@@ -1,0 +1,69 @@
+/* OdyoBOT servis çalışanı (service worker): uygulama dosyalarını cihaza kaydeder, internetsiz açılmayı sağlar.
+
+   Yeni sürüm yayınlarken:
+   - Bu listeye yeni dosya eklendiyse ya da bir dosya silindiyse ASSETS'i güncelle.
+   - VERSION'ı bir artır (ör. v2). Böylece eski önbellek silinir.
+   Dosya içerikleri her açılışta arka planda tazelenir; VERSION artırılmasa da değişiklik en geç ikinci açılışta görünür.
+
+   Firebase (Firestore/giriş) istekleri başka adrese gittiği için buraya karışmaz; onların internetsiz kopyasını
+   Firestore'un kendi önbelleği tutar. Vaka geçmişi zaten yalnızca cihazın yerel deposundadır. */
+var VERSION = 'odyobot-v1';
+var ASSETS = [
+  './',
+  './index.html',
+  './styles.css',
+  './app.js',
+  './firebase-config.js',
+  './manifest.webmanifest',
+  './vendor/firebase/firebase-app-compat.js',
+  './vendor/firebase/firebase-auth-compat.js',
+  './vendor/firebase/firebase-firestore-compat.js',
+  './fonts/bricolage-latin.woff2',
+  './fonts/bricolage-latin-ext.woff2',
+  './fonts/plexsans-latin.woff2',
+  './fonts/plexsans-latin-ext.woff2',
+  './fonts/plexmono-latin-400.woff2',
+  './fonts/plexmono-latin-500.woff2',
+  './fonts/plexmono-latin-ext-400.woff2',
+  './fonts/plexmono-latin-ext-500.woff2',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
+  './icons/apple-touch-icon.png'
+];
+
+self.addEventListener('install', function (e) {
+  e.waitUntil(caches.open(VERSION).then(function (c) { return c.addAll(ASSETS); }).then(function () { return self.skipWaiting(); }));
+});
+
+self.addEventListener('activate', function (e) {
+  e.waitUntil(caches.keys().then(function (keys) {
+    return Promise.all(keys.filter(function (k) { return k !== VERSION; }).map(function (k) { return caches.delete(k); }));
+  }).then(function () { return self.clients.claim(); }));
+});
+
+self.addEventListener('fetch', function (e) {
+  var req = e.request;
+  if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) return;
+
+  // Sayfanın kendisi: önce internet (güncel sürüm), yoksa kayıtlı kopya.
+  if (req.mode === 'navigate') {
+    e.respondWith(fetch(req).then(function (res) {
+      if (res.ok) { var copy = res.clone(); caches.open(VERSION).then(function (c) { c.put('./index.html', copy); }); }
+      return res;
+    }).catch(function () {
+      return caches.match('./index.html');
+    }));
+    return;
+  }
+
+  // Diğer dosyalar: önce kayıtlı kopya (hızlı açılış), arka planda tazele.
+  e.respondWith(caches.open(VERSION).then(function (c) {
+    return c.match(req).then(function (cached) {
+      var net = fetch(req).then(function (res) {
+        if (res.ok) c.put(req, res.clone());
+        return res;
+      }).catch(function () { return cached; });
+      return cached || net;
+    });
+  }));
+});

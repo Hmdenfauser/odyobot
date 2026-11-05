@@ -570,6 +570,11 @@
     };
   }
 
+  /* ---------- servis çalışanı: internetsiz açılma (yalnızca https veya localhost'ta çalışır) ---------- */
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+    navigator.serviceWorker.register('sw.js').catch(function () { /* desteklenmiyorsa uygulama yine çalışır */ });
+  }
+
   /* ---------- bağlantı ----------
      Vaka geçmişi: her zaman yerel depo (vakaDb).
      Ortak içerik (ilan, haber, not, tema): connectShared() Firebase Firestore'a bağlanır.
