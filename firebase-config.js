@@ -9,3 +9,7 @@ window.ODYOBOT_FIREBASE = {
   messagingSenderId: "142552598461",
   appId: "1:142552598461:web:28133d419267f3a3a074d4"
 };
+
+/* Admin hesabının kimliği (UID). Düzenleme araçları yalnızca bu hesapla giriş yapınca görünür.
+   Gerçek koruma firestore.rules içindeki aynı UID'dir; ikisi değişirse birlikte değiştirilmelidir. */
+window.ODYOBOT_ADMIN_UID = "gkXwWVHUirZTWZd7gYwRUqXUCUv2";

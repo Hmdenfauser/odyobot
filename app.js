@@ -273,7 +273,7 @@
   SEGS.forEach(function (s) { $('seg-' + s).addEventListener('click', function () { seg(s); }); });
 
   /* ---------- tabs ---------- */
-  var TABS = ['anasayfa', 'depo', 'odybot', 'notlar', 'gecmis', 'ayarlar'];
+  var TABS = ['anasayfa', 'depo', 'odybot', 'notlar', 'gecmis', 'ayarlar', 'giris'];
   function route() {
     var t = (location.hash || '').replace('#', '');
     if (TABS.indexOf(t) === -1) t = 'anasayfa';
@@ -499,7 +499,6 @@
      .then(function () { $('an-send').disabled = false; });
   });
   function setupAyarlar(db) {
-    $('gear').hidden = !canEdit; $('ayar-body').hidden = !canEdit; $('ayar-denied').hidden = canEdit;
     renderPalettes(); renderNoteAdmin();
     db.doc('ayar/tema').onSnapshot(function (s) {
       var d = s.exists ? s.data() : null;
@@ -575,15 +574,57 @@
      Vaka geçmişi: her zaman yerel depo (vakaDb).
      Ortak içerik (ilan, haber, not, tema): connectShared() Firebase Firestore'a bağlanır.
      Çevrimdışı önbellek açıktır: internet yokken son indirilen ilan ve notlar gösterilir.
-     Düzenleme yetkisi (canEdit) admin girişi eklenene kadar kapalı. */
+     Düzenleme yetkisi (canEdit): yalnızca ODYOBOT_ADMIN_UID hesabıyla giriş yapılınca açılır.
+     Bu yalnızca görünümü belirler; asıl koruma firestore.rules içindedir. */
   function connectShared() {
     if (!window.firebase || !window.ODYOBOT_FIREBASE) return Promise.reject(new Error('Firebase yüklenemedi'));
     firebase.initializeApp(window.ODYOBOT_FIREBASE);
     var db = firebase.firestore();
+    var auth = null;
+    try { auth = firebase.auth(); } catch (e) { /* giriş modülü yüklenemediyse yalnızca okuma */ }
     return db.enablePersistence({ synchronizeTabs: true })
       .catch(function () { /* önbellek desteklenmiyorsa (ör. gizli sekme) çevrimiçi devam et */ })
-      .then(function () { return { db: db, canEdit: false }; });
+      .then(function () { return { db: db, auth: auth }; });
   }
+
+  /* ---------- yönetici girişi ---------- */
+  var authRef = null;
+  function setEditMode(on, email) {
+    canEdit = !!on;
+    $('gear').hidden = !canEdit;
+    $('ayar-body').hidden = !canEdit;
+    $('ayar-denied').hidden = canEdit;
+    $('compose').hidden = !canEdit;
+    $('admin-note').hidden = !canEdit;
+    $('login-link').hidden = canEdit;
+    $('who').textContent = canEdit ? 'Giriş yapan: ' + (email || '') : '';
+    renderDuyuru(); renderNoteAdmin();
+  }
+  function authErrorText(err) {
+    var c = (err && err.code) || '';
+    if (/invalid-credential|wrong-password|user-not-found|invalid-login-credentials/.test(c)) return 'E-posta veya şifre yanlış.';
+    if (/invalid-email/.test(c)) return 'E-posta adresi geçerli görünmüyor.';
+    if (/too-many-requests/.test(c)) return 'Çok fazla deneme yapıldı. Biraz bekleyip tekrar dene.';
+    if (/network-request-failed/.test(c)) return 'İnternet bağlantısı yok. Giriş için bağlantı gerekli.';
+    if (/user-disabled/.test(c)) return 'Bu hesap devre dışı bırakılmış.';
+    if (/operation-not-supported|unsupported/.test(c)) return 'Giriş, dosya olarak açılan sayfada çalışmaz. Uygulamayı web adresinden aç.';
+    return 'Giriş yapılamadı.' + (c ? ' (' + c + ')' : '');
+  }
+  $('login-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var msg = $('l-msg'); msg.className = 'msg'; msg.textContent = '';
+    if (!authRef) { msg.textContent = 'Giriş sistemine ulaşılamıyor. Bağlantını kontrol edip sayfayı yeniden aç.'; msg.className = 'msg err'; return; }
+    $('l-send').disabled = true;
+    authRef.signInWithEmailAndPassword($('l-email').value.trim(), $('l-pass').value).then(function () {
+      $('l-pass').value = '';
+    }).catch(function (err) {
+      msg.textContent = authErrorText(err); msg.className = 'msg err';
+    }).then(function () { $('l-send').disabled = false; });
+  });
+  $('logout').addEventListener('click', function () {
+    if (!authRef) return;
+    authRef.signOut().then(function () { location.hash = '#anasayfa'; });
+  });
 
   vakaDb.collection(VAKA).orderBy('olusturma', 'desc').limit(200).onSnapshot(function (snap) {
     loadedGecmis = true;
@@ -598,9 +639,17 @@
   var giveUp = setTimeout(unreachable, 10000);
   connectShared().then(function (r) {
     var db = r.db;
-    dbRef = db; canEdit = !!r.canEdit;
-    if (canEdit) { $('compose').hidden = false; $('admin-note').hidden = false; }
+    dbRef = db; authRef = r.auth;
     setupAyarlar(db);
+    if (authRef) authRef.onAuthStateChanged(function (u) {
+      var isAdmin = !!u && u.uid === window.ODYOBOT_ADMIN_UID;
+      if (u && !isAdmin) {
+        authRef.signOut();
+        $('l-msg').textContent = 'Bu hesabın düzenleme yetkisi yok.'; $('l-msg').className = 'msg err';
+      }
+      setEditMode(isAdmin, u && u.email);
+      if (isAdmin && location.hash === '#giris') location.hash = '#ayarlar';
+    });
     db.collection('duyurular').orderBy('olusturma', 'desc').limit(200).onSnapshot(function (snap) {
       clearTimeout(giveUp); loadedDuyuru = true;
       duyurular = snap.docs.map(function (d) { var o = d.data() || {}; o.id = d.id; return o; });

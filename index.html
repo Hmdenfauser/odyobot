@@ -54,6 +54,7 @@
         </form>
       </details>
       <p class="note" id="admin-note" hidden>Eklediğin duyuruları uygulamaya erişimi olan herkes görür. Silmek için kartın altındaki bağlantıyı kullan.</p>
+      <a class="footlink" href="#giris" id="login-link">Yönetici girişi</a>
     </div>
   </section>
 
@@ -147,7 +148,27 @@
           <h3>Eklediğin notlar</h3>
           <div class="board" id="n-admin-list"></div>
         </div>
+        <div class="stack" style="gap:10px">
+          <h3>Oturum</h3>
+          <p class="note" id="who"></p>
+          <div class="admin-bar"><button class="btn" type="button" id="logout">Çıkış yap</button></div>
+        </div>
       </div>
+    </div>
+  </section>
+
+  <!-- YÖNETİCİ GİRİŞİ -->
+  <section id="giris" data-tab hidden>
+    <div class="stack">
+      <a class="back" href="#anasayfa">← Ana sayfa</a>
+      <h2>Yönetici girişi</h2>
+      <p class="lead">Bu sayfa yalnızca ilan, haber ve ders notlarını yöneten kişi içindir.</p>
+      <form class="f" id="login-form" style="padding:0">
+        <div class="fld"><label for="l-email">E-posta</label><input id="l-email" type="email" inputmode="email" autocomplete="username" required></div>
+        <div class="fld"><label for="l-pass">Şifre</label><input id="l-pass" type="password" autocomplete="current-password" required></div>
+        <div class="admin-bar"><button class="btn primary" type="submit" id="l-send">Giriş yap</button></div>
+        <div class="msg" id="l-msg" role="status"></div>
+      </form>
     </div>
   </section>
 
@@ -216,6 +237,7 @@
 </nav>
 
 <script src="vendor/firebase/firebase-app-compat.js"></script>
+<script src="vendor/firebase/firebase-auth-compat.js"></script>
 <script src="vendor/firebase/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
 <script src="app.js"></script>
