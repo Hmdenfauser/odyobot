@@ -287,7 +287,7 @@
   route();
 
   /* ---------- shared data: duyurular ---------- */
-  var duyurular = [], canEdit = false, dbRef = null, uid = null, loadedDuyuru = false;
+  var duyurular = [], canEdit = false, dbRef = null, loadedDuyuru = false;
   var armedId = null, armedTimer = null;
 
   function dateLabelFor(tur) { return tur === 'ilan' ? 'Son başvuru' : 'Etkinlik tarihi'; }
@@ -365,7 +365,8 @@
     }).then(function () { $('f-send').disabled = false; });
   });
 
-  /* ---------- private data: geçmiş ---------- */
+  /* ---------- kişisel veri: vaka geçmişi (yalnızca bu cihazda) ---------- */
+  var vakaDb = makeLocalDb(), VAKA = 'vakalar';
   var vakalar = [], loadedGecmis = false;
   $('g-tarih').value = todayISO();
   function renderGecmis() {
@@ -388,7 +389,7 @@
           renderGecmis(); return;
         }
         armedId = null; clearTimeout(armedTimer);
-        dbRef.collection('data/users/' + uid).doc(v.id).delete().catch(function () {
+        vakaDb.collection(VAKA).doc(v.id).delete().catch(function () {
           $('g-msg').textContent = 'Silinemedi.'; $('g-msg').className = 'msg err';
         });
       });
@@ -399,14 +400,13 @@
   $('gecmis-form').addEventListener('submit', function (e) {
     e.preventDefault();
     var msg = $('g-msg'); msg.className = 'msg';
-    if (!dbRef || !uid) { msg.textContent = 'Kayıt için oturum açık olmalı.'; msg.className = 'msg err'; return; }
     var doc = { etiket: $('g-etiket').value.trim(), tarih: $('g-tarih').value || todayISO(), not: $('g-not').value.trim(), olusturma: Date.now() };
     if (!doc.etiket) { msg.textContent = 'Vaka etiketi gerekli.'; msg.className = 'msg err'; return; }
     $('g-send').disabled = true;
-    dbRef.collection('data/users/' + uid).add(doc).then(function () {
+    vakaDb.collection(VAKA).add(doc).then(function () {
       $('gecmis-form').reset(); $('g-tarih').value = todayISO(); msg.textContent = 'Kaydedildi.';
     }).catch(function () {
-      msg.textContent = 'Kaydedilemedi. Bu hesapta yazma yetkisi olmayabilir.'; msg.className = 'msg err';
+      msg.textContent = 'Kaydedilemedi. Tarayıcının depolama alanı dolu ya da kapalı olabilir (örneğin gizli sekmede).'; msg.className = 'msg err';
     }).then(function () { $('g-send').disabled = false; });
   });
 
@@ -512,11 +512,14 @@
     }, function () {});
   }
 
-  /* ---------- yerel mod: Claude disinda acildiginda veri bu cihazin tarayicisinda tutulur ---------- */
+  /* ---------- yerel depo: veriyi yalnızca bu cihazın tarayıcısında (localStorage) tutar ----------
+     Vaka geçmişi her zaman buradadır ve hiçbir sunucuya gönderilmez (CLAUDE.md §5, §8).
+     Yazma başarısız olursa (depolama dolu/kapalı) hata fırlatır; çağıran taraf Promise reddi olarak görür. */
   function makeLocalDb() {
     var listeners = {};
     function read(p) { try { return JSON.parse(localStorage.getItem('odybot:' + p) || '{}'); } catch (e) { return {}; } }
-    function write(p, o) { try { localStorage.setItem('odybot:' + p, JSON.stringify(o)); } catch (e) {} }
+    function write(p, o) { localStorage.setItem('odybot:' + p, JSON.stringify(o)); }
+    function attempt(fn) { try { fn(); return Promise.resolve(); } catch (e) { return Promise.reject(e); } }
     function fire(p) { (listeners[p] || []).forEach(function (f) { f(); }); }
     function query(p, field, dir) {
       return {
@@ -540,9 +543,9 @@
     }
     function docRef(p, id) {
       return {
-        delete: function () { var o = read(p); delete o[id]; write(p, o); fire(p); return Promise.resolve(); },
-        set: function (d) { var o = read(p); o[id] = d; write(p, o); fire(p); return Promise.resolve(); },
-        update: function (d) { var o = read(p); o[id] = Object.assign(o[id] || {}, d); write(p, o); fire(p); return Promise.resolve(); },
+        delete: function () { return attempt(function () { var o = read(p); delete o[id]; write(p, o); fire(p); }); },
+        set: function (d) { return attempt(function () { var o = read(p); o[id] = d; write(p, o); fire(p); }); },
+        update: function (d) { return attempt(function () { var o = read(p); o[id] = Object.assign(o[id] || {}, d); write(p, o); fire(p); }); },
         onSnapshot: function (next) {
           function emit() { var o = read(p); next({ exists: !!o[id], data: function () { return o[id]; } }); }
           (listeners[p] = listeners[p] || []).push(emit);
@@ -555,9 +558,11 @@
       collection: function (p) {
         var q = query(p);
         q.add = function (d) {
-          var o = read(p);
-          o['l' + Date.now() + Math.random().toString(36).slice(2, 6)] = d;
-          write(p, o); fire(p); return Promise.resolve();
+          return attempt(function () {
+            var o = read(p);
+            o['l' + Date.now() + Math.random().toString(36).slice(2, 6)] = d;
+            write(p, o); fire(p);
+          });
         };
         q.doc = function (id) { return docRef(p, id); };
         return q;
@@ -566,50 +571,34 @@
     };
   }
 
-  /* ---------- connect ---------- */
-  function unreachable() {
-    if (!loadedDuyuru) {
-      ['ilan', 'haber'].forEach(function (t) { $('list-' + t).replaceChildren(h('div', { 'class': 'empty', text: 'Duyurulara şu an ulaşılamıyor. Bağlantını kontrol edip sayfayı yeniden aç.' })); });
-    }
-    if (!loadedGecmis) $('g-list').replaceChildren(h('div', { 'class': 'empty', text: 'Kayıtlara şu an ulaşılamıyor. Geçmişi görmek için oturum açık olmalı.' }));
+  /* ---------- bağlantı ----------
+     Vaka geçmişi: her zaman yerel depo (vakaDb).
+     Ortak içerik (ilan, haber, not, tema): connectShared() verir. Şimdilik yerel depo ve düzenleme kapalı;
+     Firebase eklenince yalnızca bu fonksiyon değişecek. */
+  function connectShared() {
+    return Promise.resolve({ db: makeLocalDb(), canEdit: false });
   }
-  var use = window.claude && window.claude.use;
-  if (!use) {
-    var ldb = makeLocalDb();
-    use = function (name) {
-      if (name === 'db') return Promise.resolve(ldb);
-      if (name === 'user') return Promise.resolve({
-        canEdit: function () { return Promise.resolve(false); },
-        id: function () { return Promise.resolve('local'); }
-      });
-      return Promise.resolve(null);
-    };
-    $('local-note').hidden = false;
+
+  vakaDb.collection(VAKA).orderBy('olusturma', 'desc').limit(200).onSnapshot(function (snap) {
+    loadedGecmis = true;
+    vakalar = snap.docs.map(function (d) { var o = d.data() || {}; o.id = d.id; return o; });
+    renderGecmis();
+  });
+
+  function unreachable() {
+    if (loadedDuyuru) return;
+    ['ilan', 'haber'].forEach(function (t) { $('list-' + t).replaceChildren(h('div', { 'class': 'empty', text: 'Duyurulara şu an ulaşılamıyor. Bağlantını kontrol edip sayfayı yeniden aç.' })); });
   }
   var giveUp = setTimeout(unreachable, 10000);
-  Promise.all([use.call(window.claude, 'db'), use.call(window.claude, 'user')]).then(function (r) {
-    var db = r[0], user = r[1];
-    if (!db) { clearTimeout(giveUp); unreachable(); return; }
-    dbRef = db;
-    return Promise.all([user ? user.canEdit() : false, user ? user.id() : null]).then(function (x) {
-      canEdit = !!x[0]; uid = x[1];
-      if (canEdit) { $('compose').hidden = false; $('admin-note').hidden = false; }
-      setupAyarlar(db);
-      db.collection('duyurular').orderBy('olusturma', 'desc').limit(200).onSnapshot(function (snap) {
-        clearTimeout(giveUp); loadedDuyuru = true;
-        duyurular = snap.docs.map(function (d) { var o = d.data() || {}; o.id = d.id; return o; });
-        renderDuyuru();
-      }, function () { clearTimeout(giveUp); unreachable(); });
-      if (uid) {
-        db.collection('data/users/' + uid).orderBy('olusturma', 'desc').limit(200).onSnapshot(function (snap) {
-          loadedGecmis = true;
-          vakalar = snap.docs.map(function (d) { var o = d.data() || {}; o.id = d.id; return o; });
-          renderGecmis();
-        }, function () { unreachable(); });
-      } else {
-        $('g-compose').hidden = true;
-        $('g-list').replaceChildren(h('div', { 'class': 'empty', text: 'Geçmiş kayıtları için oturum açık olmalı.' }));
-      }
-    });
-  });
+  connectShared().then(function (r) {
+    var db = r.db;
+    dbRef = db; canEdit = !!r.canEdit;
+    if (canEdit) { $('compose').hidden = false; $('admin-note').hidden = false; }
+    setupAyarlar(db);
+    db.collection('duyurular').orderBy('olusturma', 'desc').limit(200).onSnapshot(function (snap) {
+      clearTimeout(giveUp); loadedDuyuru = true;
+      duyurular = snap.docs.map(function (d) { var o = d.data() || {}; o.id = d.id; return o; });
+      renderDuyuru();
+    }, function () { clearTimeout(giveUp); unreachable(); });
+  }, function () { clearTimeout(giveUp); unreachable(); });
 })();
