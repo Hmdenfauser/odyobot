@@ -1,0 +1,2 @@
+Firebase JS SDK 13.2.0 (compat). Kaynak: https://www.gstatic.com/firebasejs/13.2.0/
+Lisans: Apache-2.0

@@ -573,10 +573,16 @@
 
   /* ---------- bağlantı ----------
      Vaka geçmişi: her zaman yerel depo (vakaDb).
-     Ortak içerik (ilan, haber, not, tema): connectShared() verir. Şimdilik yerel depo ve düzenleme kapalı;
-     Firebase eklenince yalnızca bu fonksiyon değişecek. */
+     Ortak içerik (ilan, haber, not, tema): connectShared() Firebase Firestore'a bağlanır.
+     Çevrimdışı önbellek açıktır: internet yokken son indirilen ilan ve notlar gösterilir.
+     Düzenleme yetkisi (canEdit) admin girişi eklenene kadar kapalı. */
   function connectShared() {
-    return Promise.resolve({ db: makeLocalDb(), canEdit: false });
+    if (!window.firebase || !window.ODYOBOT_FIREBASE) return Promise.reject(new Error('Firebase yüklenemedi'));
+    firebase.initializeApp(window.ODYOBOT_FIREBASE);
+    var db = firebase.firestore();
+    return db.enablePersistence({ synchronizeTabs: true })
+      .catch(function () { /* önbellek desteklenmiyorsa (ör. gizli sekme) çevrimiçi devam et */ })
+      .then(function () { return { db: db, canEdit: false }; });
   }
 
   vakaDb.collection(VAKA).orderBy('olusturma', 'desc').limit(200).onSnapshot(function (snap) {

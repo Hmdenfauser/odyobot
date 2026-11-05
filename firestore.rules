@@ -1,0 +1,52 @@
+rules_version = '2';
+
+// OdyoBOT Firestore güvenlik kuralları.
+// Bu dosyanın içeriği Firebase konsolunda Firestore Database > Kurallar (Rules) sekmesine yapıştırılır ve "Yayınla" denir.
+//
+// - Herkes ilan/haber (duyurular), ders notları (notlar) ve tema ayarını (ayar) okuyabilir.
+// - Yalnızca admin hesabı (aşağıdaki UID) yazabilir, değiştirebilir, silebilir.
+// - Burada adı geçmeyen her şey kapalıdır. Vaka geçmişi zaten Firebase'e hiç gönderilmez.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null && request.auth.uid == "gkXwWVHUirZTWZd7gYwRUqXUCUv2";
+    }
+
+    function shortString(field, max) {
+      return !(field in request.resource.data)
+        || (request.resource.data[field] is string && request.resource.data[field].size() <= max);
+    }
+
+    match /duyurular/{id} {
+      allow read: if true;
+      allow delete: if isAdmin();
+      allow create, update: if isAdmin()
+        && request.resource.data.tur in ['ilan', 'haber']
+        && request.resource.data.baslik is string
+        && request.resource.data.baslik.size() > 0
+        && shortString('baslik', 140)
+        && shortString('kurum', 120)
+        && shortString('tarih', 10)
+        && shortString('link', 300)
+        && shortString('not', 400);
+    }
+
+    match /notlar/{id} {
+      allow read: if true;
+      allow delete: if isAdmin();
+      allow create, update: if isAdmin()
+        && request.resource.data.baslik is string
+        && request.resource.data.baslik.size() > 0
+        && shortString('baslik', 100)
+        && request.resource.data.maddeler is list
+        && request.resource.data.maddeler.size() <= 40;
+    }
+
+    match /ayar/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}
