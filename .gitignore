@@ -1,0 +1,9 @@
+# İşletim sistemi dosyaları
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Anahtar ve şifre dosyaları asla depoya girmez (CLAUDE.md §8)
+.env
+.env.*
+*.key
