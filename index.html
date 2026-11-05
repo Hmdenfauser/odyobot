@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>OdyoBOT</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="styles.css">
+
+
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ANA SAYFA -->
+  <section id="anasayfa" data-tab>
+    <div class="stack">
+      <div class="hero">
+        <span class="brand">OdyoBOT</span>
+        <div class="row" style="align-items:center">
+          <span class="kicker" id="date">—</span>
+          <a class="iconbtn" id="gear" href="#ayarlar" aria-label="Ayarlar" hidden>
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg>
+          </a>
+        </div>
+        <h1>Merhaba, odyolog</h1>
+        <div class="clock" id="clock" aria-label="Saat">--:--</div>
+        <p class="note" id="local-note" hidden>Bu kopya Claude dışında açıldı: ilan, haber ve ortak notlar burada görünmez. Vaka geçmişi yalnızca bu cihazın tarayıcısında saklanır; tarayıcı verisini silersen kayıtlar da gider.</p>
+      </div>
+
+      <div class="stack" style="gap:10px">
+        <div class="row"><h2>İş ilanları</h2><span class="kicker" id="n-ilan"></span></div>
+        <div class="board" id="list-ilan"><div class="empty">Yükleniyor…</div></div>
+      </div>
+
+      <div class="stack" style="gap:10px">
+        <div class="row"><h2>Sempozyum ve kongre haberleri</h2><span class="kicker" id="n-haber"></span></div>
+        <div class="board" id="list-haber"><div class="empty">Yükleniyor…</div></div>
+      </div>
+
+      <details class="compose" id="compose" hidden>
+        <summary>Yeni duyuru ekle</summary>
+        <form class="f" id="duyuru-form" autocomplete="off">
+          <div class="fld">
+            <label for="f-tur">Tür</label>
+            <select id="f-tur"><option value="ilan">İş ilanı</option><option value="haber">Sempozyum / kongre haberi</option></select>
+          </div>
+          <div class="fld"><label for="f-baslik">Başlık</label><input id="f-baslik" type="text" maxlength="140" required></div>
+          <div class="fld"><label for="f-kurum">Kurum veya yer</label><input id="f-kurum" type="text" maxlength="120"></div>
+          <div class="fld"><label for="f-tarih" id="f-tarih-l">Son başvuru tarihi</label><input id="f-tarih" type="date"></div>
+          <div class="fld"><label for="f-link">Bağlantı (https ile başlamalı)</label><input id="f-link" type="url" inputmode="url" maxlength="300" placeholder="https://"></div>
+          <div class="fld"><label for="f-not">Kısa not</label><textarea id="f-not" maxlength="400"></textarea></div>
+          <div class="admin-bar"><button class="btn primary" type="submit" id="f-send">Yayınla</button></div>
+          <div class="msg" id="f-msg" role="status"></div>
+        </form>
+      </details>
+      <p class="note" id="admin-note" hidden>Eklediğin duyuruları uygulamaya erişimi olan herkes görür. Silmek için kartın altındaki bağlantıyı kullan.</p>
+    </div>
+  </section>
+
+  <!-- GÖRSEL DEPO -->
+  <section id="depo" data-tab hidden>
+    <div class="stack">
+      <div class="stack" style="gap:6px">
+        <h2>Görsel depo</h2>
+        <p class="lead">Şemalar ve cihaz görselleri tek yerde.</p>
+      </div>
+      <div class="seg" role="group" aria-label="Depo bölümü">
+        <button type="button" id="seg-yolak" aria-pressed="true">Yolaklar</button>
+        <button type="button" id="seg-refleks" aria-pressed="false">Refleks arkı</button>
+        <button type="button" id="seg-cihaz" aria-pressed="false">Cihazlar</button>
+      </div>
+
+      <div id="p-yolak" class="stack">
+        <p class="lead">Çıkan işitme yolağı kokleadan işitsel kortekse uzanır. Şemadaki bir basamağa dokun.</p>
+        <div class="figure">
+          <svg id="pathway" viewBox="0 0 360 540" role="group" aria-label="Çıkan işitme yolağı şeması"></svg>
+          <div class="legend">
+            <span><i class="dot r"></i>Sağ kulak</span>
+            <span><i class="dot l"></i>Sol kulak</span>
+            <span><i class="dash"></i>Karşı tarafa geçiş</span>
+          </div>
+        </div>
+        <article class="card" id="detail" aria-live="polite"></article>
+        <p class="note">Şema basitleştirilmiştir. ABR dalga kaynakları yaklaşıktır ve birden fazla yapı bir dalgaya katkı verir; kaynaklara göre atamalar değişir.</p>
+      </div>
+
+      <div id="p-refleks" class="stack" hidden>
+        <p class="lead">Şemada sağ kulağa ses verildiği varsayılır. İpsilateral yolda uyaran ve prob sağ kulaktadır. Kontralateral yolda uyaran sağ kulaktadır, sol kulaktaki prob sol stapedius yanıtını ölçer. Bir basamağa dokun.</p>
+        <div class="figure">
+          <svg id="reflex" viewBox="0 0 360 520" role="group" aria-label="Akustik refleks arkı şeması"></svg>
+          <div class="legend">
+            <span><i class="dot r"></i>İpsilateral yol</span>
+            <span><i class="dot l"></i>Kontralateral yol</span>
+            <span><i class="dash"></i>Beyin sapında karşıya geçiş</span>
+          </div>
+        </div>
+        <article class="card" id="detail-r" aria-live="polite"></article>
+        <p class="note">Şema basitleştirilmiştir. Karşıya geçişin tam düzeyi kaynaklara göre farklı anlatılır; burada trapezoid cisim düzeyinde gösterilmiştir.</p>
+      </div>
+
+      <div id="p-cihaz" class="stack" hidden>
+        <span class="status">Sıradaki içerik</span>
+        <p class="lead">Her cihaz tipi için görsel, kısa tanım, uygun işitme kaybı aralığı ile avantaj ve sınırlılıklar eklenecek.</p>
+        <ul class="soonlist">
+          <li>BTE</li><li>RIC / RITE</li><li>ITE</li><li>ITC</li><li>CIC / IIC</li>
+          <li>Kemik iletimli</li><li>Koklear implant</li><li>Orta kulak implantı</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ODYOBOT -->
+  <section id="odybot" data-tab hidden>
+    <div class="stack">
+      <span class="status">Son aşama</span>
+      <h2>OdyoBOT</h2>
+      <p class="lead">Odyogram değerlerini girince hangi kulağa ne zaman maskeleme gerektiğini ve plato tekniğinin adımlarını gösterecek. Hesaplar sabit klinik formüllerle yapılacak ve formüller birlikte doğrulanacak. Yaptığın değerlendirmeler Geçmiş sekmesine kaydedilecek.</p>
+      <ul class="soonlist">
+        <li>Hava yolu / kemik yolu girişi</li><li>Maskeleme gerekli mi?</li><li>Plato tekniği adımları</li><li>Aşırı maskeleme uyarısı</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- AYARLAR -->
+  <section id="ayarlar" data-tab hidden>
+    <div class="stack">
+      <a class="back" href="#anasayfa">← Ana sayfa</a>
+      <h2>Ayarlar</h2>
+      <div class="empty" id="ayar-denied">Bu bölüm yalnızca düzenleme yetkisi olanlar içindir.</div>
+      <div class="stack" id="ayar-body" hidden>
+        <div class="stack" style="gap:10px">
+          <h3>Renk teması</h3>
+          <p class="note">Seçtiğin tema uygulamayı açan herkeste değişir.</p>
+          <div class="palgrid" id="palettes"></div>
+        </div>
+        <div class="stack" style="gap:10px">
+          <h3>Ders notu ekle</h3>
+          <form class="f" id="an-form" autocomplete="off" style="padding:0">
+            <div class="fld"><label for="an-baslik">Başlık</label><input id="an-baslik" type="text" maxlength="100" required></div>
+            <div class="fld"><label for="an-maddeler">Maddeler (her satıra bir madde)</label><textarea id="an-maddeler" maxlength="3000" style="min-height:140px"></textarea></div>
+            <div class="admin-bar">
+              <button class="btn primary" type="submit" id="an-send">Notu yayınla</button>
+              <button class="btn" type="button" id="an-cancel" hidden>Vazgeç</button>
+            </div>
+            <div class="msg" id="an-msg" role="status"></div>
+          </form>
+          <h3>Eklediğin notlar</h3>
+          <div class="board" id="n-admin-list"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NOTLAR -->
+  <section id="notlar" data-tab hidden>
+    <div class="stack">
+      <div class="stack" style="gap:6px">
+        <h2>Ders notları</h2>
+        <p class="lead">Sık kullanılan kavramların kısa özetleri.</p>
+      </div>
+      <div class="fld"><label for="n-ara">Notlarda ara</label><input id="n-ara" type="search" placeholder="Örn. timpanometri" autocomplete="off"></div>
+      <div class="board" id="notes-list"></div>
+      <p class="note">Bunlar kısa özetlerdir. Sınır değerler kaynağa, yaşa ve kliniğe göre değişir; kendi ders kaynağınla doğrula.</p>
+    </div>
+  </section>
+
+  <!-- GEÇMİŞ -->
+  <section id="gecmis" data-tab hidden>
+    <div class="stack">
+      <div class="stack" style="gap:6px">
+        <h2>Geçmiş</h2>
+        <p class="lead">Daha önce yaptığın vakaların kaydı. Kayıtları yalnızca sen görürsün.</p>
+      </div>
+      <details class="compose" id="g-compose">
+        <summary>Vaka kaydı ekle</summary>
+        <form class="f" id="gecmis-form" autocomplete="off">
+          <p class="note">Hasta adı, soyadı, kimlik numarası gibi tanımlayıcı bilgi yazma. Anonim bir etiket kullan.</p>
+          <div class="fieldrow">
+            <div class="fld"><label for="g-etiket">Vaka etiketi</label><input id="g-etiket" type="text" maxlength="60" placeholder="Örn. V-014" required></div>
+            <div class="fld"><label for="g-tarih">Tarih</label><input id="g-tarih" type="date"></div>
+          </div>
+          <div class="fld"><label for="g-not">Özet ve sonuç</label><textarea id="g-not" maxlength="1500" placeholder="Örn. Sağ kulakta iletim tipi kayıp, maskeleme plato tekniğiyle yapıldı."></textarea></div>
+          <div class="admin-bar"><button class="btn primary" type="submit" id="g-send">Kaydet</button></div>
+          <div class="msg" id="g-msg" role="status"></div>
+        </form>
+      </details>
+      <div class="board" id="g-list"><div class="empty">Yükleniyor…</div></div>
+    </div>
+  </section>
+</div>
+
+<nav class="tabs" aria-label="Bölümler">
+  <a href="#anasayfa" data-go="anasayfa">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/><path d="M10 20v-5h4v5"/></svg>
+    Ana sayfa
+  </a>
+  <a href="#depo" data-go="depo">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.500" y="4" width="17" height="16" rx="2"/><circle cx="9" cy="10" r="1.700"/><path d="M4 18l5-4 4 3 3-2.500 4 3.500"/></svg>
+    Görsel depo
+  </a>
+  <a href="#odybot" data-go="odybot" class="bot" aria-label="OdyoBOT">
+    <span class="disc">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4.500" y="8" width="15" height="11" rx="3.500"/><circle cx="9.500" cy="13" r="1.200"/><circle cx="14.500" cy="13" r="1.200"/><path d="M12 8V5"/><circle cx="12" cy="4" r="1"/><path d="M9.500 16.500h5"/></svg>
+    </span>
+    OdyoBOT
+  </a>
+  <a href="#notlar" data-go="notlar">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h10a2 2 0 0 1 2 2v14H8a2 2 0 0 1-2-2V4z"/><path d="M6 18a2 2 0 0 1 2-2h10"/><path d="M10 8h5"/></svg>
+    Notlar
+  </a>
+  <a href="#gecmis" data-go="gecmis">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.500-5.800"/><path d="M4 4v4.500h4.500"/><path d="M12 8v4l3 2"/></svg>
+    Geçmiş
+  </a>
+</nav>
+
+<script src="app.js"></script>
+
+</body>
+</html>
