@@ -18,48 +18,74 @@ OdyoBOT, odyoloji öğrencileri ve klinisyenler için bir başvuru uygulaması. 
 | 2 | Görsel depo | (a) İşitme yolakları: koklea'dan işitsel kortekse 8 basamaklı, dokunulabilir şema. Her basamakta konum, işlev, klinik not ve ABR dalga karşılığı var. (b) Akustik refleks arkı: ipsilateral ve kontralateral yolu gösteren 7 basamaklı şema. (c) Cihaz tipleri: BTE, RIC, ITE, ITC, CIC, kemik iletimli, koklear implant, orta kulak implantı. | (a), (b) yapıldı; (c) yapılmadı, görselleri proje sahibi yükleyecek |
 | 3 | OdyoBot | Ortada, turuncu, yükseltilmiş yuvarlak düğme. Maskeleme asistanı (bkz. §7). | Yapılmadı |
 | 4 | Notlar | Kısa ders notları ve arama kutusu. Konular: saf ses odyometrisi, işitme kaybı tipleri, timpanometri, konuşma odyometrisi, maskeleme kavramları, OAE, ABR, akustik refleks. | Yapıldı |
-| 5 | Geçmiş | Kişisel vaka kaydı: anonim vaka etiketi, tarih, özet. Kayıtları yalnızca kaydı yapan görür. | Yapıldı |
+| 5 | Geçmiş | Kişisel vaka kaydı: anonim vaka etiketi, tarih, özet. Kayıtlar yalnızca o cihazda saklanır, hiçbir yere gönderilmez. | Yapıldı |
 
-**Ayarlar:** Ana sayfadaki dişli düğmesiyle açılır ve yalnızca düzenleyiciye görünür. İçinde 5 renk teması arasından seçim ile ders notu ekleme, düzenleme ve silme var.
+**Ayarlar:** Ana sayfadaki dişli düğmesiyle açılır ve yalnızca yönetici girişi yapılınca görünür. İçinde 5 renk teması arasından seçim, ders notu ekleme/düzenleme/silme ve "Çıkış yap" var.
+
+**Yönetici girişi:** Ana sayfanın en altındaki "Yönetici girişi" bağlantısı (`#giris`). E-posta ve şifre ile giriş (Firebase Authentication).
 
 **Temalar:** Petrol, Lacivert, Orman, Bordo, Mor. Açık/koyu ayrı bir ayar değil: her temanın açık ve koyu hâli var, cihazın moduna göre otomatik seçiliyor.
 
+### Tamamlanan: PWA'ya taşıma (2026-11-06)
+Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sahibi telefonda şunları denedi ve hepsi çalıştı: giriş, ilan ekleme ve başka cihazda görme, ana ekrana ekleme, uçak modunda açılma.
+
 ### Sıradaki işler (bu sırayla)
-Sıra 2026-11-05'te proje sahibiyle değiştirildi. Gerekçe: cihaz görselleri artifact veri deposuna sığmayabilir, yeni özellikler de iki kez yazılmasın.
-1. Taşınabilir sürüm (PWA): kendi adresi, ana ekrana ekleme, internetsiz çalışma
-   - Bu aşamada düzeltilecek: "Sil/Düzenle" bağlantıları 32 px, depo bölüm düğmeleri 40 px (kural ≥ 44 px). Google Fonts yerine yazı tipi dosyaları uygulamanın içine konacak (internetsiz çalışma için).
-2. Cihaz tipleri bölümü ve görsel yükleme
-3. OdyoBot maskeleme asistanı
-4. Test soruları ve mağaza paketi
+Sıra 2026-11-05'te proje sahibiyle değiştirildi; PWA'ya taşıma öne alındı ve bitti.
+1. Cihaz tipleri bölümü ve görsel yükleme (görseller `images/devices/` altına konacak)
+2. OdyoBot maskeleme asistanı
+3. Test soruları ve mağaza paketi
 
-## 4. Teknik yapı ve veri modeli (şu anki prototip)
-- Claude'un artifact altyapısında yayınlanmış **tek bir HTML dosyası** var: HTML, CSS ve sade JavaScript. Kütüphane kullanılmıyor.
-- Uygulamayı yalnızca Claude hesabı olan ve erişim verilen kişiler açabiliyor.
-- Veriler iki yerde duruyor:
-  - **Ortak alan** (altyapının veri deposu): ilanlar, haberler, ortak notlar, tema.
-  - **Kullanıcıya özel alan:** vaka geçmişi (vaka etiketi, tarih, özet).
-- Bu yapıda ana ekrana ekleme, internetsiz kullanım ve mağaza paketi mümkün değil.
-- Prototip kodu: `OdyoBOT.html` (artifact'tan kopyalandı).
-- **Veri yapısı** (artifact veri deposu, `window.claude.use('db')`):
+## 4. Teknik yapı ve veri modeli
+Uygulama bir **PWA**: tarayıcıdan ana ekrana eklenebilen ve internetsiz de açılabilen web uygulaması. Derleme aracı yok; sade HTML, CSS ve JavaScript.
 
-  | Kayıt grubu | Kim görür | Alanlar |
-  |---|---|---|
-  | `duyurular` | Herkes | `tur` ("ilan" / "haber"), `baslik`, `kurum`, `tarih` (YYYY-AA-GG), `link` (yalnızca https), `not`, `olusturma` (zaman damgası) |
-  | `notlar` | Herkes | `baslik`, `maddeler` (metin listesi, en fazla 40), `olusturma` |
-  | `ayar/tema` | Herkes | `id` (tema adı), `guncelleme` |
-  | `data/users/{kullanıcı}` | Yalnızca kaydı yapan | `etiket`, `tarih`, `not` (özet), `olusturma` |
+### Dosyalar
+| Dosya | Görevi |
+|---|---|
+| `index.html` | Sayfa yapısı (sekmeler, formlar) |
+| `styles.css` | Görünüm; renkler CSS değişkenleri, en üstte yerel yazı tipleri (`@font-face`) |
+| `app.js` | Tüm davranış: saat, şemalar, notlar, ilanlar, vaka geçmişi, giriş, servis çalışanı kaydı |
+| `firebase-config.js` | Firebase web yapılandırması ve admin UID'si (gizli bilgi değil, bkz. §8) |
+| `firestore.rules` | Firestore güvenlik kuralları. Değişirse Firebase konsoluna elle yapıştırılır. |
+| `sw.js` | Servis çalışanı: uygulama dosyalarını önbelleğe alır, internetsiz açılmayı sağlar |
+| `manifest.webmanifest` | Ana ekrana ekleme bilgisi (ad, renk, simge) |
+| `icons/` | `icon.svg` kaynak; PNG'ler (192, 512, 180) ondan üretildi |
+| `fonts/` | Yazı tipi dosyaları (yalnızca latin + latin-ext) ve OFL lisansları |
+| `vendor/firebase/` | Firebase JS SDK 13.2.0 (compat): app, auth, firestore |
+| `.nojekyll` | GitHub Pages'in dosyaları işlemesini engeller |
 
-- 8 temel ders notu veri deposunda değil, kodun içinde (`NOTES` dizisi). Depoda yalnızca Ayarlar'dan eklenen notlar var.
-- **Düzenleyici tanıma:** Uygulama Claude altyapısına soruyor (`user.canEdit()`). Yetkiyi altyapı veriyor. PWA'da bu mekanizma olmayacak, yerine bir çözüm gerekecek.
-- **Yerel mod:** Claude dışında açılınca veriler tarayıcının yerel deposunda (localStorage, `odybot:` önekiyle) tutuluyor. Vaka geçmişini cihazda tutmak için temel olarak kullanılabilir.
-- Sürüm takibi: proje klasörü git deposudur (2026-11-06'da kuruldu).
+### Barındırma ve servisler
+- **Yayın:** GitHub Pages. Depo: `github.com/Hmdenfauser/odyobot` (herkese açık), `main` dalının kök klasörü. `git push` ile gönderilen her değişiklik 1-2 dakikada yayına girer.
+- **Ortak veri ve giriş:** Firebase projesi `odyobot-c7a30` (ücretsiz Spark planı). Firestore konumu europe-west.
+- Proje sahibi bu ek kütüphanenin (Firebase) eklenmesini onayladı: "en uygunu neyse öyle yap".
 
-## 5. Hedef mimari
-- Uygulama kendi adresinde yayınlanan, bağımsız bir **PWA** olacak. PWA, tarayıcıdan ana ekrana eklenebilen ve internetsiz de açılabilen web uygulaması demek.
-- Barındırma ücretsiz olacak: Netlify, Cloudflare Pages veya GitHub Pages. *Hangisi seçilecek: karar verilmedi.*
-- Ortak içerik basit bir içerik dosyasında ya da küçük bir veri servisinde tutulacak. *Karar verilmedi.*
-- **Vaka geçmişi yalnızca kullanıcının cihazında kalacak, hiçbir zaman sunucuya gönderilmeyecek.**
-- Hedef sürümde düzenleyicinin nasıl giriş yapacağı: *karar verilmedi.*
+### Veri yapısı
+| Nerede | Kayıt grubu | Kim okur / yazar | Alanlar |
+|---|---|---|---|
+| Firestore | `duyurular` | Herkes okur, yalnızca admin yazar | `tur` ("ilan" / "haber"), `baslik` (≤140), `kurum` (≤120), `tarih` (YYYY-AA-GG), `link` (yalnızca https, ≤300), `not` (≤400), `olusturma` (zaman damgası) |
+| Firestore | `notlar` | Herkes okur, yalnızca admin yazar | `baslik` (≤100), `maddeler` (metin listesi, ≤40), `olusturma` |
+| Firestore | `ayar/tema` | Herkes okur, yalnızca admin yazar | `id` (tema adı), `guncelleme` |
+| Cihaz (localStorage, anahtar `odybot:vakalar`) | vaka geçmişi | Yalnızca o cihaz | `etiket`, `tarih`, `not` (özet), `olusturma` |
+
+- 8 temel ders notu veri deposunda değil, kodun içinde (`app.js`, `NOTES` dizisi).
+- Firestore'un çevrimdışı önbelleği açık (`enablePersistence`). İnternet yokken son indirilen ilan ve notlar gösteriliyor.
+- Kaydedilmesi gereken veri cihazdan çıkmıyor: `makeLocalDb()` yalnızca localStorage kullanır. Yazma başarısız olursa hata gösterilir.
+
+### Yönetici (admin)
+- Firebase Authentication, e-posta/şifre. Hesap Firebase konsolunda açıldı; uygulamada kayıt ekranı yok.
+- Admin UID'si iki yerde yazılı: `firebase-config.js` içinde `ODYOBOT_ADMIN_UID` (yalnızca görünümü belirler) ve `firestore.rules` (asıl koruma). Biri değişirse ikisi birlikte değiştirilmeli.
+- Admin olmayan bir hesapla giriş yapılırsa uygulama o hesabı hemen çıkarır.
+
+### Sürüm takibi
+- Proje klasörü bir git deposu. Uzak adresi `origin`, GitHub'daki depo.
+- Yazar bilgisi: `Hmdenfauser <353091884+Hmdenfauser@users.noreply.github.com>`. Bu GitHub'ın gizli adresi; proje sahibinin gerçek e-postası kayıtlarda kullanılmaz.
+- Git yolu: `C:\Program Files\Git\cmd\git.exe`. Claude'un komut ortamında `git` PATH'te olmayabilir. Gönderim için şu ortam değişkenleri gerekiyor: `GCM_INTERACTIVE=always`, `GIT_TERMINAL_PROMPT=1`.
+- Eski prototip (`OdyoBOT.html`, Claude artifact sürümü) silindi; git geçmişinde duruyor.
+
+## 5. Mimari kararlar
+- ✅ Bağımsız PWA, kendi adresinde: GitHub Pages
+- ✅ Ortak içerik: Firebase Firestore. Yönetici uygulama içinden ekler.
+- ✅ Yönetici girişi: Firebase Authentication, e-posta/şifre
+- **Vaka geçmişi yalnızca kullanıcının cihazında kalır, hiçbir zaman sunucuya gönderilmez.**
 - En son aşamada App Store ve Google Play paketi hazırlanacak. *Hangi yöntemle yapılacağı: karar verilmedi.*
 
 ## 6. Tasarım kuralları
@@ -88,6 +114,9 @@ Sıra 2026-11-05'te proje sahibiyle değiştirildi. Gerekçe: cihaz görselleri 
 - Yeni bir veri alanı eklemeden önce, bunun kişisel veri olup olmadığını **proje sahibine sor.**
 - Vaka geçmişi sağlık verisi sayılır ve cihazdan dışarı çıkmaz.
 - Anahtar, şifre ve hesap bilgileri kod dosyalarına yazılmaz.
+  - İstisna: `firebase-config.js` içindeki Firebase web yapılandırması ve admin UID'si. Bunlar Firebase'in tasarımı gereği herkese açık tanımlayıcılardır, şifre değildir. Koruma `firestore.rules` ile sağlanır.
+  - Admin şifresi hiçbir zaman sorulmaz, yazılmaz, istenmez.
+- Depo herkese açık. Gerçek e-posta, telefon gibi kişisel bilgiler dosyalara veya git kayıtlarına girmemeli.
 
 ## 9. Çalışırken dikkat edilecekler
 - Her değişiklikten sonra 400 piksel genişlikte yatay kaydırma olup olmadığını ve dokunma hedeflerinin boyutunu kontrol et.
@@ -96,18 +125,27 @@ Sıra 2026-11-05'te proje sahibiyle değiştirildi. Gerekçe: cihaz görselleri 
 - Düzenleyiciye özel işlevler (ilan/haber ekleme ve silme, Ayarlar) normal kullanıcıya görünmemeli.
 - Metinde olmayan bir şeyi uydurma; belirsiz konularda sor.
 - Proje sahibinin onayı olmadan kütüphane ekleme veya yapıyı köklü biçimde değiştirme.
+- **Yayına gönderirken (`git push`):**
+  - Yeni bir dosya eklendiyse veya silindiyse `sw.js` içindeki `ASSETS` listesini güncelle.
+  - Her yayında `sw.js` içindeki `VERSION` değerini bir artır (ör. `odyobot-v2`). Böylece telefonlardaki eski kopya yenilenir.
+- **Test yöntemi:**
+  - Edge görünmez modda (`--headless`), uygulama 400 px genişliğinde bir çerçevenin (iframe) içinde açılır ve ekran görüntüsü alınır.
+  - Açık/koyu tema `--blink-settings=preferredColorScheme=1/0` ile seçilir.
+  - Firebase, giriş ve servis çalışanı `file://` ile açılan sayfada çalışmaz. Bunlar için `http://localhost` üzerinden küçük bir Node sunucusuyla test edilir.
+  - `--virtual-time-budget` sayaçları ileri sarar ve "ulaşılamıyor" zaman aşımını yanlışlıkla tetikler. Ağ testlerinde bunu kullanma.
+  - Test betikleri proje klasörüne değil, sistemin geçici klasörüne yazılır.
 
 ## 10. Proje sahibine sorulacak sorular
-1. Hedef sürümde düzenleyici nasıl giriş yapacak (şifre, hesap vb.)? *(Prototipte Claude altyapısı tanıyor, bkz. §4.)*
-2. Barındırma için hangisi seçilecek: Netlify, Cloudflare Pages mı, GitHub Pages mi?
-3. Ortak içerik bir içerik dosyasında mı, yoksa küçük bir veri servisinde mi tutulacak?
+1. ~~Düzenleyici girişi~~ *Cevaplandı: Firebase e-posta/şifre, bkz. §4.*
+2. ~~Barındırma~~ *Cevaplandı: GitHub Pages.*
+3. ~~Ortak içerik nerede~~ *Cevaplandı: Firebase Firestore, uygulama içinden ekleme.*
 4. ~~5 temanın isimleri ve renkleri~~ *Cevaplandı, bkz. §3.*
-5. Prototipteki mevcut veriler taşınacak mı? *İlan ve haber yok, sıfırdan başlanacak. Ayarlar'dan eklenmiş ders notu ve vaka kaydı olup olmadığı: sorulacak.*
+5. ~~Prototip verileri taşınacak mı~~ *Taşınacak veri yoktu; sıfırdan başlandı.*
 6. Vaka geçmişi yalnızca cihazda kalacağı için, telefon değişirse ya da veriler silinirse kayıtlar kaybolur. Dosyaya yedekleme veya dışa aktarma isteniyor mu?
-7. Vaka "özet" alanı serbest metin. Buraya tanımlayıcı bilgi yazılmasını önlemek için bir uyarı gösterilsin mi?
+7. Vaka formunda zaten bir uyarı var: "Hasta adı, soyadı, kimlik numarası gibi tanımlayıcı bilgi yazma. Anonim bir etiket kullan." Bu uyarı yeterli mi, yoksa daha güçlü bir önlem mi isteniyor?
 8. Cihaz görselleri hangi biçimde ve boyutta olacak? Her cihaz için açıklama metni de eklenecek mi?
 9. OdyoBot için hangi kaynak esas alınacak? Hangi girdiler kullanılacak (frekanslar, hava ve kemik yolu eşikleri, kulaklık tipi)? Hangi interaural attenüasyon değerleri kullanılacak?
-10. İnternet yokken ilan ve haberler için son kaydedilen kopya mı gösterilecek?
-11. Hedef sürüm herkese açık mı olacak, yoksa erişim sınırlı mı kalacak?
+10. ~~İnternetsiz ilanlar~~ *Son indirilen kopya gösteriliyor; telefonda uçak moduyla doğrulandı.*
+11. Uygulama şu an herkese açık: adresi bilen herkes açabiliyor. Bu durum kalıcı mı, yoksa ileride erişim sınırlanacak mı?
 12. Test soruları hangi biçimde olacak (çoktan seçmeli vb.) ve içeriği kim hazırlayacak?
 13. Mağaza paketi için geliştirici hesapları var mı? Paket hangi yöntemle hazırlanacak?
