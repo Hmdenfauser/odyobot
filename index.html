@@ -247,6 +247,27 @@
       <div class="stack" id="v-vaka-ekran" hidden>
         <button class="back geribtn" type="button" id="v-geri">← Vakalara dön</button>
 
+        <!-- Odyogram paneli: form açıkken formun içine, ayrıntıda başlığın altına taşınır (vakalarim.js) -->
+        <div class="figure odyo-panel" id="v-grafik">
+          <div class="seg seg2" role="group" aria-label="Grafik düzeni">
+            <button type="button" id="v-tek" aria-pressed="true">Tek grafik</button>
+            <button type="button" id="v-ayri" aria-pressed="false">Ayrı grafikler</button>
+          </div>
+          <div id="v-grafik-cizim"></div>
+          <div class="legend odyo-lejant">
+            <span class="lj"><i data-sembol="sag hava 0"></i><span data-k="vakalarim.lj.sagHava">Sağ hava</span></span>
+            <span class="lj"><i data-sembol="sag hava 1"></i><span data-k="vakalarim.lj.sagHavaM">Sağ hava maskeli</span></span>
+            <span class="lj"><i data-sembol="sol hava 0"></i><span data-k="vakalarim.lj.solHava">Sol hava</span></span>
+            <span class="lj"><i data-sembol="sol hava 1"></i><span data-k="vakalarim.lj.solHavaM">Sol hava maskeli</span></span>
+            <span class="lj"><i data-sembol="sag kemik 0"></i><span data-k="vakalarim.lj.sagKemik">Sağ kemik</span></span>
+            <span class="lj"><i data-sembol="sag kemik 1"></i><span data-k="vakalarim.lj.sagKemikM">Sağ kemik maskeli</span></span>
+            <span class="lj"><i data-sembol="sol kemik 0"></i><span data-k="vakalarim.lj.solKemik">Sol kemik</span></span>
+            <span class="lj"><i data-sembol="sol kemik 1"></i><span data-k="vakalarim.lj.solKemikM">Sol kemik maskeli</span></span>
+            <span class="lj"><i data-sembol="nr"></i><span data-k="vakalarim.lj.nr">Yanıt yok (NR)</span></span>
+            <span class="lj"><i data-sembol="bant"></i><span data-k="vakalarim.lj.bant">Normal işitme (−10 ile 25 dB)</span></span>
+          </div>
+        </div>
+
         <!-- Ayrıntı -->
         <div class="stack" id="v-detay" hidden></div>
 

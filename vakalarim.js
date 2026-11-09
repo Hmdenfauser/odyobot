@@ -157,6 +157,117 @@
     return e.db + (e.nr ? ' NR' : '') + (e.maskeli ? ' M' + (e.maskDb != null ? '(' + e.maskDb + ')' : '') : '');
   }
 
+  /* ---------- odyogram çizimi (SVG) ----------
+     Yatay eksen frekans (logaritmik, oktav aralıklı), dikey eksen dB HL (ters: küçük değerler üstte).
+     Renkler CSS değişkenlerinden gelir (sağ kırmızı --right, sol mavi --left).
+     Hava yolu çizgisi yalnızca komşu dolu noktaları birleştirir:
+     - Arada boş bırakılmış bir ANA frekans varsa çizgi kopar (boş frekans atlanmaz).
+     - Ara frekanslar (750, 1500, 3000, 6000) isteğe bağlı ölçüldüğü için boş olmaları çizgiyi koparmaz.
+     - NR (yanıt yok) noktaları çizgiye bağlanmaz (yaygın odyogram kuralı); NR_CIZGIYE_BAGLA ile değiştirilebilir. */
+  var NR_CIZGIYE_BAGLA = false;
+  var NORMAL_BANT = [-10, 25];
+  var SVGNS = 'http://www.w3.org/2000/svg';
+  function s(tag, attrs, kids) {
+    var e = document.createElementNS(SVGNS, tag);
+    if (attrs) for (var k in attrs) { if (k === 'text') e.textContent = attrs[k]; else e.setAttribute(k, attrs[k]); }
+    (kids || []).forEach(function (c) { if (c) e.appendChild(c); });
+    return e;
+  }
+  function yuvarla(n) { return Math.round(n * 10) / 10; }
+  function nokta(dizi) { return dizi.map(function (p) { return yuvarla(p[0]) + ',' + yuvarla(p[1]); }).join(' '); }
+
+  // Tek bir odyogram sembolü. x, y: frekans çizgisi ve dB konumu; r: boyut.
+  function sembolCiz(g, x, y, kulak, yol, maskeli, nr, r) {
+    var c = 'os ' + kulak, d = kulak === 'sag' ? -1 : 1;
+    var sx = x;
+    if (yol === 'hava') {
+      if (kulak === 'sag' && !maskeli) g.appendChild(s('circle', { 'class': c, cx: yuvarla(x), cy: yuvarla(y), r: yuvarla(r) }));
+      else if (kulak === 'sag') g.appendChild(s('polygon', { 'class': c, points: nokta([[x, y - r * 1.15], [x - r * 1.1, y + r * 0.8], [x + r * 1.1, y + r * 0.8]]) }));
+      else if (!maskeli) {
+        g.appendChild(s('line', { 'class': c, x1: yuvarla(x - r * 0.85), y1: yuvarla(y - r * 0.85), x2: yuvarla(x + r * 0.85), y2: yuvarla(y + r * 0.85) }));
+        g.appendChild(s('line', { 'class': c, x1: yuvarla(x - r * 0.85), y1: yuvarla(y + r * 0.85), x2: yuvarla(x + r * 0.85), y2: yuvarla(y - r * 0.85) }));
+      } else g.appendChild(s('rect', { 'class': c, x: yuvarla(x - r * 0.9), y: yuvarla(y - r * 0.9), width: yuvarla(r * 1.8), height: yuvarla(r * 1.8) }));
+    } else {
+      // Kemik yolu: sağ "<" / "[" çizginin solunda, sol ">" / "]" sağında.
+      sx = x + d * r * 1.3;
+      var acik = sx - d * r * 0.5, uc = sx + d * r * 0.5;     // açık uç ve sivri uç
+      if (!maskeli) g.appendChild(s('polyline', { 'class': c, points: nokta([[acik, y - r], [uc, y], [acik, y + r]]) }));
+      else g.appendChild(s('polyline', { 'class': c, points: nokta([[acik, y - r * 1.1], [uc, y - r * 1.1], [uc, y + r * 1.1], [acik, y + r * 1.1]]) }));
+    }
+    if (nr) {
+      // Yanıt yok: sembolden aşağı eğik ok (sağ kulakta sola, sol kulakta sağa).
+      var x1 = sx + d * r * 0.7, y1 = y + r * 0.7, tx = sx + d * r * 2, ty = y + r * 2.3;
+      g.appendChild(s('polyline', { 'class': c, points: nokta([[x1, y1], [tx, ty]]) }));
+      g.appendChild(s('polyline', { 'class': c, points: nokta([[tx - d * r * 0.9, ty], [tx, ty], [tx, ty - r * 0.9]]) }));
+    }
+  }
+
+  // vaka: { esik }, secenek: { kulaklar: ['sag','sol'], kucuk: true/false }
+  function cizOdyogram(v, secenek) {
+    secenek = secenek || {};
+    var kucuk = !!secenek.kucuk, kulaklar = secenek.kulaklar || KULAKLAR;
+    var W = kucuk ? 180 : 360, H = kucuk ? 150 : 310;
+    var L = kucuk ? 4 : 32, R = kucuk ? 4 : 8, T = kucuk ? 4 : 22, B = kucuk ? 4 : 8, pad = kucuk ? 8 : 14;
+    var r = kucuk ? 4.2 : 5.5;
+    function xK(f) { return L + pad + (Math.log(f / 125) / Math.LN2) / 6 * (W - L - R - 2 * pad); }
+    function yK(db) { return T + (db - DB_EN_AZ) / (DB_EN_COK - DB_EN_AZ) * (H - T - B); }
+    var svg = s('svg', { viewBox: '0 0 ' + W + ' ' + H, 'class': 'odyogram' + (kucuk ? ' kucuk' : ''), role: 'img' });
+    svg.setAttribute('aria-label', kucuk ? 'Küçük odyogram' : 'Odyogram' + (kulaklar.length === 1 ? ' (' + KULAK_AD[kulaklar[0]] + ' kulak)' : ''));
+    // normal işitme bandı ve çerçeve
+    svg.appendChild(s('rect', { 'class': 'og-bant', x: L, y: yuvarla(yK(NORMAL_BANT[0])), width: W - L - R, height: yuvarla(yK(NORMAL_BANT[1]) - yK(NORMAL_BANT[0])) }));
+    // yatay çizgiler (her 10 dB) ve dB yazıları
+    for (var db = DB_EN_AZ; db <= DB_EN_COK; db += 10) {
+      if (kucuk && db % 20 !== 0) continue;
+      svg.appendChild(s('line', { 'class': 'og-cizgi' + (db === 0 ? ' og-sifir' : ''), x1: L, x2: W - R, y1: yuvarla(yK(db)), y2: yuvarla(yK(db)) }));
+      if (!kucuk) svg.appendChild(s('text', { 'class': 'og-yazi', x: L - 4, y: yuvarla(yK(db) + 3), 'text-anchor': 'end', text: String(db) }));
+    }
+    // dikey çizgiler: ana frekanslar düz, ara frekanslar kesikli
+    TUM_FREKANSLAR.forEach(function (f) {
+      if (kucuk && araMi(f)) return;
+      svg.appendChild(s('line', { 'class': 'og-cizgi' + (araMi(f) ? ' og-ara' : ''), x1: yuvarla(xK(f)), x2: yuvarla(xK(f)), y1: T, y2: H - B }));
+      if (!kucuk && !araMi(f)) svg.appendChild(s('text', { 'class': 'og-yazi', x: yuvarla(xK(f)), y: T - 8, 'text-anchor': 'middle', text: String(f) }));
+    });
+    if (!kucuk) svg.appendChild(s('text', { 'class': 'og-yazi og-birim', x: 2, y: T - 8, text: 'dB HL' }));
+    svg.appendChild(s('rect', { 'class': 'og-cerceve', x: L, y: T, width: W - L - R, height: H - T - B }));
+
+    var esik = (v && v.esik) || {};
+    kulaklar.forEach(function (k) {
+      var g = s('g', { 'class': 'og-kulak ' + k });
+      // hava yolu çizgisi
+      var hava = (esik[k] && esik[k].hava) || {};
+      var parca = [], parcalar = [parca];
+      TUM_FREKANSLAR.forEach(function (f) {
+        var e = hava[String(f)];
+        if (!e) { if (!araMi(f)) { parca = []; parcalar.push(parca); } return; }   // boş ana frekans: çizgi kopar
+        if (e.nr && !NR_CIZGIYE_BAGLA) { parca = []; parcalar.push(parca); return; }
+        parca.push([xK(f), yK(e.db)]);
+      });
+      parcalar.forEach(function (p) {
+        if (p.length > 1) g.appendChild(s('polyline', { 'class': 'og-hat ' + k, points: nokta(p) }));
+      });
+      // semboller
+      YOLLAR.forEach(function (y) {
+        var yolV = (esik[k] && esik[k][y]) || {};
+        TUM_FREKANSLAR.forEach(function (f) {
+          var e = yolV[String(f)];
+          if (e) sembolCiz(g, xK(f), yK(e.db), k, y, !!e.maskeli, !!e.nr, r);
+        });
+      });
+      svg.appendChild(g);
+    });
+    return svg;
+  }
+
+  // Lejanttaki küçük semboller (index.html'deki data-sembol yer tutucularına çizilir).
+  document.querySelectorAll('#v-grafik [data-sembol]').forEach(function (yer) {
+    var p = yer.getAttribute('data-sembol').split(' ');
+    var svg = s('svg', { viewBox: '0 0 28 22', 'class': 'lj-svg', 'aria-hidden': 'true' });
+    if (p[0] === 'bant') svg.appendChild(s('rect', { 'class': 'og-bant og-bant-lj', x: 2, y: 4, width: 24, height: 14 }));
+    else if (p[0] === 'nr') { var g1 = s('g'); sembolCiz(g1, 14, 6, 'sag', 'hava', false, true, 4.5); g1.setAttribute('class', 'og-kulak notr'); svg.appendChild(g1); }
+    else { var g2 = s('g'); sembolCiz(g2, p[1] === 'kemik' ? 14 - (p[0] === 'sag' ? -1 : 1) * 6 : 14, 11, p[0], p[1], p[2] === '1', false, 5.5); svg.appendChild(g2); }
+    yer.replaceWith(svg);
+  });
+
   /* ---------- form: eşik satırları ---------- */
   var alanlar = { sag: { hava: {}, kemik: {} }, sol: { hava: {}, kemik: {} } };
   var seciliKulak = 'sag', duzenlenen = null, formDegisti = false;
@@ -178,8 +289,8 @@
     var giris = h('input', { id: id, 'class': 'db', type: 'number', step: '1', min: String(DB_EN_AZ), max: String(DB_EN_COK), 'aria-label': ad + ' (dB HL)', 'aria-describedby': id + '-u' });
     var m = tgDugme('M', ad + ': maskeli');
     var nr = tgDugme('NR', ad + ': yanıt yok');
-    var mask = h('input', { id: id + '-m', 'class': 'db', type: 'number', step: '1', min: String(DB_EN_AZ), max: String(DB_EN_COK), placeholder: 'isteğe bağlı' });
-    var maskSatir = h('div', { 'class': 'mask-satir', hidden: '' }, [h('label', { 'for': id + '-m', text: 'Maskeleme düzeyi (dB)' }), mask]);
+    var mask = h('input', { id: id + '-m', 'class': 'db', type: 'number', step: '1', min: String(DB_EN_AZ), max: String(DB_EN_COK), placeholder: 'dB' });
+    var maskSatir = h('div', { 'class': 'mask-satir', hidden: '' }, [h('label', { 'for': id + '-m', text: 'Maskeleme düzeyi (dB, isteğe bağlı)' }), mask]);
     var uyari = h('div', { id: id + '-u', 'class': 'alan-uyari' });
     var satir = h('div', { 'class': 'esik-satir' + (araMi(f) ? ' ara' : ''), 'data-f': String(f) }, [
       h('div', { 'class': 'esik-ust' }, [h('label', { 'for': id, 'class': 'hz', text: f + ' Hz' }), giris, m, nr]),
@@ -272,8 +383,28 @@
     formdanCiz();
   }
 
-  // Formdaki canlı önizlemeler (odyogram ve sonuç) buradan güncellenir; sonraki aşamalarda doldurulur.
-  function formdanCiz() {}
+  // Formdaki canlı önizlemeler (odyogram ve sonuç): her girişte formdaki geçerli değerlerle yeniden çizilir.
+  function formdanCiz() {
+    if (ekran !== 'form') return;
+    grafikCiz(formuOku().vaka);
+  }
+
+  /* ---------- odyogram paneli: tek / ayrı grafik ---------- */
+  var grafikAyri = ayarOku('odybot:grafik') === 'ayri';
+  function grafikCiz(v) {
+    bas($('v-tek'), !grafikAyri); bas($('v-ayri'), grafikAyri);
+    var kap = $('v-grafik-cizim');
+    if (!grafikAyri) { kap.replaceChildren(cizOdyogram(v)); return; }
+    kap.replaceChildren.apply(kap, KULAKLAR.map(function (k) {
+      return h('div', { 'class': 'og-tek' }, [h('div', { 'class': 'og-baslik ' + k, text: KULAK_AD[k] + ' kulak' }), cizOdyogram(v, { kulaklar: [k] })]);
+    }));
+  }
+  function grafikDuzeni(ayri) {
+    grafikAyri = ayri; ayarYaz('odybot:grafik', ayri ? 'ayri' : 'tek');
+    if (ekran === 'form') formdanCiz(); else if (ekran === 'detay' && bul(acikId)) grafikCiz(bul(acikId));
+  }
+  $('v-tek').addEventListener('click', function () { grafikDuzeni(false); });
+  $('v-ayri').addEventListener('click', function () { grafikDuzeni(true); });
 
   $('v-form').addEventListener('input', function (e) { if (!e.target.classList.contains('db')) formDegisti = true; });
   $('v-form').addEventListener('submit', function (e) {
@@ -316,6 +447,11 @@
     $('v-vaka-ekran').hidden = e === 'liste';
     $('v-form').hidden = e !== 'form';
     $('v-detay').hidden = e !== 'detay';
+    if (e === 'form') {   // grafik paneli formda kulak seçiminin hemen üstünde durur
+      var seg = document.querySelector('#v-form .seg2');
+      seg.parentNode.insertBefore($('v-grafik'), seg);
+      formdanCiz();
+    }
     try { window.scrollTo(0, 0); } catch (x) {}
   }
   function ayrilabilir() {
@@ -339,8 +475,12 @@
       return KULAK_AD[k] + ': ' + (n ? n + ' eşik' : 'eşik yok');
     }).join(' · ');
   }
-  // Kartta ve ayrıntıda grafik için yer; odyogram aşamasında doldurulur.
-  function kucukGrafik() { return null; }
+  // Liste kartındaki küçük odyogram (iki kulak bir arada, yazısız).
+  function kucukGrafik(v) {
+    var svg = cizOdyogram(v, { kucuk: true });
+    svg.setAttribute('aria-hidden', 'true');
+    return h('div', { 'class': 'vmini' }, [svg]);
+  }
 
   function listeCiz() {
     var box = $('v-liste');
@@ -353,8 +493,7 @@
     box.replaceChildren.apply(box, vakalar.map(function (v) {
       var kart = h('div', { 'class': 'item vkart', role: 'button', tabindex: '0', 'aria-label': v.kimlik + ' vakasını aç' }, [
         h('div', { 'class': 'item-top' }, [h('div', { 'class': 'item-title', text: v.kimlik }), h('span', { 'class': 'tag', text: U.fmtDate(v.tarih) || 'tarihsiz' })]),
-        kucukGrafik(v),
-        h('div', { 'class': 'meta vozet', text: ozetMetni(v) })
+        h('div', { 'class': 'vkart-govde' }, [kucukGrafik(v), h('div', { 'class': 'meta vozet', text: ozetMetni(v) })])
       ]);
       function ac() { ayrintiAc(v.id); }
       kart.addEventListener('click', ac);
@@ -414,8 +553,9 @@
     parca.push(h('div', { 'class': 'admin-bar' }, [duzenle, sil]), msg);
     $('v-detay').replaceChildren.apply($('v-detay'), parca.filter(Boolean));
   }
-  // Odyogram ve sonuç kartı sonraki aşamalarda doldurulur.
-  function buyukGrafik() { return null; }
+  // Ayrıntıdaki odyogram: ortak panel (tek/ayrı düğmesi ve lejant ile) buraya taşınır.
+  function buyukGrafik(v) { grafikCiz(v); return $('v-grafik'); }
+  // Sonuç kartı hesaplama aşamasında doldurulur.
   function sonucKarti() { return null; }
 
   function ayrintiAc(id) { acikId = id; silOnay = null; goster('detay'); ayrintiCiz(); }
@@ -595,5 +735,5 @@
   goster('liste');
   yenile();
   // Test ve sonraki aşamalar için (tarayıcı konsolundan denenebilir).
-  window.Vakalarim = { temizle: temizle, yedekCoz: yedekCoz, csvIcerik: csvIcerik, sayiOku: sayiOku };
+  window.Vakalarim = { cizOdyogram: cizOdyogram, temizle: temizle, yedekCoz: yedekCoz, csvIcerik: csvIcerik, sayiOku: sayiOku };
 })();

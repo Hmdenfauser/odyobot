@@ -274,3 +274,31 @@ input.db.hatali { border-color: var(--danger); border-width: 2px; background: co
 .esik-tablo tr:last-child th, .esik-tablo tr:last-child td { border-bottom: none; }
 #vakalarim h4 { font-family: var(--font-display); font-weight: 600; font-size: 15px; margin: 0; }
 .yedek-ic { display: flex; flex-direction: column; gap: 12px; padding: 0 14px 14px; }
+
+/* Odyogram */
+.odyo-panel { display: flex; flex-direction: column; gap: 8px; padding: 8px; }
+.odyogram { display: block; width: 100%; height: auto; }
+.og-bant { fill: var(--accent); fill-opacity: .10; }
+.og-bant-lj { stroke: var(--accent); stroke-opacity: .35; stroke-width: 1; }
+.og-cizgi { stroke: var(--line); stroke-width: 1; }
+.og-cizgi.og-ara { stroke-dasharray: 2 3; }
+.og-cizgi.og-sifir { stroke: var(--muted); stroke-opacity: .6; }
+.og-cerceve { fill: none; stroke: var(--muted); stroke-opacity: .7; stroke-width: 1; }
+.og-yazi { font-family: var(--font-mono); font-size: 9px; fill: var(--muted); }
+.os { fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.os.sag { stroke: var(--right); } .os.sol { stroke: var(--left); }
+.notr .os { stroke: var(--muted); }
+.og-hat { fill: none; stroke-width: 1.6; stroke-linejoin: round; }
+.og-hat.sag { stroke: var(--right); }
+.og-hat.sol { stroke: var(--left); stroke-dasharray: 6 4; }
+.odyogram.kucuk .os { stroke-width: 1.6; }
+.odyogram.kucuk .og-hat { stroke-width: 1.4; }
+.og-tek { display: flex; flex-direction: column; gap: 2px; }
+.og-baslik { font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; padding-left: 4px; }
+.og-baslik.sag { color: var(--right); } .og-baslik.sol { color: var(--left); }
+.odyo-lejant { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); padding: 2px 4px 4px; gap: 4px 10px; }
+.odyo-lejant .lj { display: flex; align-items: center; gap: 4px; min-width: 0; }
+.odyo-lejant .lj > span { display: inline; min-width: 0; overflow-wrap: anywhere; line-height: 1.3; }
+.odyo-lejant .lj-svg { width: 28px; height: 22px; max-width: none; flex: none; }
+.vkart-govde { display: grid; grid-template-columns: 132px minmax(0, 1fr); gap: 12px; align-items: center; }
+.vmini { border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: var(--bg); }
