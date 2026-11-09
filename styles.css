@@ -226,3 +226,51 @@ nav.tabs a.bot[aria-current="page"] .disc { box-shadow: 0 0 0 3px var(--bot), 0 
 @media (prefers-reduced-motion: no-preference) {
   .node .pill, .node .c { transition: fill .15s ease, stroke .15s ease; }
 }
+
+/* Vakalarım */
+.btncol { display: flex; flex-direction: column; gap: 8px; }
+button.btn.tehlike { color: var(--danger); border-color: var(--danger); }
+button.back.geribtn { background: none; border: none; font: inherit; padding: 0; cursor: pointer; }
+.hatirlatma { display: flex; align-items: center; justify-content: space-between; gap: 8px; background: var(--surface); border: 1px solid var(--accent); border-radius: 10px; padding: 6px 6px 6px 14px; font-size: 14px; }
+.vkart { cursor: pointer; }
+.vkart:hover { border-color: var(--accent); }
+.vkart:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.vozet { color: var(--ink); }
+.vnot { white-space: pre-wrap; overflow-wrap: anywhere; }
+.geri-sor { display: flex; flex-direction: column; gap: 8px; border: 1px dashed var(--accent); border-radius: 10px; padding: 12px; background: var(--bg); font-size: 14px; }
+.seg.seg2 { grid-template-columns: 1fr 1fr; }
+.seg button.kulak-sag[aria-pressed="true"] { background: var(--right); color: var(--surface); }
+.seg button.kulak-sol[aria-pressed="true"] { background: var(--left); color: var(--surface); }
+.anahtar { display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: 14px; cursor: pointer; }
+.anahtar input { width: 22px; height: 22px; flex: none; accent-color: var(--accent); margin: 0; }
+.esik-blok { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px 4px; }
+#vakalarim .esik-blok h4 { margin: 0 0 4px; font-family: var(--font-display); font-weight: 600; font-size: 15px; }
+.esik-blok.sag h4 { color: var(--right); }
+.esik-blok.sol h4 { color: var(--left); }
+.esik-satir { border-top: 1px solid var(--line); padding: 6px 0; }
+.esik-satir:first-child { border-top: none; }
+.esik-satir[hidden] { display: none; }
+.esik-ust { display: grid; grid-template-columns: 64px minmax(0, 1fr) 44px 44px; gap: 6px; align-items: center; }
+.esik-ust .hz { font-family: var(--font-mono); font-size: 13px; color: var(--muted); }
+input.db { font: inherit; font-size: 16px; font-family: var(--font-mono); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; min-height: 44px; width: 100%; min-width: 0; -moz-appearance: textfield; appearance: textfield; }
+input.db::-webkit-outer-spin-button, input.db::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+input.db:focus-visible { outline: 3px solid var(--accent); outline-offset: 1px; }
+input.db.hatali { border-color: var(--danger); border-width: 2px; background: color-mix(in srgb, var(--danger) 10%, var(--bg)); }
+.tg { font-family: var(--font-mono); font-size: 13px; font-weight: 500; width: 44px; height: 44px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--muted); cursor: pointer; padding: 0; }
+.tg[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.tg:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.mask-satir { display: grid; grid-template-columns: minmax(0, 1fr) 110px; gap: 8px; align-items: center; margin-top: 6px; padding-left: 70px; }
+.mask-satir[hidden] { display: none; }
+.mask-satir label { font-size: 12.5px; color: var(--muted); }
+.alan-uyari { color: var(--danger); font-size: 12.5px; padding-left: 70px; }
+.alan-uyari:empty { display: none; }
+.tablo-kap { display: flex; flex-direction: column; gap: 6px; }
+.esik-tablo { width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: 12.5px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+.esik-tablo th, .esik-tablo td { padding: 6px 3px; text-align: center; border-bottom: 1px solid var(--line); font-weight: 400; }
+.esik-tablo thead th { font-size: 11px; color: var(--muted); line-height: 1.2; }
+.esik-tablo thead th.sag { color: var(--right); }
+.esik-tablo thead th.sol { color: var(--left); }
+.esik-tablo tbody th { color: var(--muted); }
+.esik-tablo tr:last-child th, .esik-tablo tr:last-child td { border-bottom: none; }
+#vakalarim h4 { font-family: var(--font-display); font-weight: 600; font-size: 15px; margin: 0; }
+.yedek-ic { display: flex; flex-direction: column; gap: 12px; padding: 0 14px 14px; }

@@ -21,6 +21,8 @@
     try { return new Date(+p[0], +p[1] - 1, +p[2]).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }); }
     catch (e) { return iso; }
   }
+  // vakalarim.js bu küçük yardımcıları kullanır.
+  window.OdyoUI = { h: h, $: $, todayISO: todayISO, fmtDate: fmtDate };
   function safeLink(u) { return typeof u === 'string' && /^https:\/\/[^\s]+$/i.test(u) ? u : ''; }
 
   /* ---------- düzenlenebilir içerik (yönetici) ----------
@@ -435,9 +437,11 @@
   SEGS.forEach(function (s) { $('seg-' + s).addEventListener('click', function () { seg(s); }); });
 
   /* ---------- tabs ---------- */
-  var TABS = ['anasayfa', 'depo', 'odybot', 'notlar', 'gecmis', 'ayarlar', 'giris'];
+  var TABS = ['anasayfa', 'depo', 'odybot', 'notlar', 'vakalarim', 'ayarlar', 'giris'];
   function route() {
     var t = (location.hash || '').replace('#', '');
+    // Eski adres: Geçmiş sekmesinin adı Vakalarım oldu; eski bağlantılar da çalışsın.
+    if (t === 'gecmis') { t = 'vakalarim'; try { history.replaceState(null, '', '#vakalarim'); } catch (e) {} }
     if (TABS.indexOf(t) === -1) t = 'anasayfa';
     document.querySelectorAll('section[data-tab]').forEach(function (s) { s.hidden = s.id !== t; });
     document.querySelectorAll('nav.tabs a').forEach(function (a) {
@@ -525,51 +529,6 @@
     }).catch(function () {
       msg.textContent = 'Yayınlanamadı. Düzenleme yetkin olmayabilir ya da bağlantı kesilmiş olabilir.'; msg.className = 'msg err';
     }).then(function () { $('f-send').disabled = false; });
-  });
-
-  /* ---------- kişisel veri: vaka geçmişi (yalnızca bu cihazda) ---------- */
-  var vakaDb = makeLocalDb(), VAKA = 'vakalar';
-  var vakalar = [], loadedGecmis = false;
-  $('g-tarih').value = todayISO();
-  function renderGecmis() {
-    var box = $('g-list');
-    if (!loadedGecmis) return;
-    if (!vakalar.length) {
-      box.replaceChildren(h('div', { 'class': 'empty', text: 'Henüz kayıtlı vaka yok. Yukarıdan ilk vakanı ekle.' }));
-      return;
-    }
-    box.replaceChildren.apply(box, vakalar.map(function (v) {
-      var top = h('div', { 'class': 'item-top' }, [h('div', { 'class': 'item-title', text: v.etiket || '' }), h('span', { 'class': 'tag', text: fmtDate(v.tarih) })]);
-      var card = h('div', { 'class': 'item' }, [top]);
-      if (v.not) card.appendChild(h('div', { text: v.not, style: 'white-space:pre-wrap;overflow-wrap:anywhere' }));
-      var del = h('button', { 'class': 'linkbtn', type: 'button', text: armedId === 'g' + v.id ? 'Emin misin? Sil' : 'Sil' });
-      if (armedId === 'g' + v.id) del.classList.add('danger');
-      del.addEventListener('click', function () {
-        if (armedId !== 'g' + v.id) {
-          armedId = 'g' + v.id; clearTimeout(armedTimer);
-          armedTimer = setTimeout(function () { armedId = null; renderGecmis(); }, 4000);
-          renderGecmis(); return;
-        }
-        armedId = null; clearTimeout(armedTimer);
-        vakaDb.collection(VAKA).doc(v.id).delete().catch(function () {
-          $('g-msg').textContent = 'Silinemedi.'; $('g-msg').className = 'msg err';
-        });
-      });
-      card.appendChild(h('div', { 'class': 'admin-bar' }, [del]));
-      return card;
-    }));
-  }
-  $('gecmis-form').addEventListener('submit', function (e) {
-    e.preventDefault();
-    var msg = $('g-msg'); msg.className = 'msg';
-    var doc = { etiket: $('g-etiket').value.trim(), tarih: $('g-tarih').value || todayISO(), not: $('g-not').value.trim(), olusturma: Date.now() };
-    if (!doc.etiket) { msg.textContent = 'Vaka etiketi gerekli.'; msg.className = 'msg err'; return; }
-    $('g-send').disabled = true;
-    vakaDb.collection(VAKA).add(doc).then(function () {
-      $('gecmis-form').reset(); $('g-tarih').value = todayISO(); msg.textContent = 'Kaydedildi.';
-    }).catch(function () {
-      msg.textContent = 'Kaydedilemedi. Tarayıcının depolama alanı dolu ya da kapalı olabilir (örneğin gizli sekmede).'; msg.className = 'msg err';
-    }).then(function () { $('g-send').disabled = false; });
   });
 
   /* ---------- ayarlar: renk teması ve ders notları ---------- */
@@ -774,72 +733,13 @@
   // Tüm düzenlenebilir içeriği yeniden çizer (yönetici değişikliği geldiğinde, giriş/çıkışta).
   function refreshContent() { refreshPathway(); refreshReflex(); refreshNotes(); refreshDevices(); refreshStatic(); }
 
-  /* ---------- yerel depo: veriyi yalnızca bu cihazın tarayıcısında (localStorage) tutar ----------
-     Vaka geçmişi her zaman buradadır ve hiçbir sunucuya gönderilmez (CLAUDE.md §5, §8).
-     Yazma başarısız olursa (depolama dolu/kapalı) hata fırlatır; çağıran taraf Promise reddi olarak görür. */
-  function makeLocalDb() {
-    var listeners = {};
-    function read(p) { try { return JSON.parse(localStorage.getItem('odybot:' + p) || '{}'); } catch (e) { return {}; } }
-    function write(p, o) { localStorage.setItem('odybot:' + p, JSON.stringify(o)); }
-    function attempt(fn) { try { fn(); return Promise.resolve(); } catch (e) { return Promise.reject(e); } }
-    function fire(p) { (listeners[p] || []).forEach(function (f) { f(); }); }
-    function query(p, field, dir) {
-      return {
-        limit: function () { return this; },
-        orderBy: function (f, d) { return query(p, f, d); },
-        onSnapshot: function (next) {
-          function emit() {
-            var o = read(p);
-            var docs = Object.keys(o).map(function (id) { return { id: id, data: function () { return o[id]; } }; });
-            if (field) docs.sort(function (a, b) {
-              var x = a.data()[field] || 0, y = b.data()[field] || 0;
-              return dir === 'desc' ? y - x : x - y;
-            });
-            next({ docs: docs });
-          }
-          (listeners[p] = listeners[p] || []).push(emit);
-          emit();
-          return function () { listeners[p] = listeners[p].filter(function (f) { return f !== emit; }); };
-        }
-      };
-    }
-    function docRef(p, id) {
-      return {
-        delete: function () { return attempt(function () { var o = read(p); delete o[id]; write(p, o); fire(p); }); },
-        set: function (d) { return attempt(function () { var o = read(p); o[id] = d; write(p, o); fire(p); }); },
-        update: function (d) { return attempt(function () { var o = read(p); o[id] = Object.assign(o[id] || {}, d); write(p, o); fire(p); }); },
-        onSnapshot: function (next) {
-          function emit() { var o = read(p); next({ exists: !!o[id], data: function () { return o[id]; } }); }
-          (listeners[p] = listeners[p] || []).push(emit);
-          emit();
-          return function () { listeners[p] = listeners[p].filter(function (f) { return f !== emit; }); };
-        }
-      };
-    }
-    return {
-      collection: function (p) {
-        var q = query(p);
-        q.add = function (d) {
-          return attempt(function () {
-            var o = read(p);
-            o['l' + Date.now() + Math.random().toString(36).slice(2, 6)] = d;
-            write(p, o); fire(p);
-          });
-        };
-        q.doc = function (id) { return docRef(p, id); };
-        return q;
-      },
-      doc: function (path) { var a = path.split('/'); return docRef(a[0], a[1]); }
-    };
-  }
-
   /* ---------- servis çalışanı: internetsiz açılma (yalnızca https veya localhost'ta çalışır) ---------- */
   if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
     navigator.serviceWorker.register('sw.js').catch(function () { /* desteklenmiyorsa uygulama yine çalışır */ });
   }
 
   /* ---------- bağlantı ----------
-     Vaka geçmişi: her zaman yerel depo (vakaDb).
+     Vaka kayıtları (Vakalarım): vakalarim.js, yalnızca bu cihazda.
      Ortak içerik (ilan, haber, not, tema): connectShared() Firebase Firestore'a bağlanır.
      Çevrimdışı önbellek açıktır: internet yokken son indirilen ilan ve notlar gösterilir.
      Düzenleme yetkisi (canEdit): yalnızca ODYOBOT_ADMIN_UID hesabıyla giriş yapılınca açılır.
@@ -893,12 +793,6 @@
   $('logout').addEventListener('click', function () {
     if (!authRef) return;
     authRef.signOut().then(function () { location.hash = '#anasayfa'; });
-  });
-
-  vakaDb.collection(VAKA).orderBy('olusturma', 'desc').limit(200).onSnapshot(function (snap) {
-    loadedGecmis = true;
-    vakalar = snap.docs.map(function (d) { var o = d.data() || {}; o.id = d.id; return o; });
-    renderGecmis();
   });
 
   function unreachable() {

@@ -7,13 +7,14 @@
    Görseller, simgeler ve yazı tipleri önbellekten gelir, arka planda tazelenir.
 
    Firebase (Firestore/giriş) istekleri başka adrese gittiği için buraya karışmaz; onların internetsiz kopyasını
-   Firestore'un kendi önbelleği tutar. Vaka geçmişi zaten yalnızca cihazın yerel deposundadır. */
-var VERSION = 'odyobot-v5';
+   Firestore'un kendi önbelleği tutar. Vaka kayıtları (Vakalarım) zaten yalnızca cihazın yerel deposundadır. */
+var VERSION = 'odyobot-v6';
 var ASSETS = [
   './',
   './index.html',
   './styles.css',
   './app.js',
+  './vakalarim.js',
   './firebase-config.js',
   './manifest.webmanifest',
   './vendor/firebase/firebase-app-compat.js',
