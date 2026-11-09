@@ -7,3 +7,6 @@ desktop.ini
 .env
 .env.*
 *.key
+
+# Ham (küçültülmemiş) görseller: yalnızca kaynak, yayına gitmez.
+ham-gorseller/

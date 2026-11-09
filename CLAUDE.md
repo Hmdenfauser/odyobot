@@ -15,8 +15,8 @@ OdyoBOT, odyoloji öğrencileri ve klinisyenler için bir başvuru uygulaması. 
 | # | Sekme | İçerik | Durum |
 |---|---|---|---|
 | 1 | Ana sayfa | "Merhaba, odyolog" karşılaması, canlı saat ve tarih, iş ilanları, sempozyum ve kongre haberleri. İlanları ve haberleri yalnızca düzenleyici ekler/siler, herkes görür. | Yapıldı |
-| 2 | Görsel depo | (a) İşitme yolakları: koklea'dan işitsel kortekse 8 basamaklı, dokunulabilir şema. Her basamakta konum, işlev, klinik not ve ABR dalga karşılığı var. (b) Akustik refleks arkı: ipsilateral ve kontralateral yolu gösteren 7 basamaklı şema. (c) Cihaz tipleri: BTE, RIC, ITE, ITC, CIC, kemik iletimli, koklear implant, orta kulak implantı. | (a), (b) yapıldı; (c) yapılmadı, görselleri proje sahibi yükleyecek |
-| 3 | OdyoBot | Ortada, turuncu, yükseltilmiş yuvarlak düğme. Maskeleme asistanı (bkz. §7). | Yapılmadı |
+| 2 | Görsel depo | (a) İşitme yolakları: koklea'dan işitsel kortekse 8 basamaklı, dokunulabilir şema. Her basamakta konum, işlev, klinik not ve ABR dalga karşılığı var. (b) Akustik refleks arkı: ipsilateral ve kontralateral yolu gösteren 7 basamaklı şema. (c) Cihazlar: 8 işitme cihazı (BTE, RIC, ITE tam/yarım konka, ITC, CIC, IIC, bantlı kemik iletimli) ve 10 implant kartı. Liste `app.js` → `DEVICES`. Açıklamaları yönetici uygulama içinden yazar (kartta "Açıklama ekle/düzenle"). | Hepsi yapıldı (2026-11-09). Açıklamalar boş, proje sahibi yazacak. |
+| 3 | OdyoBot | Ortada, turuncu, yükseltilmiş yuvarlak düğme; içinde uygulama logosu. Maskeleme asistanı (bkz. §7). | Logo yerleşti; asistan yapılmadı |
 | 4 | Notlar | Kısa ders notları ve arama kutusu. Konular: saf ses odyometrisi, işitme kaybı tipleri, timpanometri, konuşma odyometrisi, maskeleme kavramları, OAE, ABR, akustik refleks. | Yapıldı |
 | 5 | Geçmiş | Kişisel vaka kaydı: anonim vaka etiketi, tarih, özet. Kayıtlar yalnızca o cihazda saklanır, hiçbir yere gönderilmez. | Yapıldı |
 
@@ -29,11 +29,17 @@ OdyoBOT, odyoloji öğrencileri ve klinisyenler için bir başvuru uygulaması. 
 ### Tamamlanan: PWA'ya taşıma (2026-11-06)
 Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sahibi telefonda şunları denedi ve hepsi çalıştı: giriş, ilan ekleme ve başka cihazda görme, ana ekrana ekleme, uçak modunda açılma.
 
+### Tamamlanan: Cihazlar bölümü ve logo (2026-11-09)
+- Ham görseller `ham-gorseller/` klasöründe (git dışında, `.gitignore`). Küçültülmüş kopyalar `images/devices/` altında (800 px, JPEG).
+- Logo `ham-gorseller/logo/OdyoBOT.jpg` dosyasından üretildi: `icons/icon-192.png`, `icon-512.png`, `icon-maskable-512.png`, `apple-touch-icon.png`, `logo.png` (düğmedeki küçük logo).
+- **Yenilenecek görseller** (proje sahibi yeni görsel getirecek):
+  - Hatalı, kartta yer tutucu var: aktif transkütanöz (implant ve transdüser kafatası içinde çizilmiş), ABI yüzey elektrotlu (kablo kulak kanalından geçiyor).
+  - Şüpheli, proje sahibi kontrol edecek: ITE tam ve yarım konka (boyutları neredeyse aynı), ITC (ITE'ye benziyor), bantlı kemik iletim (karşı taraftaki parça belirsiz), penetran ABI (anatomi okunmuyor), orta kulak yarı implante (deri altı alıcı belirsiz).
+- Görsel değiştirme yolu: yeni dosya `ham-gorseller/` altına konur. Claude küçültüp `images/devices/` altına yazar. Yer tutucuysa `DEVICES` içindeki `img` doldurulur ve `sw.js` güncellenir.
+
 ### Sıradaki işler (bu sırayla)
-Sıra 2026-11-05'te proje sahibiyle değiştirildi; PWA'ya taşıma öne alındı ve bitti.
-1. Cihaz tipleri bölümü ve görsel yükleme (görseller `images/devices/` altına konacak)
-2. OdyoBot maskeleme asistanı
-3. Test soruları ve mağaza paketi
+1. OdyoBot maskeleme asistanı
+2. Test soruları ve mağaza paketi
 
 ## 4. Teknik yapı ve veri modeli
 Uygulama bir **PWA**: tarayıcıdan ana ekrana eklenebilen ve internetsiz de açılabilen web uygulaması. Derleme aracı yok; sade HTML, CSS ve JavaScript.
@@ -48,7 +54,8 @@ Uygulama bir **PWA**: tarayıcıdan ana ekrana eklenebilen ve internetsiz de aç
 | `firestore.rules` | Firestore güvenlik kuralları. Değişirse Firebase konsoluna elle yapıştırılır. |
 | `sw.js` | Servis çalışanı: uygulama dosyalarını önbelleğe alır, internetsiz açılmayı sağlar |
 | `manifest.webmanifest` | Ana ekrana ekleme bilgisi (ad, renk, simge) |
-| `icons/` | `icon.svg` kaynak; PNG'ler (192, 512, 180) ondan üretildi |
+| `icons/` | Uygulama logosundan üretilen PNG'ler (192, 512, maskable 512, 180) ve düğmedeki `logo.png` |
+| `images/devices/` | Cihaz görselleri (küçültülmüş). Ham halleri `ham-gorseller/` içinde, git'e girmez. |
 | `fonts/` | Yazı tipi dosyaları (yalnızca latin + latin-ext) ve OFL lisansları |
 | `vendor/firebase/` | Firebase JS SDK 13.2.0 (compat): app, auth, firestore |
 | `.nojekyll` | GitHub Pages'in dosyaları işlemesini engeller |
@@ -63,6 +70,7 @@ Uygulama bir **PWA**: tarayıcıdan ana ekrana eklenebilen ve internetsiz de aç
 |---|---|---|---|
 | Firestore | `duyurular` | Herkes okur, yalnızca admin yazar | `tur` ("ilan" / "haber"), `baslik` (≤140), `kurum` (≤120), `tarih` (YYYY-AA-GG), `link` (yalnızca https, ≤300), `not` (≤400), `olusturma` (zaman damgası) |
 | Firestore | `notlar` | Herkes okur, yalnızca admin yazar | `baslik` (≤100), `maddeler` (metin listesi, ≤40), `olusturma` |
+| Firestore | `cihazlar/{cihaz kimliği}` | Herkes okur, yalnızca admin yazar | `maddeler` (metin listesi, 1–20), `guncelleme`. Kişisel veri değil. |
 | Firestore | `ayar/tema` | Herkes okur, yalnızca admin yazar | `id` (tema adı), `guncelleme` |
 | Cihaz (localStorage, anahtar `odybot:vakalar`) | vaka geçmişi | Yalnızca o cihaz | `etiket`, `tarih`, `not` (özet), `olusturma` |
 
@@ -92,6 +100,7 @@ Uygulama bir **PWA**: tarayıcıdan ana ekrana eklenebilen ve internetsiz de aç
 - Görünüm sade, klinik ve okunaklı olacak.
 - Yazı tipleri: başlıklarda **Bricolage Grotesque**, metinde **IBM Plex Sans**, etiket, saat ve verilerde **IBM Plex Mono**.
 - Ana renk petrol mavisi-yeşili, OdyoBot yuvarlağı turuncu. Açık ve koyu tema desteklenecek.
+- Uygulama logosu (mavi-turkuaz, kulak + robot) ana ekran simgesi olarak kullanılır. OdyoBot düğmesinde turuncu yuvarlağın içinde, beyaz daire üzerinde durur (2026-11-09 kararı).
 - Renkler her zaman isimli değişkenlerle (CSS değişkenleri) tanımlanacak, koda doğrudan renk kodu yazılmayacak.
 - **Odyogram kuralı (bütün şemalarda geçerli):** sağ kulak kırmızı, sol kulak mavi, karşıya geçiş kesik gri çizgi.
 - Mobil öncelik:
@@ -143,7 +152,7 @@ Uygulama bir **PWA**: tarayıcıdan ana ekrana eklenebilen ve internetsiz de aç
 5. ~~Prototip verileri taşınacak mı~~ *Taşınacak veri yoktu; sıfırdan başlandı.*
 6. Vaka geçmişi yalnızca cihazda kalacağı için, telefon değişirse ya da veriler silinirse kayıtlar kaybolur. Dosyaya yedekleme veya dışa aktarma isteniyor mu?
 7. Vaka formunda zaten bir uyarı var: "Hasta adı, soyadı, kimlik numarası gibi tanımlayıcı bilgi yazma. Anonim bir etiket kullan." Bu uyarı yeterli mi, yoksa daha güçlü bir önlem mi isteniyor?
-8. Cihaz görselleri hangi biçimde ve boyutta olacak? Her cihaz için açıklama metni de eklenecek mi?
+8. ~~Cihaz görselleri ve açıklamaları~~ *Cevaplandı: proje sahibinin JPG'leri küçültülerek eklendi; açıklamaları yönetici uygulama içinden yazar.*
 9. OdyoBot için hangi kaynak esas alınacak? Hangi girdiler kullanılacak (frekanslar, hava ve kemik yolu eşikleri, kulaklık tipi)? Hangi interaural attenüasyon değerleri kullanılacak?
 10. ~~İnternetsiz ilanlar~~ *Son indirilen kopya gösteriliyor; telefonda uçak moduyla doğrulandı.*
 11. Uygulama şu an herkese açık: adresi bilen herkes açabiliyor. Bu durum kalıcı mı, yoksa ileride erişim sınırlanacak mı?

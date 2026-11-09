@@ -3,7 +3,7 @@ rules_version = '2';
 // OdyoBOT Firestore güvenlik kuralları.
 // Bu dosyanın içeriği Firebase konsolunda Firestore Database > Kurallar (Rules) sekmesine yapıştırılır ve "Yayınla" denir.
 //
-// - Herkes ilan/haber (duyurular), ders notları (notlar) ve tema ayarını (ayar) okuyabilir.
+// - Herkes ilan/haber (duyurular), ders notları (notlar), cihaz açıklamaları (cihazlar) ve tema ayarını (ayar) okuyabilir.
 // - Yalnızca admin hesabı (aşağıdaki UID) yazabilir, değiştirebilir, silebilir.
 // - Burada adı geçmeyen her şey kapalıdır. Vaka geçmişi zaten Firebase'e hiç gönderilmez.
 
@@ -42,6 +42,16 @@ service cloud.firestore {
         && shortString('baslik', 100)
         && request.resource.data.maddeler is list
         && request.resource.data.maddeler.size() <= 40;
+    }
+
+    // Cihaz açıklamaları: belge adı cihazın kimliği (ör. "bte"), içinde madde listesi.
+    match /cihazlar/{id} {
+      allow read: if true;
+      allow delete: if isAdmin();
+      allow create, update: if isAdmin()
+        && request.resource.data.maddeler is list
+        && request.resource.data.maddeler.size() > 0
+        && request.resource.data.maddeler.size() <= 20;
     }
 
     match /ayar/{id} {

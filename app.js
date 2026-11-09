@@ -509,7 +509,91 @@
       customNotes = noteDocs.map(function (d) { return { t: String(d.baslik || ''), p: (d.maddeler || []).map(String) }; });
       renderNotes($('n-ara').value); renderNoteAdmin();
     }, function () {});
+    db.collection('cihazlar').onSnapshot(function (snap) {
+      devText = {};
+      snap.docs.forEach(function (d) {
+        var o = d.data() || {};
+        if (Array.isArray(o.maddeler)) devText[d.id] = o.maddeler.map(String);
+      });
+      if (!editingDev) renderDevices(); // düzenleme sırasında yazılan metin silinmesin
+    }, function () {});
   }
+
+  /* ---------- cihaz tipleri ----------
+     Liste ve görseller kodda sabit (görseller images/devices/ altında, git ile güncellenir).
+     Açıklamalar Firestore'da: cihazlar/{id} -> { maddeler: [...], guncelleme }. Herkes okur, yalnızca yönetici yazar.
+     img: null olan cihazın görseli yenilenecek; kartta yer tutucu görünür. */
+  var DEVICES = [
+    { id: 'bte', grup: 'isitme', ad: 'Kulak arkası (BTE)', img: 'bte.jpg' },
+    { id: 'ric', grup: 'isitme', ad: 'Hoparlörü kanalda (RIC)', img: 'ric.jpg' },
+    { id: 'ite-tam', grup: 'isitme', ad: 'Kulak içi, tam konka (ITE)', img: 'ite-tam.jpg' },
+    { id: 'ite-yarim', grup: 'isitme', ad: 'Kulak içi, yarım konka (ITE)', img: 'ite-yarim.jpg' },
+    { id: 'itc', grup: 'isitme', ad: 'Kanal içi (ITC)', img: 'itc.jpg' },
+    { id: 'cic', grup: 'isitme', ad: 'Tamamen kanal içi (CIC)', img: 'cic.jpg' },
+    { id: 'iic', grup: 'isitme', ad: 'Görünmez kanal içi (IIC)', img: 'iic.jpg' },
+    { id: 'kemik-bant', grup: 'isitme', ad: 'Kemik iletimli, bantlı', img: 'kemik-bant.jpg' },
+    { id: 'ki', grup: 'implant', ad: 'Koklear implant', img: 'ki.jpg' },
+    { id: 'ki-elektrot', grup: 'implant', ad: 'Elektrot dizisi karşılaştırması', img: 'ki-elektrot.jpg',
+      alt: 'Solda lateral duvar elektrodu, sağda perimodiolar elektrot.' },
+    { id: 'eas', grup: 'implant', ad: 'Elektroakustik stimülasyon (EAS)', img: 'eas.jpg' },
+    { id: 'baha-perkutan', grup: 'implant', ad: 'Perkütan kemik iletim implantı', img: 'baha-perkutan.jpg' },
+    { id: 'transkutan-pasif', grup: 'implant', ad: 'Pasif transkütanöz kemik iletim implantı', img: 'transkutan-pasif.jpg' },
+    { id: 'transkutan-aktif', grup: 'implant', ad: 'Aktif transkütanöz kemik iletim implantı', img: null },
+    { id: 'orta-kulak-yarim', grup: 'implant', ad: 'Orta kulak implantı, yarı implante', img: 'orta-kulak-yarim.jpg' },
+    { id: 'orta-kulak-tam', grup: 'implant', ad: 'Orta kulak implantı, tam implante', img: 'orta-kulak-tam.jpg' },
+    { id: 'abi-yuzey', grup: 'implant', ad: 'İşitsel beyin sapı implantı (ABI), yüzey elektrotlu', img: null },
+    { id: 'abi-penetran', grup: 'implant', ad: 'Penetran ABI', img: 'abi-penetran.jpg' }
+  ];
+  var devText = {}, editingDev = null;
+  function renderDevices() {
+    ['isitme', 'implant'].forEach(function (g) {
+      var box = $('dev-' + g);
+      box.replaceChildren.apply(box, DEVICES.filter(function (d) { return d.grup === g; }).map(deviceCard));
+    });
+  }
+  function deviceCard(d) {
+    var maddeler = devText[d.id] || [];
+    var card = h('article', { 'class': 'item dev' }, [
+      d.img
+        ? h('img', { 'class': 'dev-img', src: 'images/devices/' + d.img, alt: d.ad, loading: 'lazy' })
+        : h('div', { 'class': 'dev-img dev-ph', text: 'Görsel yenilenecek' }),
+      h('h4', { 'class': 'item-title', text: d.ad }),
+      d.alt ? h('div', { 'class': 'meta', text: d.alt }) : null,
+      maddeler.length ? h('ul', { 'class': 'dev-list' }, maddeler.map(function (x) { return h('li', { text: x }); })) : null
+    ]);
+    if (!canEdit) return card;
+    if (editingDev !== d.id) {
+      var btn = h('button', { 'class': 'linkbtn', type: 'button', text: maddeler.length ? 'Açıklamayı düzenle' : 'Açıklama ekle' });
+      btn.addEventListener('click', function () {
+        editingDev = d.id; renderDevices();
+        var ta = $('dev-ta'); if (ta) ta.focus();
+      });
+      card.appendChild(h('div', { 'class': 'admin-bar' }, [btn]));
+      return card;
+    }
+    var ta = h('textarea', { id: 'dev-ta', maxlength: '3000', 'aria-label': d.ad + ' açıklaması (her satıra bir madde)' });
+    ta.value = maddeler.join('\n');
+    var save = h('button', { 'class': 'btn primary', type: 'button', text: 'Kaydet' });
+    var cancel = h('button', { 'class': 'btn', type: 'button', text: 'Vazgeç' });
+    var msg = h('div', { 'class': 'msg', role: 'status' });
+    cancel.addEventListener('click', function () { editingDev = null; renderDevices(); });
+    save.addEventListener('click', function () {
+      var list = ta.value.split('\n').map(function (x) { return x.trim(); }).filter(Boolean).slice(0, 20);
+      if (!dbRef) { msg.textContent = 'Veri deposuna ulaşılamıyor.'; msg.className = 'msg err'; return; }
+      save.disabled = true;
+      var ref = dbRef.collection('cihazlar').doc(d.id);
+      (list.length ? ref.set({ maddeler: list, guncelleme: Date.now() }) : ref.delete())
+        .then(function () { editingDev = null; renderDevices(); })
+        .catch(function () { msg.textContent = 'Kaydedilemedi. Düzenleme yetkin olmayabilir.'; msg.className = 'msg err'; save.disabled = false; });
+    });
+    card.appendChild(h('div', { 'class': 'fld' }, [
+      h('label', { 'for': 'dev-ta', text: 'Açıklama (her satıra bir madde, en çok 20)' }), ta
+    ]));
+    card.appendChild(h('div', { 'class': 'admin-bar' }, [save, cancel]));
+    card.appendChild(msg);
+    return card;
+  }
+  renderDevices();
 
   /* ---------- yerel depo: veriyi yalnızca bu cihazın tarayıcısında (localStorage) tutar ----------
      Vaka geçmişi her zaman buradadır ve hiçbir sunucuya gönderilmez (CLAUDE.md §5, §8).
@@ -603,7 +687,8 @@
     $('admin-note').hidden = !canEdit;
     $('login-link').hidden = canEdit;
     $('who').textContent = canEdit ? 'Giriş yapan: ' + (email || '') : '';
-    renderDuyuru(); renderNoteAdmin();
+    if (!canEdit) editingDev = null;
+    renderDuyuru(); renderNoteAdmin(); renderDevices();
   }
   function authErrorText(err) {
     var c = (err && err.code) || '';

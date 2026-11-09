@@ -110,12 +110,16 @@
       </div>
 
       <div id="p-cihaz" class="stack" hidden>
-        <span class="status">Sıradaki içerik</span>
-        <p class="lead">Her cihaz tipi için görsel, kısa tanım, uygun işitme kaybı aralığı ile avantaj ve sınırlılıklar eklenecek.</p>
-        <ul class="soonlist">
-          <li>BTE</li><li>RIC / RITE</li><li>ITE</li><li>ITC</li><li>CIC / IIC</li>
-          <li>Kemik iletimli</li><li>Koklear implant</li><li>Orta kulak implantı</li>
-        </ul>
+        <p class="lead">İşitme cihazları ve implantlar. Görseller temsilidir; belirli bir marka veya modeli göstermez.</p>
+        <div class="stack" style="gap:10px">
+          <h3>İşitme cihazları</h3>
+          <div class="board" id="dev-isitme"></div>
+        </div>
+        <div class="stack" style="gap:10px">
+          <h3>İmplantlar</h3>
+          <div class="board" id="dev-implant"></div>
+        </div>
+        <p class="note">Uygun işitme kaybı aralıkları ve endikasyonlar kaynağa, üreticiye ve kliniğe göre değişir.</p>
       </div>
     </div>
   </section>
@@ -172,7 +176,7 @@
     <div class="stack">
       <a class="back" href="#anasayfa">← Ana sayfa</a>
       <h2>Yönetici girişi</h2>
-      <p class="lead">Bu sayfa yalnızca ilan, haber ve ders notlarını yöneten kişi içindir.</p>
+      <p class="lead">Bu sayfa yalnızca ilan, haber, ders notları ve cihaz açıklamalarını yöneten kişi içindir.</p>
       <form class="f" id="login-form" style="padding:0">
         <div class="fld"><label for="l-email">E-posta</label><input id="l-email" type="email" inputmode="email" autocomplete="username" required></div>
         <div class="fld"><label for="l-pass">Şifre</label><input id="l-pass" type="password" autocomplete="current-password" required></div>
@@ -232,7 +236,7 @@
   </a>
   <a href="#odybot" data-go="odybot" class="bot" aria-label="OdyoBOT">
     <span class="disc">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4.500" y="8" width="15" height="11" rx="3.500"/><circle cx="9.500" cy="13" r="1.200"/><circle cx="14.500" cy="13" r="1.200"/><path d="M12 8V5"/><circle cx="12" cy="4" r="1"/><path d="M9.500 16.500h5"/></svg>
+      <img class="logo" src="icons/logo.png" width="40" height="40" alt="">
     </span>
     OdyoBOT
   </a>

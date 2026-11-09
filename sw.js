@@ -7,7 +7,7 @@
 
    Firebase (Firestore/giriş) istekleri başka adrese gittiği için buraya karışmaz; onların internetsiz kopyasını
    Firestore'un kendi önbelleği tutar. Vaka geçmişi zaten yalnızca cihazın yerel deposundadır. */
-var VERSION = 'odyobot-v1';
+var VERSION = 'odyobot-v2';
 var ASSETS = [
   './',
   './index.html',
@@ -28,7 +28,25 @@ var ASSETS = [
   './fonts/plexmono-latin-ext-500.woff2',
   './icons/icon-192.png',
   './icons/icon-512.png',
-  './icons/apple-touch-icon.png'
+  './icons/apple-touch-icon.png',
+  './icons/icon-maskable-512.png',
+  './icons/logo.png',
+  './images/devices/bte.jpg',
+  './images/devices/ric.jpg',
+  './images/devices/ite-tam.jpg',
+  './images/devices/ite-yarim.jpg',
+  './images/devices/itc.jpg',
+  './images/devices/cic.jpg',
+  './images/devices/iic.jpg',
+  './images/devices/kemik-bant.jpg',
+  './images/devices/ki.jpg',
+  './images/devices/ki-elektrot.jpg',
+  './images/devices/eas.jpg',
+  './images/devices/baha-perkutan.jpg',
+  './images/devices/transkutan-pasif.jpg',
+  './images/devices/orta-kulak-yarim.jpg',
+  './images/devices/orta-kulak-tam.jpg',
+  './images/devices/abi-penetran.jpg'
 ];
 
 self.addEventListener('install', function (e) {

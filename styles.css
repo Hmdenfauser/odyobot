@@ -177,6 +177,16 @@ details.ns > summary:focus-visible { outline: 3px solid var(--accent); outline-o
 details.ns ul { margin: 0; padding: 0 14px 14px 32px; display: flex; flex-direction: column; gap: 6px; }
 details.ns li { overflow-wrap: anywhere; }
 
+/* Cihaz kartları */
+.item.dev { padding: 0 0 10px; overflow: hidden; gap: 6px; }
+.item.dev > :not(.dev-img) { margin-left: 14px; margin-right: 14px; }
+.item.dev h4 { margin-top: 4px; margin-bottom: 0; }
+.dev-img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-bottom: 1px solid var(--line); }
+.dev-ph { display: flex; align-items: center; justify-content: center; background: var(--bg); color: var(--muted); font-family: var(--font-mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; }
+.dev-list { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
+.dev-list li { overflow-wrap: anywhere; }
+.item.dev textarea { min-height: 140px; }
+
 /* Tab bar */
 nav.tabs {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
@@ -197,6 +207,7 @@ nav.tabs a.bot .disc { transition: transform .15s ease; }
 nav.tabs a.bot:active .disc { transform: scale(.94); }
 nav.tabs a.bot .disc { width: 58px; height: 58px; border-radius: 50%; background: var(--bot); color: var(--bot-ink); display: flex; align-items: center; justify-content: center; margin-top: -26px; border: 4px solid var(--surface); box-shadow: 0 2px 8px rgba(0,0,0,.18); }
 nav.tabs a.bot .disc svg { width: 30px; height: 30px; stroke-width: 2; }
+nav.tabs a.bot .disc .logo { width: 40px; height: 40px; border-radius: 50%; display: block; }
 nav.tabs a.bot[aria-current="page"] { color: var(--ink); }
 nav.tabs a.bot[aria-current="page"] .disc { box-shadow: 0 0 0 3px var(--bot), 0 2px 8px rgba(0,0,0,.18); }
 @media (prefers-reduced-motion: no-preference) {
