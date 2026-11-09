@@ -305,6 +305,58 @@
           <div class="esik-blok sol" data-kulak="sol" data-yol="hava" hidden><h4 data-k="vakalarim.solHava">Sol kulak · Hava yolu</h4><div class="esik-satirlar"></div></div>
           <div class="esik-blok sol" data-kulak="sol" data-yol="kemik" hidden><h4 data-k="vakalarim.solKemik">Sol kulak · Kemik yolu</h4><div class="esik-satirlar"></div></div>
 
+          <details class="compose ek-olcum" id="v-ek">
+            <summary data-k="vakalarim.ekBaslik">Ek ölçümler (isteğe bağlı)</summary>
+            <div class="yedek-ic">
+              <p class="note" data-k="vakalarim.ekNot">Hepsi boş bırakılabilir. dB değerleri −10 ile 120, kelime skoru 0 ile 100 arasında tam sayı.</p>
+              <div class="ek-kulak sag" data-kulak="sag">
+                <h4 data-k="vakalarim.ekSag">Sağ kulak</h4>
+                <div class="ek-grid">
+                  <div class="fld"><label for="v-ek-srt-sag" data-k="vakalarim.ekSrt">SRT (dB)</label><input class="db" id="v-ek-srt-sag" type="number" step="1"><div class="alan-uyari"></div></div>
+                  <div class="fld"><label for="v-ek-sds-sag" data-k="vakalarim.ekSds">SDS / WRS (%)</label><input class="db" id="v-ek-sds-sag" type="number" step="1"><div class="alan-uyari"></div></div>
+                  <div class="fld"><label for="v-ek-sunum-sag" data-k="vakalarim.ekSunum">Sunum düzeyi (dB)</label><input class="db" id="v-ek-sunum-sag" type="number" step="1"><div class="alan-uyari"></div></div>
+                  <label class="anahtar"><input type="checkbox" id="v-ek-km-sag"> <span data-k="vakalarim.ekMaskeli">Konuşmada maskeli</span></label>
+                  <div class="fld"><label for="v-ek-mcl-sag" data-k="vakalarim.ekMcl">MCL (dB)</label><input class="db" id="v-ek-mcl-sag" type="number" step="1"><div class="alan-uyari"></div></div>
+                  <div class="fld"><label for="v-ek-ucl-sag" data-k="vakalarim.ekUcl">UCL (dB)</label><input class="db" id="v-ek-ucl-sag" type="number" step="1"><div class="alan-uyari"></div></div>
+                </div>
+                <div class="fld"><span class="etiket" data-k="vakalarim.ekRinneSag">Rinne (sağ)</span>
+                  <div class="seg secim seg3" id="v-ek-rinne-sag" role="group" aria-label="Rinne sağ">
+                    <button type="button" data-deger="pozitif" aria-pressed="false">Pozitif</button>
+                    <button type="button" data-deger="negatif" aria-pressed="false">Negatif</button>
+                    <button type="button" data-deger="yapilmadi" aria-pressed="false">Yapılmadı</button>
+                  </div>
+                </div>
+              </div>
+              <div class="ek-kulak sol" data-kulak="sol">
+                <h4 data-k="vakalarim.ekSol">Sol kulak</h4>
+                <div class="ek-grid">
+                  <div class="fld"><label for="v-ek-srt-sol" data-k="vakalarim.ekSrtSol">SRT (dB)</label><input class="db" id="v-ek-srt-sol" type="number" step="1"><div class="alan-uyari"></div></div>
+                  <div class="fld"><label for="v-ek-sds-sol" data-k="vakalarim.ekSdsSol">SDS / WRS (%)</label><input class="db" id="v-ek-sds-sol" type="number" step="1"><div class="alan-uyari"></div></div>
+                  <div class="fld"><label for="v-ek-sunum-sol" data-k="vakalarim.ekSunumSol">Sunum düzeyi (dB)</label><input class="db" id="v-ek-sunum-sol" type="number" step="1"><div class="alan-uyari"></div></div>
+                  <label class="anahtar"><input type="checkbox" id="v-ek-km-sol"> <span data-k="vakalarim.ekMaskeliSol">Konuşmada maskeli</span></label>
+                  <div class="fld"><label for="v-ek-mcl-sol" data-k="vakalarim.ekMclSol">MCL (dB)</label><input class="db" id="v-ek-mcl-sol" type="number" step="1"><div class="alan-uyari"></div></div>
+                  <div class="fld"><label for="v-ek-ucl-sol" data-k="vakalarim.ekUclSol">UCL (dB)</label><input class="db" id="v-ek-ucl-sol" type="number" step="1"><div class="alan-uyari"></div></div>
+                </div>
+                <div class="fld"><span class="etiket" data-k="vakalarim.ekRinneSol">Rinne (sol)</span>
+                  <div class="seg secim seg3" id="v-ek-rinne-sol" role="group" aria-label="Rinne sol">
+                    <button type="button" data-deger="pozitif" aria-pressed="false">Pozitif</button>
+                    <button type="button" data-deger="negatif" aria-pressed="false">Negatif</button>
+                    <button type="button" data-deger="yapilmadi" aria-pressed="false">Yapılmadı</button>
+                  </div>
+                </div>
+              </div>
+              <div class="fld"><span class="etiket" data-k="vakalarim.ekWeber">Weber testi</span>
+                <div class="seg secim seg4" id="v-ek-weber" role="group" aria-label="Weber">
+                  <button type="button" data-deger="orta" aria-pressed="false">Orta</button>
+                  <button type="button" data-deger="sag" aria-pressed="false">Sağ</button>
+                  <button type="button" data-deger="sol" aria-pressed="false">Sol</button>
+                  <button type="button" data-deger="yapilmadi" aria-pressed="false">Yapılmadı</button>
+                </div>
+              </div>
+              <p class="note" data-k="vakalarim.ekSecimNot">Seçili bir düğmeye yeniden dokunursan seçim kalkar.</p>
+            </div>
+          </details>
+
           <div class="fld"><label for="v-notlar" data-k="vakalarim.notlarEtiket">Notlar</label><textarea id="v-notlar" maxlength="2000"></textarea></div>
           <div class="admin-bar">
             <button class="btn primary" type="submit" id="v-kaydet">Kaydet</button>

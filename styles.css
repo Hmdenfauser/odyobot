@@ -312,3 +312,17 @@ input.db.hatali { border-color: var(--danger); border-width: 2px; background: co
 .sonuc-dl { gap: 6px; }
 .sonuc-dl dd { font-weight: 500; overflow-wrap: anywhere; }
 .sonuc-uyari { font-size: 13px; font-weight: 600; color: var(--ink); border-top: 1px solid var(--line); padding-top: 8px; }
+
+/* Ek ölçümler */
+.ek-kulak { display: flex; flex-direction: column; gap: 8px; border-left: 3px solid var(--line); padding-left: 10px; }
+.ek-kulak.sag { border-left-color: var(--right); }
+.ek-kulak.sol { border-left-color: var(--left); }
+.ek-kulak.sag h4 { color: var(--right); }
+.ek-kulak.sol h4 { color: var(--left); }
+.ek-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; align-items: end; }
+.fld .etiket { font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.seg.seg3 { grid-template-columns: repeat(3, 1fr); }
+.seg.seg4 { grid-template-columns: repeat(4, 1fr); }
+.ek-tablo td, .ek-tablo th { text-align: left; padding-left: 8px; }
+.vek { font-size: 12.5px; }
+.ek-grid .alan-uyari { padding-left: 0; }

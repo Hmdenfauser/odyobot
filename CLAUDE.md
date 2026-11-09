@@ -18,7 +18,7 @@ OdyoBOT, odyoloji öğrencileri ve klinisyenler için bir başvuru uygulaması. 
 | 2 | Görsel depo | (a) İşitme yolakları: koklea'dan işitsel kortekse 9 basamaklı, dokunulabilir şema (akustik striyalar dahil). Her kutuda beyin bölgesi yazıyor; karşıya geçişler iki taraflı. Her basamakta konum, işlev, klinik not ve ABR dalga karşılığı var. (b) Akustik refleks arkı: simetrik, iki kulak da uyarılıyor. Dış kulaktan 7. sinire 7 basamak. (a) ve (b) proje sahibinin `ham-gorseller/` içindeki referans görsellerine bakılarak yeniden çizildi (2026-11-09); görseller uygulamaya konmadı. (c) Cihazlar: 8 işitme cihazı (BTE, RIC, ITE tam/yarım konka, ITC, CIC, IIC, bantlı kemik iletimli) ve 10 implant kartı. Liste `app.js` → `DEVICES`. Açıklamaları yönetici uygulama içinden yazar (kartta "Açıklama ekle/düzenle"). | Hepsi yapıldı (2026-11-09). Açıklamalar boş, proje sahibi yazacak. |
 | 3 | OdyoBot | Ortada, turuncu, yükseltilmiş yuvarlak düğme; içinde uygulama logosu. Maskeleme asistanı (bkz. §7). | Logo yerleşti; asistan yapılmadı |
 | 4 | Notlar | Kısa ders notları ve arama kutusu. Konular: saf ses odyometrisi, işitme kaybı tipleri, timpanometri, konuşma odyometrisi, maskeleme kavramları, OAE, ABR, akustik refleks. | Yapıldı |
-| 5 | Geçmiş | Kişisel vaka kaydı: anonim vaka etiketi, tarih, özet. Kayıtlar yalnızca o cihazda saklanır, hiçbir yere gönderilmez. | Yapıldı |
+| 5 | Vakalarım (`#vakalarim`; eski adı Geçmiş, `#gecmis` yönlendirilir) | Odyometri vaka kaydı (yalnızca o cihazda). Liste (küçük odyogram + tip/derece özeti), form (kimlik, tarih, 125–8000 Hz hava/kemik eşikleri, ara frekans anahtarı, M/maskeleme düzeyi, NR), canlı odyogram (tek/ayrı grafik, lejant), otomatik PTA/derece/tip (`odyo-hesap.js`), ek ölçümler (SRT, SDS/WRS, sunum düzeyi, MCL, UCL, Weber, Rinne), yedekleme (JSON indir/paylaş, CSV, geri yükle: birleştir/üzerine yaz), 10 kayıtta bir yedek hatırlatması. | Yapıldı (2026-11-09). Ayrıntı: `PROGRESS.md` |
 
 **Yönetici düzenlemesi:** Giriş yapınca her şema basamağında, ders notunda, cihaz kartında ve sayfa yazısında "Düzenle" bağlantısı çıkar. Değişiklik herkese yansır, "Varsayılana dön" ile geri alınır.
 
@@ -39,6 +39,11 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
   - Şüpheli, proje sahibi kontrol edecek: ITE tam ve yarım konka (boyutları neredeyse aynı), ITC (ITE'ye benziyor), bantlı kemik iletim (karşı taraftaki parça belirsiz), penetran ABI (anatomi okunmuyor), orta kulak yarı implante (deri altı alıcı belirsiz).
 - Görsel değiştirme yolu: yeni dosya `ham-gorseller/` altına konur. Claude küçültüp `images/devices/` altına yazar. Yer tutucuysa `DEVICES` içindeki `img` doldurulur ve `sw.js` güncellenir.
 
+### Tamamlanan: Vakalarım sekmesi (2026-11-09)
+- 4 aşamada yapıldı, her biri ayrı commit (sw v6–v9). Kararlar ve testler `PROGRESS.md` içinde.
+- Proje sahibinin verdiği klinik değerler: Clark derece tablosu ve 10 dB ABG eşiği (`odyo-hesap.js` başında, tek yerde). "Normal" sınırı tablonun ilk satırı (15 dB). Metinlerde "karma" değil "mikst".
+- Proje sahibinin telefonda denemesi bekleniyor.
+
 ### Sıradaki işler (bu sırayla)
 1. OdyoBot maskeleme asistanı
 2. Test soruları ve mağaza paketi
@@ -51,7 +56,9 @@ Uygulama bir **PWA**: tarayıcıdan ana ekrana eklenebilen ve internetsiz de aç
 |---|---|
 | `index.html` | Sayfa yapısı (sekmeler, formlar) |
 | `styles.css` | Görünüm; renkler CSS değişkenleri, en üstte yerel yazı tipleri (`@font-face`) |
-| `app.js` | Tüm davranış: saat, şemalar, notlar, ilanlar, vaka geçmişi, giriş, servis çalışanı kaydı |
+| `app.js` | Genel davranış: saat, sekmeler, şemalar, notlar, ilanlar, giriş, servis çalışanı kaydı. `window.OdyoUI` yardımcılarını açar. |
+| `vakalarim.js` | Vakalarım sekmesi: veri katmanı (`VakaDeposu`, şimdilik localStorage; fotoğraf eklenince IndexedDB'ye yalnızca bu katman değişir), form, odyogram çizimi, liste/ayrıntı, yedekleme ve CSV |
+| `odyo-hesap.js` | Hesap kuralları (PTA, derece, tip). Ekrandan bağımsız; Node ile `require` edilip test edilebilir. |
 | `firebase-config.js` | Firebase web yapılandırması ve admin UID'si (gizli bilgi değil, bkz. §8) |
 | `firestore.rules` | Firestore güvenlik kuralları. Değişirse Firebase konsoluna elle yapıştırılır. |
 | `sw.js` | Servis çalışanı: uygulama dosyalarını önbelleğe alır, internetsiz açılmayı sağlar |
@@ -75,11 +82,12 @@ Uygulama bir **PWA**: tarayıcıdan ana ekrana eklenebilen ve internetsiz de aç
 | Firestore | `cihazlar/{cihaz kimliği}` | Herkes okur, yalnızca admin yazar | `maddeler` (metin listesi, 1–20), `guncelleme`. Kişisel veri değil. |
 | Firestore | `icerik/{anahtar}` | Herkes okur, yalnızca admin yazar | `alanlar` (yalnızca değiştirilen alanlar: alan → metin, ≤20), `guncelleme`. Anahtarlar: `yolak.<id>`, `refleks.<id>`, `not.<sıra>`, `cihaz.<id>`, `metin.<data-k>`. Silinirse koddaki varsayılan metin döner. |
 | Firestore | `ayar/tema` | Herkes okur, yalnızca admin yazar | `id` (tema adı), `guncelleme` |
-| Cihaz (localStorage, anahtar `odybot:vakalar`) | vaka geçmişi | Yalnızca o cihaz | `etiket`, `tarih`, `not` (özet), `olusturma` |
+| Cihaz (localStorage, anahtar `odybot:vakalar`) | vakalar (Vakalarım) | Yalnızca o cihaz | `id`, `surum`, `kimlik` (≤40, ad-soyad değil), `tarih`, `notlar` (≤2000), `olusturma`, `guncelleme`, `esik.{sag,sol}.{hava,kemik}.{Hz}` = `{db (-10..120 tam sayı), maskeli, maskDb, nr}` (boş frekans yazılmaz), `konusma.{sag,sol}` = `{srt, sds (0..100), sunum, maskeli}`, `mcl.{sag,sol}`, `ucl.{sag,sol}`, `weber` (orta/sag/sol/yapilmadi), `rinne.{sag,sol}` (pozitif/negatif/yapilmadi). Eski kayıtlardaki `etiket`/`not` okunurken taşınır. |
+| Cihaz (localStorage) | ayarlar | Yalnızca o cihaz | `odybot:ptaTur` (3/4), `odybot:grafik` (tek/ayri), `odybot:araFrekans`, `odybot:yedekSayac`, `odybot:hatirlatmaKapali` |
 
 - 8 temel ders notu veri deposunda değil, kodun içinde (`app.js`, `NOTES` dizisi).
 - Firestore'un çevrimdışı önbelleği açık (`enablePersistence`). İnternet yokken son indirilen ilan ve notlar gösteriliyor.
-- Kaydedilmesi gereken veri cihazdan çıkmıyor: `makeLocalDb()` yalnızca localStorage kullanır. Yazma başarısız olursa hata gösterilir.
+- Vaka verisi cihazdan kendiliğinden çıkmaz: `VakaDeposu` yalnızca localStorage kullanır. Yazma başarısız olursa hata gösterilir ve eski veri korunur. Yedek dosyası (JSON/CSV) yalnızca kullanıcı isteyince indirilir/paylaşılır; ekranda bunun sorumluluğunun kullanıcıda olduğu yazar.
 
 ### Yönetici (admin)
 - Firebase Authentication, e-posta/şifre. Hesap Firebase konsolunda açıldı; uygulamada kayıt ekranı yok.
@@ -159,7 +167,7 @@ Uygulama bir **PWA**: tarayıcıdan ana ekrana eklenebilen ve internetsiz de aç
 3. ~~Ortak içerik nerede~~ *Cevaplandı: Firebase Firestore, uygulama içinden ekleme.*
 4. ~~5 temanın isimleri ve renkleri~~ *Cevaplandı, bkz. §3.*
 5. ~~Prototip verileri taşınacak mı~~ *Taşınacak veri yoktu; sıfırdan başlandı.*
-6. Vaka geçmişi yalnızca cihazda kalacağı için, telefon değişirse ya da veriler silinirse kayıtlar kaybolur. Dosyaya yedekleme veya dışa aktarma isteniyor mu?
+6. ~~Vaka yedekleme~~ *Cevaplandı: JSON yedek (indir/paylaş), CSV tablo ve geri yükleme yapıldı (2026-11-09).*
 7. Vaka formunda zaten bir uyarı var: "Hasta adı, soyadı, kimlik numarası gibi tanımlayıcı bilgi yazma. Anonim bir etiket kullan." Bu uyarı yeterli mi, yoksa daha güçlü bir önlem mi isteniyor?
 8. ~~Cihaz görselleri ve açıklamaları~~ *Cevaplandı: proje sahibinin JPG'leri küçültülerek eklendi; açıklamaları yönetici uygulama içinden yazar.*
 9. OdyoBot için hangi kaynak esas alınacak? Hangi girdiler kullanılacak (frekanslar, hava ve kemik yolu eşikleri, kulaklık tipi)? Hangi interaural attenüasyon değerleri kullanılacak?

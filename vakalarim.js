@@ -18,6 +18,34 @@
   var HATIRLATMA_ARALIGI = 10;                  // her 10 yeni kayıtta bir "yedek al" hatırlatması
   var SAYAC_ANAHTAR = 'odybot:yedekSayac', KAPALI_ANAHTAR = 'odybot:hatirlatmaKapali';
 
+  // Ek ölçümler (hepsi isteğe bağlı). Konuşma alanları v.konusma[kulak], MCL/UCL v.mcl[kulak] / v.ucl[kulak] içinde.
+  var EK_ALANLAR = [
+    { ad: 'srt', baslik: 'SRT', enAz: -10, enCok: 120, birim: 'dB' },
+    { ad: 'sds', baslik: 'SDS / WRS', enAz: 0, enCok: 100, birim: '%' },
+    { ad: 'sunum', baslik: 'Sunum düzeyi', enAz: -10, enCok: 120, birim: 'dB' },
+    { ad: 'mcl', baslik: 'MCL', enAz: -10, enCok: 120, birim: 'dB' },
+    { ad: 'ucl', baslik: 'UCL', enAz: -10, enCok: 120, birim: 'dB' }
+  ];
+  var KONUSMA_ALANLARI = ['srt', 'sds', 'sunum', 'maskeli'];
+  var WEBER_AD = { orta: 'Orta', sag: 'Sağ', sol: 'Sol', yapilmadi: 'Yapılmadı' };
+  var RINNE_AD = { pozitif: 'Pozitif', negatif: 'Negatif', yapilmadi: 'Yapılmadı' };
+  function ekDeger(v, alan, k) {
+    if (KONUSMA_ALANLARI.indexOf(alan) !== -1) return v.konusma && v.konusma[k] ? v.konusma[k][alan] : undefined;
+    return v[alan] && typeof v[alan] === 'object' ? v[alan][k] : undefined;
+  }
+  function ekYaz(v, alan, k, x) {
+    if (KONUSMA_ALANLARI.indexOf(alan) !== -1) {
+      v.konusma = v.konusma || {}; v.konusma[k] = v.konusma[k] || {}; v.konusma[k][alan] = x;
+    } else { v[alan] = v[alan] || {}; v[alan][k] = x; }
+  }
+  function ekVarMi(v) {
+    if (v.weber) return true;
+    return KULAKLAR.some(function (k) {
+      return (v.rinne && v.rinne[k]) || ekDeger(v, 'maskeli', k) || EK_ALANLAR.some(function (a) { return ekDeger(v, a.ad, k) != null; });
+    });
+  }
+  function ekMetni(a, x) { return x == null ? '' : (a.birim === '%' ? '%' + x : x + ' dB'); }
+
   function araMi(f) { return ARA_FREKANSLAR.indexOf(+f) !== -1; }
   function yeniId() { return 'v' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
   function ayarOku(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
@@ -89,6 +117,23 @@
         });
       });
     });
+    // ek ölçümler
+    KULAKLAR.forEach(function (k) {
+      EK_ALANLAR.forEach(function (a) {
+        var x = ekDeger(v, a.ad, k);
+        if (x == null || x === '') return;
+        if (!tamSayiMi(x, a.enAz, a.enCok)) { sorun(KULAK_AD[k] + ' ' + a.baslik + ' değeri geçersiz'); return; }
+        ekYaz(out, a.ad, k, x);
+      });
+      if (ekDeger(v, 'maskeli', k) === true) ekYaz(out, 'maskeli', k, true);
+      var r = v.rinne && v.rinne[k];
+      if (r != null && r !== '') {
+        if (RINNE_AD[r]) { out.rinne = out.rinne || {}; out.rinne[k] = r; } else sorun(KULAK_AD[k] + ' Rinne değeri geçersiz');
+      }
+    });
+    if (v.weber != null && v.weber !== '') {
+      if (WEBER_AD[v.weber]) out.weber = v.weber; else sorun('Weber değeri geçersiz');
+    }
     return out;
   }
 
@@ -340,6 +385,62 @@
   $('v-kulak-sag').addEventListener('click', function () { kulakSec('sag'); });
   $('v-kulak-sol').addEventListener('click', function () { kulakSec('sol'); });
 
+  /* ---------- form: ek ölçümler ---------- */
+  function ekGiris(a, k) { return $('v-ek-' + a.ad + '-' + k); }
+  function ekDogrula(a, k) {
+    var el = ekGiris(a, k), r = alanOku(el, a.enAz, a.enCok);
+    el.classList.toggle('hatali', !!r.hata);
+    el.setAttribute('aria-invalid', r.hata ? 'true' : 'false');
+    el.nextElementSibling.textContent = r.hata || '';
+    return r;
+  }
+  KULAKLAR.forEach(function (k) {
+    EK_ALANLAR.forEach(function (a) {
+      var el = ekGiris(a, k);
+      el.min = String(a.enAz); el.max = String(a.enCok);
+      el.addEventListener('input', function () { ekDogrula(a, k); formDegisti = true; });
+    });
+  });
+  // Tek seçimli düğme grupları (Weber, Rinne). Seçili düğmeye yeniden dokunmak seçimi kaldırır.
+  document.querySelectorAll('#v-ek .secim').forEach(function (grp) {
+    grp.addEventListener('click', function (e) {
+      var b = e.target.closest('button'); if (!b) return;
+      var on = !basili(b);
+      grp.querySelectorAll('button').forEach(function (x) { bas(x, false); });
+      if (on) bas(b, true);
+      formDegisti = true;
+    });
+  });
+  function secimOku(id) { var b = $(id).querySelector('button[aria-pressed="true"]'); return b ? b.getAttribute('data-deger') : ''; }
+  function secimYaz(id, deger) { $(id).querySelectorAll('button').forEach(function (b) { bas(b, b.getAttribute('data-deger') === deger); }); }
+  function ekleriOku(v, hatalar) {
+    KULAKLAR.forEach(function (k) {
+      EK_ALANLAR.forEach(function (a) {
+        var r = ekDogrula(a, k);
+        if (r.hata) hatalar.push({ giris: ekGiris(a, k), k: k, f: null, ek: true });
+        else if (r.deger != null) ekYaz(v, a.ad, k, r.deger);
+      });
+      if ($('v-ek-km-' + k).checked) ekYaz(v, 'maskeli', k, true);
+      var rn = secimOku('v-ek-rinne-' + k);
+      if (rn) { v.rinne = v.rinne || {}; v.rinne[k] = rn; }
+    });
+    var w = secimOku('v-ek-weber');
+    if (w) v.weber = w;
+  }
+  function ekleriDoldur(v) {
+    KULAKLAR.forEach(function (k) {
+      EK_ALANLAR.forEach(function (a) {
+        var el = ekGiris(a, k), x = v ? ekDeger(v, a.ad, k) : null;
+        el.value = x != null ? String(x) : '';
+        el.classList.remove('hatali'); el.nextElementSibling.textContent = '';
+      });
+      $('v-ek-km-' + k).checked = !!(v && ekDeger(v, 'maskeli', k));
+      secimYaz('v-ek-rinne-' + k, v && v.rinne ? v.rinne[k] : '');
+    });
+    secimYaz('v-ek-weber', v ? v.weber : '');
+    $('v-ek').open = !!(v && ekVarMi(v));
+  }
+
   // Formdaki değerlerden vaka nesnesi üretir. Hatalı alan varsa listesini de döndürür.
   function formuOku() {
     var v = {
@@ -358,6 +459,7 @@
       if (basili(a.nr)) e.nr = true;
       v.esik[a.k][a.y][String(a.f)] = e;
     });
+    ekleriOku(v, hatalar);
     return { vaka: v, hatalar: hatalar };
   }
 
@@ -378,6 +480,7 @@
       if (e && araMi(a.f)) araVar = true;
     });
     araGoster(araVar || ayarOku('odybot:araFrekans') === '1');
+    ekleriDoldur(v);
     kulakSec('sag');
     $('v-form-msg').textContent = ''; $('v-form-msg').className = 'msg';
     formDegisti = false;
@@ -446,7 +549,8 @@
     if (r.hatalar.length) {
       var ilk = r.hatalar[0];
       if (ilk.k !== seciliKulak) kulakSec(ilk.k);
-      if (araMi(ilk.f) && !$('v-ara').checked) araGoster(true);
+      if (ilk.f != null && araMi(ilk.f) && !$('v-ara').checked) araGoster(true);
+      if (ilk.ek) $('v-ek').open = true;
       msg.textContent = 'Kırmızı alanları düzelt (' + r.hatalar.length + ' alan).'; msg.className = 'msg err';
       ilk.giris.focus();
       return;
@@ -458,9 +562,7 @@
     v.id = yeni ? yeniId() : duzenlenen.id;
     v.olusturma = yeni ? simdi : duzenlenen.olusturma;
     v.guncelleme = simdi;
-    if (!yeni) {   // sonraki aşamalarda eklenen ek alanlar formda yoksa korunur
-      Object.keys(duzenlenen).forEach(function (x) { if (!(x in v)) v[x] = duzenlenen[x]; });
-    }
+    // Form vakanın tüm alanlarını içerir; formda boşaltılan alan kayıttan da çıkar.
     $('v-kaydet').disabled = true;
     VakaDeposu.kaydet(v).then(function () {
       if (yeni) ayarYaz(SAYAC_ANAHTAR, sayacOku() + 1);
@@ -505,7 +607,7 @@
   // Liste kartındaki kısa sonuç özeti: her kulak için tip + derece.
   function ozetMetni(v) {
     return KULAKLAR.map(function (k) {
-      return KULAK_AD[k] + ': ' + (kulakBos(v, k) ? 'değer yok' : Hesap.kisaOzet(Hesap.degerlendir(v.esik[k], ptaTur)));
+      return KULAK_AD[k] + ': ' + (kulakBos(v, k) ? 'eşik yok' : Hesap.kisaOzet(Hesap.degerlendir(v.esik[k], ptaTur)));
     }).join(' · ');
   }
   // Liste kartındaki küçük odyogram (iki kulak bir arada, yazısız).
@@ -528,6 +630,8 @@
         h('div', { 'class': 'item-top' }, [h('div', { 'class': 'item-title', text: v.kimlik }), h('span', { 'class': 'tag', text: U.fmtDate(v.tarih) || 'tarihsiz' })]),
         h('div', { 'class': 'vkart-govde' }, [kucukGrafik(v), h('div', { 'class': 'meta vozet', text: ozetMetni(v) })])
       ]);
+      var ek = ekOzet(v);
+      if (ek) kart.appendChild(h('div', { 'class': 'meta vek', text: ek }));
       function ac() { ayrintiAc(v.id); }
       kart.addEventListener('click', ac);
       kart.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); ac(); } });
@@ -556,6 +660,39 @@
     ]);
   }
 
+  // Ek ölçümlerin kısa özeti (liste kartı). "Yapılmadı" seçimleri ve boş alanlar yazılmaz.
+  function ekOzet(v) {
+    var p = [];
+    function ikiKulak(baslik, fn) {
+      var x = KULAKLAR.map(function (k) { var m = fn(k); return m ? KULAK_AD[k].toLowerCase() + ' ' + m : ''; }).filter(Boolean);
+      if (x.length) p.push(baslik + ': ' + x.join(', '));
+    }
+    EK_ALANLAR.forEach(function (a) {
+      if (a.ad === 'sunum') return;
+      ikiKulak(a.baslik, function (k) { return ekMetni(a, ekDeger(v, a.ad, k)); });
+    });
+    ikiKulak('Rinne', function (k) { var r = v.rinne && v.rinne[k]; return r && r !== 'yapilmadi' ? RINNE_AD[r].toLowerCase() : ''; });
+    if (v.weber && v.weber !== 'yapilmadi') p.push('Weber: ' + WEBER_AD[v.weber].toLowerCase());
+    return p.join(' · ');
+  }
+  function ekTablosu(v) {
+    if (!ekVarMi(v)) return null;
+    var satirlar = [];
+    function satir(baslik, fn) {
+      var d = KULAKLAR.map(fn);
+      if (d.some(Boolean)) satirlar.push(h('tr', null, [h('th', { text: baslik })].concat(d.map(function (x) { return h('td', { text: x || '–' }); }))));
+    }
+    EK_ALANLAR.forEach(function (a) { satir(a.baslik, function (k) { return ekMetni(a, ekDeger(v, a.ad, k)); }); });
+    satir('Konuşmada maskeli', function (k) { return ekDeger(v, 'maskeli', k) ? 'Evet' : ''; });
+    satir('Rinne', function (k) { return v.rinne && v.rinne[k] ? RINNE_AD[v.rinne[k]] : ''; });
+    var parca = [h('h4', { text: 'Ek ölçümler' })];
+    if (satirlar.length) parca.push(h('table', { 'class': 'esik-tablo ek-tablo' }, [
+      h('thead', null, [h('tr', null, [h('th', { text: '' }), h('th', { 'class': 'sag', text: 'Sağ' }), h('th', { 'class': 'sol', text: 'Sol' })])]),
+      h('tbody', null, satirlar)]));
+    if (v.weber) parca.push(h('p', { text: 'Weber: ' + WEBER_AD[v.weber] }));
+    return h('div', { 'class': 'tablo-kap' }, parca);
+  }
+
   var silOnay = null, silZaman = null;
   function ayrintiCiz() {
     var v = bul(acikId);
@@ -580,7 +717,8 @@
       buyukGrafik(v),
       sonucKarti(v),
       h('h4', { text: 'Eşikler' }),
-      esikTablosu(v)
+      esikTablosu(v),
+      ekTablosu(v)
     ];
     if (v.notlar) parca.push(h('h4', { text: 'Notlar' }), h('p', { 'class': 'vnot', text: v.notlar }));
     parca.push(h('div', { 'class': 'admin-bar' }, [duzenle, sil]), msg);
@@ -693,6 +831,17 @@
       { ad: KULAK_AD[k] + ' tip', al: function (v) { return kulakBos(v, k) ? '' : r(v).tip.metin; } }
     );
   });
+  // Ek ölçüm sütunları.
+  KULAKLAR.forEach(function (k) {
+    EK_ALANLAR.forEach(function (a) {
+      CSV_SUTUNLARI.push({ ad: KULAK_AD[k] + ' ' + a.baslik + ' (' + a.birim + ')', al: function (v) { var x = ekDeger(v, a.ad, k); return x == null ? '' : x; } });
+    });
+    CSV_SUTUNLARI.push(
+      { ad: KULAK_AD[k] + ' konuşmada maskeli', al: function (v) { return ekDeger(v, 'maskeli', k) ? 'evet' : ''; } },
+      { ad: KULAK_AD[k] + ' Rinne', al: function (v) { return v.rinne && v.rinne[k] ? RINNE_AD[v.rinne[k]] : ''; } }
+    );
+  });
+  CSV_SUTUNLARI.push({ ad: 'Weber', al: function (v) { return v.weber ? WEBER_AD[v.weber] : ''; } });
   var CSV_SON = [{ ad: 'Notlar', al: function (v) { return v.notlar; } }];
   function csvIcerik(l) {
     var sut = CSV_SUTUNLARI.concat(CSV_SON);
