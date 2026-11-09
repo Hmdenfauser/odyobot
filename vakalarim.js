@@ -206,7 +206,8 @@
   /* ---------- odyogram çizimi (SVG) ----------
      Yatay eksen frekans (logaritmik, oktav aralıklı), dikey eksen dB HL (ters: küçük değerler üstte).
      Renkler CSS değişkenlerinden gelir (sağ kırmızı --right, sol mavi --left).
-     Hava yolu çizgisi yalnızca komşu dolu noktaları birleştirir:
+     Çizgiler (proje sahibinin kuralı, 2026-11-09): hava yolu DÜZ, kemik yolu KESİKLİ çizgi; iki kulakta da aynı.
+     Çizgi yalnızca komşu dolu noktaları birleştirir:
      - Arada boş bırakılmış bir ANA frekans varsa çizgi kopar (boş frekans atlanmaz).
      - Ara frekanslar (750, 1500, 3000, 6000) isteğe bağlı ölçüldüğü için boş olmaları çizgiyi koparmaz.
      - NR (yanıt yok) noktaları çizgiye bağlanmaz (yaygın odyogram kuralı); NR_CIZGIYE_BAGLA ile değiştirilebilir. */
@@ -279,17 +280,21 @@
     var esik = (v && v.esik) || {};
     kulaklar.forEach(function (k) {
       var g = s('g', { 'class': 'og-kulak ' + k });
-      // hava yolu çizgisi
-      var hava = (esik[k] && esik[k].hava) || {};
-      var parca = [], parcalar = [parca];
-      TUM_FREKANSLAR.forEach(function (f) {
-        var e = hava[String(f)];
-        if (!e) { if (!araMi(f)) { parca = []; parcalar.push(parca); } return; }   // boş ana frekans: çizgi kopar
-        if (e.nr && !NR_CIZGIYE_BAGLA) { parca = []; parcalar.push(parca); return; }
-        parca.push([xK(f), yK(e.db)]);
-      });
-      parcalar.forEach(function (p) {
-        if (p.length > 1) g.appendChild(s('polyline', { 'class': 'og-hat ' + k, points: nokta(p) }));
+      // çizgiler: hava yolu düz, kemik yolu kesikli (iki kulakta da; renk kulağı gösterir).
+      // Kemik çizgisi, sembollerin kaydırıldığı konumdan geçer (sağ solda, sol sağda).
+      YOLLAR.forEach(function (y) {
+        var yolV = (esik[k] && esik[k][y]) || {};
+        var kayma = y === 'kemik' ? (k === 'sag' ? -1 : 1) * r * 1.3 : 0;
+        var parca = [], parcalar = [parca];
+        TUM_FREKANSLAR.forEach(function (f) {
+          var e = yolV[String(f)];
+          if (!e) { if (!araMi(f)) { parca = []; parcalar.push(parca); } return; }   // boş ana frekans: çizgi kopar
+          if (e.nr && !NR_CIZGIYE_BAGLA) { parca = []; parcalar.push(parca); return; }
+          parca.push([xK(f) + kayma, yK(e.db)]);
+        });
+        parcalar.forEach(function (p) {
+          if (p.length > 1) g.appendChild(s('polyline', { 'class': 'og-hat ' + k + ' ' + y, points: nokta(p) }));
+        });
       });
       // semboller
       YOLLAR.forEach(function (y) {
@@ -308,7 +313,8 @@
   document.querySelectorAll('#v-grafik [data-sembol]').forEach(function (yer) {
     var p = yer.getAttribute('data-sembol').split(' ');
     var svg = s('svg', { viewBox: '0 0 28 22', 'class': 'lj-svg', 'aria-hidden': 'true' });
-    if (p[0] === 'bant') svg.appendChild(s('rect', { 'class': 'og-bant og-bant-lj', x: 2, y: 4, width: 24, height: 14 }));
+    if (p[0] === 'hat') svg.appendChild(s('line', { 'class': 'og-hat notr ' + p[1], x1: 2, y1: 11, x2: 26, y2: 11 }));
+    else if (p[0] === 'bant') svg.appendChild(s('rect', { 'class': 'og-bant og-bant-lj', x: 2, y: 4, width: 24, height: 14 }));
     else if (p[0] === 'nr') { var g1 = s('g'); sembolCiz(g1, 14, 6, 'sag', 'hava', false, true, 4.5); g1.setAttribute('class', 'og-kulak notr'); svg.appendChild(g1); }
     else { var g2 = s('g'); sembolCiz(g2, p[1] === 'kemik' ? 14 - (p[0] === 'sag' ? -1 : 1) * 6 : 14, 11, p[0], p[1], p[2] === '1', false, 5.5); svg.appendChild(g2); }
     yer.replaceWith(svg);

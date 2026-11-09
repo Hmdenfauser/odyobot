@@ -290,7 +290,9 @@ input.db.hatali { border-color: var(--danger); border-width: 2px; background: co
 .notr .os { stroke: var(--muted); }
 .og-hat { fill: none; stroke-width: 1.6; stroke-linejoin: round; }
 .og-hat.sag { stroke: var(--right); }
-.og-hat.sol { stroke: var(--left); stroke-dasharray: 6 4; }
+.og-hat.sol { stroke: var(--left); }
+.og-hat.kemik { stroke-dasharray: 5 4; }
+.og-hat.notr { stroke: var(--muted); }
 .odyogram.kucuk .os { stroke-width: 1.6; }
 .odyogram.kucuk .og-hat { stroke-width: 1.4; }
 .og-tek { display: flex; flex-direction: column; gap: 2px; }

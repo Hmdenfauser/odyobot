@@ -114,6 +114,7 @@ Uygulama bir **PWA**: tarayıcıdan ana ekrana eklenebilen ve internetsiz de aç
 - Uygulama logosu (mavi-turkuaz, kulak + robot) ana ekran simgesi olarak kullanılır. OdyoBot düğmesinde turuncu yuvarlağın içinde, beyaz daire üzerinde durur (2026-11-09 kararı).
 - Renkler her zaman isimli değişkenlerle (CSS değişkenleri) tanımlanacak, koda doğrudan renk kodu yazılmayacak.
 - **Odyogram kuralı (bütün şemalarda geçerli):** sağ kulak kırmızı, sol kulak mavi, karşıya geçiş kesik gri çizgi.
+  - Odyogram (Vakalarım, 2026-11-09 kararı): hava yolu noktaları düz, kemik yolu noktaları kesikli çizgiyle birleşir; iki kulakta da aynı, renk kulağı gösterir (sağ kırmızı, sol mavi). Boş ana frekansta çizgi kopar, NR noktası çizgiye bağlanmaz.
   - İstisna, akustik refleks arkı (2026-11-09 kararı): renk **uyarılan** kulağı gösterir (sağ kırmızı, sol mavi). Düz çizgi kontralateral, noktalı çizgi ipsilateral yoldur.
 - Mobil öncelik:
   - 400 piksel genişlikte yatay kaydırma olmayacak.
