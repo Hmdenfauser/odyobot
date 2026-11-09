@@ -126,6 +126,13 @@ button.btn.primary { background: var(--accent); color: var(--accent-ink); border
 .lnk { fill: none; stroke-width: 2.5; }
 .lnk.r { stroke: var(--right); } .lnk.l { stroke: var(--left); }
 .lnk.x { stroke: var(--cross); stroke-width: 2; stroke-dasharray: 5 4; }
+.lnk.ip { stroke-dasharray: 0.5 5.5; stroke-linecap: round; stroke-width: 3; }
+.ah.r { fill: var(--right); } .ah.l { fill: var(--left); }
+.node text.reg { font-family: var(--font-mono); font-size: 9.5px; font-weight: 400; fill: var(--muted); letter-spacing: .02em; }
+.node.sel text.reg { fill: var(--accent-ink); }
+.ln { width: 22px; height: 0; border-top: 3px solid var(--muted); display: inline-block; }
+.ln.r { border-top-color: var(--right); } .ln.l { border-top-color: var(--left); }
+.ln.ip { border-top-style: dotted; }
 .node { cursor: pointer; outline: none; }
 .node .c { fill: var(--surface); stroke-width: 2.5; }
 .node .c.r { stroke: var(--right); } .node .c.l { stroke: var(--left); }

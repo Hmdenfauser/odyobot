@@ -15,7 +15,7 @@ OdyoBOT, odyoloji öğrencileri ve klinisyenler için bir başvuru uygulaması. 
 | # | Sekme | İçerik | Durum |
 |---|---|---|---|
 | 1 | Ana sayfa | "Merhaba, odyolog" karşılaması, canlı saat ve tarih, iş ilanları, sempozyum ve kongre haberleri. İlanları ve haberleri yalnızca düzenleyici ekler/siler, herkes görür. | Yapıldı |
-| 2 | Görsel depo | (a) İşitme yolakları: koklea'dan işitsel kortekse 8 basamaklı, dokunulabilir şema. Her basamakta konum, işlev, klinik not ve ABR dalga karşılığı var. (b) Akustik refleks arkı: ipsilateral ve kontralateral yolu gösteren 7 basamaklı şema. (c) Cihazlar: 8 işitme cihazı (BTE, RIC, ITE tam/yarım konka, ITC, CIC, IIC, bantlı kemik iletimli) ve 10 implant kartı. Liste `app.js` → `DEVICES`. Açıklamaları yönetici uygulama içinden yazar (kartta "Açıklama ekle/düzenle"). | Hepsi yapıldı (2026-11-09). Açıklamalar boş, proje sahibi yazacak. |
+| 2 | Görsel depo | (a) İşitme yolakları: koklea'dan işitsel kortekse 9 basamaklı, dokunulabilir şema (akustik striyalar dahil). Her kutuda beyin bölgesi yazıyor; karşıya geçişler iki taraflı. Her basamakta konum, işlev, klinik not ve ABR dalga karşılığı var. (b) Akustik refleks arkı: simetrik, iki kulak da uyarılıyor. Dış kulaktan 7. sinire 7 basamak. (a) ve (b) proje sahibinin `ham-gorseller/` içindeki referans görsellerine bakılarak yeniden çizildi (2026-11-09); görseller uygulamaya konmadı. (c) Cihazlar: 8 işitme cihazı (BTE, RIC, ITE tam/yarım konka, ITC, CIC, IIC, bantlı kemik iletimli) ve 10 implant kartı. Liste `app.js` → `DEVICES`. Açıklamaları yönetici uygulama içinden yazar (kartta "Açıklama ekle/düzenle"). | Hepsi yapıldı (2026-11-09). Açıklamalar boş, proje sahibi yazacak. |
 | 3 | OdyoBot | Ortada, turuncu, yükseltilmiş yuvarlak düğme; içinde uygulama logosu. Maskeleme asistanı (bkz. §7). | Logo yerleşti; asistan yapılmadı |
 | 4 | Notlar | Kısa ders notları ve arama kutusu. Konular: saf ses odyometrisi, işitme kaybı tipleri, timpanometri, konuşma odyometrisi, maskeleme kavramları, OAE, ABR, akustik refleks. | Yapıldı |
 | 5 | Geçmiş | Kişisel vaka kaydı: anonim vaka etiketi, tarih, özet. Kayıtlar yalnızca o cihazda saklanır, hiçbir yere gönderilmez. | Yapıldı |
@@ -103,6 +103,7 @@ Uygulama bir **PWA**: tarayıcıdan ana ekrana eklenebilen ve internetsiz de aç
 - Uygulama logosu (mavi-turkuaz, kulak + robot) ana ekran simgesi olarak kullanılır. OdyoBot düğmesinde turuncu yuvarlağın içinde, beyaz daire üzerinde durur (2026-11-09 kararı).
 - Renkler her zaman isimli değişkenlerle (CSS değişkenleri) tanımlanacak, koda doğrudan renk kodu yazılmayacak.
 - **Odyogram kuralı (bütün şemalarda geçerli):** sağ kulak kırmızı, sol kulak mavi, karşıya geçiş kesik gri çizgi.
+  - İstisna, akustik refleks arkı (2026-11-09 kararı): renk **uyarılan** kulağı gösterir (sağ kırmızı, sol mavi). Düz çizgi kontralateral, noktalı çizgi ipsilateral yoldur.
 - Mobil öncelik:
   - 400 piksel genişlikte yatay kaydırma olmayacak.
   - Dokunma hedefleri en az 44 piksel olacak.

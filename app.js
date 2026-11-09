@@ -37,39 +37,47 @@
 
   /* ---------- pathway diagram ---------- */
   var NODES = [
-    { id: 'koklea', y: 495, label: 'Koklea', latin: 'Cochlea', abr: 'Yok (OAE ve koklear mikrofonik burada üretilir)',
+    { id: 'koklea', label: 'Koklea', latin: 'Cochlea', abr: 'Yok (OAE ve koklear mikrofonik burada üretilir)',
       yer: 'İç kulak, temporal kemik içinde.',
       islev: 'Mekanik titreşimi iç ve dış tüy hücreleri aracılığıyla elektriksel sinyale çevirir. Tonotopik yapıdadır: taban yüksek, apeks düşük frekanslara yanıt verir.',
       klinik: 'Sensörinöral işitme kaybının en sık yeri. Dış tüy hücre işlevi otoakustik emisyonlarla (OAE) değerlendirilir.' },
-    { id: 'n8', y: 430, label: 'Koklear sinir (VIII)', latin: 'N. cochlearis', abr: 'Dalga I (distal) ve II (proksimal)',
+    { id: 'n8', label: 'Koklear sinir (VIII)', latin: 'N. cochlearis', abr: 'Dalga I (distal) ve II (proksimal)',
       yer: 'Spiral ganglion hücre gövdelerinden çıkar, internal akustik kanaldan geçerek beyin sapına girer.',
       islev: 'İç tüy hücrelerinden gelen bilgiyi koklear çekirdeğe taşır. Tonotopi sinir boyunca korunur.',
       klinik: 'Retrokoklear patolojide (örneğin vestibüler schwannom) ABR’de I–V aralığında uzama görülebilir. Nöropati spektrumunda OAE var, ABR yok ya da bozuktur.' },
-    { id: 'cn', y: 365, label: 'Koklear çekirdek', latin: 'Nucleus cochlearis', abr: 'Dalga III (genellikle)',
+    { id: 'cn', label: 'Koklear çekirdek', latin: 'Nucleus cochlearis', abr: 'Dalga III (genellikle)',
       yer: 'Beyin sapı, pontomedüller bileşke. Dorsal ve ventral bölümleri vardır.',
       islev: 'İşitsel sinir liflerinin ilk sinaps yeri ve aynı taraflı bir işlem istasyonudur. Buradan çıkan lifler büyük oranda karşı tarafa geçer.',
       klinik: 'Bu düzeydeki lezyonlar ABR’de III. dalga ve sonrasını etkiler.' },
-    { id: 'soc', y: 300, label: 'Süperior olivar kompleks', latin: 'Complexus olivaris superior', abr: 'Dalga III–IV (yaklaşık)',
+    { id: 'striya', label: 'Akustik striyalar', bolge: 'Medulla – pons', latin: 'Striae acusticae', abr: 'Ayrı bir dalga karşılığı yok',
+      yer: 'Koklear çekirdekten çıkıp beyin sapında karşı tarafa geçen lif demetleri.',
+      islev: 'Dorsal striya dorsal koklear çekirdekten çıkar ve karşı taraftaki lateral lemniskus yoluyla inferior kolikulusa ulaşır. Ara striya posteroventral koklear çekirdekten çıkar. Ventral striya (trapezoid cisim) anteroventral koklear çekirdekten çıkar ve iki taraftaki süperior olivar komplekse gider.',
+      klinik: 'Liflerin çoğu karşı tarafa geçtiği için koklear çekirdeğin üstündeki tek taraflı lezyonlar genellikle saf ses eşiğini bozmaz. Striyaların ayrıntılı hedefleri kaynaklara göre farklı anlatılır.' },
+    { id: 'soc', label: 'Süperior olivar kompleks', latin: 'Complexus olivaris superior', abr: 'Dalga III–IV (yaklaşık)',
       yer: 'Pons, trapezoid cisim düzeyi.',
       islev: 'İki kulaktan gelen bilgiyi ilk kez birleştirir. Zaman farkı (ITD) ve şiddet farkı (ILD) işlenmesiyle yön bulmanın temelini oluşturur. Akustik refleks arkının da parçasıdır.',
       klinik: 'Bilateral temsil nedeniyle tek taraflı lezyonlar belirgin bir saf ses eşik kaybı vermeyebilir, ancak lokalizasyon ve gürültüde dinleme zorlaşabilir.' },
-    { id: 'll', y: 235, label: 'Lateral lemniskus', latin: 'Lemniscus lateralis', abr: 'Dalga IV–V (yaklaşık)',
+    { id: 'll', label: 'Lateral lemniskus', latin: 'Lemniscus lateralis', abr: 'Dalga IV–V (yaklaşık)',
       yer: 'Pons ve orta beyin arasında yükselen lif demeti ve çekirdekleri.',
       islev: 'Koklear çekirdek ve süperior olivar kompleksten gelen lifleri inferior kolikulusa taşır.',
       klinik: 'ABR’de IV ve V. dalga bileşkesi bu bölgeyle ilişkilendirilir.' },
-    { id: 'ic', y: 170, label: 'İnferior kolikulus', latin: 'Colliculus inferior', abr: 'Dalga V (yaklaşık)',
+    { id: 'ic', label: 'İnferior kolikulus', latin: 'Colliculus inferior', abr: 'Dalga V (yaklaşık)',
       yer: 'Orta beyin, tektum.',
       islev: 'Çıkan yolakların neredeyse tamamının birleştiği merkezi bir istasyondur. Frekans, şiddet ve zaman bilgisini bütünleştirir.',
       klinik: 'ABR’nin en dayanıklı dalgası olan V. dalga eşik tayininde kullanılır; kaynağı IC ve lateral lemniskus bölgesi olarak kabul edilir.' },
-    { id: 'mgb', y: 105, label: 'Medial genikulat cisim', latin: 'Corpus geniculatum mediale', abr: 'Klasik ABR dışı',
+    { id: 'mgb', label: 'Medial genikulat cisim', latin: 'Corpus geniculatum mediale', abr: 'Klasik ABR dışı',
       yer: 'Talamus.',
       islev: 'Duyusal bilginin kortekse son aktarım istasyonudur. Dikkat ve geri bildirim döngüleriyle de bağlantılıdır.',
       klinik: 'Talamik lezyonlar nadirdir. Orta ve geç latanslı yanıtlar bu düzeyin üstüne ait olabilir.' },
-    { id: 'cortex', y: 40, label: 'İşitsel korteks', latin: 'Cortex auditivus', abr: 'Kortikal yanıtlar (CAEP: P1–N1–P2)',
+    { id: 'cortex', label: 'İşitsel korteks', latin: 'Cortex auditivus', abr: 'Kortikal yanıtlar (CAEP: P1–N1–P2)',
       yer: 'Temporal lob, Heschl girusu (primer alan, Brodmann 41 ve 42).',
       islev: 'Sesin algılanması, ayrımı ve anlamlandırılması. Primer alanda tonotopi sürer.',
       klinik: 'Yolak iki taraflı olduğundan tek taraflı kortikal lezyon çoğu zaman eşikleri normal bırakır. Dikotik testlerde karşı kulakta zorluk görülebilir (santral işitsel işlem değerlendirmesi).' }
   ];
+  // Beyin bölgesi etiketleri (kutuda adın altında). MGB talamusa aittir.
+  var BOLGE = { koklea: 'İç kulak', n8: 'İç kulak yolu', cn: 'Medulla (pontomedüller)', soc: 'Pons', ll: 'Pons',
+    ic: 'Orta beyin', mgb: 'Talamus', cortex: 'Temporal lob' };
+  NODES.forEach(function (n, i) { n.y = 570 - i * 65; if (!n.bolge) n.bolge = BOLGE[n.id]; });
   var XL = 45, XR = 315, CX = 180, sel = 'soc';
   var svg = $('pathway'), NS = 'http://www.w3.org/2000/svg';
   function se(name, attrs, parent) {
@@ -83,10 +91,16 @@
     se('line', { x1: XL, y1: byId[a].y, x2: XL, y2: byId[b].y, 'class': 'lnk r' }, svg);
     se('line', { x1: XR, y1: byId[a].y, x2: XR, y2: byId[b].y, 'class': 'lnk l' }, svg);
   }
-  straight('koklea', 'n8'); straight('n8', 'cn');
-  se('line', { x1: XL, y1: byId.cn.y, x2: XR, y2: byId.soc.y, 'class': 'lnk x' }, svg);
-  se('line', { x1: XR, y1: byId.cn.y, x2: XL, y2: byId.soc.y, 'class': 'lnk x' }, svg);
-  straight('cn', 'soc'); straight('soc', 'll'); straight('ll', 'ic'); straight('ic', 'mgb'); straight('mgb', 'cortex');
+  // Karşıya geçişler (kesik gri): her biri iki yönde çizilir.
+  function cross(a, b) {
+    se('line', { x1: XL, y1: byId[a].y, x2: XR, y2: byId[b].y, 'class': 'lnk x' }, svg);
+    se('line', { x1: XR, y1: byId[a].y, x2: XL, y2: byId[b].y, 'class': 'lnk x' }, svg);
+  }
+  cross('cn', 'soc');  // ventral striya (trapezoid cisim) → karşı SOC
+  cross('cn', 'll');   // dorsal ve ara striya → karşı lateral lemniskus
+  cross('soc', 'll');  // SOC → karşı lateral lemniskus
+  straight('koklea', 'n8'); straight('n8', 'cn'); straight('cn', 'striya'); straight('striya', 'soc');
+  straight('soc', 'll'); straight('ll', 'ic'); straight('ic', 'mgb'); straight('mgb', 'cortex');
   se('text', { x: XL, y: 14, 'class': 'side-label', 'text-anchor': 'middle' }, svg).textContent = 'SAĞ';
   se('text', { x: XR, y: 14, 'class': 'side-label', 'text-anchor': 'middle' }, svg).textContent = 'SOL';
   var groups = {};
@@ -94,8 +108,9 @@
     var g = se('g', { 'class': 'node', tabindex: '0', role: 'button', 'aria-label': n.label + ', basamak ' + (i + 1) + '/' + NODES.length }, svg);
     se('circle', { cx: XL, cy: n.y, r: 14, 'class': 'c r' }, g);
     se('circle', { cx: XR, cy: n.y, r: 14, 'class': 'c l' }, g);
-    se('rect', { x: CX - 85, y: n.y - 17, width: 170, height: 34, rx: 8, 'class': 'pill' }, g);
-    se('text', { x: CX, y: n.y }, g).textContent = n.label;
+    se('rect', { x: CX - 88, y: n.y - 22, width: 176, height: 44, rx: 8, 'class': 'pill' }, g);
+    se('text', { x: CX, y: n.y - 7 }, g).textContent = n.label;
+    se('text', { x: CX, y: n.y + 10, 'class': 'reg' }, g).textContent = n.bolge;
     g.addEventListener('click', function () { select(n.id); });
     g.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(n.id); } });
     groups[n.id] = g;
@@ -122,51 +137,78 @@
   }
   select(sel);
 
-  /* ---------- reflex arc diagram ---------- */
-  var RX = { r: 92, l: 268 }, RY0 = 62, RDY = 70;
+  /* ---------- reflex arc diagram ----------
+     Simetrik şema: sol yarı SAĞ kulak, sağ yarı SOL kulak (ayna).
+     Renk uyarılan kulağı gösterir (sağ kırmızı, sol mavi). Düz çizgi kontralateral, noktalı çizgi ipsilateral yol.
+     Bu çizgi dili yalnızca refleks şemasına özgüdür (proje sahibinin kararı, 2026-11-09). */
   var RNODES = [
-    { id: 'koklea', row: 0, sides: ['r'], label: ['Koklea'], kol: 'Afferent kol', title: 'Koklea (uyaran kulağı)', latin: 'Cochlea',
-      yer: 'İç kulak; ses verilen kulak.',
+    { id: 'dis', col: 'aff', y: 470, label: ['Dış kulak'], kol: 'Afferent kol', title: 'Dış kulak', latin: 'Auris externa',
+      yer: 'Kulak kepçesi ve dış kulak yolu. Uyaran ve ölçüm probu dış kulak yoluna yerleştirilir.',
+      islev: 'Uyaranı kulak zarına iletir. Ölçüm için prob dış kulak yolunu hava geçirmez biçimde kapatmalıdır.',
+      klinik: 'Buşon, kanal kollapsı ya da probun kanal duvarına dayanması ölçümü bozabilir; test öncesi otoskopi yapılır.' },
+    { id: 'orta', col: 'aff', y: 390, label: ['Orta kulak'], kol: 'İletim ve efektör', title: 'Orta kulak ve stapedius kası', latin: 'Auris media, m. stapedius',
+      yer: 'Kulak zarı, kemikçik zinciri ve stapes boynuna tutunan stapedius kası.',
+      islev: 'Afferent kolda sesi kokleaya iletir. Refleksin sonunda stapedius kası kasılır, kemikçik zinciri sertleşir ve kulağın akustik admitansı değişir. Test bu değişimi prob kulağında ölçer.',
+      klinik: 'Uyaran kulağındaki iletim kaybı kokleaya ulaşan sesi azaltır; refleks yüksek eşikte çıkabilir ya da alınamayabilir. Prob kulağında orta kulak patolojisi (efüzyon, otoskleroz vb.) varsa kas kasılsa bile admitans değişimi algılanamaz ve o kulakta refleks alınamaz.' },
+    { id: 'koklea', col: 'aff', y: 310, label: ['Koklea'], kol: 'Afferent kol', title: 'Koklea', latin: 'Cochlea',
+      yer: 'İç kulak; uyarılan kulak.',
       islev: 'Yeterince şiddetli ses (saf seste genellikle yaklaşık 70–100 dB HL arası) tüy hücrelerinde işlenir ve refleksin duyusal kolunu başlatır.',
       klinik: 'Koklear kayıpta refleks eşiği çoğu zaman saf ses eşiğine göre daha dar bir duyum düzeyinde (SL) ortaya çıkar; bu bulgu rekrutmanla ilişkilendirilir. Ağır kayıplarda refleks alınamayabilir.' },
-    { id: 'n8', row: 1, sides: ['r'], label: ['VIII. sinir'], kol: 'Afferent kol', title: 'VIII. sinir (koklear dal)', latin: 'N. cochlearis',
+    { id: 'n8', col: 'aff', y: 230, label: ['8. sinir'], kol: 'Afferent kol', title: '8. sinir (koklear dal)', latin: 'N. cochlearis',
       yer: 'Spiral gangliondan çıkar, internal akustik kanaldan beyin sapına girer.',
       islev: 'Uyaran bilgisini beyin sapındaki ventral koklear çekirdeğe taşır.',
-      klinik: 'VIII. sinir veya retrokoklear lezyonda uyaran bu kulaktan verildiğinde ipsilateral ve kontralateral refleksler alınamayabilir ya da yüksek eşikte çıkabilir; refleks decay anormal olabilir.' },
-    { id: 'vcn', row: 2, sides: ['r'], label: ['Ventral koklear', 'çekirdek'], kol: 'Beyin sapı', title: 'Ventral koklear çekirdek', latin: 'Nucleus cochlearis ventralis',
+      klinik: '8. sinir veya retrokoklear lezyonda uyaran bu kulaktan verildiğinde ipsilateral ve kontralateral refleksler alınamayabilir ya da yüksek eşikte çıkabilir; refleks decay anormal olabilir.' },
+    { id: 'kn', col: 'aff', y: 150, label: ['Koklear', 'nükleus'], kol: 'Beyin sapı', title: 'Koklear nükleus (ventral)', latin: 'Nucleus cochlearis ventralis',
       yer: 'Pontomedüller bileşke.',
       islev: 'Refleksin ilk sinaps yeri. Buradan çıkan lifler aynı taraftaki ve karşı taraftaki süperior olivar komplekse ilerler.',
       klinik: 'Beyin sapı lezyonlarında ipsilateral ve kontralateral refleks bulgularının karşılaştırılması lezyon düzeyi için ipucu verir.' },
-    { id: 'soc', row: 3, sides: ['r', 'l'], label: ['Süperior olivar', 'kompleks'], kol: 'Beyin sapı', title: 'Süperior olivar kompleks', latin: 'Complexus olivaris superior',
+    { id: 'soc', col: 'soc', y: 60, label: ['Süperior olivar', 'kompleks'], kol: 'Beyin sapı', title: 'Süperior olivar kompleks', latin: 'Complexus olivaris superior',
       yer: 'Pons; medial süperior olivar bölge ve trapezoid cisim çevresi.',
-      islev: 'İki taraflı bağlantının kurulduğu düğüm. Kontralateral yolun karşıya geçişi bu düzeyde gösterilir.',
+      islev: 'İki taraflı bağlantının kurulduğu düğüm. Kontralateral yolun karşıya geçişi bu düzeyde gösterilir. Sinyal buradan fasiyal motor çekirdeğe iletilir.',
       klinik: 'Pontin lezyonlar kontralateral refleksi ipsilateral refleksten daha belirgin bozabilir; yorum tüm refleks bulgularıyla birlikte yapılır.' },
-    { id: 'fn', row: 4, sides: ['r', 'l'], label: ['Fasiyal motor', 'çekirdek'], kol: 'Efferent kol', title: 'Fasiyal motor çekirdek (VII)', latin: 'Nucleus nervi facialis',
-      yer: 'Pons.',
-      islev: 'Stapedius kasını innerve eden motor nöronlar burada bulunur. Süperior olivar kompleksten gelen sinyal bu çekirdeğe ulaşır.',
-      klinik: 'Pontin lezyonlar refleks bulgularını ve yüz sinirinin işlevini birlikte etkileyebilir.' },
-    { id: 'n7', row: 5, sides: ['r', 'l'], label: ['VII. sinir'], kol: 'Efferent kol', title: 'VII. sinir (stapedius dalı)', latin: 'N. facialis, n. stapedius',
-      yer: 'Temporal kemik içinde fasiyal kanalda seyreder.',
-      islev: 'Motor komutu stapedius kasına taşır.',
-      klinik: 'Stapedius dalının proksimalinde fasiyal sinir lezyonu varsa (örneğin Bell paralizisi veya temporal kemik patolojisi), prob lezyonlu kulaktayken uyaran hangi kulaktan verilirse verilsin refleks alınamaz.' },
-    { id: 'stap', row: 6, sides: ['r', 'l'], label: ['Stapedius kası'], kol: 'Efektör', title: 'Stapedius kası', latin: 'M. stapedius',
-      yer: 'Orta kulak; stapes boynuna tutunur.',
-      islev: 'Kasılınca kemikçik zinciri sertleşir ve kulağın akustik admitansı değişir. Test bu değişimi prob kulağında ölçer.',
-      klinik: 'Prob kulağında orta kulak patolojisi (efüzyon, otoskleroz vb.) olduğunda kas kasılsa bile admitans değişimi algılanamaz ve o kulakta refleks alınamaz.' }
+    { id: 'n7', col: 'eff', y: 230, label: ['7. sinir'], kol: 'Efferent kol', title: '7. sinir (stapedius dalı)', latin: 'N. facialis, n. stapedius',
+      yer: 'Motor çekirdeği ponstadır. Sinir temporal kemik içinde fasiyal kanalda seyreder ve stapedius dalını verir.',
+      islev: 'Süperior olivar kompleksten gelen sinyal fasiyal motor çekirdeğe ulaşır. Motor komut 7. sinirin stapedius dalıyla orta kulaktaki stapedius kasına taşınır.',
+      klinik: 'Stapedius dalının proksimalinde fasiyal sinir lezyonu varsa (örneğin Bell paralizisi veya temporal kemik patolojisi), prob lezyonlu kulaktayken uyaran hangi kulaktan verilirse verilsin refleks alınamaz. Pontin lezyonlar refleksi ve yüz sinirinin işlevini birlikte etkileyebilir.' }
   ];
+  var RCOL = { aff: { x: 58, w: 100 }, soc: { x: 100, w: 120 }, eff: { x: 146, w: 56 } };
   var rsvg = $('reflex'), rsel = 'soc', rgroups = {};
-  function ry(row) { return RY0 + row * RDY; }
-  function rline(x1, y1, x2, y2, cls) { se('line', { x1: x1, y1: y1, x2: x2, y2: y2, 'class': 'lnk ' + cls }, rsvg); }
-  for (var ri = 0; ri < 6; ri++) rline(RX.r, ry(ri) + 20, RX.r, ry(ri + 1) - 20, 'r');
-  for (ri = 3; ri < 6; ri++) rline(RX.l, ry(ri) + 20, RX.l, ry(ri + 1) - 20, 'l');
-  rline(RX.r, ry(2) + 20, RX.l, ry(3) - 20, 'x');
-  se('text', { x: RX.r, y: 16, 'class': 'side-label', 'text-anchor': 'middle' }, rsvg).textContent = 'SAĞ (UYARILAN)';
-  se('text', { x: RX.l, y: 16, 'class': 'side-label', 'text-anchor': 'middle' }, rsvg).textContent = 'SOL (KARŞI)';
+  function mx(x, s) { return s === 'r' ? x : 360 - x; }  // sol kulak tarafı aynalanır
+  var defs = se('defs', {}, rsvg);
+  ['r', 'l'].forEach(function (s) {
+    var m = se('marker', { id: 'ah-' + s, viewBox: '0 0 10 10', refX: '9', refY: '5', markerWidth: '3.4', markerHeight: '3.4', orient: 'auto' }, defs);
+    se('path', { d: 'M0,0 L10,5 L0,10 z', 'class': 'ah ' + s }, m);
+  });
+  // Çizgi: s = renk ('r' sağ uyaran, 'l' sol uyaran), ip = noktalı (ipsilateral). pts koordinatları sol yarıya göre, side ile aynalanır.
+  function rpath(side, pts, s, ip) {
+    var d = pts.map(function (p, i) { return (i ? 'L' : 'M') + mx(p[0], side) + ',' + p[1]; }).join(' ');
+    se('path', { d: d, 'class': 'lnk ' + s + (ip ? ' ip' : ''), 'marker-end': 'url(#ah-' + s + ')' }, rsvg);
+  }
+  var aff = RNODES.filter(function (n) { return n.col === 'aff'; });  // alttan üste
+  ['r', 'l'].forEach(function (side) {
+    var own = side, other = side === 'r' ? 'l' : 'r';
+    // Afferent kol: her basamak arası iki çizgi (düz = kontralateral, noktalı = ipsilateral), uyarılan kulağın renginde.
+    for (var i = 0; i < aff.length; i++) {
+      var y1 = aff[i].y - 22, y2 = i + 1 < aff.length ? aff[i + 1].y + 22 : 60 + 22;
+      rpath(side, [[52, y1], [52, y2 + 2]], own, false);
+      rpath(side, [[64, y1], [64, y2 + 2]], own, true);
+    }
+    // Efferent kol: SOC → 7. sinir → orta kulak. İç çizgi bu kulağın ipsilateral yolu, dış çizgi karşı kulağın kontralateral yolu.
+    rpath(side, [[145, 82], [145, 208 + 2]], own, true);
+    rpath(side, [[155, 82], [155, 208 + 2]], other, false);
+    rpath(side, [[145, 252], [145, 385], [108 + 2, 385]], own, true);
+    rpath(side, [[155, 252], [155, 395], [108 + 2, 395]], other, false);
+  });
+  // Karşıya geçiş: sağ SOC → sol SOC (kırmızı), sol SOC → sağ SOC (mavi).
+  rpath('r', [[160, 52], [200 + 2, 52]], 'r', false);
+  rpath('r', [[200, 68], [160 - 2, 68]], 'l', false);
+  se('text', { x: 58, y: 16, 'class': 'side-label', 'text-anchor': 'middle' }, rsvg).textContent = 'SAĞ';
+  se('text', { x: 302, y: 16, 'class': 'side-label', 'text-anchor': 'middle' }, rsvg).textContent = 'SOL';
   RNODES.forEach(function (n, idx) {
     var g = se('g', { 'class': 'node', tabindex: '0', role: 'button', 'aria-label': n.title + ', basamak ' + (idx + 1) + '/' + RNODES.length }, rsvg);
-    n.sides.forEach(function (s) {
-      var x = RX[s], y = ry(n.row);
-      se('rect', { x: x - 70, y: y - 20, width: 140, height: 40, rx: 8, 'class': 'pill ' + s }, g);
+    ['r', 'l'].forEach(function (side) {
+      var c = RCOL[n.col], x = mx(c.x, side), y = n.y;
+      se('rect', { x: x - c.w / 2, y: y - 22, width: c.w, height: 44, rx: 8, 'class': 'pill' }, g);
       var t = se('text', { x: x, y: y }, g);
       if (n.label.length === 1) { t.textContent = n.label[0]; }
       else {
