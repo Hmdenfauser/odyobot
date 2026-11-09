@@ -44,6 +44,15 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 - Proje sahibinin verdiği klinik değerler: Clark derece tablosu ve 10 dB ABG eşiği (`odyo-hesap.js` başında, tek yerde). "Normal" sınırı tablonun ilk satırı (15 dB). Metinlerde "karma" değil "mikst".
 - Proje sahibi telefonda denedi, her şey düzgün çalışıyor (2026-11-09).
 
+### Kaldığımız yer (2026-11-09 akşamı)
+- Vakalarım bitti ve telefonda doğrulandı; her şey yayında, bekleyen değişiklik yok (son sürüm sw v11).
+- Proje sahibi ertesi gün devam edecek. Sıradaki iş: **OdyoBot maskeleme asistanı.** Kod yazılmadan önce proje sahibinden cevap beklenenler:
+  1. Esas alınacak kaynak (kitap/kılavuz).
+  2. Interaural attenüasyon değerleri: kulaklık tipine göre (supra-aural, insert), hava ve kemik yolu için.
+  3. Asistan eşikleri Vakalarım'daki vakadan mı alsın (önerilen: evet, değerler bir kez girilir), yoksa ayrı giriş mi olsun?
+- Cevaplar gelince önce plan çıkarılıp gösterilecek; formüller kaynaktan birlikte doğrulanmadan koda yazılmayacak (§7).
+- Ayrıca bekleyen küçük işler: cihaz kartlarının açıklamaları (proje sahibi uygulamadan yazacak) ve yenilenecek cihaz görselleri (yukarıdaki liste).
+
 ### Sıradaki işler (bu sırayla)
 1. OdyoBot maskeleme asistanı
 2. Test soruları ve mağaza paketi
