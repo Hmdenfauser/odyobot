@@ -3,11 +3,12 @@
    Yeni sürüm yayınlarken:
    - Bu listeye yeni dosya eklendiyse ya da bir dosya silindiyse ASSETS'i güncelle.
    - VERSION'ı bir artır (ör. v2). Böylece eski önbellek silinir.
-   Dosya içerikleri her açılışta arka planda tazelenir; VERSION artırılmasa da değişiklik en geç ikinci açılışta görünür.
+   Sayfa, css, js ve manifest internet varken her zaman yeniden alınır (sürüm karışmasın diye).
+   Görseller, simgeler ve yazı tipleri önbellekten gelir, arka planda tazelenir.
 
    Firebase (Firestore/giriş) istekleri başka adrese gittiği için buraya karışmaz; onların internetsiz kopyasını
    Firestore'un kendi önbelleği tutar. Vaka geçmişi zaten yalnızca cihazın yerel deposundadır. */
-var VERSION = 'odyobot-v2';
+var VERSION = 'odyobot-v3';
 var ASSETS = [
   './',
   './index.html',
@@ -50,7 +51,10 @@ var ASSETS = [
 ];
 
 self.addEventListener('install', function (e) {
-  e.waitUntil(caches.open(VERSION).then(function (c) { return c.addAll(ASSETS); }).then(function () { return self.skipWaiting(); }));
+  // cache: 'reload' → tarayıcının kendi kısa süreli önbelleğini atla, dosyaları sunucudan taze al.
+  e.waitUntil(caches.open(VERSION).then(function (c) {
+    return c.addAll(ASSETS.map(function (u) { return new Request(u, { cache: 'reload' }); }));
+  }).then(function () { return self.skipWaiting(); }));
 });
 
 self.addEventListener('activate', function (e) {
@@ -74,7 +78,20 @@ self.addEventListener('fetch', function (e) {
     return;
   }
 
-  // Diğer dosyalar: önce kayıtlı kopya (hızlı açılış), arka planda tazele.
+  // Kod ve görünüm dosyaları (css, js, manifest): sayfayla aynı sürümde olmalı, bu yüzden önce internet.
+  // Yoksa kayıtlı kopya. Böylece yeni sayfa eski kodla karışmaz. (vendor/ büyük ve sabit; önbellekten gelir.)
+  var path = new URL(req.url).pathname;
+  if (/\.(css|js|webmanifest)$/.test(path) && path.indexOf('/vendor/') === -1) {
+    e.respondWith(fetch(req, { cache: 'no-cache' }).then(function (res) {
+      if (res.ok) { var copy = res.clone(); caches.open(VERSION).then(function (c) { c.put(req, copy); }); }
+      return res;
+    }).catch(function () {
+      return caches.match(req);
+    }));
+    return;
+  }
+
+  // Diğer dosyalar (görseller, simgeler, yazı tipleri, vendor): önce kayıtlı kopya (hızlı açılış), arka planda tazele.
   e.respondWith(caches.open(VERSION).then(function (c) {
     return c.match(req).then(function (cached) {
       var net = fetch(req).then(function (res) {

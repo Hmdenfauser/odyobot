@@ -136,7 +136,8 @@ Uygulama bir **PWA**: tarayıcıdan ana ekrana eklenebilen ve internetsiz de aç
 - Proje sahibinin onayı olmadan kütüphane ekleme veya yapıyı köklü biçimde değiştirme.
 - **Yayına gönderirken (`git push`):**
   - Yeni bir dosya eklendiyse veya silindiyse `sw.js` içindeki `ASSETS` listesini güncelle.
-  - Her yayında `sw.js` içindeki `VERSION` değerini bir artır (ör. `odyobot-v2`). Böylece telefonlardaki eski kopya yenilenir.
+  - Her yayında `sw.js` içindeki `VERSION` değerini bir artır (ör. `odyobot-v4`). Böylece telefonlardaki eski kopya yenilenir.
+  - `sw.js` sayfa, css, js ve manifest dosyalarını önce internetten alır. Görsel, simge ve yazı tiplerini önce önbellekten alır. Bunun nedeni: v2 yayınında telefon yeni `index.html`'i eski `app.js`/`styles.css` ile açtı ve kartlar görünmedi (2026-11-09). Bu ayrımı bozma.
 - **Test yöntemi:**
   - Edge görünmez modda (`--headless`), uygulama 400 px genişliğinde bir çerçevenin (iframe) içinde açılır ve ekran görüntüsü alınır.
   - Açık/koyu tema `--blink-settings=preferredColorScheme=1/0` ile seçilir.
