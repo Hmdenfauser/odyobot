@@ -10,7 +10,7 @@ Yeni oturumda: "PROGRESS.md'ye bak, devam et". Onaylı plan: `C:\Users\Hmd\.clau
 | 3 | D: otomatik hesaplama (`odyo-hesap.js`) | ✅ Bitti (2026-11-09), sw v8 |
 | 4 | E: ek ölçümler | ✅ Bitti (2026-11-09), sw v9 |
 
-**Durum:** İstenen işlerin hepsi bitti ve yayında. Proje sahibinin telefonda denemesi bekleniyor.
+**Durum:** İstenen işlerin hepsi bitti ve yayında. Proje sahibi telefonda denedi, her şey düzgün (2026-11-09).
 
 ## Yapılanlar (Aşama 1)
 - "Geçmiş" sekmesi "Vakalarım" oldu: alt çubuk, başlık, `#vakalarim`. Eski `#gecmis` adresi `app.js` `route()` içinde yönlendiriliyor.
@@ -37,7 +37,7 @@ Yeni oturumda: "PROGRESS.md'ye bak, devam et". Onaylı plan: `C:\Users\Hmd\.clau
 - Form vakanın tüm alanlarını içerir: formda boşaltılan alan kayıttan da çıkar.
 
 ## Kalanlar / olası sonraki işler
-- Proje sahibinin telefonda denemesi ve geri bildirimi.
+- Telefonda deneme: tamamlandı, sorun yok (2026-11-09).
 - Fotoğraf ekleme (proje sahibi sonra yapacak): o zaman `VakaDeposu`'nun içi IndexedDB'ye çevrilecek.
 
 ## Dikkat

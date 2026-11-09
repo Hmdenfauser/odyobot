@@ -42,7 +42,7 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 ### Tamamlanan: Vakalarım sekmesi (2026-11-09)
 - 4 aşamada yapıldı, her biri ayrı commit (sw v6–v9). Kararlar ve testler `PROGRESS.md` içinde.
 - Proje sahibinin verdiği klinik değerler: Clark derece tablosu ve 10 dB ABG eşiği (`odyo-hesap.js` başında, tek yerde). "Normal" sınırı tablonun ilk satırı (15 dB). Metinlerde "karma" değil "mikst".
-- Proje sahibinin telefonda denemesi bekleniyor.
+- Proje sahibi telefonda denedi, her şey düzgün çalışıyor (2026-11-09).
 
 ### Sıradaki işler (bu sırayla)
 1. OdyoBot maskeleme asistanı
