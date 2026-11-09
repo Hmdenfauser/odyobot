@@ -6,6 +6,7 @@
   var U = window.OdyoUI;
   if (!U || !document.getElementById('vakalarim')) return;
   var h = U.h, $ = U.$;
+  var Hesap = window.OdyoHesap;   // hesaplama kuralları: odyo-hesap.js
 
   /* ---------- sabitler ---------- */
   var ANA_FREKANSLAR = [125, 250, 500, 1000, 2000, 4000, 8000];
@@ -206,8 +207,8 @@
   function cizOdyogram(v, secenek) {
     secenek = secenek || {};
     var kucuk = !!secenek.kucuk, kulaklar = secenek.kulaklar || KULAKLAR;
-    var W = kucuk ? 180 : 360, H = kucuk ? 150 : 310;
-    var L = kucuk ? 4 : 32, R = kucuk ? 4 : 8, T = kucuk ? 4 : 22, B = kucuk ? 4 : 8, pad = kucuk ? 8 : 14;
+    var W = kucuk ? 180 : 360, H = kucuk ? 158 : 324;
+    var L = kucuk ? 4 : 32, R = kucuk ? 4 : 8, T = kucuk ? 4 : 22, B = kucuk ? 12 : 22, pad = kucuk ? 8 : 14;   // altta NR okları için boşluk
     var r = kucuk ? 4.2 : 5.5;
     function xK(f) { return L + pad + (Math.log(f / 125) / Math.LN2) / 6 * (W - L - R - 2 * pad); }
     function yK(db) { return T + (db - DB_EN_AZ) / (DB_EN_COK - DB_EN_AZ) * (H - T - B); }
@@ -386,8 +387,39 @@
   // Formdaki canlı önizlemeler (odyogram ve sonuç): her girişte formdaki geçerli değerlerle yeniden çizilir.
   function formdanCiz() {
     if (ekran !== 'form') return;
-    grafikCiz(formuOku().vaka);
+    var v = formuOku().vaka;
+    grafikCiz(v); sonucCiz(v);
   }
+
+  /* ---------- sonuç kartı (hesaplar odyo-hesap.js'te) ---------- */
+  var ptaTur = ayarOku('odybot:ptaTur') === '4' ? 4 : 3;
+  function kulakBos(v, k) { return esikSayisi(v, k) === 0; }
+  function sonucCiz(v) {
+    bas($('v-pta3'), ptaTur === 3); bas($('v-pta4'), ptaTur === 4);
+    $('v-pta-frek').textContent = 'Ortalama frekansları: ' + Hesap.PTA_FREKANSLARI[ptaTur].join(', ') + ' Hz';
+    var kap = $('v-sonuc-icerik');
+    kap.replaceChildren.apply(kap, KULAKLAR.map(function (k) {
+      var bas_ = h('div', { 'class': 'og-baslik ' + k, text: KULAK_AD[k] + ' kulak' });
+      if (!v || kulakBos(v, k)) return h('div', { 'class': 'sonuc-kulak ' + k }, [bas_, h('div', { 'class': 'meta', text: 'Bu kulak için değer girilmedi.' })]);
+      var r = Hesap.degerlendir(v.esik[k], ptaTur);
+      var satirlar = [
+        ['Hava yolu ortalaması', Hesap.ptaMetni(r.hava)],
+        ['Kemik yolu ortalaması', Hesap.ptaMetni(r.kemik)]
+      ];
+      if (r.tip.abg != null) satirlar.push(['Hava-kemik farkı (ABG)', Hesap.sayiYaz(r.tip.abg) + ' dB']);
+      satirlar.push(['Derece', r.dereceMetni || '–']);
+      satirlar.push(['Tip', r.tip.metin + (r.tip.kesinDegil ? ' (NR değeri içerir, kesin değil)' : '')]);
+      var dl = h('dl', { 'class': 'sonuc-dl' });
+      satirlar.forEach(function (x) { dl.appendChild(h('dt', { text: x[0] })); dl.appendChild(h('dd', { text: x[1] })); });
+      return h('div', { 'class': 'sonuc-kulak ' + k }, [bas_, dl]);
+    }));
+  }
+  function ptaSec(n) {
+    ptaTur = n; ayarYaz('odybot:ptaTur', n);
+    if (ekran === 'form') formdanCiz(); else if (ekran === 'detay' && bul(acikId)) sonucCiz(bul(acikId));
+  }
+  $('v-pta3').addEventListener('click', function () { ptaSec(3); });
+  $('v-pta4').addEventListener('click', function () { ptaSec(4); });
 
   /* ---------- odyogram paneli: tek / ayrı grafik ---------- */
   var grafikAyri = ayarOku('odybot:grafik') === 'ayri';
@@ -450,6 +482,8 @@
     if (e === 'form') {   // grafik paneli formda kulak seçiminin hemen üstünde durur
       var seg = document.querySelector('#v-form .seg2');
       seg.parentNode.insertBefore($('v-grafik'), seg);
+      var notFld = $('v-notlar').closest('.fld');      // sonuç kartı eşiklerin hemen altında
+      notFld.parentNode.insertBefore($('v-sonuc'), notFld);
       formdanCiz();
     }
     try { window.scrollTo(0, 0); } catch (x) {}
@@ -468,11 +502,10 @@
 
   function bul(id) { for (var i = 0; i < vakalar.length; i++) if (vakalar[i].id === id) return vakalar[i]; return null; }
 
-  // Liste kartındaki kısa sonuç özeti. (Hesaplama aşamasında tip + derece ile değişir.)
+  // Liste kartındaki kısa sonuç özeti: her kulak için tip + derece.
   function ozetMetni(v) {
     return KULAKLAR.map(function (k) {
-      var n = esikSayisi(v, k);
-      return KULAK_AD[k] + ': ' + (n ? n + ' eşik' : 'eşik yok');
+      return KULAK_AD[k] + ': ' + (kulakBos(v, k) ? 'değer yok' : Hesap.kisaOzet(Hesap.degerlendir(v.esik[k], ptaTur)));
     }).join(' · ');
   }
   // Liste kartındaki küçük odyogram (iki kulak bir arada, yazısız).
@@ -555,8 +588,7 @@
   }
   // Ayrıntıdaki odyogram: ortak panel (tek/ayrı düğmesi ve lejant ile) buraya taşınır.
   function buyukGrafik(v) { grafikCiz(v); return $('v-grafik'); }
-  // Sonuç kartı hesaplama aşamasında doldurulur.
-  function sonucKarti() { return null; }
+  function sonucKarti(v) { sonucCiz(v); return $('v-sonuc'); }
 
   function ayrintiAc(id) { acikId = id; silOnay = null; goster('detay'); ayrintiCiz(); }
 
@@ -647,6 +679,19 @@
         CSV_SUTUNLARI.push({ ad: KULAK_AD[k] + ' ' + YOL_AD[y].toLowerCase() + ' ' + f, al: function (v) { return esikMetni(v.esik[k][y][String(f)]); } });
       });
     });
+  });
+  // Hesap sütunları (seçili ortalama türüyle). Ondalık ayırıcı virgül (Türkçe Excel).
+  CSV_SUTUNLARI.push({ ad: 'Ortalama frekansları', al: function () { return Hesap.PTA_FREKANSLARI[ptaTur].join('-'); } });
+  KULAKLAR.forEach(function (k) {
+    function r(v) { return Hesap.degerlendir(v.esik[k], ptaTur); }
+    function p(x) { return x.hesaplandi ? (x.enAz ? 'en az ' : '') + Hesap.sayiYaz(x.deger) : ''; }
+    CSV_SUTUNLARI.push(
+      { ad: KULAK_AD[k] + ' hava PTA', al: function (v) { return p(r(v).hava); } },
+      { ad: KULAK_AD[k] + ' kemik PTA', al: function (v) { return p(r(v).kemik); } },
+      { ad: KULAK_AD[k] + ' ABG', al: function (v) { var t = r(v).tip; return t.abg != null ? Hesap.sayiYaz(t.abg) : ''; } },
+      { ad: KULAK_AD[k] + ' derece', al: function (v) { return r(v).dereceMetni; } },
+      { ad: KULAK_AD[k] + ' tip', al: function (v) { return kulakBos(v, k) ? '' : r(v).tip.metin; } }
+    );
   });
   var CSV_SON = [{ ad: 'Notlar', al: function (v) { return v.notlar; } }];
   function csvIcerik(l) {

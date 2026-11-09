@@ -8,12 +8,13 @@
 
    Firebase (Firestore/giriş) istekleri başka adrese gittiği için buraya karışmaz; onların internetsiz kopyasını
    Firestore'un kendi önbelleği tutar. Vaka kayıtları (Vakalarım) zaten yalnızca cihazın yerel deposundadır. */
-var VERSION = 'odyobot-v7';
+var VERSION = 'odyobot-v8';
 var ASSETS = [
   './',
   './index.html',
   './styles.css',
   './app.js',
+  './odyo-hesap.js',
   './vakalarim.js',
   './firebase-config.js',
   './manifest.webmanifest',

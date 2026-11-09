@@ -302,3 +302,13 @@ input.db.hatali { border-color: var(--danger); border-width: 2px; background: co
 .odyo-lejant .lj-svg { width: 28px; height: 22px; max-width: none; flex: none; }
 .vkart-govde { display: grid; grid-template-columns: 132px minmax(0, 1fr); gap: 12px; align-items: center; }
 .vmini { border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: var(--bg); }
+
+/* Sonuç kartı */
+.sonuc-panel { gap: 10px; padding: 14px; }
+.sonuc-kulaklar { display: flex; flex-direction: column; gap: 12px; }
+.sonuc-kulak { display: flex; flex-direction: column; gap: 6px; border-top: 1px solid var(--line); padding-top: 10px; }
+.sonuc-kulak.sag { border-left: 3px solid var(--right); padding-left: 10px; }
+.sonuc-kulak.sol { border-left: 3px solid var(--left); padding-left: 10px; }
+.sonuc-dl { gap: 6px; }
+.sonuc-dl dd { font-weight: 500; overflow-wrap: anywhere; }
+.sonuc-uyari { font-size: 13px; font-weight: 600; color: var(--ink); border-top: 1px solid var(--line); padding-top: 8px; }
