@@ -184,6 +184,12 @@ details.ns > summary:focus-visible { outline: 3px solid var(--accent); outline-o
 details.ns ul { margin: 0; padding: 0 14px 14px 32px; display: flex; flex-direction: column; gap: 6px; }
 details.ns li { overflow-wrap: anywhere; }
 
+/* Yönetici düzenleme kutuları */
+.editbox { display: flex; flex-direction: column; gap: 10px; border: 1px dashed var(--accent); border-radius: 10px; padding: 12px; background: var(--bg); }
+.editbox textarea { min-height: 160px; }
+.ns-admin { padding: 0 14px 12px; }
+.k-admin { margin-top: -6px; }
+
 /* Cihaz kartları */
 .item.dev { padding: 0 0 10px; overflow: hidden; gap: 6px; }
 .item.dev > :not(.dev-img) { margin-left: 14px; margin-right: 14px; }

@@ -20,6 +20,8 @@ OdyoBOT, odyoloji öğrencileri ve klinisyenler için bir başvuru uygulaması. 
 | 4 | Notlar | Kısa ders notları ve arama kutusu. Konular: saf ses odyometrisi, işitme kaybı tipleri, timpanometri, konuşma odyometrisi, maskeleme kavramları, OAE, ABR, akustik refleks. | Yapıldı |
 | 5 | Geçmiş | Kişisel vaka kaydı: anonim vaka etiketi, tarih, özet. Kayıtlar yalnızca o cihazda saklanır, hiçbir yere gönderilmez. | Yapıldı |
 
+**Yönetici düzenlemesi:** Giriş yapınca her şema basamağında, ders notunda, cihaz kartında ve sayfa yazısında "Düzenle" bağlantısı çıkar. Değişiklik herkese yansır, "Varsayılana dön" ile geri alınır.
+
 **Ayarlar:** Ana sayfadaki dişli düğmesiyle açılır ve yalnızca yönetici girişi yapılınca görünür. İçinde 5 renk teması arasından seçim, ders notu ekleme/düzenleme/silme ve "Çıkış yap" var.
 
 **Yönetici girişi:** Ana sayfanın en altındaki "Yönetici girişi" bağlantısı (`#giris`). E-posta ve şifre ile giriş (Firebase Authentication).
@@ -71,6 +73,7 @@ Uygulama bir **PWA**: tarayıcıdan ana ekrana eklenebilen ve internetsiz de aç
 | Firestore | `duyurular` | Herkes okur, yalnızca admin yazar | `tur` ("ilan" / "haber"), `baslik` (≤140), `kurum` (≤120), `tarih` (YYYY-AA-GG), `link` (yalnızca https, ≤300), `not` (≤400), `olusturma` (zaman damgası) |
 | Firestore | `notlar` | Herkes okur, yalnızca admin yazar | `baslik` (≤100), `maddeler` (metin listesi, ≤40), `olusturma` |
 | Firestore | `cihazlar/{cihaz kimliği}` | Herkes okur, yalnızca admin yazar | `maddeler` (metin listesi, 1–20), `guncelleme`. Kişisel veri değil. |
+| Firestore | `icerik/{anahtar}` | Herkes okur, yalnızca admin yazar | `alanlar` (yalnızca değiştirilen alanlar: alan → metin, ≤20), `guncelleme`. Anahtarlar: `yolak.<id>`, `refleks.<id>`, `not.<sıra>`, `cihaz.<id>`, `metin.<data-k>`. Silinirse koddaki varsayılan metin döner. |
 | Firestore | `ayar/tema` | Herkes okur, yalnızca admin yazar | `id` (tema adı), `guncelleme` |
 | Cihaz (localStorage, anahtar `odybot:vakalar`) | vaka geçmişi | Yalnızca o cihaz | `etiket`, `tarih`, `not` (özet), `olusturma` |
 
@@ -133,6 +136,10 @@ Uygulama bir **PWA**: tarayıcıdan ana ekrana eklenebilen ve internetsiz de aç
 - Açık ve koyu temanın ikisini de kontrol et.
 - Tüm arayüz metinleri Türkçe olmalı.
 - Düzenleyiciye özel işlevler (ilan/haber ekleme ve silme, Ayarlar) normal kullanıcıya görünmemeli.
+- **Yönetici her metni düzenleyebilmeli (proje sahibinin kuralı, 2026-11-09).** Uygulamaya eklenen her yeni içerik, sorulmadan, otomatik olarak düzenlenebilir yapılır:
+  - Koddaki veri nesneleri: `editable(nesne, alanlar)` + yenilemede `applyOv(anahtar, nesne)`; ekranda `adminPart(anahtar, nesne, alanlar, etiket)`. Yeni bölümün yenileme fonksiyonu `refreshContent()` içine eklenir.
+  - `index.html`'deki sabit yazılar: öğeye `data-k="bolum.ad"` eklenir (yalnızca düz metin içeren öğeler).
+  - Klinik metni ben yazarsam yine proje sahibine doğrulatırım; o da uygulamadan düzeltir.
 - Metinde olmayan bir şeyi uydurma; belirsiz konularda sor.
 - Proje sahibinin onayı olmadan kütüphane ekleme veya yapıyı köklü biçimde değiştirme.
 - **Yayına gönderirken (`git push`):**

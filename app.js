@@ -23,6 +23,77 @@
   }
   function safeLink(u) { return typeof u === 'string' && /^https:\/\/[^\s]+$/i.test(u) ? u : ''; }
 
+  /* ---------- düzenlenebilir içerik (yönetici) ----------
+     Koddaki her metin varsayılandır. Yönetici bir metni değiştirince yalnızca farklı alanlar
+     Firestore'da icerik/{anahtar} -> { alanlar: { alan: metin }, guncelleme } olarak saklanır.
+     "Varsayılana dön" bu kaydı siler. Yeni içerik eklerken: nesneye editable(...) uygula, ekranda
+     düzenleme kutusu için editBox(...) kullan (CLAUDE.md §9). */
+  var overrides = {}, editingKey = null;
+  function editable(obj, fields) {        // varsayılanları sakla
+    obj._def = {}; fields.forEach(function (f) { obj._def[f] = obj[f]; });
+  }
+  function applyOv(key, obj) {           // varsayılan + yöneticinin değişikliği
+    var o = overrides[key] || {};
+    Object.keys(obj._def).forEach(function (f) {
+      var d = obj._def[f], v = o[f];
+      if (typeof v !== 'string' || !v.trim()) { obj[f] = d; return; }
+      obj[f] = Array.isArray(d) ? v.split('\n').map(function (x) { return x.trim(); }).filter(Boolean) : v.trim();
+    });
+  }
+  function asText(v) { return Array.isArray(v) ? v.join('\n') : (v || ''); }
+  // Düzenleme kutusu. fields: [{ f: alan, ad: etiket, cok: çok satırlı mı }]
+  function editBox(key, obj, fields, extra) {
+    var box = h('div', { 'class': 'editbox' }), inputs = {};
+    fields.forEach(function (x) {
+      var id = 'ed-' + key.replace(/[^a-z0-9]/gi, '-') + '-' + x.f;
+      var el = h(x.cok ? 'textarea' : 'input', { id: id, maxlength: '4000' });
+      if (!x.cok) el.setAttribute('type', 'text');
+      el.value = asText(obj[x.f]);
+      inputs[x.f] = el;
+      box.appendChild(h('div', { 'class': 'fld' }, [h('label', { 'for': id, text: x.ad }), el]));
+    });
+    if (extra) box.appendChild(extra.node);
+    var save = h('button', { 'class': 'btn primary', type: 'button', text: 'Kaydet' });
+    var reset = h('button', { 'class': 'btn', type: 'button', text: 'Varsayılana dön' });
+    var cancel = h('button', { 'class': 'btn', type: 'button', text: 'Vazgeç' });
+    var msg = h('div', { 'class': 'msg', role: 'status' });
+    function done() { editingKey = null; refreshContent(); }
+    function fail() { msg.textContent = 'Kaydedilemedi. Düzenleme yetkin olmayabilir ya da bağlantı yok.'; msg.className = 'msg err'; save.disabled = reset.disabled = false; }
+    cancel.addEventListener('click', done);
+    reset.addEventListener('click', function () {
+      if (!dbRef) return fail();
+      save.disabled = reset.disabled = true;
+      Promise.all([dbRef.collection('icerik').doc(key).delete()].concat(extra && extra.reset ? [extra.reset()] : [])).then(done, fail);
+    });
+    save.addEventListener('click', function () {
+      if (!dbRef) return fail();
+      var alanlar = {};
+      fields.forEach(function (x) {
+        var v = inputs[x.f].value.trim();
+        if (v && v !== asText(obj._def[x.f]).trim()) alanlar[x.f] = v;
+      });
+      var ref = dbRef.collection('icerik').doc(key);
+      save.disabled = reset.disabled = true;
+      Promise.all([Object.keys(alanlar).length ? ref.set({ alanlar: alanlar, guncelleme: Date.now() }) : ref.delete()]
+        .concat(extra && extra.save ? [extra.save()] : [])).then(done, fail);
+    });
+    box.appendChild(h('div', { 'class': 'admin-bar' }, [save, reset, cancel]));
+    box.appendChild(msg);
+    setTimeout(function () { var first = box.querySelector('input,textarea'); if (first) first.focus(); }, 0);
+    return box;
+  }
+  function fill(el, kids) { el.replaceChildren.apply(el, kids.filter(Boolean)); }
+  // Yönetici için: düzenleniyorsa kutu, değilse "Düzenle" düğmesi; normal kullanıcıya hiçbir şey.
+  function adminPart(key, obj, fields, label, extra) {
+    if (!canEdit) return null;
+    return editingKey === key ? editBox(key, obj, fields, extra) : h('div', { 'class': 'admin-bar' }, [editBtn(key, label)]);
+  }
+  function editBtn(key, label) {
+    var b = h('button', { 'class': 'linkbtn', type: 'button', text: label || 'Düzenle' });
+    b.addEventListener('click', function () { editingKey = key; refreshContent(); });
+    return b;
+  }
+
   /* ---------- clock ---------- */
   function tick() {
     var d = new Date(), t;
@@ -77,7 +148,12 @@
   // Beyin bölgesi etiketleri (kutuda adın altında). MGB talamusa aittir.
   var BOLGE = { koklea: 'İç kulak', n8: 'İç kulak yolu', cn: 'Medulla (pontomedüller)', soc: 'Pons', ll: 'Pons',
     ic: 'Orta beyin', mgb: 'Talamus', cortex: 'Temporal lob' };
-  NODES.forEach(function (n, i) { n.y = 570 - i * 65; if (!n.bolge) n.bolge = BOLGE[n.id]; });
+  var YOLAK_ALAN = [{ f: 'label', ad: 'Ad' }, { f: 'bolge', ad: 'Beyin bölgesi' }, { f: 'latin', ad: 'Latince' },
+    { f: 'abr', ad: 'ABR karşılığı' }, { f: 'yer', ad: 'Konum', cok: true }, { f: 'islev', ad: 'İşlev', cok: true }, { f: 'klinik', ad: 'Klinik not', cok: true }];
+  NODES.forEach(function (n, i) {
+    n.y = 570 - i * 65; if (!n.bolge) n.bolge = BOLGE[n.id];
+    editable(n, YOLAK_ALAN.map(function (x) { return x.f; }));
+  });
   var XL = 45, XR = 315, CX = 180, sel = 'soc';
   var svg = $('pathway'), NS = 'http://www.w3.org/2000/svg';
   function se(name, attrs, parent) {
@@ -109,8 +185,9 @@
     se('circle', { cx: XL, cy: n.y, r: 14, 'class': 'c r' }, g);
     se('circle', { cx: XR, cy: n.y, r: 14, 'class': 'c l' }, g);
     se('rect', { x: CX - 88, y: n.y - 22, width: 176, height: 44, rx: 8, 'class': 'pill' }, g);
-    se('text', { x: CX, y: n.y - 7 }, g).textContent = n.label;
-    se('text', { x: CX, y: n.y + 10, 'class': 'reg' }, g).textContent = n.bolge;
+    n._t = se('text', { x: CX, y: n.y - 7 }, g); n._t.textContent = n.label;
+    n._r = se('text', { x: CX, y: n.y + 10, 'class': 'reg' }, g); n._r.textContent = n.bolge;
+    n._g = g;
     g.addEventListener('click', function () { select(n.id); });
     g.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(n.id); } });
     groups[n.id] = g;
@@ -128,12 +205,22 @@
     if (idx === NODES.length - 1) next.disabled = true;
     prev.addEventListener('click', function () { select(NODES[idx - 1].id); });
     next.addEventListener('click', function () { select(NODES[idx + 1].id); });
-    detail.replaceChildren(
+    var key = 'yolak.' + n.id;
+    fill(detail, [
       h('div', { 'class': 'card-head' }, [h('h2', { text: n.label }), h('span', { 'class': 'latin', text: n.latin })]),
       h('span', { 'class': 'badge', text: 'ABR: ' + n.abr }),
       h('dl', null, [dlRow('Konum', n.yer), dlRow('İşlev', n.islev), dlRow('Klinik not', n.klinik)]),
-      h('div', { 'class': 'stepper' }, [prev, h('span', { 'class': 'pos', text: 'Basamak ' + (idx + 1) + ' / ' + NODES.length }), next])
-    );
+      h('div', { 'class': 'stepper' }, [prev, h('span', { 'class': 'pos', text: 'Basamak ' + (idx + 1) + ' / ' + NODES.length }), next]),
+      adminPart(key, n, YOLAK_ALAN, 'Bu basamağı düzenle')
+    ]);
+  }
+  function refreshPathway() {
+    NODES.forEach(function (n, i) {
+      applyOv('yolak.' + n.id, n);
+      n._t.textContent = n.label; n._r.textContent = n.bolge;
+      n._g.setAttribute('aria-label', n.label + ', basamak ' + (i + 1) + '/' + NODES.length);
+    });
+    select(sel);
   }
   select(sel);
 
@@ -204,18 +291,27 @@
   rpath('r', [[200, 68], [160 - 2, 68]], 'l', false);
   se('text', { x: 58, y: 16, 'class': 'side-label', 'text-anchor': 'middle' }, rsvg).textContent = 'SAĞ';
   se('text', { x: 302, y: 16, 'class': 'side-label', 'text-anchor': 'middle' }, rsvg).textContent = 'SOL';
+  var REFLEKS_ALAN = [{ f: 'title', ad: 'Başlık' }, { f: 'label', ad: 'Şemadaki ad (en çok 2 satır)', cok: true }, { f: 'latin', ad: 'Latince' },
+    { f: 'kol', ad: 'Rozet' }, { f: 'yer', ad: 'Konum', cok: true }, { f: 'islev', ad: 'İşlev', cok: true }, { f: 'klinik', ad: 'Klinik not', cok: true }];
+  function rlabel(t, lines, x, y) {
+    t.replaceChildren();
+    lines = lines.slice(0, 2);
+    if (lines.length === 1) { t.textContent = lines[0]; return; }
+    se('tspan', { x: x, y: y - 8 }, t).textContent = lines[0];
+    se('tspan', { x: x, y: y + 8 }, t).textContent = lines[1];
+  }
   RNODES.forEach(function (n, idx) {
+    editable(n, REFLEKS_ALAN.map(function (x) { return x.f; }));
     var g = se('g', { 'class': 'node', tabindex: '0', role: 'button', 'aria-label': n.title + ', basamak ' + (idx + 1) + '/' + RNODES.length }, rsvg);
+    n._ts = [];
     ['r', 'l'].forEach(function (side) {
       var c = RCOL[n.col], x = mx(c.x, side), y = n.y;
       se('rect', { x: x - c.w / 2, y: y - 22, width: c.w, height: 44, rx: 8, 'class': 'pill' }, g);
       var t = se('text', { x: x, y: y }, g);
-      if (n.label.length === 1) { t.textContent = n.label[0]; }
-      else {
-        se('tspan', { x: x, y: y - 8 }, t).textContent = n.label[0];
-        se('tspan', { x: x, y: y + 8 }, t).textContent = n.label[1];
-      }
+      rlabel(t, n.label, x, y);
+      n._ts.push({ t: t, x: x, y: y });
     });
+    n._g = g;
     g.addEventListener('click', function () { rselect(n.id); });
     g.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); rselect(n.id); } });
     rgroups[n.id] = g;
@@ -232,12 +328,22 @@
     if (idx === RNODES.length - 1) next.disabled = true;
     prev.addEventListener('click', function () { rselect(RNODES[idx - 1].id); });
     next.addEventListener('click', function () { rselect(RNODES[idx + 1].id); });
-    rdetail.replaceChildren(
+    var key = 'refleks.' + n.id;
+    fill(rdetail, [
       h('div', { 'class': 'card-head' }, [h('h2', { text: n.title }), h('span', { 'class': 'latin', text: n.latin })]),
       h('span', { 'class': 'badge', text: n.kol }),
       h('dl', null, [dlRow('Konum', n.yer), dlRow('İşlev', n.islev), dlRow('Klinik not', n.klinik)]),
-      h('div', { 'class': 'stepper' }, [prev, h('span', { 'class': 'pos', text: 'Basamak ' + (idx + 1) + ' / ' + RNODES.length }), next])
-    );
+      h('div', { 'class': 'stepper' }, [prev, h('span', { 'class': 'pos', text: 'Basamak ' + (idx + 1) + ' / ' + RNODES.length }), next]),
+      adminPart(key, n, REFLEKS_ALAN, 'Bu basamağı düzenle')
+    ]);
+  }
+  function refreshReflex() {
+    RNODES.forEach(function (n, i) {
+      applyOv('refleks.' + n.id, n);
+      n._ts.forEach(function (o) { rlabel(o.t, n.label, o.x, o.y); });
+      n._g.setAttribute('aria-label', n.title + ', basamak ' + (i + 1) + '/' + RNODES.length);
+    });
+    rselect(rsel);
   }
   rselect(rsel);
 
@@ -284,6 +390,9 @@
       'Prob kulağında orta kulak patolojisi, o kulakta ölçülen refleksleri engeller.',
       'Refleks decay: uzun süreli uyaranda yanıtın hızla azalması retrokoklear patolojiyi düşündürebilir.' ] }
   ];
+  // Koddaki temel notlar da yönetici tarafından düzenlenebilir (anahtar: not.<sıra>). Sırayı değiştirme.
+  var NOT_ALAN = [{ f: 't', ad: 'Başlık' }, { f: 'p', ad: 'Maddeler (her satıra bir madde)', cok: true }];
+  NOTES.forEach(function (n, i) { n.key = 'not.' + i; editable(n, ['t', 'p']); });
   function renderNotes(q) {
     var box = $('notes-list');
     var qq = (q || '').trim().toLocaleLowerCase('tr');
@@ -293,13 +402,24 @@
     });
     if (!shown.length) { box.replaceChildren(h('div', { 'class': 'empty', text: 'Bu aramayla eşleşen not yok.' })); return; }
     box.replaceChildren.apply(box, shown.map(function (n) {
+      var admin = null;
+      if (canEdit && n.key) admin = h('div', { 'class': 'ns-admin' }, [adminPart(n.key, n, NOT_ALAN, 'Bu notu düzenle')]);
+      else if (canEdit) {
+        var go = h('a', { 'class': 'linkbtn', href: '#ayarlar', text: 'Ayarlar’da düzenle' });
+        admin = h('div', { 'class': 'ns-admin admin-bar' }, [go]);
+      }
       var d = h('details', { 'class': 'ns' }, [
         h('summary', { text: n.t }),
-        h('ul', null, n.p.map(function (x) { return h('li', { text: x }); }))
+        h('ul', null, n.p.map(function (x) { return h('li', { text: x }); })),
+        admin
       ]);
-      if (qq) d.open = true;
+      if (qq || (n.key && editingKey === n.key)) d.open = true;
       return d;
     }));
+  }
+  function refreshNotes() {
+    NOTES.forEach(function (n) { applyOv(n.key, n); });
+    renderNotes($('n-ara').value);
   }
   renderNotes('');
   $('n-ara').addEventListener('input', function () { renderNotes($('n-ara').value); });
@@ -557,7 +677,15 @@
         var o = d.data() || {};
         if (Array.isArray(o.maddeler)) devText[d.id] = o.maddeler.map(String);
       });
-      if (!editingDev) renderDevices(); // düzenleme sırasında yazılan metin silinmesin
+      if (!editingKey) renderDevices(); // düzenleme sırasında yazılan metin silinmesin
+    }, function () {});
+    db.collection('icerik').onSnapshot(function (snap) {
+      overrides = {};
+      snap.docs.forEach(function (d) {
+        var o = d.data() || {};
+        if (o.alanlar && typeof o.alanlar === 'object') overrides[d.id] = o.alanlar;
+      });
+      if (!editingKey) refreshContent();
     }, function () {});
   }
 
@@ -586,7 +714,9 @@
     { id: 'abi-yuzey', grup: 'implant', ad: 'İşitsel beyin sapı implantı (ABI), yüzey elektrotlu', img: null },
     { id: 'abi-penetran', grup: 'implant', ad: 'Penetran ABI', img: 'abi-penetran.jpg' }
   ];
-  var devText = {}, editingDev = null;
+  var devText = {};
+  var CIHAZ_ALAN = [{ f: 'ad', ad: 'Cihaz adı' }, { f: 'alt', ad: 'Görsel altı not (isteğe bağlı)' }];
+  DEVICES.forEach(function (d) { if (!d.alt) d.alt = ''; d.key = 'cihaz.' + d.id; editable(d, ['ad', 'alt']); });
   function renderDevices() {
     ['isitme', 'implant'].forEach(function (g) {
       var box = $('dev-' + g);
@@ -603,39 +733,46 @@
       d.alt ? h('div', { 'class': 'meta', text: d.alt }) : null,
       maddeler.length ? h('ul', { 'class': 'dev-list' }, maddeler.map(function (x) { return h('li', { text: x }); })) : null
     ]);
-    if (!canEdit) return card;
-    if (editingDev !== d.id) {
-      var btn = h('button', { 'class': 'linkbtn', type: 'button', text: maddeler.length ? 'Açıklamayı düzenle' : 'Açıklama ekle' });
-      btn.addEventListener('click', function () {
-        editingDev = d.id; renderDevices();
-        var ta = $('dev-ta'); if (ta) ta.focus();
-      });
-      card.appendChild(h('div', { 'class': 'admin-bar' }, [btn]));
-      return card;
-    }
-    var ta = h('textarea', { id: 'dev-ta', maxlength: '3000', 'aria-label': d.ad + ' açıklaması (her satıra bir madde)' });
+    // Açıklama maddeleri ayrı kayıtta (cihazlar/{id}); ad ve alt not icerik/cihaz.{id} kaydında.
+    var taId = 'ed-dev-' + d.id;
+    var ta = h('textarea', { id: taId, maxlength: '3000' });
     ta.value = maddeler.join('\n');
-    var save = h('button', { 'class': 'btn primary', type: 'button', text: 'Kaydet' });
-    var cancel = h('button', { 'class': 'btn', type: 'button', text: 'Vazgeç' });
-    var msg = h('div', { 'class': 'msg', role: 'status' });
-    cancel.addEventListener('click', function () { editingDev = null; renderDevices(); });
-    save.addEventListener('click', function () {
-      var list = ta.value.split('\n').map(function (x) { return x.trim(); }).filter(Boolean).slice(0, 20);
-      if (!dbRef) { msg.textContent = 'Veri deposuna ulaşılamıyor.'; msg.className = 'msg err'; return; }
-      save.disabled = true;
-      var ref = dbRef.collection('cihazlar').doc(d.id);
-      (list.length ? ref.set({ maddeler: list, guncelleme: Date.now() }) : ref.delete())
-        .then(function () { editingDev = null; renderDevices(); })
-        .catch(function () { msg.textContent = 'Kaydedilemedi. Düzenleme yetkin olmayabilir.'; msg.className = 'msg err'; save.disabled = false; });
-    });
-    card.appendChild(h('div', { 'class': 'fld' }, [
-      h('label', { 'for': 'dev-ta', text: 'Açıklama (her satıra bir madde, en çok 20)' }), ta
-    ]));
-    card.appendChild(h('div', { 'class': 'admin-bar' }, [save, cancel]));
-    card.appendChild(msg);
+    var extra = {
+      node: h('div', { 'class': 'fld' }, [h('label', { 'for': taId, text: 'Açıklama (her satıra bir madde, en çok 20)' }), ta]),
+      save: function () {
+        var list = ta.value.split('\n').map(function (x) { return x.trim(); }).filter(Boolean).slice(0, 20);
+        var ref = dbRef.collection('cihazlar').doc(d.id);
+        return list.length ? ref.set({ maddeler: list, guncelleme: Date.now() }) : ref.delete();
+      }
+    };
+    var admin = adminPart(d.key, d, CIHAZ_ALAN, maddeler.length ? 'Düzenle' : 'Açıklama ekle / düzenle', extra);
+    if (admin) card.appendChild(admin);
     return card;
   }
+  function refreshDevices() {
+    DEVICES.forEach(function (d) { applyOv(d.key, d); });
+    renderDevices();
+  }
   renderDevices();
+
+  /* ---------- sayfadaki sabit metinler: index.html'de data-k="..." taşıyan her öğe ---------- */
+  var STATIC = [];
+  document.querySelectorAll('[data-k]').forEach(function (el) {
+    var o = { key: 'metin.' + el.getAttribute('data-k'), metin: el.textContent.trim(), el: el };
+    editable(o, ['metin']);
+    STATIC.push(o);
+  });
+  function refreshStatic() {
+    document.querySelectorAll('.k-admin').forEach(function (x) { x.remove(); });
+    STATIC.forEach(function (o) {
+      applyOv(o.key, o);
+      o.el.textContent = o.metin;
+      var a = adminPart(o.key, o, [{ f: 'metin', ad: 'Metin', cok: true }], 'Bu yazıyı düzenle');
+      if (a) o.el.after(h('div', { 'class': 'k-admin' }, [a]));
+    });
+  }
+  // Tüm düzenlenebilir içeriği yeniden çizer (yönetici değişikliği geldiğinde, giriş/çıkışta).
+  function refreshContent() { refreshPathway(); refreshReflex(); refreshNotes(); refreshDevices(); refreshStatic(); }
 
   /* ---------- yerel depo: veriyi yalnızca bu cihazın tarayıcısında (localStorage) tutar ----------
      Vaka geçmişi her zaman buradadır ve hiçbir sunucuya gönderilmez (CLAUDE.md §5, §8).
@@ -729,8 +866,8 @@
     $('admin-note').hidden = !canEdit;
     $('login-link').hidden = canEdit;
     $('who').textContent = canEdit ? 'Giriş yapan: ' + (email || '') : '';
-    if (!canEdit) editingDev = null;
-    renderDuyuru(); renderNoteAdmin(); renderDevices();
+    if (!canEdit) editingKey = null;
+    renderDuyuru(); renderNoteAdmin(); refreshContent();
   }
   function authErrorText(err) {
     var c = (err && err.code) || '';

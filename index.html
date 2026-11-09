@@ -33,17 +33,17 @@
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg>
           </a>
         </div>
-        <h1>Merhaba, odyolog</h1>
+        <h1 data-k="ana.baslik">Merhaba, odyolog</h1>
         <div class="clock" id="clock" aria-label="Saat">--:--</div>
       </div>
 
       <div class="stack" style="gap:10px">
-        <div class="row"><h2>İş ilanları</h2><span class="kicker" id="n-ilan"></span></div>
+        <div class="row"><h2 data-k="ana.ilan">İş ilanları</h2><span class="kicker" id="n-ilan"></span></div>
         <div class="board" id="list-ilan"><div class="empty">Yükleniyor…</div></div>
       </div>
 
       <div class="stack" style="gap:10px">
-        <div class="row"><h2>Sempozyum ve kongre haberleri</h2><span class="kicker" id="n-haber"></span></div>
+        <div class="row"><h2 data-k="ana.haber">Sempozyum ve kongre haberleri</h2><span class="kicker" id="n-haber"></span></div>
         <div class="board" id="list-haber"><div class="empty">Yükleniyor…</div></div>
       </div>
 
@@ -72,8 +72,8 @@
   <section id="depo" data-tab hidden>
     <div class="stack">
       <div class="stack" style="gap:6px">
-        <h2>Görsel depo</h2>
-        <p class="lead">Şemalar ve cihaz görselleri tek yerde.</p>
+        <h2 data-k="depo.baslik">Görsel depo</h2>
+        <p class="lead" data-k="depo.lead">Şemalar ve cihaz görselleri tek yerde.</p>
       </div>
       <div class="seg" role="group" aria-label="Depo bölümü">
         <button type="button" id="seg-yolak" aria-pressed="true">Yolaklar</button>
@@ -82,7 +82,7 @@
       </div>
 
       <div id="p-yolak" class="stack">
-        <p class="lead">Çıkan işitme yolağı kokleadan işitsel kortekse uzanır. Şemadaki bir basamağa dokun.</p>
+        <p class="lead" data-k="yolak.lead">Çıkan işitme yolağı kokleadan işitsel kortekse uzanır. Şemadaki bir basamağa dokun.</p>
         <div class="figure">
           <svg id="pathway" viewBox="0 0 360 600" role="group" aria-label="Çıkan işitme yolağı şeması"></svg>
           <div class="legend">
@@ -92,11 +92,11 @@
           </div>
         </div>
         <article class="card" id="detail" aria-live="polite"></article>
-        <p class="note">Şema basitleştirilmiştir; ara bağlantılar ve kolikuluslar arası geçiş gösterilmemiştir. ABR dalga kaynakları yaklaşıktır ve birden fazla yapı bir dalgaya katkı verir; kaynaklara göre atamalar değişir.</p>
+        <p class="note" data-k="yolak.not">Şema basitleştirilmiştir; ara bağlantılar ve kolikuluslar arası geçiş gösterilmemiştir. ABR dalga kaynakları yaklaşıktır ve birden fazla yapı bir dalgaya katkı verir; kaynaklara göre atamalar değişir.</p>
       </div>
 
       <div id="p-refleks" class="stack" hidden>
-        <p class="lead">Kırmızı yollar sağ kulak uyarıldığında, mavi yollar sol kulak uyarıldığında çalışır. İpsilateral yolda yanıt uyarılan kulakta, kontralateral yolda karşı kulakta ölçülür. Bir basamağa dokun.</p>
+        <p class="lead" data-k="refleks.lead">Kırmızı yollar sağ kulak uyarıldığında, mavi yollar sol kulak uyarıldığında çalışır. İpsilateral yolda yanıt uyarılan kulakta, kontralateral yolda karşı kulakta ölçülür. Bir basamağa dokun.</p>
         <div class="figure">
           <svg id="reflex" viewBox="0 0 360 510" role="group" aria-label="Akustik refleks arkı şeması"></svg>
           <div class="legend">
@@ -107,11 +107,11 @@
           </div>
         </div>
         <article class="card" id="detail-r" aria-live="polite"></article>
-        <p class="note">Şema basitleştirilmiştir. Karşıya geçişin tam düzeyi kaynaklara göre farklı anlatılır; burada trapezoid cisim düzeyinde gösterilmiştir.</p>
+        <p class="note" data-k="refleks.not">Şema basitleştirilmiştir. Karşıya geçişin tam düzeyi kaynaklara göre farklı anlatılır; burada trapezoid cisim düzeyinde gösterilmiştir.</p>
       </div>
 
       <div id="p-cihaz" class="stack" hidden>
-        <p class="lead">İşitme cihazları ve implantlar. Görseller temsilidir; belirli bir marka veya modeli göstermez.</p>
+        <p class="lead" data-k="cihaz.lead">İşitme cihazları ve implantlar. Görseller temsilidir; belirli bir marka veya modeli göstermez.</p>
         <div class="stack" style="gap:10px">
           <h3>İşitme cihazları</h3>
           <div class="board" id="dev-isitme"></div>
@@ -120,7 +120,7 @@
           <h3>İmplantlar</h3>
           <div class="board" id="dev-implant"></div>
         </div>
-        <p class="note">Uygun işitme kaybı aralıkları ve endikasyonlar kaynağa, üreticiye ve kliniğe göre değişir.</p>
+        <p class="note" data-k="cihaz.not">Uygun işitme kaybı aralıkları ve endikasyonlar kaynağa, üreticiye ve kliniğe göre değişir.</p>
       </div>
     </div>
   </section>
@@ -129,8 +129,8 @@
   <section id="odybot" data-tab hidden>
     <div class="stack">
       <span class="status">Son aşama</span>
-      <h2>OdyoBOT</h2>
-      <p class="lead">Odyogram değerlerini girince hangi kulağa ne zaman maskeleme gerektiğini ve plato tekniğinin adımlarını gösterecek. Hesaplar sabit klinik formüllerle yapılacak ve formüller birlikte doğrulanacak. Yaptığın değerlendirmeler Geçmiş sekmesine kaydedilecek.</p>
+      <h2 data-k="odybot.baslik">OdyoBOT</h2>
+      <p class="lead" data-k="odybot.lead">Odyogram değerlerini girince hangi kulağa ne zaman maskeleme gerektiğini ve plato tekniğinin adımlarını gösterecek. Hesaplar sabit klinik formüllerle yapılacak ve formüller birlikte doğrulanacak. Yaptığın değerlendirmeler Geçmiş sekmesine kaydedilecek.</p>
       <ul class="soonlist">
         <li>Hava yolu / kemik yolu girişi</li><li>Maskeleme gerekli mi?</li><li>Plato tekniği adımları</li><li>Aşırı maskeleme uyarısı</li>
       </ul>
@@ -191,12 +191,12 @@
   <section id="notlar" data-tab hidden>
     <div class="stack">
       <div class="stack" style="gap:6px">
-        <h2>Ders notları</h2>
-        <p class="lead">Sık kullanılan kavramların kısa özetleri.</p>
+        <h2 data-k="notlar.baslik">Ders notları</h2>
+        <p class="lead" data-k="notlar.lead">Sık kullanılan kavramların kısa özetleri.</p>
       </div>
       <div class="fld"><label for="n-ara">Notlarda ara</label><input id="n-ara" type="search" placeholder="Örn. timpanometri" autocomplete="off"></div>
       <div class="board" id="notes-list"></div>
-      <p class="note">Bunlar kısa özetlerdir. Sınır değerler kaynağa, yaşa ve kliniğe göre değişir; kendi ders kaynağınla doğrula.</p>
+      <p class="note" data-k="notlar.not">Bunlar kısa özetlerdir. Sınır değerler kaynağa, yaşa ve kliniğe göre değişir; kendi ders kaynağınla doğrula.</p>
     </div>
   </section>
 
@@ -204,14 +204,14 @@
   <section id="gecmis" data-tab hidden>
     <div class="stack">
       <div class="stack" style="gap:6px">
-        <h2>Geçmiş</h2>
-        <p class="lead">Daha önce yaptığın vakaların kaydı. Kayıtlar yalnızca bu cihazda saklanır ve hiçbir yere gönderilmez.</p>
-        <p class="note">Tarayıcı verisini silersen ya da cihaz değiştirirsen kayıtlar kaybolur.</p>
+        <h2 data-k="gecmis.baslik">Geçmiş</h2>
+        <p class="lead" data-k="gecmis.lead">Daha önce yaptığın vakaların kaydı. Kayıtlar yalnızca bu cihazda saklanır ve hiçbir yere gönderilmez.</p>
+        <p class="note" data-k="gecmis.not">Tarayıcı verisini silersen ya da cihaz değiştirirsen kayıtlar kaybolur.</p>
       </div>
       <details class="compose" id="g-compose">
         <summary>Vaka kaydı ekle</summary>
         <form class="f" id="gecmis-form" autocomplete="off">
-          <p class="note">Hasta adı, soyadı, kimlik numarası gibi tanımlayıcı bilgi yazma. Anonim bir etiket kullan.</p>
+          <p class="note" data-k="gecmis.uyari">Hasta adı, soyadı, kimlik numarası gibi tanımlayıcı bilgi yazma. Anonim bir etiket kullan.</p>
           <div class="fieldrow">
             <div class="fld"><label for="g-etiket">Vaka etiketi</label><input id="g-etiket" type="text" maxlength="60" placeholder="Örn. V-014" required></div>
             <div class="fld"><label for="g-tarih">Tarih</label><input id="g-tarih" type="date"></div>
