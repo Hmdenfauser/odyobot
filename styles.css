@@ -29,6 +29,14 @@
   --right: #C23A2F;
   --left: #2A5BC4;
   --cross: #8A9BA1;
+  /* Odyogram çıktısı (JPEG/PDF): tema ve koyu moddan bağımsız, her zaman beyaz kâğıt üzerinde (cikti.js okur). */
+  --cikti-zemin: #FFFFFF;
+  --cikti-yazi: #10242B;
+  --cikti-soluk: #566B72;
+  --cikti-cizgi: #C9D4D7;
+  --cikti-bant: #0B6E78;
+  --cikti-sag: #C23A2F;
+  --cikti-sol: #2A5BC4;
   --font-display: "Bricolage Grotesque", "IBM Plex Sans", system-ui, sans-serif;
   --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
@@ -328,3 +336,36 @@ input.db.hatali { border-color: var(--danger); border-width: 2px; background: co
 .ek-tablo td, .ek-tablo th { text-align: left; padding-left: 8px; }
 .vek { font-size: 12.5px; }
 .ek-grid .alan-uyari { padding-left: 0; }
+
+/* Vakalarım: seçim modu (OdyoBOT'a gönderme) */
+.liste-bas { align-items: center; }
+.liste-bas h3 { margin-right: auto; }
+button.btn.kucuk-btn { padding: 6px 14px; }
+button.btn.kucuk-btn[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+.secim-bar { display: flex; flex-direction: column; gap: 6px; background: var(--surface); border: 1px solid var(--accent); border-radius: 10px; padding: 10px 12px; position: sticky; top: 8px; z-index: 5; }
+button.btn:disabled { opacity: .5; cursor: default; }
+.vsec-kutu { flex: none; width: 22px; height: 22px; border: 2px solid var(--muted); border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: var(--accent-ink); }
+.vkart.secimde .item-top { justify-content: flex-start; }
+.vkart.secimde .item-title { margin-right: auto; }
+.vkart.secili { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.vkart.secili .vsec-kutu { background: var(--accent); border-color: var(--accent); }
+button.btn.bot-gonder { border-color: var(--bot); color: var(--ink); }
+
+/* OdyoBOT sohbeti: bot balonları solda, kullanıcının seçimleri sağda */
+.sohbet { display: flex; flex-direction: column; gap: 10px; }
+.balon { max-width: 88%; border-radius: 14px; padding: 10px 14px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.balon p { margin: 0; overflow-wrap: anywhere; }
+.balon.bot { align-self: flex-start; background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--bot); border-top-left-radius: 4px; }
+.balon.ben { align-self: flex-end; background: var(--accent); color: var(--accent-ink); border-top-right-radius: 4px; }
+.balon .vmini { width: 180px; max-width: 100%; }
+.b-vaka-baslik { font-weight: 600; }
+.b-secenek { display: flex; flex-direction: column; gap: 8px; }
+.b-secenek:empty { display: none; }
+button.btn.b-vaka { display: flex; align-items: center; gap: 10px; text-align: left; background: var(--surface); }
+.b-vaka-ad { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.b-vaka-kutu { flex: none; width: 20px; height: 20px; border: 2px solid var(--muted); border-radius: 6px; }
+button.btn.b-vaka[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+button.btn.b-vaka[aria-pressed="true"] .b-vaka-kutu { background: var(--accent); border-color: var(--accent); }
+.b-metinler { display: none; }
+.yonetici .b-metinler { display: block; }
+.b-metinler p { margin: 0; font-size: 14px; }

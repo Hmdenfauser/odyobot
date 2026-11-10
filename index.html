@@ -132,12 +132,30 @@
   <!-- ODYOBOT -->
   <section id="odybot" data-tab hidden>
     <div class="stack">
-      <span class="status">Son aşama</span>
-      <h2 data-k="odybot.baslik">OdyoBOT</h2>
-      <p class="lead" data-k="odybot.lead">Odyogram değerlerini girince hangi kulağa ne zaman maskeleme gerektiğini ve plato tekniğinin adımlarını gösterecek. Hesaplar sabit klinik formüllerle yapılacak ve formüller birlikte doğrulanacak. Yaptığın değerlendirmeler Vakalarım sekmesine kaydedilecek.</p>
-      <ul class="soonlist">
-        <li>Hava yolu / kemik yolu girişi</li><li>Maskeleme gerekli mi?</li><li>Plato tekniği adımları</li><li>Aşırı maskeleme uyarısı</li>
-      </ul>
+      <div class="stack" style="gap:6px">
+        <h2 data-k="odybot.baslik">OdyoBOT</h2>
+        <p class="lead" data-k="odybot.lead2">Maskeleme asistanı. Eşikleri Vakalarım'daki vakalardan alır; hangi kulağa, ne zaman ve ne kadar maskeleme gerektiğini adım adım gösterir. Kuralları sabittir, tanı koymaz.</p>
+      </div>
+
+      <!-- Sohbet: bot mesajları ve kullanıcının seçimleri (odybot.js çizer) -->
+      <div class="sohbet" id="b-sohbet" aria-live="polite"></div>
+      <div class="b-secenek" id="b-secenek" role="group" aria-label="Seçenekler"></div>
+
+      <!-- Bot mesaj metinleri: yalnızca yöneticiye görünür, buradan düzenlenir. {n}, {i}, {vaka} yerine sayı/vaka adı gelir. -->
+      <details class="compose b-metinler" id="b-metinler">
+        <summary>OdyoBOT mesaj metinleri (yönetici)</summary>
+        <div class="yedek-ic">
+          <p data-k="odybot.m.merhaba" data-m="merhaba">Merhaba, ben OdyoBOT. Maskeleme kararlarında sana yardım ederim. Eşikleri Vakalarım'daki vakalardan alırım; bir ya da birkaç vaka seçebilirsin.</p>
+          <p data-k="odybot.m.vakaYok" data-m="vakaYok">Vakalarım'da kayıtlı vaka yok. Önce bir vaka ekle, sonra buraya dön.</p>
+          <p data-k="odybot.m.secim" data-m="secim">Hangi vakalara bakalım? Birden fazla seçebilirsin.</p>
+          <p data-k="odybot.m.geldi" data-m="geldi">{n} vaka geldi. Sırayla bakacağız.</p>
+          <p data-k="odybot.m.kulaklik" data-m="kulaklik">Ölçümde hangi kulaklığı kullandın? Interaural attenüasyon (sesin bir kulaktan kafatası üzerinden öbür kulağa geçerken zayıflaması) değeri buna göre seçilir.</p>
+          <p data-k="odybot.m.vaka" data-m="vaka">Vaka {i}/{n}: {vaka}</p>
+          <p data-k="odybot.m.kuralBekliyor" data-m="kuralBekliyor">Maskeleme kuralları henüz doğrulanmadı. Katz'a göre hazırlanan taslak kural tablosu onay bekliyor; onaylanınca burada hangi kulağa, hangi frekansta ve ne kadar maskeleme gerektiğini göstereceğim.</p>
+          <p data-k="odybot.m.bulunamadi" data-m="bulunamadi">Bu vaka bulunamadı; silinmiş olabilir.</p>
+          <p data-k="odybot.m.bitti" data-m="bitti">Seçtiğin vakaların hepsine baktık.</p>
+        </div>
+      </details>
     </div>
   </section>
 
@@ -219,7 +237,14 @@
           <span id="v-hatirlatma-metin"></span>
           <button class="linkbtn" type="button" id="v-hatirlatma-kapat">Kapat</button>
         </div>
-        <div class="row"><h3 data-k="vakalarim.listeBaslik">Kayıtlı vakalar</h3><span class="kicker" id="v-sayi"></span></div>
+        <div class="row liste-bas"><h3 data-k="vakalarim.listeBaslik">Kayıtlı vakalar</h3><span class="kicker" id="v-sayi"></span><button class="btn kucuk-btn" type="button" id="v-sec" aria-pressed="false" hidden>Seç</button></div>
+        <div class="secim-bar" id="v-secim-bar" hidden>
+          <span class="note" id="v-secim-metin" data-k="vakalarim.secimNot">OdyoBOT'a göndermek istediğin vakalara dokun.</span>
+          <div class="admin-bar">
+            <button class="btn primary" type="button" id="v-bota" disabled>OdyoBOT'a gönder</button>
+            <button class="btn" type="button" id="v-secim-vazgec">Vazgeç</button>
+          </div>
+        </div>
         <div class="board" id="v-liste"><div class="empty">Yükleniyor…</div></div>
 
         <details class="compose" id="v-yedek">
@@ -288,7 +313,29 @@
         </div>
 
         <!-- Ayrıntı -->
-        <div class="stack" id="v-detay" hidden></div>
+        <div class="stack" id="v-detay" hidden>
+          <!-- Çıktı paneli: ayrıntı ekranında "Sil/Düzenle" düğmelerinin üstüne taşınır (vakalarim.js), işi cikti.js yapar -->
+          <details class="compose" id="v-cikti">
+            <summary data-k="vakalarim.ciktiBaslik">Çıktı al (JPEG / PDF)</summary>
+            <div class="yedek-ic">
+              <div class="seg seg2" role="group" aria-label="Çıktı içeriği">
+                <button type="button" id="c-detayli" aria-pressed="true">Detaylı</button>
+                <button type="button" id="c-sade" aria-pressed="false">Yalnızca odyogram</button>
+              </div>
+              <div class="seg seg2" role="group" aria-label="Dosya türü">
+                <button type="button" id="c-jpeg" aria-pressed="true">JPEG</button>
+                <button type="button" id="c-pdf" aria-pressed="false">PDF</button>
+              </div>
+              <p class="note" data-k="vakalarim.ciktiAciklama">Detaylı: vaka etiketi, tarih, odyogram, lejant, ortalamalar, derece, tip, ek ölçümler ve notlar. Grafik düzeni (tek / ayrı) yukarıdaki seçime uyar.</p>
+              <div class="btncol">
+                <button class="btn primary" type="button" id="c-indir" data-k="vakalarim.ciktiIndir">İndir</button>
+                <button class="btn" type="button" id="c-paylas" hidden data-k="vakalarim.ciktiPaylas">Paylaş</button>
+              </div>
+              <p class="note" data-k="vakalarim.ciktiNot">Çıktı sağlık verisi içerir. Telefondan çıkardığında (paylaşma, e-posta) korumak senin sorumluluğunda. iPhone'da indirme çalışmazsa "Paylaş" düğmesini kullan.</p>
+              <div class="msg" id="c-msg" role="status"></div>
+            </div>
+          </details>
+        </div>
 
         <!-- Form -->
         <form class="stack" id="v-form" autocomplete="off" novalidate hidden>
@@ -407,6 +454,8 @@
 <script src="app.js"></script>
 <script src="odyo-hesap.js"></script>
 <script src="vakalarim.js"></script>
+<script src="cikti.js"></script>
+<script src="odybot.js"></script>
 
 </body>
 </html>

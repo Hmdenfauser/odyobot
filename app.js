@@ -766,6 +766,8 @@
     $('admin-note').hidden = !canEdit;
     $('login-link').hidden = canEdit;
     $('who').textContent = canEdit ? 'Giriş yapan: ' + (email || '') : '';
+    // Yalnızca yöneticiye görünen bölümler (ör. OdyoBOT mesaj metinleri) CSS'te .yonetici ile açılır.
+    document.documentElement.classList.toggle('yonetici', canEdit);
     if (!canEdit) editingKey = null;
     renderDuyuru(); renderNoteAdmin(); refreshContent();
   }
