@@ -2,6 +2,10 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8">
+<!-- Güvenlik kuralı (CSP): yalnızca kendi dosyalarımız ve Firebase adresleri çalışabilir/bağlanabilir.
+     GitHub Pages sunucu başlığı göndermeye izin vermediği için meta satırı olarak yazıldı.
+     Firebase'e yeni bir servis eklenirse (ör. Storage) adresi connect-src'ye eklenmeli. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com; frame-src https://odyobot-c7a30.firebaseapp.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <style>:root{color-scheme:light;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>OdyoBOT</title>
@@ -386,13 +390,13 @@
     </span>
     OdyoBOT
   </a>
-  <a href="#notlar" data-go="notlar">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h10a2 2 0 0 1 2 2v14H8a2 2 0 0 1-2-2V4z"/><path d="M6 18a2 2 0 0 1 2-2h10"/><path d="M10 8h5"/></svg>
-    Notlar
-  </a>
   <a href="#vakalarim" data-go="vakalarim">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.500-5.800"/><path d="M4 4v4.500h4.500"/><path d="M12 8v4l3 2"/></svg>
     Vakalarım
+  </a>
+  <a href="#notlar" data-go="notlar">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h10a2 2 0 0 1 2 2v14H8a2 2 0 0 1-2-2V4z"/><path d="M6 18a2 2 0 0 1 2-2h10"/><path d="M10 8h5"/></svg>
+    Notlar
   </a>
 </nav>
 
