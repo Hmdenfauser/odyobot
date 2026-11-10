@@ -28,7 +28,7 @@ OdyoBOT, odyoloji öğrencileri ve klinisyenler için bir başvuru uygulaması. 
 
 **Temalar:** Petrol, Lacivert, Orman, Bordo, Mor. Her temanın açık ve koyu hâli var.
 
-**Görünüm (açık/koyu):** Ana sayfanın altında herkese açık "Görünüm: Otomatik / Açık / Koyu" seçici (2026-11-10). Otomatik cihazın moduna uyar. Seçim yalnızca o cihazda saklanır ().
+**Görünüm (açık/koyu):** Ana sayfanın altında herkese açık "Görünüm: Otomatik / Açık / Koyu" seçici (2026-11-10). Otomatik cihazın moduna uyar. Seçim yalnızca o cihazda saklanır (`gorunum.js`).
 
 ### Tamamlanan: PWA'ya taşıma (2026-11-06)
 Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sahibi telefonda şunları denedi ve hepsi çalıştı: giriş, ilan ekleme ve başka cihazda görme, ana ekrana ekleme, uçak modunda açılma.
