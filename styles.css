@@ -369,3 +369,7 @@ button.btn.b-vaka[aria-pressed="true"] .b-vaka-kutu { background: var(--accent);
 .b-metinler { display: none; }
 .yonetici .b-metinler { display: block; }
 .b-metinler p { margin: 0; font-size: 14px; }
+.b-liste { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 8px; }
+.b-liste li { overflow-wrap: anywhere; }
+.b-uyari { color: var(--danger); font-size: 13.5px; margin-top: 2px; }
+.balon .og-baslik { padding-left: 0; }

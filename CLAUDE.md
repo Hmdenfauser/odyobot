@@ -16,7 +16,7 @@ OdyoBOT, odyoloji öğrencileri ve klinisyenler için bir başvuru uygulaması. 
 |---|---|---|---|
 | 1 | Ana sayfa | "Merhaba, odyolog" karşılaması, canlı saat ve tarih, iş ilanları, sempozyum ve kongre haberleri. İlanları ve haberleri yalnızca düzenleyici ekler/siler, herkes görür. | Yapıldı |
 | 2 | Görsel depo | (a) İşitme yolakları: koklea'dan işitsel kortekse 9 basamaklı, dokunulabilir şema (akustik striyalar dahil). Her kutuda beyin bölgesi yazıyor; karşıya geçişler iki taraflı. Her basamakta konum, işlev, klinik not ve ABR dalga karşılığı var. (b) Akustik refleks arkı: simetrik, iki kulak da uyarılıyor. Dış kulaktan 7. sinire 7 basamak. (a) ve (b) proje sahibinin `ham-gorseller/` içindeki referans görsellerine bakılarak yeniden çizildi (2026-11-09); görseller uygulamaya konmadı. (c) Cihazlar: 8 işitme cihazı (BTE, RIC, ITE tam/yarım konka, ITC, CIC, IIC, bantlı kemik iletimli) ve 10 implant kartı. Liste `app.js` → `DEVICES`. Açıklamaları yönetici uygulama içinden yazar (kartta "Açıklama ekle/düzenle"). | Hepsi yapıldı (2026-11-09). Açıklamalar boş, proje sahibi yazacak. |
-| 3 | OdyoBot | Ortada, turuncu, yükseltilmiş yuvarlak düğme; içinde uygulama logosu. Maskeleme asistanı (bkz. §7): düğmeli sohbet, vakalar Vakalarım'dan gelir (tek ya da çoklu). Kaynak: Katz. | Sohbet iskeleti yapıldı (2026-11-10); maskeleme kuralları taslak tablonun onayını bekliyor (`PROGRESS.md`) |
+| 3 | OdyoBot | Ortada, turuncu, yükseltilmiş yuvarlak düğme; içinde uygulama logosu. Maskeleme asistanı (bkz. §7): düğmeli sohbet, vakalar Vakalarım'dan gelir (tek ya da çoklu). Kaynak: Katz. | Yapıldı (2026-11-10): kurallar `maskeleme-kural.js` (Katz 7. baskı, Bölüm 6), plato rehberi, testler `testler/maskeleme-test.js` |
 | 4 | Vakalarım (`#vakalarim`; eski adı Geçmiş, `#gecmis` yönlendirilir) | Odyometri vaka kaydı (yalnızca o cihazda). Liste (küçük odyogram + tip/derece özeti), form (kimlik, tarih, 125–8000 Hz hava/kemik eşikleri, ara frekans anahtarı, M/maskeleme düzeyi, NR), canlı odyogram (tek/ayrı grafik, lejant), otomatik PTA/derece/tip (`odyo-hesap.js`), ek ölçümler (SRT, SDS/WRS, sunum düzeyi, MCL, UCL, Weber, Rinne), yedekleme (JSON indir/paylaş, CSV, geri yükle: birleştir/üzerine yaz), 10 kayıtta bir yedek hatırlatması. Odyogram çıktısı JPEG/PDF (detaylı / yalnızca odyogram). Listede "Seç" ile vakalar OdyoBOT'a gönderilir. | Yapıldı (2026-11-09). Ayrıntı: `PROGRESS.md` |
 | 5 | Notlar | Kısa ders notları ve arama kutusu. Konular: saf ses odyometrisi, işitme kaybı tipleri, timpanometri, konuşma odyometrisi, maskeleme kavramları, OAE, ABR, akustik refleks. | Yapıldı |
 
@@ -51,7 +51,7 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 
 ### Kaldığımız yer (2026-11-10)
 - Yukarıdaki işler bitti; yerelde test edildi. **Yayına gönderilmedi (git push bekliyor)** ve telefonda denenmedi.
-- Proje sahibi `PROGRESS.md` içindeki **taslak maskeleme kural tablosunu** Katz'tan kontrol edecek, kitabın baskısını ve 3–5 örnek vakayı verecek. Sonra `maskeleme-kural.js` yazılacak.
+- Maskeleme asistanı bitti (sw v13): kurallar Katz fotoğraflarından okundu, proje sahibi onayladı, kitap örnekleriyle 25 test geçti. Telefonda denenecek.
 
 ### Önceki: kaldığımız yer (2026-11-09 akşamı)
 - Vakalarım bitti ve telefonda doğrulandı; her şey yayında, bekleyen değişiklik yok (son sürüm sw v11).
@@ -78,6 +78,7 @@ Uygulama bir **PWA**: tarayıcıdan ana ekrana eklenebilen ve internetsiz de aç
 | `vakalarim.js` | Vakalarım sekmesi: veri katmanı (`VakaDeposu`, şimdilik localStorage; fotoğraf eklenince IndexedDB'ye yalnızca bu katman değişir), form, odyogram çizimi, liste/ayrıntı, yedekleme ve CSV |
 | `cikti.js` | Odyogram çıktısı: SVG sayfa → JPEG; PDF için küçük el yazımı PDF yazıcı. Renkler `--cikti-*` |
 | `odybot.js` | OdyoBOT sohbet ekranı (düğmeli, kural tabanlı). Mesaj metinleri `index.html` `#b-metinler` |
+| `maskeleme-kural.js` | Maskeleme kuralları (Katz). Ekrandan bağımsız, Node ile test: `node testler/maskeleme-test.js` |
 | `odyo-hesap.js` | Hesap kuralları (PTA, derece, tip). Ekrandan bağımsız; Node ile `require` edilip test edilebilir. |
 | `firebase-config.js` | Firebase web yapılandırması ve admin UID'si (gizli bilgi değil, bkz. §8) |
 | `firestore.rules` | Firestore güvenlik kuralları. Değişirse Firebase konsoluna elle yapıştırılır. |

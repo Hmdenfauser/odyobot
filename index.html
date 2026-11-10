@@ -151,7 +151,19 @@
           <p data-k="odybot.m.geldi" data-m="geldi">{n} vaka geldi. Sırayla bakacağız.</p>
           <p data-k="odybot.m.kulaklik" data-m="kulaklik">Ölçümde hangi kulaklığı kullandın? Interaural attenüasyon (sesin bir kulaktan kafatası üzerinden öbür kulağa geçerken zayıflaması) değeri buna göre seçilir.</p>
           <p data-k="odybot.m.vaka" data-m="vaka">Vaka {i}/{n}: {vaka}</p>
-          <p data-k="odybot.m.kuralBekliyor" data-m="kuralBekliyor">Maskeleme kuralları henüz doğrulanmadı. Katz'a göre hazırlanan taslak kural tablosu onay bekliyor; onaylanınca burada hangi kulağa, hangi frekansta ve ne kadar maskeleme gerektiğini göstereceğim.</p>
+          <p data-k="odybot.m.sonucGiris" data-m="sonucGiris">Kulaklık: {kulaklik}. Eşikler bu vakadan alındı. Değerler dB HL, maske düzeyleri dB EM (karşı kulağa).</p>
+          <p data-k="odybot.m.onKarar" data-m="onKarar">* Ön karar: karşı kulağın o frekansta kemik eşiği yok, iki kulağın hava eşikleri karşılaştırıldı. Bu yol bazı gerekli maskelemeleri kaçırabilir; kemik eşiği ölçülünce tekrar bak.</p>
+          <p data-k="odybot.m.tahmini" data-m="tahmini">En çok düzey, test kulağının maskesiz (görünürdeki) kemik eşiğiyle hesaplandı. Gerçek kemik eşiği daha kötüyse kullanılabilecek en çok düzey daha yüksektir.</p>
+          <p data-k="odybot.m.ikilem" data-m="ikilem">Maskeleme ikilemi: başlangıç düzeyi aşırı maskeleme sınırının üstünde. Plato bulunamayabilir; insert kulaklık kullanmayı düşün.</p>
+          <p data-k="odybot.m.darPlato" data-m="darPlato">Plato dar olabilir: başlangıç ile en çok düzey arasında 15 dB'den az var. Aşırı maskelemeye dikkat et.</p>
+          <p data-k="odybot.m.kayitAsiri" data-m="kayitAsiri">Kayıttaki maske düzeyi hesaplanan en çok düzeyin üstünde; aşırı maskeleme olmuş olabilir.</p>
+          <p data-k="odybot.m.santral" data-m="santral">Not: Karşı kulağa maske verilince test kulağında yaklaşık 5 dB'lik eşik yükselmesi (santral maskeleme) olabilir. Bu eşiklerden çıkarılmaz; 5 dB'lik fark genelde anlamlı sayılmaz.</p>
+          <p data-k="odybot.m.taniYok" data-m="taniYok">Bu bir hesap yardımcısıdır, tanı koymaz. Kararı klinik değerlendirmenle birlikte ver.</p>
+          <p data-k="odybot.m.platoGiris" data-m="platoGiris">Plato (Hood) yöntemi: Maske karşı kulağa başlangıç düzeyinde verilir. Hasta duyarsa maske 5 dB artar; duymazsa ton 5 dB artar. Maske art arda 3 kez (15 dB) artırıldığı hâlde hasta aynı tonu duyuyorsa plato bulunmuştur.</p>
+          <p data-k="odybot.m.platoSoru" data-m="platoSoru">Ton {ton} dB HL, maske {maske} dB EM. Hasta tonu duydu mu?</p>
+          <p data-k="odybot.m.platoBulundu" data-m="platoBulundu">Plato bulundu. Maskeli eşik: {esik} dB HL (son maske {maske} dB EM). Vakalarım'da bu frekansı "maskeli" olarak güncelleyebilirsin.</p>
+          <p data-k="odybot.m.platoCevapYok" data-m="platoCevapYok">Ton cihaz sınırını ({ton} dB HL) aştı ve plato bulunamadı. Aşırı maskeleme yoksa bu kulakta bu frekansta ölçülebilir işitme yok (NR).</p>
+          <p data-k="odybot.m.platoAsiri" data-m="platoAsiri">Dikkat: maske hesaplanan en çok düzeyi ({enCok} dB EM) aştı. Eşik bundan sonra kayıyorsa aşırı maskeleme olabilir.</p>
           <p data-k="odybot.m.bulunamadi" data-m="bulunamadi">Bu vaka bulunamadı; silinmiş olabilir.</p>
           <p data-k="odybot.m.bitti" data-m="bitti">Seçtiğin vakaların hepsine baktık.</p>
         </div>
@@ -455,6 +467,7 @@
 <script src="odyo-hesap.js"></script>
 <script src="vakalarim.js"></script>
 <script src="cikti.js"></script>
+<script src="maskeleme-kural.js"></script>
 <script src="odybot.js"></script>
 
 </body>

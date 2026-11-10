@@ -58,8 +58,8 @@ Onaylı plan: `C:\Users\Hmd\.claude\plans\csp-yok-index-html-e-bir-polished-star
 | 2 | Alt çubukta Vakalarım ↔ Notlar | ✅ Bitti |
 | 3 | Odyogram çıktısı: JPEG/PDF, detaylı / yalnızca odyogram (`cikti.js`) | ✅ Bitti, sw v12 |
 | 4 | Vakalarım → OdyoBOT (seçim modu, "OdyoBOT'a gönder"), sohbet iskeleti (`odybot.js`) | ✅ Bitti, sw v12 |
-| 5 | Kural tablosu Katz fotoğraflarından okundu (aşağıda) | ⏳ Proje sahibinin son onayı ve 4 soru |
-| 6 | `maskeleme-kural.js` + bot kararları + örnek vaka testleri | ⛔ 5 onaylanmadan başlanmaz |
+| 5 | Kural tablosu Katz fotoğraflarından okundu (aşağıda) | ✅ Proje sahibi onayladı (2026-11-10): plato 5 dB × 3 artış; baskı hatası düzeltmeleri, ön karar, yalnız kulak üstü/insert kabul |
+| 6 | `maskeleme-kural.js` + bot kararları + plato rehberi + testler (`testler/maskeleme-test.js`, 25/25) | ✅ Bitti, sw v13 |
 
 ## Kural tablosu — Katz'tan okundu (2026-11-10), proje sahibinin son onayını bekliyor
 Kaynak: Katz J. (baş ed.), *Temel Klinik Odyoloji*, 7. baskı (Türkçe çeviri, Pelikan 2022; çeviri ed. B. Gündüz).
@@ -109,7 +109,10 @@ Aşağıda "TK" = test kulağı, "KK" = karşı (test edilmeyen) kulak.
   kulak üstü: en az 60, en çok 80, orta 70; insert: en az 40, en çok 100, orta 70; sadeleştirilmiş 75 dB EM.
 - **Şekil 6.15 (s. 108–109):** sunum 100, insert → en az 40, en çok 110, orta 75; sadeleştirilmiş 80 dB EM.
 
-### Proje sahibine kalan sorular (kod bunlar cevaplanınca yazılır)
+### Proje sahibinin cevapları (2026-11-10)
+1–4: Claude'un önerileri kabul; plato = 5 dB adımla art arda 3 artış (15 dB). İnternetten karşılaştırma yapıldı (aşağıda).
+
+### (Eski) sorular
 1. Baskı hatası notları (19, 20) doğru mu: en az formülde "+", en çok formülde "+KAA"?
 2. Plato genişliği: 15 dB (5 dB adımla 3 artış) mı, 20 dB mi?
 3. KK'de o frekansta kemik eşiği yoksa: bot ön kararı hava-hava karşılaştırmasıyla (kural 5) verip "kemik ölçülünce tekrar bak" desin mi?
@@ -122,3 +125,10 @@ Aşağıda "TK" = test kulağı, "KK" = karşı (test edilmeyen) kulak.
 - Çıktı renkleri `styles.css` `--cikti-*` (temadan bağımsız, her zaman beyaz kâğıt).
 - PDF'in görünüşü bu bilgisayarda görüntülenemedi (araç yok); yapı (xref) doğrulandı. Telefonda bakılacak.
 - iPhone'da "Paylaş": dosya hazırlanırken kısa süre geçer; Safari paylaşma penceresini açmazsa "İndir" denenecek.
+
+## İnternet karşılaştırması (2026-11-10)
+- Kulak üstü KAA 40 dB, kemik 0 dB, kemik için ABG ≥ 15 dB, başlangıç = KK hava + 10, plato 5 dB × 3 artış (15 dB), kemik yoksa hava-hava ön karar: kaynaklarla uyumlu.
+- Insert KAA kaynaklara göre 50–70 dB arasında değişiyor; Katz (≤1000 Hz 75, >1000 Hz 50) kullanıldı.
+- Karşı kulağın ABG'si en az düzeye **eklenir** (Interacoustics) → s. 105'teki "−" baskı hatası kararı doğrulandı.
+- "TK kemik + KAA − 5" en çok formülü internette bulunamadı (kitaba özgü Lidén formülü); Katz s. 94 esas alındı.
+- Kulak çevresi (HDA 200) için yaygın kabul görmüş ayrı bir KAA değeri yok; tek çalışma 40 dB kuralını öneriyor → seçenek eklenmedi.
