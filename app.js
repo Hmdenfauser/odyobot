@@ -21,9 +21,9 @@
     try { return new Date(+p[0], +p[1] - 1, +p[2]).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }); }
     catch (e) { return iso; }
   }
-  // vakalarim.js bu küçük yardımcıları kullanır.
-  window.OdyoUI = { h: h, $: $, todayISO: todayISO, fmtDate: fmtDate };
   function safeLink(u) { return typeof u === 'string' && /^https:\/\/[^\s]+$/i.test(u) ? u : ''; }
+  // vakalarim.js ve akis.js de kullanır. db/yonetici bağlantı kurulunca doldurulur.
+  window.OdyoUI = { h: h, $: $, todayISO: todayISO, fmtDate: fmtDate, safeLink: safeLink, db: null, dbYok: false, yonetici: false };
 
   /* ---------- düzenlenebilir içerik (yönetici) ----------
      Koddaki her metin varsayılandır. Yönetici bir metni değiştirince yalnızca farklı alanlar
@@ -438,8 +438,11 @@
 
   /* ---------- tabs ---------- */
   var TABS = ['anasayfa', 'depo', 'odybot', 'notlar', 'vakalarim', 'ayarlar', 'giris'];
+  var oncekiHash = '';
   function route() {
     var t = (location.hash || '').replace('#', '');
+    var ham = t, duyuru = t.indexOf('duyuru/') === 0;
+    if (duyuru) t = 'anasayfa';
     // Eski adres: Geçmiş sekmesinin adı Vakalarım oldu; eski bağlantılar da çalışsın.
     if (t === 'gecmis') { t = 'vakalarim'; try { history.replaceState(null, '', '#vakalarim'); } catch (e) {} }
     if (TABS.indexOf(t) === -1) t = 'anasayfa';
@@ -447,89 +450,20 @@
     document.querySelectorAll('nav.tabs a').forEach(function (a) {
       if (a.getAttribute('data-go') === t) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
     });
+    var oncekiDuyuru = oncekiHash.indexOf('duyuru/') === 0;
+    oncekiHash = ham;
+    if (duyuru || oncekiDuyuru) return; // ayrıntı sayfası açılıp kapanırken akıştaki yer korunur
     try { window.scrollTo(0, 0); } catch (e) {}
   }
   window.addEventListener('hashchange', route);
   route();
 
-  /* ---------- shared data: duyurular ---------- */
-  var duyurular = [], canEdit = false, dbRef = null, loadedDuyuru = false;
+  /* ---------- ortak veri ----------
+     Ana sayfa akışı (etkinlik, iş ilanı, haber) akis.js içinde. app.js bağlantıyı kurar ve olaylarla bildirir:
+     'odyo:db' (detail: Firestore), 'odyo:db-yok', 'odyo:yetki' (detail: true/false), 'odyo:metinler' (yönetici metinleri yenilendi). */
+  var canEdit = false, dbRef = null;
   var armedId = null, armedTimer = null;
-
-  function dateLabelFor(tur) { return tur === 'ilan' ? 'Son başvuru' : 'Etkinlik tarihi'; }
-  function sortItems(arr) {
-    var t = todayISO();
-    var up = arr.filter(function (x) { return !x.tarih || x.tarih >= t; });
-    var pa = arr.filter(function (x) { return x.tarih && x.tarih < t; });
-    up.sort(function (a, b) { return (a.tarih || '9999') < (b.tarih || '9999') ? -1 : 1; });
-    pa.sort(function (a, b) { return a.tarih < b.tarih ? 1 : -1; });
-    return up.concat(pa);
-  }
-  function renderDuyuru() {
-    ['ilan', 'haber'].forEach(function (tur) {
-      var box = $('list-' + tur);
-      var items = sortItems(duyurular.filter(function (d) { return d.tur === tur; }));
-      $('n-' + tur).textContent = items.length ? items.length + ' kayıt' : '';
-      if (!loadedDuyuru) return;
-      if (!items.length) {
-        box.replaceChildren(h('div', { 'class': 'empty', text: tur === 'ilan'
-          ? 'Şu an güncel ilan yok. Yeni ilanlar eklendiğinde burada görünür.'
-          : 'Şu an duyurulmuş sempozyum veya kongre yok. Yeni haberler eklendiğinde burada görünür.' }));
-        return;
-      }
-      var today = todayISO();
-      box.replaceChildren.apply(box, items.map(function (d) {
-        var past = d.tarih && d.tarih < today;
-        var top = h('div', { 'class': 'item-top' }, [h('div', { 'class': 'item-title', text: d.baslik || '' })]);
-        if (past) top.appendChild(h('span', { 'class': 'tag', text: 'Geçti' }));
-        var card = h('div', { 'class': 'item' + (past ? ' past' : '') }, [top]);
-        if (d.kurum) card.appendChild(h('div', { 'class': 'meta', text: d.kurum }));
-        if (d.tarih) card.appendChild(h('div', { 'class': 'meta', text: dateLabelFor(d.tur) + ': ' + fmtDate(d.tarih) }));
-        if (d.not) card.appendChild(h('div', { text: d.not }));
-        var l = safeLink(d.link);
-        if (l) card.appendChild(h('a', { 'class': 'go', href: l, target: '_blank', rel: 'noopener noreferrer', text: 'Bağlantıyı aç ↗' }));
-        if (canEdit) {
-          var del = h('button', { 'class': 'linkbtn', type: 'button', text: armedId === d.id ? 'Emin misin? Sil' : 'Sil' });
-          if (armedId === d.id) del.classList.add('danger');
-          del.addEventListener('click', function () {
-            if (armedId !== d.id) {
-              armedId = d.id; clearTimeout(armedTimer);
-              armedTimer = setTimeout(function () { armedId = null; renderDuyuru(); }, 4000);
-              renderDuyuru(); return;
-            }
-            armedId = null; clearTimeout(armedTimer);
-            dbRef.collection('duyurular').doc(d.id).delete().catch(function () {
-              $('f-msg').textContent = 'Silinemedi. Bağlantını kontrol edip tekrar dene.'; $('f-msg').className = 'msg err';
-            });
-          });
-          card.appendChild(h('div', { 'class': 'admin-bar' }, [del]));
-        }
-        return card;
-      }));
-    });
-  }
-  $('f-tur').addEventListener('change', function () {
-    $('f-tarih-l').textContent = $('f-tur').value === 'ilan' ? 'Son başvuru tarihi' : 'Etkinlik tarihi';
-  });
-  $('duyuru-form').addEventListener('submit', function (e) {
-    e.preventDefault();
-    var msg = $('f-msg'); msg.className = 'msg';
-    if (!dbRef) { msg.textContent = 'Veri deposuna ulaşılamıyor.'; msg.className = 'msg err'; return; }
-    var link = $('f-link').value.trim();
-    if (link && !safeLink(link)) { msg.textContent = 'Bağlantı https:// ile başlamalı.'; msg.className = 'msg err'; return; }
-    var doc = {
-      tur: $('f-tur').value, baslik: $('f-baslik').value.trim(), kurum: $('f-kurum').value.trim(),
-      tarih: $('f-tarih').value, link: link, not: $('f-not').value.trim(), olusturma: Date.now()
-    };
-    if (!doc.baslik) { msg.textContent = 'Başlık gerekli.'; msg.className = 'msg err'; return; }
-    $('f-send').disabled = true;
-    dbRef.collection('duyurular').add(doc).then(function () {
-      $('duyuru-form').reset(); $('f-tarih-l').textContent = 'Son başvuru tarihi';
-      msg.textContent = 'Yayınlandı. Herkes görebilir.';
-    }).catch(function () {
-      msg.textContent = 'Yayınlanamadı. Düzenleme yetkin olmayabilir ya da bağlantı kesilmiş olabilir.'; msg.className = 'msg err';
-    }).then(function () { $('f-send').disabled = false; });
-  });
+  function bildir(ad, deger) { try { window.dispatchEvent(new CustomEvent(ad, { detail: deger })); } catch (e) {} }
 
   /* ---------- ayarlar: renk teması ve ders notları ---------- */
   var PALETTES = {
@@ -731,7 +665,7 @@
     });
   }
   // Tüm düzenlenebilir içeriği yeniden çizer (yönetici değişikliği geldiğinde, giriş/çıkışta).
-  function refreshContent() { refreshPathway(); refreshReflex(); refreshNotes(); refreshDevices(); refreshStatic(); }
+  function refreshContent() { refreshPathway(); refreshReflex(); refreshNotes(); refreshDevices(); refreshStatic(); bildir('odyo:metinler'); }
 
   /* ---------- servis çalışanı: internetsiz açılma (yalnızca https veya localhost'ta çalışır) ---------- */
   if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
@@ -740,8 +674,8 @@
 
   /* ---------- bağlantı ----------
      Vaka kayıtları (Vakalarım): vakalarim.js, yalnızca bu cihazda.
-     Ortak içerik (ilan, haber, not, tema): connectShared() Firebase Firestore'a bağlanır.
-     Çevrimdışı önbellek açıktır: internet yokken son indirilen ilan ve notlar gösterilir.
+     Ortak içerik (ana sayfa paylaşımları, not, tema): connectShared() Firebase Firestore'a bağlanır.
+     Çevrimdışı önbellek açıktır: internet yokken son indirilen paylaşımlar ve notlar gösterilir.
      Düzenleme yetkisi (canEdit): yalnızca ODYOBOT_ADMIN_UID hesabıyla giriş yapılınca açılır.
      Bu yalnızca görünümü belirler; asıl koruma firestore.rules içindedir. */
   function connectShared() {
@@ -763,13 +697,13 @@
     $('ayar-body').hidden = !canEdit;
     $('ayar-denied').hidden = canEdit;
     $('compose').hidden = !canEdit;
-    $('admin-note').hidden = !canEdit;
     $('login-link').hidden = canEdit;
     $('who').textContent = canEdit ? 'Giriş yapan: ' + (email || '') : '';
     // Yalnızca yöneticiye görünen bölümler (ör. OdyoBOT mesaj metinleri) CSS'te .yonetici ile açılır.
     document.documentElement.classList.toggle('yonetici', canEdit);
     if (!canEdit) editingKey = null;
-    renderDuyuru(); renderNoteAdmin(); refreshContent();
+    window.OdyoUI.yonetici = canEdit; bildir('odyo:yetki', canEdit);
+    renderNoteAdmin(); refreshContent();
   }
   function authErrorText(err) {
     var c = (err && err.code) || '';
@@ -797,14 +731,10 @@
     authRef.signOut().then(function () { location.hash = '#anasayfa'; });
   });
 
-  function unreachable() {
-    if (loadedDuyuru) return;
-    ['ilan', 'haber'].forEach(function (t) { $('list-' + t).replaceChildren(h('div', { 'class': 'empty', text: 'Duyurulara şu an ulaşılamıyor. Bağlantını kontrol edip sayfayı yeniden aç.' })); });
-  }
-  var giveUp = setTimeout(unreachable, 10000);
   connectShared().then(function (r) {
     var db = r.db;
     dbRef = db; authRef = r.auth;
+    window.OdyoUI.db = db; bildir('odyo:db', db);
     setupAyarlar(db);
     if (authRef) authRef.onAuthStateChanged(function (u) {
       var isAdmin = !!u && u.uid === window.ODYOBOT_ADMIN_UID;
@@ -815,10 +745,5 @@
       setEditMode(isAdmin, u && u.email);
       if (isAdmin && location.hash === '#giris') location.hash = '#ayarlar';
     });
-    db.collection('duyurular').orderBy('olusturma', 'desc').limit(200).onSnapshot(function (snap) {
-      clearTimeout(giveUp); loadedDuyuru = true;
-      duyurular = snap.docs.map(function (d) { var o = d.data() || {}; o.id = d.id; return o; });
-      renderDuyuru();
-    }, function () { clearTimeout(giveUp); unreachable(); });
-  }, function () { clearTimeout(giveUp); unreachable(); });
+  }, function () { window.OdyoUI.dbYok = true; bildir('odyo:db-yok'); });
 })();

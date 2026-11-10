@@ -30,10 +30,9 @@
   <!-- ANA SAYFA -->
   <section id="anasayfa" data-tab>
     <div class="stack">
-      <div class="hero">
-        <span class="brand">OdyoBOT</span>
-        <div class="row" style="align-items:center">
-          <span class="kicker" id="date">—</span>
+      <div class="hero kompakt">
+        <div class="hero-ust">
+          <span class="brand">OdyoBOT</span>
           <span class="ust-dugmeler">
           <button class="iconbtn" id="gorunum-dugme" type="button" aria-label="Görünüm: Otomatik. Değiştirmek için dokun.">
             <svg data-ikon="auto" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg>
@@ -46,36 +45,73 @@
           </span>
         </div>
         <h1 data-k="ana.baslik">Merhaba, odyolog</h1>
-        <div class="clock" id="clock" aria-label="Saat">--:--</div>
+        <div class="hero-zaman"><span class="clock" id="clock" aria-label="Saat">--:--</span><span class="kicker" id="date">—</span></div>
       </div>
 
-      <div class="stack" style="gap:10px">
-        <div class="row"><h2 data-k="ana.ilan">İş ilanları</h2><span class="kicker" id="n-ilan"></span></div>
-        <div class="board" id="list-ilan"><div class="empty">Yükleniyor…</div></div>
+      <div class="a-cipler" role="group" aria-label="Paylaşımları süz">
+        <button type="button" class="a-cip" data-filtre="tumu" aria-pressed="true">Tümü</button>
+        <button type="button" class="a-cip" data-filtre="etkinlik" aria-pressed="false">Etkinlikler</button>
+        <button type="button" class="a-cip" data-filtre="ilan" aria-pressed="false">İlanlar</button>
+        <button type="button" class="a-cip" data-filtre="haber" aria-pressed="false">Haberler</button>
       </div>
 
-      <div class="stack" style="gap:10px">
-        <div class="row"><h2 data-k="ana.haber">Sempozyum ve kongre haberleri</h2><span class="kicker" id="n-haber"></span></div>
-        <div class="board" id="list-haber"><div class="empty">Yükleniyor…</div></div>
-      </div>
+      <div class="stack" id="akis" aria-live="polite"><div class="empty">Yükleniyor…</div></div>
 
       <details class="compose" id="compose" hidden>
-        <summary>Yeni duyuru ekle</summary>
-        <form class="f" id="duyuru-form" autocomplete="off">
-          <div class="fld">
-            <label for="f-tur">Tür</label>
-            <select id="f-tur"><option value="ilan">İş ilanı</option><option value="haber">Sempozyum / kongre haberi</option></select>
+        <summary id="a-form-ozet">Yeni paylaşım</summary>
+        <form class="f" id="a-form" autocomplete="off" novalidate>
+          <div class="seg seg3" role="group" aria-label="Paylaşım türü">
+            <button type="button" data-tur="etkinlik" aria-pressed="true">Etkinlik</button>
+            <button type="button" data-tur="ilan" aria-pressed="false">İş ilanı</button>
+            <button type="button" data-tur="haber" aria-pressed="false">Haber</button>
           </div>
-          <div class="fld"><label for="f-baslik">Başlık</label><input id="f-baslik" type="text" maxlength="140" required></div>
-          <div class="fld"><label for="f-kurum">Kurum veya yer</label><input id="f-kurum" type="text" maxlength="120"></div>
-          <div class="fld"><label for="f-tarih" id="f-tarih-l">Son başvuru tarihi</label><input id="f-tarih" type="date"></div>
-          <div class="fld"><label for="f-link">Bağlantı (https ile başlamalı)</label><input id="f-link" type="url" inputmode="url" maxlength="300" placeholder="https://"></div>
-          <div class="fld"><label for="f-not">Kısa not</label><textarea id="f-not" maxlength="400"></textarea></div>
-          <div class="admin-bar"><button class="btn primary" type="submit" id="f-send">Yayınla</button></div>
-          <div class="msg" id="f-msg" role="status"></div>
+          <div class="fld" data-icin="etkinlik ilan"><label for="a-baslik">Başlık</label><input id="a-baslik" type="text" maxlength="140"></div>
+          <div class="fld" data-icin="ilan"><label for="a-kurum">Kurum</label><input id="a-kurum" type="text" maxlength="120"></div>
+          <div class="fld" data-icin="ilan"><label for="a-tarih">Son başvuru tarihi</label><input id="a-tarih" type="date"></div>
+          <div class="fieldrow" data-icin="etkinlik">
+            <div class="fld"><label for="a-baslangic">Başlangıç tarihi</label><input id="a-baslangic" type="date"></div>
+            <div class="fld"><label for="a-bitis">Bitiş tarihi</label><input id="a-bitis" type="date"></div>
+          </div>
+          <div class="fld" data-icin="etkinlik"><label for="a-yer">Yer</label><input id="a-yer" type="text" maxlength="120" placeholder="Şehir, salon"></div>
+          <div class="fld"><label for="a-metin" id="a-metin-l">Açıklama</label><textarea id="a-metin" maxlength="1000"></textarea><div class="a-sayac" id="a-sayac" aria-live="polite"></div></div>
+          <div class="fld" data-icin="etkinlik ilan"><label for="a-link">Bağlantı (https ile başlamalı)</label><input id="a-link" type="url" inputmode="url" maxlength="300" placeholder="https://"></div>
+          <div class="fld">
+            <span class="fld-ad">Fotoğraf</span>
+            <input id="a-foto" type="file" accept="image/*" hidden>
+            <div class="a-foto-on" id="a-foto-on" hidden>
+              <img id="a-foto-img" alt="Seçilen fotoğrafın önizlemesi">
+              <button type="button" class="btn" id="a-foto-kaldir">Kaldır</button>
+            </div>
+            <button type="button" class="btn" id="a-foto-sec">Fotoğraf ekle</button>
+          </div>
+          <div class="admin-bar"><button class="btn primary" type="submit" id="a-gonder">Yayınla</button><button class="btn" type="button" id="a-vazgec" hidden>Vazgeç</button></div>
+          <div class="msg" id="a-msg" role="status"></div>
+          <p class="note" data-k="ana.fotoNot">Yalnızca paylaşım izni olan afiş ve fotoğrafları yükle. Hasta veya tanınabilir kişi fotoğrafı paylaşma.</p>
         </form>
       </details>
-      <p class="note" id="admin-note" hidden>Eklediğin duyuruları uygulamaya erişimi olan herkes görür. Silmek için kartın altındaki bağlantıyı kullan.</p>
+
+      <!-- Ana sayfa yazıları: yalnızca yöneticiye görünür, buradan düzenlenir. {n} yerine sayı gelir. -->
+      <details class="compose b-metinler" id="a-metinler">
+        <summary>Ana sayfa metinleri (yönetici)</summary>
+        <div class="yedek-ic">
+          <p data-k="ana.m.etkinlikler" data-m="etkinlikler">Etkinlikler</p>
+          <p data-k="ana.m.ilanlar" data-m="ilanlar">İş ilanları</p>
+          <p data-k="ana.m.haberler" data-m="haberler">Haberler</p>
+          <p data-k="ana.m.tumunuGor" data-m="tumunuGor">Tümünü gör</p>
+          <p data-k="ana.m.bosEtkinlik" data-m="bosEtkinlik">Şu an duyurulmuş sempozyum veya kongre yok. Yeni etkinlikler eklendiğinde burada görünür.</p>
+          <p data-k="ana.m.bosIlan" data-m="bosIlan">Şu an güncel iş ilanı yok. Yeni ilanlar eklendiğinde burada görünür.</p>
+          <p data-k="ana.m.bosHaber" data-m="bosHaber">Henüz haber paylaşılmadı.</p>
+          <p data-k="ana.m.yukleniyor" data-m="yukleniyor">Yükleniyor…</p>
+          <p data-k="ana.m.ulasilamiyor" data-m="ulasilamiyor">Paylaşımlara şu an ulaşılamıyor. Bağlantını kontrol edip sayfayı yeniden aç.</p>
+          <p data-k="ana.m.bulunamadi" data-m="bulunamadi">Bu paylaşım bulunamadı. Silinmiş olabilir.</p>
+          <p data-k="ana.m.daha" data-m="daha">Daha fazla göster</p>
+          <p data-k="ana.m.gecti" data-m="gecti">Geçti</p>
+          <p data-k="ana.m.sonBasvuru" data-m="sonBasvuru">Son başvuru</p>
+          <p data-k="ana.m.baglanti" data-m="baglanti">Bağlantıya git</p>
+          <p data-k="ana.m.paylas" data-m="paylas">Paylaş</p>
+          <p data-k="ana.m.kopyalandi" data-m="kopyalandi">Bağlantı kopyalandı.</p>
+        </div>
+      </details>
       <a class="footlink" href="#giris" id="login-link">Yönetici girişi</a>
     </div>
   </section>
@@ -444,6 +480,19 @@
   </section>
 </div>
 
+<div class="a-sayfa" id="a-sayfa" role="dialog" aria-modal="true" aria-labelledby="a-sayfa-baslik" hidden>
+  <div class="a-sayfa-ust">
+    <button class="iconbtn" type="button" id="a-kapat" aria-label="Kapat">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <span class="kicker" id="a-sayfa-tur"></span>
+    <button class="iconbtn" type="button" id="a-paylas" aria-label="Paylaş">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3M7.500 7.500L12 3l4.500 4.500"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>
+    </button>
+  </div>
+  <div class="a-sayfa-ic" id="a-sayfa-ic"></div>
+</div>
+
 <div class="gorunum-yazi" id="gorunum-yazi" role="status" aria-live="polite"></div>
 
 <nav class="tabs" aria-label="Bölümler">
@@ -476,6 +525,7 @@
 <script src="vendor/firebase/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
 <script src="app.js"></script>
+<script src="akis.js"></script>
 <script src="odyo-hesap.js"></script>
 <script src="vakalarim.js"></script>
 <script src="cikti.js"></script>

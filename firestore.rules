@@ -3,7 +3,7 @@ rules_version = '2';
 // OdyoBOT Firestore güvenlik kuralları.
 // Bu dosyanın içeriği Firebase konsolunda Firestore Database > Kurallar (Rules) sekmesine yapıştırılır ve "Yayınla" denir.
 //
-// - Herkes ilan/haber (duyurular), ders notları (notlar), cihaz açıklamaları (cihazlar), metin düzenlemeleri (icerik) ve tema ayarını (ayar) okuyabilir.
+// - Herkes paylaşımları (duyurular: etkinlik, iş ilanı, haber) ve fotoğraflarını (gorseller), ders notları (notlar), cihaz açıklamaları (cihazlar), metin düzenlemeleri (icerik) ve tema ayarını (ayar) okuyabilir.
 // - Yalnızca admin hesabı (aşağıdaki UID) yazabilir, değiştirebilir, silebilir.
 // - Burada adı geçmeyen her şey kapalıdır. Vaka geçmişi zaten Firebase'e hiç gönderilmez.
 
@@ -19,18 +19,176 @@ service cloud.firestore {
         || (request.resource.data[field] is string && request.resource.data[field].size() <= max);
     }
 
+    // Tarih alanı: yoksa ya da boşsa geçerli, varsa YYYY-AA-GG.
+    function dateField(field) {
+      return !(field in request.resource.data)
+        || (request.resource.data[field] is string
+            && request.resource.data[field].matches('^$|^[0-9]{4}-[0-9]{2}-[0-9]{2}
+
+    match /notlar/{id} {
+      allow read: if true;
+      allow delete: if isAdmin();
+      allow create, update: if isAdmin()
+        && request.resource.data.baslik is string
+        && request.resource.data.baslik.size() > 0
+        && shortString('baslik', 100)
+        && request.resource.data.maddeler is list
+        && request.resource.data.maddeler.size() <= 40;
+    }
+
+    // Cihaz açıklamaları: belge adı cihazın kimliği (ör. "bte"), içinde madde listesi.
+    match /cihazlar/{id} {
+      allow read: if true;
+      allow delete: if isAdmin();
+      allow create, update: if isAdmin()
+        && request.resource.data.maddeler is list
+        && request.resource.data.maddeler.size() > 0
+        && request.resource.data.maddeler.size() <= 20;
+    }
+
+    // Yöneticinin uygulamadaki metinlerde yaptığı değişiklikler (şemalar, notlar, cihaz adları, sayfa yazıları).
+    // Belge adı içeriğin anahtarı (ör. "yolak.soc"), içinde yalnızca değiştirilen alanlar.
+    match /icerik/{id} {
+      allow read: if true;
+      allow delete: if isAdmin();
+      allow create, update: if isAdmin()
+        && request.resource.data.alanlar is map
+        && request.resource.data.alanlar.size() <= 20;
+    }
+
+    match /ayar/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}
+));
+    }
+
+    // Ana sayfa paylaşımları. tur: etkinlik (sempozyum/kongre), ilan (iş ilanı), haber (kısa gelişme).
+    // Eski kayıtlarda tur "haber" + metin yok = sempozyum duyurusu; uygulama bunları okurken etkinlik sayar.
+    // Fotoğraf ayrı belgede (gorseller/{gorselId}); burada yalnızca kimliği durur.
     match /duyurular/{id} {
       allow read: if true;
       allow delete: if isAdmin();
       allow create, update: if isAdmin()
-        && request.resource.data.tur in ['ilan', 'haber']
-        && request.resource.data.baslik is string
-        && request.resource.data.baslik.size() > 0
+        && request.resource.data.keys().hasOnly(['tur', 'baslik', 'kurum', 'tarih', 'baslangic', 'bitis',
+             'yer', 'metin', 'link', 'gorselId', 'olusturma', 'guncelleme'])
+        && request.resource.data.tur in ['etkinlik', 'ilan', 'haber']
+        && request.resource.data.olusturma is number
         && shortString('baslik', 140)
         && shortString('kurum', 120)
-        && shortString('tarih', 10)
+        && shortString('yer', 120)
         && shortString('link', 300)
-        && shortString('not', 400);
+        && shortString('gorselId', 40)
+        && dateField('tarih')
+        && dateField('baslangic')
+        && dateField('bitis')
+        && (!('link' in request.resource.data) || request.resource.data.link.matches('^$|^https://[^ ]+
+
+    match /notlar/{id} {
+      allow read: if true;
+      allow delete: if isAdmin();
+      allow create, update: if isAdmin()
+        && request.resource.data.baslik is string
+        && request.resource.data.baslik.size() > 0
+        && shortString('baslik', 100)
+        && request.resource.data.maddeler is list
+        && request.resource.data.maddeler.size() <= 40;
+    }
+
+    // Cihaz açıklamaları: belge adı cihazın kimliği (ör. "bte"), içinde madde listesi.
+    match /cihazlar/{id} {
+      allow read: if true;
+      allow delete: if isAdmin();
+      allow create, update: if isAdmin()
+        && request.resource.data.maddeler is list
+        && request.resource.data.maddeler.size() > 0
+        && request.resource.data.maddeler.size() <= 20;
+    }
+
+    // Yöneticinin uygulamadaki metinlerde yaptığı değişiklikler (şemalar, notlar, cihaz adları, sayfa yazıları).
+    // Belge adı içeriğin anahtarı (ör. "yolak.soc"), içinde yalnızca değiştirilen alanlar.
+    match /icerik/{id} {
+      allow read: if true;
+      allow delete: if isAdmin();
+      allow create, update: if isAdmin()
+        && request.resource.data.alanlar is map
+        && request.resource.data.alanlar.size() <= 20;
+    }
+
+    match /ayar/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}
+))
+        && (
+          // Haber: başlık yok, metin zorunlu ve en çok 280 karakter.
+          (request.resource.data.tur == 'haber'
+            && request.resource.data.metin is string
+            && request.resource.data.metin.size() > 0
+            && request.resource.data.metin.size() <= 280)
+          ||
+          // Etkinlik ve iş ilanı: başlık zorunlu, açıklama en çok 1000 karakter.
+          (request.resource.data.tur != 'haber'
+            && request.resource.data.baslik is string
+            && request.resource.data.baslik.size() > 0
+            && shortString('metin', 1000))
+        );
+    }
+
+    // Paylaşım fotoğrafları: uygulamada küçültülmüş JPEG, metin olarak (data URL).
+    // Firebase Storage ücretsiz planda kapalı olduğu için fotoğraflar burada duruyor.
+    match /gorseller/{id} {
+      allow read: if true;
+      allow delete: if isAdmin();
+      allow create, update: if isAdmin()
+        && request.resource.data.keys().hasOnly(['veri', 'olusturma'])
+        && request.resource.data.olusturma is number
+        && request.resource.data.veri is string
+        && request.resource.data.veri.size() < 900000
+        && request.resource.data.veri.matches('^data:image/jpeg;base64,[A-Za-z0-9+/=]+
+
+    match /notlar/{id} {
+      allow read: if true;
+      allow delete: if isAdmin();
+      allow create, update: if isAdmin()
+        && request.resource.data.baslik is string
+        && request.resource.data.baslik.size() > 0
+        && shortString('baslik', 100)
+        && request.resource.data.maddeler is list
+        && request.resource.data.maddeler.size() <= 40;
+    }
+
+    // Cihaz açıklamaları: belge adı cihazın kimliği (ör. "bte"), içinde madde listesi.
+    match /cihazlar/{id} {
+      allow read: if true;
+      allow delete: if isAdmin();
+      allow create, update: if isAdmin()
+        && request.resource.data.maddeler is list
+        && request.resource.data.maddeler.size() > 0
+        && request.resource.data.maddeler.size() <= 20;
+    }
+
+    // Yöneticinin uygulamadaki metinlerde yaptığı değişiklikler (şemalar, notlar, cihaz adları, sayfa yazıları).
+    // Belge adı içeriğin anahtarı (ör. "yolak.soc"), içinde yalnızca değiştirilen alanlar.
+    match /icerik/{id} {
+      allow read: if true;
+      allow delete: if isAdmin();
+      allow create, update: if isAdmin()
+        && request.resource.data.alanlar is map
+        && request.resource.data.alanlar.size() <= 20;
+    }
+
+    match /ayar/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}
+);
     }
 
     match /notlar/{id} {

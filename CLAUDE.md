@@ -14,7 +14,7 @@ OdyoBOT, odyoloji öğrencileri ve klinisyenler için bir başvuru uygulaması. 
 ### Sekmeler (alt çubuk)
 | # | Sekme | İçerik | Durum |
 |---|---|---|---|
-| 1 | Ana sayfa | "Merhaba, odyolog" karşılaması, canlı saat ve tarih, iş ilanları, sempozyum ve kongre haberleri. İlanları ve haberleri yalnızca düzenleyici ekler/siler, herkes görür. | Yapıldı |
+| 1 | Ana sayfa | Küçük karşılama ("Merhaba, odyolog", saat, tarih) ve fotoğraflı akış (`akis.js`). Filtre çipleri: Tümü / Etkinlikler / İlanlar / Haberler. Etkinlik: 3:4 afiş kartı, tarih aralığı, yer; yaklaşan önce, geçmiş soluk + "Geçti"; Tümü'nde yatay şerit. İş ilanı: kurum, başlık, son başvuru, küçük görsel; süresi geçen soluk. Haber: Twitter benzeri akış (OdyoBOT simgesi, "3 saat önce", ≤280 karakter, 16:9 fotoğraf, tıklanabilir https bağlantıları). Karta dokununca alttan tam ekran ayrıntı sayfası (`#duyuru/<kimlik>`, paylaşılabilir; geri tuşu kapatır). İlk 30 kayıt, "Daha fazla göster". Paylaşımı yalnızca yönetici yapar (formda türe göre alanlar, fotoğraf ekle/kaldır), ayrıntı sayfasında Düzenle/Sil. | Yapıldı (2026-11-11), sw v17. Firestore kuralları konsola yapıştırılacak. |
 | 2 | Görsel depo | (a) İşitme yolakları: koklea'dan işitsel kortekse 9 basamaklı, dokunulabilir şema (akustik striyalar dahil). Her kutuda beyin bölgesi yazıyor; karşıya geçişler iki taraflı. Her basamakta konum, işlev, klinik not ve ABR dalga karşılığı var. (b) Akustik refleks arkı: simetrik, iki kulak da uyarılıyor. Dış kulaktan 7. sinire 7 basamak. (a) ve (b) proje sahibinin `ham-gorseller/` içindeki referans görsellerine bakılarak yeniden çizildi (2026-11-09); görseller uygulamaya konmadı. (c) Cihazlar: 8 işitme cihazı (BTE, RIC, ITE tam/yarım konka, ITC, CIC, IIC, bantlı kemik iletimli) ve 10 implant kartı. Liste `app.js` → `DEVICES`. Açıklamaları yönetici uygulama içinden yazar (kartta "Açıklama ekle/düzenle"). | Hepsi yapıldı (2026-11-09). Açıklamalar boş, proje sahibi yazacak. |
 | 3 | OdyoBot | Ortada, turuncu, yükseltilmiş yuvarlak düğme; içinde uygulama logosu. Maskeleme asistanı (bkz. §7): düğmeli sohbet, vakalar Vakalarım'dan gelir (tek ya da çoklu). Kaynak: Katz. | Yapıldı (2026-11-10): kurallar `maskeleme-kural.js` (Katz 7. baskı, Bölüm 6), plato rehberi, testler `testler/maskeleme-test.js` |
 | 4 | Vakalarım (`#vakalarim`; eski adı Geçmiş, `#gecmis` yönlendirilir) | Odyometri vaka kaydı (yalnızca o cihazda). Liste (küçük odyogram + tip/derece özeti), form (kimlik, tarih, 125–8000 Hz hava/kemik eşikleri, ara frekans anahtarı, M/maskeleme düzeyi, NR), canlı odyogram (tek/ayrı grafik, lejant), otomatik PTA/derece/tip (`odyo-hesap.js`), ek ölçümler (SRT, SDS/WRS, sunum düzeyi, MCL, UCL, Weber, Rinne), yedekleme (JSON indir/paylaş, CSV, geri yükle: birleştir/üzerine yaz), 10 kayıtta bir yedek hatırlatması. Odyogram çıktısı JPEG/PDF (detaylı / yalnızca odyogram). Her kartta "OdyoBOT'a gönder" düğmesi; listede "Seç" ile birden çok vaka gönderilir. Sekme simgesi: küçük odyogram (çerçeve; O ve X, aralarında onlara değmeyen kesikli çizgi) (2026-11-10). | Yapıldı (2026-11-09). Ayrıntı: `PROGRESS.md` |
@@ -51,8 +51,9 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 - Alt çubuk sırası: Ana sayfa, Görsel depo, OdyoBOT, Vakalarım, Notlar.
 - Odyogram çıktısı (`cikti.js`), Vakalarım → OdyoBOT gönderme, düğmeli sohbet (`odybot.js`). sw v12. Ayrıntı: `PROGRESS.md`.
 
-### Kaldığımız yer (2026-11-10)
-- Yukarıdaki işler bitti; yerelde test edildi. **Yayında (sw v16, 2026-11-10)**: görünüm seçici tek simge düğmesi; telefonda henüz denenmedi.
+### Kaldığımız yer (2026-11-11)
+- Ana sayfa fotoğraflı akışa çevrildi (sw v17). Sahte veriyle yerelde test edildi; **yayına gönderilmedi**. Yayından sonra `firestore.rules` Firebase konsoluna yapıştırılmalı, yoksa yeni paylaşımlar kaydedilemez. Gerçek veritabanına yazma ve kural denemesi telefonda yapılacak.
+- Önceki: görünüm seçici tek simge düğmesi (sw v16, yayında); telefonda henüz denenmedi.
 - Vaka kartına "OdyoBOT'a gönder" ve yeni Vakalarım simgesi eklendi; 5 vakayla uçtan uca test edildi (sw v14).
 - Maskeleme asistanı bitti (sw v13): kurallar Katz fotoğraflarından okundu, proje sahibi onayladı, kitap örnekleriyle 25 test geçti. Telefonda denenecek.
 
@@ -78,7 +79,8 @@ Uygulama bir **PWA**: tarayıcıdan ana ekrana eklenebilen ve internetsiz de aç
 | `index.html` | Sayfa yapısı (sekmeler, formlar) |
 | `styles.css` | Görünüm; renkler CSS değişkenleri, en üstte yerel yazı tipleri (`@font-face`) |
 | `gorunum.js` | Açık/koyu görünüm düğmesi (sırayla değiştirir, kısa yazı gösterir); `<head>`de yüklenir (renk sıçramasın diye), `<html data-theme>` yazar |
-| `app.js` | Genel davranış: saat, sekmeler, şemalar, notlar, ilanlar, giriş, servis çalışanı kaydı. `window.OdyoUI` yardımcılarını açar. |
+| `app.js` | Genel davranış: saat, sekmeler, şemalar, notlar, giriş, servis çalışanı kaydı. `window.OdyoUI` yardımcılarını açar; Firebase bağlantısını kurup `odyo:db`, `odyo:db-yok`, `odyo:yetki`, `odyo:metinler` olaylarıyla bildirir. |
+| `akis.js` | Ana sayfa akışı: etkinlik/ilan/haber kartları, ayrıntı sayfası, yönetici paylaşım formu, fotoğraf küçültme (canvas, uzun kenar 1200 px, JPEG 0,75'ten kademeli; data URL ≤700 000 karakter). Metinler `index.html` `#a-metinler` |
 | `vakalarim.js` | Vakalarım sekmesi: veri katmanı (`VakaDeposu`, şimdilik localStorage; fotoğraf eklenince IndexedDB'ye yalnızca bu katman değişir), form, odyogram çizimi, liste/ayrıntı, yedekleme ve CSV |
 | `cikti.js` | Odyogram çıktısı: SVG sayfa → JPEG; PDF için küçük el yazımı PDF yazıcı. Renkler `--cikti-*` |
 | `odybot.js` | OdyoBOT sohbet ekranı (düğmeli, kural tabanlı). Mesaj metinleri `index.html` `#b-metinler` |
@@ -102,7 +104,8 @@ Uygulama bir **PWA**: tarayıcıdan ana ekrana eklenebilen ve internetsiz de aç
 ### Veri yapısı
 | Nerede | Kayıt grubu | Kim okur / yazar | Alanlar |
 |---|---|---|---|
-| Firestore | `duyurular` | Herkes okur, yalnızca admin yazar | `tur` ("ilan" / "haber"), `baslik` (≤140), `kurum` (≤120), `tarih` (YYYY-AA-GG), `link` (yalnızca https, ≤300), `not` (≤400), `olusturma` (zaman damgası) |
+| Firestore | `duyurular` | Herkes okur, yalnızca admin yazar | `tur` ("etkinlik" / "ilan" / "haber"), `baslik` (≤140; haberde yok, diğerlerinde zorunlu), `kurum` (≤120, ilan), `tarih` (son başvuru, YYYY-AA-GG, ilan), `baslangic`, `bitis` (YYYY-AA-GG, etkinlik), `yer` (≤120, etkinlik), `metin` (haber ≤280 zorunlu, diğerleri ≤1000), `link` (yalnızca https, ≤300), `gorselId` (isteğe bağlı, ≤40), `olusturma`, `guncelleme` (zaman damgası). Bunların dışında alan kabul edilmez. **Eski kayıtlar** (2026-11-11 öncesi): `tur` "haber" + `metin` yok = sempozyum duyurusu; uygulama okurken etkinlik sayar (`tarih`→başlangıç, `kurum`→yer, `not`→metin). Veritabanında değiştirilmez; düzenlenip kaydedilince yeni biçime geçer. |
+| Firestore | `gorseller` | Herkes okur, yalnızca admin yazar | `veri` ("data:image/jpeg;base64," ile başlar, <900 000 karakter), `olusturma`. Paylaşım silinince ya da fotoğrafı değişince eski görsel de silinir (tek seferde, batch). Firebase Storage ücretsiz planda kapalı olduğu için bu yol seçildi. |
 | Firestore | `notlar` | Herkes okur, yalnızca admin yazar | `baslik` (≤100), `maddeler` (metin listesi, ≤40), `olusturma` |
 | Firestore | `cihazlar/{cihaz kimliği}` | Herkes okur, yalnızca admin yazar | `maddeler` (metin listesi, 1–20), `guncelleme`. Kişisel veri değil. |
 | Firestore | `icerik/{anahtar}` | Herkes okur, yalnızca admin yazar | `alanlar` (yalnızca değiştirilen alanlar: alan → metin, ≤20), `guncelleme`. Anahtarlar: `yolak.<id>`, `refleks.<id>`, `not.<sıra>`, `cihaz.<id>`, `metin.<data-k>`. Silinirse koddaki varsayılan metin döner. |
