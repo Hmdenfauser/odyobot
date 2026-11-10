@@ -13,6 +13,7 @@
 <!-- Tarayıcı çubuğu rengi: CSS değişkeni kullanılamadığı için --bg değerleri burada tekrar yazılı. -->
 <meta name="theme-color" content="#F2F5F6" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0C1A1F" media="(prefers-color-scheme: dark)">
+<script src="gorunum.js"></script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="OdyoBOT">
@@ -68,6 +69,14 @@
         </form>
       </details>
       <p class="note" id="admin-note" hidden>Eklediğin duyuruları uygulamaya erişimi olan herkes görür. Silmek için kartın altındaki bağlantıyı kullan.</p>
+      <div class="stack gorunum" style="gap:6px">
+        <span class="kicker" id="gorunum-baslik" data-k="ana.gorunum">Görünüm</span>
+        <div class="seg seg3" role="group" aria-labelledby="gorunum-baslik">
+          <button type="button" data-gorunum="auto" aria-pressed="true">Otomatik</button>
+          <button type="button" data-gorunum="light" aria-pressed="false">Açık</button>
+          <button type="button" data-gorunum="dark" aria-pressed="false">Koyu</button>
+        </div>
+      </div>
       <a class="footlink" href="#giris" id="login-link">Yönetici girişi</a>
     </div>
   </section>

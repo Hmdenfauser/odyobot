@@ -13,6 +13,7 @@ var ASSETS = [
   './',
   './index.html',
   './styles.css',
+  './gorunum.js',
   './app.js',
   './odyo-hesap.js',
   './vakalarim.js',

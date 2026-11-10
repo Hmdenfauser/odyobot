@@ -26,7 +26,9 @@ OdyoBOT, odyoloji öğrencileri ve klinisyenler için bir başvuru uygulaması. 
 
 **Yönetici girişi:** Ana sayfanın en altındaki "Yönetici girişi" bağlantısı (`#giris`). E-posta ve şifre ile giriş (Firebase Authentication).
 
-**Temalar:** Petrol, Lacivert, Orman, Bordo, Mor. Açık/koyu ayrı bir ayar değil: her temanın açık ve koyu hâli var, cihazın moduna göre otomatik seçiliyor.
+**Temalar:** Petrol, Lacivert, Orman, Bordo, Mor. Her temanın açık ve koyu hâli var.
+
+**Görünüm (açık/koyu):** Ana sayfanın altında herkese açık "Görünüm: Otomatik / Açık / Koyu" seçici (2026-11-10). Otomatik cihazın moduna uyar. Seçim yalnızca o cihazda saklanır ().
 
 ### Tamamlanan: PWA'ya taşıma (2026-11-06)
 Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sahibi telefonda şunları denedi ve hepsi çalıştı: giriş, ilan ekleme ve başka cihazda görme, ana ekrana ekleme, uçak modunda açılma.
@@ -50,7 +52,7 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 - Odyogram çıktısı (`cikti.js`), Vakalarım → OdyoBOT gönderme, düğmeli sohbet (`odybot.js`). sw v12. Ayrıntı: `PROGRESS.md`.
 
 ### Kaldığımız yer (2026-11-10)
-- Yukarıdaki işler bitti; yerelde test edildi. **Yayında (sw v14, 2026-11-10)**; telefonda henüz denenmedi.
+- Yukarıdaki işler bitti; yerelde test edildi. **Yayında (sw v15, 2026-11-10)**: görünüm seçici de eklendi; telefonda henüz denenmedi.
 - Vaka kartına "OdyoBOT'a gönder" ve yeni Vakalarım simgesi eklendi; 5 vakayla uçtan uca test edildi (sw v14).
 - Maskeleme asistanı bitti (sw v13): kurallar Katz fotoğraflarından okundu, proje sahibi onayladı, kitap örnekleriyle 25 test geçti. Telefonda denenecek.
 
@@ -75,6 +77,7 @@ Uygulama bir **PWA**: tarayıcıdan ana ekrana eklenebilen ve internetsiz de aç
 |---|---|
 | `index.html` | Sayfa yapısı (sekmeler, formlar) |
 | `styles.css` | Görünüm; renkler CSS değişkenleri, en üstte yerel yazı tipleri (`@font-face`) |
+| `gorunum.js` | Açık/koyu görünüm seçimi; `<head>`de yüklenir (renk sıçramasın diye), `<html data-theme>` yazar |
 | `app.js` | Genel davranış: saat, sekmeler, şemalar, notlar, ilanlar, giriş, servis çalışanı kaydı. `window.OdyoUI` yardımcılarını açar. |
 | `vakalarim.js` | Vakalarım sekmesi: veri katmanı (`VakaDeposu`, şimdilik localStorage; fotoğraf eklenince IndexedDB'ye yalnızca bu katman değişir), form, odyogram çizimi, liste/ayrıntı, yedekleme ve CSV |
 | `cikti.js` | Odyogram çıktısı: SVG sayfa → JPEG; PDF için küçük el yazımı PDF yazıcı. Renkler `--cikti-*` |
@@ -106,7 +109,7 @@ Uygulama bir **PWA**: tarayıcıdan ana ekrana eklenebilen ve internetsiz de aç
 | Firestore | `ayar/tema` | Herkes okur, yalnızca admin yazar | `id` (tema adı), `guncelleme` |
 | Cihaz (localStorage, anahtar `odybot:vakalar`) | vakalar (Vakalarım) | Yalnızca o cihaz | `id`, `surum`, `kimlik` (≤40, ad-soyad değil), `tarih`, `notlar` (≤2000), `olusturma`, `guncelleme`, `esik.{sag,sol}.{hava,kemik}.{Hz}` = `{db (-10..120 tam sayı), maskeli, maskDb, nr}` (boş frekans yazılmaz), `konusma.{sag,sol}` = `{srt, sds (0..100), sunum, maskeli}`, `mcl.{sag,sol}`, `ucl.{sag,sol}`, `weber` (orta/sag/sol/yapilmadi), `rinne.{sag,sol}` (pozitif/negatif/yapilmadi). Eski kayıtlardaki `etiket`/`not` okunurken taşınır. |
 | Cihaz (sessionStorage) | `odybot:gonderilen` | Yalnızca o sekme | Vakalarım'dan OdyoBOT'a gönderilen vaka kimlikleri (değer değil); bot okuyunca siler |
-| Cihaz (localStorage) | ayarlar | Yalnızca o cihaz | `odybot:ptaTur` (3/4), `odybot:grafik` (tek/ayri), `odybot:araFrekans`, `odybot:yedekSayac`, `odybot:hatirlatmaKapali` |
+| Cihaz (localStorage) | ayarlar | Yalnızca o cihaz | `odybot:gorunum` (light/dark; yoksa otomatik), `odybot:ptaTur` (3/4), `odybot:grafik` (tek/ayri), `odybot:araFrekans`, `odybot:yedekSayac`, `odybot:hatirlatmaKapali` |
 
 - 8 temel ders notu veri deposunda değil, kodun içinde (`app.js`, `NOTES` dizisi).
 - Firestore'un çevrimdışı önbelleği açık (`enablePersistence`). İnternet yokken son indirilen ilan ve notlar gösteriliyor.
