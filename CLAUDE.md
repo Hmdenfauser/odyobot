@@ -52,7 +52,7 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 - Odyogram çıktısı (`cikti.js`), Vakalarım → OdyoBOT gönderme, düğmeli sohbet (`odybot.js`). sw v12. Ayrıntı: `PROGRESS.md`.
 
 ### Kaldığımız yer (2026-11-10)
-- Yukarıdaki işler bitti; yerelde test edildi. **Yayında (sw v15, 2026-11-10)**. Görünüm seçici tek simge düğmesine çevrildi (sw v16): **yayına gönderilmedi**; telefonda henüz denenmedi.
+- Yukarıdaki işler bitti; yerelde test edildi. **Yayında (sw v16, 2026-11-10)**: görünüm seçici tek simge düğmesi; telefonda henüz denenmedi.
 - Vaka kartına "OdyoBOT'a gönder" ve yeni Vakalarım simgesi eklendi; 5 vakayla uçtan uca test edildi (sw v14).
 - Maskeleme asistanı bitti (sw v13): kurallar Katz fotoğraflarından okundu, proje sahibi onayladı, kitap örnekleriyle 25 test geçti. Telefonda denenecek.
 
