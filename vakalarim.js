@@ -664,26 +664,37 @@
     }
     box.replaceChildren.apply(box, vakalar.map(function (v) {
       var secili = secimModu && secilen.indexOf(v.id) !== -1;
-      var kart = h('div', { 'class': 'item vkart' + (secimModu ? ' secimde' : '') + (secili ? ' secili' : ''), role: 'button', tabindex: '0',
+      // Kartın açılan/seçilen bölümü (alan) ile "OdyoBOT'a gönder" düğmesi ayrı öğelerdir; iç içe düğme olmasın diye.
+      var alan = h('div', { 'class': 'vkart-ac', role: 'button', tabindex: '0',
         'aria-label': secimModu ? v.kimlik + ' vakasını seç' : v.kimlik + ' vakasını aç' }, [
         h('div', { 'class': 'item-top' }, [
           secimModu ? h('span', { 'class': 'vsec-kutu', 'aria-hidden': 'true', text: secili ? '✓' : '' }) : null,
           h('div', { 'class': 'item-title', text: v.kimlik }), h('span', { 'class': 'tag', text: U.fmtDate(v.tarih) || 'tarihsiz' })]),
         h('div', { 'class': 'vkart-govde' }, [kucukGrafik(v), h('div', { 'class': 'meta vozet', text: ozetMetni(v) })])
       ]);
-      if (secimModu) kart.setAttribute('aria-pressed', secili ? 'true' : 'false');
+      if (secimModu) alan.setAttribute('aria-pressed', secili ? 'true' : 'false');
       var ek = ekOzet(v);
-      if (ek) kart.appendChild(h('div', { 'class': 'meta vek', text: ek }));
+      if (ek) alan.appendChild(h('div', { 'class': 'meta vek', text: ek }));
+      var kart = h('div', { 'class': 'item vkart' + (secimModu ? ' secimde' : '') + (secili ? ' secili' : '') }, [alan]);
+      if (!secimModu) {
+        var gonder = h('button', { 'class': 'btn bot-gonder kart-gonder', type: 'button', 'aria-label': v.kimlik + ' vakasını OdyoBOT\'a gönder' }, [
+          h('img', { 'class': 'kart-gonder-logo', src: 'icons/logo.png', alt: '', width: '22', height: '22' }),
+          h('span', { text: 'OdyoBOT\'a gönder' })
+        ]);
+        gonder.addEventListener('click', function () { botaGonder([v.id]); });
+        kart.appendChild(gonder);
+      }
       function ac() {
         if (!secimModu) { ayrintiAc(v.id); return; }
         var i = secilen.indexOf(v.id);
         if (i === -1) secilen.push(v.id); else secilen.splice(i, 1);
         listeCiz();
         var yeni = box.children[vakalar.indexOf(v)];   // klavyeyle seçerken odak kartta kalsın
+        if (yeni) yeni = yeni.querySelector('.vkart-ac');
         if (yeni) yeni.focus();
       }
-      kart.addEventListener('click', ac);
-      kart.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); ac(); } });
+      alan.addEventListener('click', ac);
+      alan.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); ac(); } });
       return kart;
     }));
   }

@@ -77,9 +77,12 @@
   }
 
   function uyarilarEkle(s) {
+    // En çok düzey maskesiz (görünürdeki) kemik eşiğiyle tahmin edildiyse gerçek sınır daha yüksek olabilir (s. 95);
+    // bu durumda uyarı "olası" olarak verilir (…Tahmini mesajları).
     if (s.baslangic != null && s.enCok != null) {
-      if (s.baslangic > s.enCok.db) s.uyarilar.push('ikilem');           // başlangıç zaten aşırı maskeleme sınırının üstünde
-      else if (s.enCok.db - s.baslangic < PLATO_ADIM * PLATO_ARTIS) s.uyarilar.push('darPlato');
+      var ek = s.enCok.tahmini ? 'Tahmini' : '';
+      if (s.baslangic > s.enCok.db) s.uyarilar.push('ikilem' + ek);           // başlangıç zaten aşırı maskeleme sınırının üstünde
+      else if (s.enCok.db - s.baslangic < PLATO_ADIM * PLATO_ARTIS) s.uyarilar.push('darPlato' + ek);
     }
     if (s.maskeli && s.maskDb != null && s.enCok != null && s.maskDb > s.enCok.db) s.uyarilar.push('kayitAsiri');
   }

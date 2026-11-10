@@ -76,4 +76,13 @@ es('6.11 sonuç 2',sim(95,60,25).esik,95);
 es('6.11 sonuç 3',sim(999,60,25).tur,'cevapYok');
 // aynı girdi aynı sonuç
 es('belirlenimci',JSON.stringify(M.degerlendir(v614,'supra')),JSON.stringify(M.degerlendir(v614,'supra')));
+// Tahmini en çok düzey: tek taraflı ileri SN kayıpta kesin 'ikilem' değil 'ikilemTahmini' (s. 95)
+const vSN=vaka({250:10},{250:5},{250:70},{250:5});
+const kSN=M.degerlendir(vSN,'supra').kemik.find(x=>x.kulak==='sol');
+es('tahmini ikilem',[kSN.baslangic,kSN.enCok.db,kSN.enCok.tahmini,kSN.uyarilar],[50,40,true,['ikilemTahmini']]);
+// Maskeli kemik bilinince kesin uyarı
+const vSN2=vaka({250:10},{250:5},{250:70},{250:{db:20,maskeli:true}});
+const hSN2=M.degerlendir(vSN2,'supra').hava.find(x=>x.kulak==='sol');
+es('kesin en çok',[hSN2.enCok.db,hSN2.enCok.tahmini,hSN2.uyarilar],[55,false,[]]);
+if(hata)process.exitCode=1;
 console.log(ok+' başarılı, '+hata+' hatalı');
