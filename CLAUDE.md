@@ -16,9 +16,9 @@ OdyoBOT, odyoloji öğrencileri ve klinisyenler için bir başvuru uygulaması. 
 |---|---|---|---|
 | 1 | Ana sayfa | "Merhaba, odyolog" karşılaması, canlı saat ve tarih, iş ilanları, sempozyum ve kongre haberleri. İlanları ve haberleri yalnızca düzenleyici ekler/siler, herkes görür. | Yapıldı |
 | 2 | Görsel depo | (a) İşitme yolakları: koklea'dan işitsel kortekse 9 basamaklı, dokunulabilir şema (akustik striyalar dahil). Her kutuda beyin bölgesi yazıyor; karşıya geçişler iki taraflı. Her basamakta konum, işlev, klinik not ve ABR dalga karşılığı var. (b) Akustik refleks arkı: simetrik, iki kulak da uyarılıyor. Dış kulaktan 7. sinire 7 basamak. (a) ve (b) proje sahibinin `ham-gorseller/` içindeki referans görsellerine bakılarak yeniden çizildi (2026-11-09); görseller uygulamaya konmadı. (c) Cihazlar: 8 işitme cihazı (BTE, RIC, ITE tam/yarım konka, ITC, CIC, IIC, bantlı kemik iletimli) ve 10 implant kartı. Liste `app.js` → `DEVICES`. Açıklamaları yönetici uygulama içinden yazar (kartta "Açıklama ekle/düzenle"). | Hepsi yapıldı (2026-11-09). Açıklamalar boş, proje sahibi yazacak. |
-| 3 | OdyoBot | Ortada, turuncu, yükseltilmiş yuvarlak düğme; içinde uygulama logosu. Maskeleme asistanı (bkz. §7). | Logo yerleşti; asistan yapılmadı |
-| 4 | Notlar | Kısa ders notları ve arama kutusu. Konular: saf ses odyometrisi, işitme kaybı tipleri, timpanometri, konuşma odyometrisi, maskeleme kavramları, OAE, ABR, akustik refleks. | Yapıldı |
-| 5 | Vakalarım (`#vakalarim`; eski adı Geçmiş, `#gecmis` yönlendirilir) | Odyometri vaka kaydı (yalnızca o cihazda). Liste (küçük odyogram + tip/derece özeti), form (kimlik, tarih, 125–8000 Hz hava/kemik eşikleri, ara frekans anahtarı, M/maskeleme düzeyi, NR), canlı odyogram (tek/ayrı grafik, lejant), otomatik PTA/derece/tip (`odyo-hesap.js`), ek ölçümler (SRT, SDS/WRS, sunum düzeyi, MCL, UCL, Weber, Rinne), yedekleme (JSON indir/paylaş, CSV, geri yükle: birleştir/üzerine yaz), 10 kayıtta bir yedek hatırlatması. | Yapıldı (2026-11-09). Ayrıntı: `PROGRESS.md` |
+| 3 | OdyoBot | Ortada, turuncu, yükseltilmiş yuvarlak düğme; içinde uygulama logosu. Maskeleme asistanı (bkz. §7): düğmeli sohbet, vakalar Vakalarım'dan gelir (tek ya da çoklu). Kaynak: Katz. | Sohbet iskeleti yapıldı (2026-11-10); maskeleme kuralları taslak tablonun onayını bekliyor (`PROGRESS.md`) |
+| 4 | Vakalarım (`#vakalarim`; eski adı Geçmiş, `#gecmis` yönlendirilir) | Odyometri vaka kaydı (yalnızca o cihazda). Liste (küçük odyogram + tip/derece özeti), form (kimlik, tarih, 125–8000 Hz hava/kemik eşikleri, ara frekans anahtarı, M/maskeleme düzeyi, NR), canlı odyogram (tek/ayrı grafik, lejant), otomatik PTA/derece/tip (`odyo-hesap.js`), ek ölçümler (SRT, SDS/WRS, sunum düzeyi, MCL, UCL, Weber, Rinne), yedekleme (JSON indir/paylaş, CSV, geri yükle: birleştir/üzerine yaz), 10 kayıtta bir yedek hatırlatması. Odyogram çıktısı JPEG/PDF (detaylı / yalnızca odyogram). Listede "Seç" ile vakalar OdyoBOT'a gönderilir. | Yapıldı (2026-11-09). Ayrıntı: `PROGRESS.md` |
+| 5 | Notlar | Kısa ders notları ve arama kutusu. Konular: saf ses odyometrisi, işitme kaybı tipleri, timpanometri, konuşma odyometrisi, maskeleme kavramları, OAE, ABR, akustik refleks. | Yapıldı |
 
 **Yönetici düzenlemesi:** Giriş yapınca her şema basamağında, ders notunda, cihaz kartında ve sayfa yazısında "Düzenle" bağlantısı çıkar. Değişiklik herkese yansır, "Varsayılana dön" ile geri alınır.
 
@@ -44,7 +44,16 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 - Proje sahibinin verdiği klinik değerler: Clark derece tablosu ve 10 dB ABG eşiği (`odyo-hesap.js` başında, tek yerde). "Normal" sınırı tablonun ilk satırı (15 dB). Metinlerde "karma" değil "mikst".
 - Proje sahibi telefonda denedi, her şey düzgün çalışıyor (2026-11-09).
 
-### Kaldığımız yer (2026-11-09 akşamı)
+### Tamamlanan: CSP, sekme sırası, çıktı, OdyoBOT iskeleti (2026-11-10)
+- `index.html` başında CSP satırı (meta). Firebase'e yeni servis eklenirse adresi `connect-src`'ye eklenmeli.
+- Alt çubuk sırası: Ana sayfa, Görsel depo, OdyoBOT, Vakalarım, Notlar.
+- Odyogram çıktısı (`cikti.js`), Vakalarım → OdyoBOT gönderme, düğmeli sohbet (`odybot.js`). sw v12. Ayrıntı: `PROGRESS.md`.
+
+### Kaldığımız yer (2026-11-10)
+- Yukarıdaki işler bitti; yerelde test edildi. **Yayına gönderilmedi (git push bekliyor)** ve telefonda denenmedi.
+- Proje sahibi `PROGRESS.md` içindeki **taslak maskeleme kural tablosunu** Katz'tan kontrol edecek, kitabın baskısını ve 3–5 örnek vakayı verecek. Sonra `maskeleme-kural.js` yazılacak.
+
+### Önceki: kaldığımız yer (2026-11-09 akşamı)
 - Vakalarım bitti ve telefonda doğrulandı; her şey yayında, bekleyen değişiklik yok (son sürüm sw v11).
 - Proje sahibi ertesi gün devam edecek. Sıradaki iş: **OdyoBot maskeleme asistanı.** Kod yazılmadan önce proje sahibinden cevap beklenenler:
   1. Esas alınacak kaynak (kitap/kılavuz).
@@ -67,6 +76,8 @@ Uygulama bir **PWA**: tarayıcıdan ana ekrana eklenebilen ve internetsiz de aç
 | `styles.css` | Görünüm; renkler CSS değişkenleri, en üstte yerel yazı tipleri (`@font-face`) |
 | `app.js` | Genel davranış: saat, sekmeler, şemalar, notlar, ilanlar, giriş, servis çalışanı kaydı. `window.OdyoUI` yardımcılarını açar. |
 | `vakalarim.js` | Vakalarım sekmesi: veri katmanı (`VakaDeposu`, şimdilik localStorage; fotoğraf eklenince IndexedDB'ye yalnızca bu katman değişir), form, odyogram çizimi, liste/ayrıntı, yedekleme ve CSV |
+| `cikti.js` | Odyogram çıktısı: SVG sayfa → JPEG; PDF için küçük el yazımı PDF yazıcı. Renkler `--cikti-*` |
+| `odybot.js` | OdyoBOT sohbet ekranı (düğmeli, kural tabanlı). Mesaj metinleri `index.html` `#b-metinler` |
 | `odyo-hesap.js` | Hesap kuralları (PTA, derece, tip). Ekrandan bağımsız; Node ile `require` edilip test edilebilir. |
 | `firebase-config.js` | Firebase web yapılandırması ve admin UID'si (gizli bilgi değil, bkz. §8) |
 | `firestore.rules` | Firestore güvenlik kuralları. Değişirse Firebase konsoluna elle yapıştırılır. |
@@ -92,6 +103,7 @@ Uygulama bir **PWA**: tarayıcıdan ana ekrana eklenebilen ve internetsiz de aç
 | Firestore | `icerik/{anahtar}` | Herkes okur, yalnızca admin yazar | `alanlar` (yalnızca değiştirilen alanlar: alan → metin, ≤20), `guncelleme`. Anahtarlar: `yolak.<id>`, `refleks.<id>`, `not.<sıra>`, `cihaz.<id>`, `metin.<data-k>`. Silinirse koddaki varsayılan metin döner. |
 | Firestore | `ayar/tema` | Herkes okur, yalnızca admin yazar | `id` (tema adı), `guncelleme` |
 | Cihaz (localStorage, anahtar `odybot:vakalar`) | vakalar (Vakalarım) | Yalnızca o cihaz | `id`, `surum`, `kimlik` (≤40, ad-soyad değil), `tarih`, `notlar` (≤2000), `olusturma`, `guncelleme`, `esik.{sag,sol}.{hava,kemik}.{Hz}` = `{db (-10..120 tam sayı), maskeli, maskDb, nr}` (boş frekans yazılmaz), `konusma.{sag,sol}` = `{srt, sds (0..100), sunum, maskeli}`, `mcl.{sag,sol}`, `ucl.{sag,sol}`, `weber` (orta/sag/sol/yapilmadi), `rinne.{sag,sol}` (pozitif/negatif/yapilmadi). Eski kayıtlardaki `etiket`/`not` okunurken taşınır. |
+| Cihaz (sessionStorage) | `odybot:gonderilen` | Yalnızca o sekme | Vakalarım'dan OdyoBOT'a gönderilen vaka kimlikleri (değer değil); bot okuyunca siler |
 | Cihaz (localStorage) | ayarlar | Yalnızca o cihaz | `odybot:ptaTur` (3/4), `odybot:grafik` (tek/ayri), `odybot:araFrekans`, `odybot:yedekSayac`, `odybot:hatirlatmaKapali` |
 
 - 8 temel ders notu veri deposunda değil, kodun içinde (`app.js`, `NOTES` dizisi).
@@ -180,7 +192,7 @@ Uygulama bir **PWA**: tarayıcıdan ana ekrana eklenebilen ve internetsiz de aç
 6. ~~Vaka yedekleme~~ *Cevaplandı: JSON yedek (indir/paylaş), CSV tablo ve geri yükleme yapıldı (2026-11-09).*
 7. Vaka formunda zaten bir uyarı var: "Hasta adı, soyadı, kimlik numarası gibi tanımlayıcı bilgi yazma. Anonim bir etiket kullan." Bu uyarı yeterli mi, yoksa daha güçlü bir önlem mi isteniyor?
 8. ~~Cihaz görselleri ve açıklamaları~~ *Cevaplandı: proje sahibinin JPG'leri küçültülerek eklendi; açıklamaları yönetici uygulama içinden yazar.*
-9. OdyoBot için hangi kaynak esas alınacak? Hangi girdiler kullanılacak (frekanslar, hava ve kemik yolu eşikleri, kulaklık tipi)? Hangi interaural attenüasyon değerleri kullanılacak?
+9. ~~Kaynak~~ *Katz (2026-11-10). Eşikler Vakalarım'dan gelir.* IA değerleri ve formüller: `PROGRESS.md` taslak tablosu onay bekliyor. Eski soru: OdyoBot için hangi kaynak esas alınacak? Hangi girdiler kullanılacak (frekanslar, hava ve kemik yolu eşikleri, kulaklık tipi)? Hangi interaural attenüasyon değerleri kullanılacak?
 10. ~~İnternetsiz ilanlar~~ *Son indirilen kopya gösteriliyor; telefonda uçak moduyla doğrulandı.*
 11. Uygulama şu an herkese açık: adresi bilen herkes açabiliyor. Bu durum kalıcı mı, yoksa ileride erişim sınırlanacak mı?
 12. Test soruları hangi biçimde olacak (çoktan seçmeli vb.) ve içeriği kim hazırlayacak?
