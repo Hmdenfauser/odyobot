@@ -51,8 +51,10 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 - Alt çubuk sırası: Ana sayfa, Görsel depo, OdyoBOT, Vakalarım, Notlar.
 - Odyogram çıktısı (`cikti.js`), Vakalarım → OdyoBOT gönderme, düğmeli sohbet (`odybot.js`). sw v12. Ayrıntı: `PROGRESS.md`.
 
-### Kaldığımız yer (2026-11-11)
-- Ana sayfa fotoğraflı akışa çevrildi (sw v17). Sahte veriyle yerelde test edildi; **yayında (2026-11-11)**. Yayından sonra `firestore.rules` Firebase konsoluna yapıştırılmalı, yoksa yeni paylaşımlar kaydedilemez. Gerçek veritabanına yazma ve kural denemesi telefonda yapılacak.
+### Kaldığımız yer (2026-11-11 akşamı)
+- Ana sayfa fotoğraflı akışa çevrildi (sw v17, **yayında**). Sahte veriyle yerelde test edildi. Yeni `firestore.rules` proje sahibi tarafından konsola yapıştırıldı ve hatasız yayınlandı (2026-11-11). İlk yapıştırmada dosya bozuktu (düzenleme betiğinde JS `replace` içindeki `$'` deseni metni çoğaltmıştı; düzeltildi). Not: dosyaya kural/metin yazarken `replace(a, () => b)` kullan.
+- **Yarın ilk iş (telefonda, proje sahibiyle):** yönetici girişiyle fotoğraflı birer Haber, Etkinlik, İş ilanı paylaşmak (gerçek yazma ve kurallar ilk kez denenecek; fotoğrafın kaydı bilgisayarda hiç denenmedi), karttan ayrıntı sayfası (geri tuşu, ✕, Paylaş), Düzenle ve Sil, uçak modunda açılış. Hata çıkarsa ekran görüntüsü istenecek.
+- Ayrıca telefonda denenmemiş olanlar: görünüm düğmesi (v16), Vakalarım'dan OdyoBOT'a gönderme ve maskeleme asistanı, JPEG/PDF çıktısı.
 - Önceki: görünüm seçici tek simge düğmesi (sw v16, yayında); telefonda henüz denenmedi.
 - Vaka kartına "OdyoBOT'a gönder" ve yeni Vakalarım simgesi eklendi; 5 vakayla uçtan uca test edildi (sw v14).
 - Maskeleme asistanı bitti (sw v13): kurallar Katz fotoğraflarından okundu, proje sahibi onayladı, kitap örnekleriyle 25 test geçti. Telefonda denenecek.
