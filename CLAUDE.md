@@ -28,7 +28,7 @@ OdyoBOT, odyoloji öğrencileri ve klinisyenler için bir başvuru uygulaması. 
 
 **Temalar:** Petrol, Lacivert, Orman, Bordo, Mor. Her temanın açık ve koyu hâli var.
 
-**Görünüm (açık/koyu):** Ana sayfanın altında herkese açık "Görünüm: Otomatik / Açık / Koyu" seçici (2026-11-10). Otomatik cihazın moduna uyar. Seçim yalnızca o cihazda saklanır (`gorunum.js`).
+**Görünüm (açık/koyu):** Ana sayfanın üstünde, dişlinin yanında herkese açık tek simge düğmesi (2026-11-10). Her dokunuşta Otomatik → Açık → Koyu → Otomatik; simge yarım dolu daire / güneş / ay. Dokununca altta 1,5 sn "Görünüm: …" yazısı çıkar. Otomatik cihazın moduna uyar. Seçim yalnızca o cihazda saklanır (`gorunum.js`). Dişli simgesi güneşle karışmasın diye çark biçiminde çizildi.
 
 ### Tamamlanan: PWA'ya taşıma (2026-11-06)
 Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sahibi telefonda şunları denedi ve hepsi çalıştı: giriş, ilan ekleme ve başka cihazda görme, ana ekrana ekleme, uçak modunda açılma.
@@ -52,7 +52,7 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 - Odyogram çıktısı (`cikti.js`), Vakalarım → OdyoBOT gönderme, düğmeli sohbet (`odybot.js`). sw v12. Ayrıntı: `PROGRESS.md`.
 
 ### Kaldığımız yer (2026-11-10)
-- Yukarıdaki işler bitti; yerelde test edildi. **Yayında (sw v15, 2026-11-10)**: görünüm seçici de eklendi; telefonda henüz denenmedi.
+- Yukarıdaki işler bitti; yerelde test edildi. **Yayında (sw v15, 2026-11-10)**. Görünüm seçici tek simge düğmesine çevrildi (sw v16): **yayına gönderilmedi**; telefonda henüz denenmedi.
 - Vaka kartına "OdyoBOT'a gönder" ve yeni Vakalarım simgesi eklendi; 5 vakayla uçtan uca test edildi (sw v14).
 - Maskeleme asistanı bitti (sw v13): kurallar Katz fotoğraflarından okundu, proje sahibi onayladı, kitap örnekleriyle 25 test geçti. Telefonda denenecek.
 
@@ -77,7 +77,7 @@ Uygulama bir **PWA**: tarayıcıdan ana ekrana eklenebilen ve internetsiz de aç
 |---|---|
 | `index.html` | Sayfa yapısı (sekmeler, formlar) |
 | `styles.css` | Görünüm; renkler CSS değişkenleri, en üstte yerel yazı tipleri (`@font-face`) |
-| `gorunum.js` | Açık/koyu görünüm seçimi; `<head>`de yüklenir (renk sıçramasın diye), `<html data-theme>` yazar |
+| `gorunum.js` | Açık/koyu görünüm düğmesi (sırayla değiştirir, kısa yazı gösterir); `<head>`de yüklenir (renk sıçramasın diye), `<html data-theme>` yazar |
 | `app.js` | Genel davranış: saat, sekmeler, şemalar, notlar, ilanlar, giriş, servis çalışanı kaydı. `window.OdyoUI` yardımcılarını açar. |
 | `vakalarim.js` | Vakalarım sekmesi: veri katmanı (`VakaDeposu`, şimdilik localStorage; fotoğraf eklenince IndexedDB'ye yalnızca bu katman değişir), form, odyogram çizimi, liste/ayrıntı, yedekleme ve CSV |
 | `cikti.js` | Odyogram çıktısı: SVG sayfa → JPEG; PDF için küçük el yazımı PDF yazıcı. Renkler `--cikti-*` |

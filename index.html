@@ -34,9 +34,16 @@
         <span class="brand">OdyoBOT</span>
         <div class="row" style="align-items:center">
           <span class="kicker" id="date">—</span>
+          <span class="ust-dugmeler">
+          <button class="iconbtn" id="gorunum-dugme" type="button" aria-label="Görünüm: Otomatik. Değiştirmek için dokun.">
+            <svg data-ikon="auto" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg>
+            <svg data-ikon="light" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" hidden><circle cx="12" cy="12" r="4.500" fill="currentColor"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.900 4.900l1.400 1.400M17.700 17.700l1.400 1.400M19.100 4.900l-1.400 1.400M6.300 17.700l-1.400 1.400"/></svg>
+            <svg data-ikon="dark" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true" hidden><path d="M20 14.500A8 8 0 1 1 9.500 4a6.500 6.500 0 0 0 10.500 10.500z"/></svg>
+          </button>
           <a class="iconbtn" id="gear" href="#ayarlar" aria-label="Ayarlar" hidden>
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg>
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M18.89 9.91L21.28 9.96L21.28 14.04L18.89 14.09L18.35 15.39L20 17.12L17.12 20L15.39 18.35L14.09 18.89L14.04 21.28L9.96 21.28L9.91 18.89L8.61 18.35L6.88 20L4 17.12L5.65 15.39L5.11 14.09L2.72 14.04L2.72 9.96L5.11 9.91L5.65 8.61L4 6.88L6.88 4L8.61 5.65L9.91 5.11L9.96 2.72L14.04 2.72L14.09 5.11L15.39 5.65L17.12 4L20 6.88L18.35 8.61Z"/><circle cx="12" cy="12" r="3"/></svg>
           </a>
+          </span>
         </div>
         <h1 data-k="ana.baslik">Merhaba, odyolog</h1>
         <div class="clock" id="clock" aria-label="Saat">--:--</div>
@@ -69,14 +76,6 @@
         </form>
       </details>
       <p class="note" id="admin-note" hidden>Eklediğin duyuruları uygulamaya erişimi olan herkes görür. Silmek için kartın altındaki bağlantıyı kullan.</p>
-      <div class="stack gorunum" style="gap:6px">
-        <span class="kicker" id="gorunum-baslik" data-k="ana.gorunum">Görünüm</span>
-        <div class="seg seg3" role="group" aria-labelledby="gorunum-baslik">
-          <button type="button" data-gorunum="auto" aria-pressed="true">Otomatik</button>
-          <button type="button" data-gorunum="light" aria-pressed="false">Açık</button>
-          <button type="button" data-gorunum="dark" aria-pressed="false">Koyu</button>
-        </div>
-      </div>
       <a class="footlink" href="#giris" id="login-link">Yönetici girişi</a>
     </div>
   </section>
@@ -444,6 +443,8 @@
     </div>
   </section>
 </div>
+
+<div class="gorunum-yazi" id="gorunum-yazi" role="status" aria-live="polite"></div>
 
 <nav class="tabs" aria-label="Bölümler">
   <a href="#anasayfa" data-go="anasayfa">

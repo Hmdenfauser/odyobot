@@ -175,6 +175,8 @@ dd { margin: 2px 0 0; min-width: 0; }
 .node.sel .pill.l { fill: var(--left); stroke: var(--left); }
 
 .iconbtn { display: inline-flex; width: 44px; height: 44px; align-items: center; justify-content: center; border: 1px solid var(--line); border-radius: 10px; color: var(--muted); background: var(--surface); }
+.ust-dugmeler { display: inline-flex; gap: 8px; align-items: center; }
+button.iconbtn { font: inherit; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .iconbtn:focus-visible, .back:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 .back { color: var(--accent); text-decoration: none; font-weight: 500; min-height: 44px; display: inline-flex; align-items: center; align-self: flex-start; }
 .footlink { align-self: flex-start; display: inline-flex; align-items: center; min-height: 44px; font-size: 13px; color: var(--muted); text-underline-offset: 3px; }
@@ -376,3 +378,8 @@ button.btn.b-vaka[aria-pressed="true"] .b-vaka-kutu { background: var(--accent);
 .b-liste li { overflow-wrap: anywhere; }
 .b-uyari { color: var(--danger); font-size: 13.5px; margin-top: 2px; }
 .balon .og-baslik { padding-left: 0; }
+
+/* Görünüm değişince altta 1,5 sn görünen kısa yazı (gorunum.js) */
+.gorunum-yazi { position: fixed; left: 50%; bottom: calc(100px + env(safe-area-inset-bottom, 0px)); z-index: 30; transform: translate(-50%, 8px); max-width: calc(100% - 32px); padding: 10px 16px; border-radius: 999px; background: var(--ink); color: var(--bg); font-size: 14px; font-weight: 500; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity .2s ease, transform .2s ease; }
+.gorunum-yazi.acik { opacity: 1; transform: translate(-50%, 0); }
+@media (prefers-reduced-motion: reduce) { .gorunum-yazi { transition: none; } }
