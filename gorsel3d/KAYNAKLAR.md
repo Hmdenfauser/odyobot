@@ -17,6 +17,7 @@ Bu klasördeki 3D model (`periferik.bin`, `periferik.json`) iki açık lisanslı
 - Dış kulak yolu modelinin iki ucu açıldı; iç ucu timpanik membranın kenarına oturtuldu.
 - Kulak kepçesi taraması kırpıldı, yüzde 15 küçültüldü (yaklaşık 62 mm yükseklik), Blender ile arka yüzü tamamlanıp kapalı hâle getirildi (arka yüz ölçülmüş veri değildir), 11 bölgeye elle ayrıldı ve dış kulak yolunun dış ucuna hizalandı.
 - Kepçe ile kanal arasındaki yaklaşık 8 mm'lik boşluk çizilmiş bir tüp parçasıyla kapatıldı (tarama verisi değildir). Kepçe başka bir kişiye aittir.
+- Skala media (`sm`) tarama verisi değildir (OdyoBOT, 2026-11-14). Kaynak modelde skala vestibuli ile skala timpani birbirine değiyor, aralarında ayrı bir koklear kanal yok. Tüp, iki skalanın değdiği bölmenin (st yüzeyine 0,12 mm'den yakın sv köşeleri) dış kenarı boyunca, skala vestibuli tarafına 0,28 mm yarıçapla çizildi (yaklaşık 21 mm). Konumu ve kalınlığı yaklaşıktır. Diğer parçalar değiştirilmedi; yeni parça dosyanın sonuna eklendi.
 - Temporal kemik ile sigmoid sinüs ve dura, kulağın çevresine kırpılıp sadeleştirildi.
 - Renkler öğretim amaçlıdır.
 

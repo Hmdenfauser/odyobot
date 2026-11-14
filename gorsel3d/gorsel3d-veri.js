@@ -4,14 +4,14 @@
 window.GORSEL3D_VERI = {
   bolumler: [
     { id: 'tum', ad: 'Tüm sistem', aciklama: 'Kulak kepçesinden iç kulağa bütün periferik yapılar. Ayrıntı için bir bölüm seç ya da bir yapıya dokun.',
-      yapilar: ['eac', 'tm', 'mal', 'inc', 'sta', 'ct', 'n7', 'n8', 'sv', 'st', 'vest', 'ant', 'post', 'lat', 'crus', 'amp'],
+      yapilar: ['eac', 'tm', 'mal', 'inc', 'sta', 'ct', 'n7', 'n8', 'sv', 'sm', 'st', 'vest', 'ant', 'post', 'lat', 'crus', 'amp'],
       ek: ['p_helix', 'p_antihelix', 'p_scapha', 'p_fossa', 'p_crush', 'p_cymba', 'p_cavum', 'p_tragus', 'p_antitragus', 'p_notch', 'p_lobule'] },
     { id: 'dis', ad: 'Dış kulak', aciklama: 'Kulak kepçesi ve dış kulak yolu. Kepçenin bölümlerini görmek için kepçeye dokun.',
       yapilar: ['p_helix', 'p_antihelix', 'p_scapha', 'p_fossa', 'p_crush', 'p_cymba', 'p_cavum', 'p_tragus', 'p_antitragus', 'p_notch', 'p_lobule', 'eac'] },
     { id: 'orta', ad: 'Orta kulak', aciklama: 'Timpanik membran (kulak zarı) ve kemikçik zinciri. Titreşim kulak zarından malleus, inkus ve stapes yoluyla oval pencereye iletilir.',
       yapilar: ['tm', 'mal', 'inc', 'sta', 'ct'] },
     { id: 'ic', ad: 'İç kulak', aciklama: 'Koklea (iki skala), vestibül ve üç semisirküler kanal. Model iç kulağın perilenf boşluğunu gösterir.',
-      yapilar: ['sv', 'st', 'vest', 'ant', 'post', 'lat', 'crus', 'amp'] },
+      yapilar: ['sv', 'sm', 'st', 'vest', 'ant', 'post', 'lat', 'crus', 'amp'] },
     { id: 'sinir', ad: 'Sinirler', aciklama: 'Fasiyal sinir, vestibulokoklear sinir ve korda timpani.',
       yapilar: ['n7', 'n8', 'ct'] },
     { id: 'cevre', ad: 'Çevre yapılar', aciklama: 'Temporal kemik, internal karotis, sigmoid sinüs ve dura. Kulağın çevresindeki komşuluklar.',
@@ -36,6 +36,7 @@ window.GORSEL3D_VERI = {
     inc: { ad: 'İnkus', aciklama: 'Örs. Kısa kolu arkaya uzanır; uzun kolunun ucundaki lentiküler çıkıntı stapes başıyla eklem yapar.' },
     sta: { ad: 'Stapes', aciklama: 'Üzengi. İki bacağı ve tabanı vardır; tabanı oval pencereye oturur ve titreşimi perilenfe aktarır.' },
     sv: { ad: 'Skala vestibuli', aciklama: 'Kokleanın oval pencere tarafındaki perilenf kanalı. Vestibülden başlar, apekste helikotrema ile skala timpaniye bağlanır.' },
+    sm: { ad: 'Skala media', aciklama: 'Koklear kanal (duktus koklearis). Skala vestibuli ile skala timpani arasında, endolenf dolu kanal. Bu parça tarama verisi değildir: modelde iki skalanın birleştiği bölmenin dış kenarına, skala vestibuli tarafına çizildi; konumu ve kalınlığı yaklaşıktır. Skala vestibulinin içinde kaldığı için en iyi seçilince görünür.' },
     st: { ad: 'Skala timpani', aciklama: 'Kokleanın yuvarlak pencere tarafındaki perilenf kanalı. Koklear implant elektrodu genellikle buraya yerleştirilir.' },
     vest: { ad: 'Vestibül', aciklama: 'Koklea ile semisirküler kanallar arasındaki orta boşluk. Utrikulus ve sakkulus burada yer alır; stapes tabanı dış duvarındaki oval pencereye oturur.' },
     ant: { ad: 'Anterior kanal', aciklama: 'Süperior kanal. Dikey kanallardan biri ve en yukarı uzananıdır; ampullası önde, diğer ucu ortak krusa katılır.' },
@@ -66,12 +67,12 @@ window.GORSEL3D_VERI = {
     gorunumBasligi: 'Görünüm',
     gorunumler: { lat: 'Lateralden', med: 'Medialden', ust: 'Üstten', on: 'Önden', arka: 'Arkadan' },
     ipucu: 'Döndür, iki parmakla yakınlaştır, bir yapıya dokun.',
-    not: 'Kulak kepçesi başka bir kişinin taramasıdır; dış kulak yolunun dış ucuna hizalandı ve aradaki yaklaşık 8 mm\'lik boşluk çizilmiş bir tüp parçasıyla kapatıldı; o kısım tarama verisi değildir. Kepçenin arka yüzü ölçülmüş veri değildir, ön yüzden yaklaşık 3 mm kalınlık verilerek tamamlandı. Kepçe bölümlerinin sınırları tarama üzerinde elle, iç kulaktaki vestibül, kanal, ampulla ve ortak krus sınırları otomatik ayrıştırmayla çizildi. Hepsi yaklaşıktır.',
+    not: 'Kulak kepçesi başka bir kişinin taramasıdır; dış kulak yolunun dış ucuna hizalandı ve aradaki yaklaşık 8 mm\'lik boşluk çizilmiş bir tüp parçasıyla kapatıldı; o kısım tarama verisi değildir. Skala media da tarama verisi değildir; iki skala arasındaki bölmeye göre yaklaşık olarak çizildi. Kepçenin arka yüzü ölçülmüş veri değildir, ön yüzden yaklaşık 3 mm kalınlık verilerek tamamlandı. Kepçe bölümlerinin sınırları tarama üzerinde elle, iç kulaktaki vestibül, kanal, ampulla ve ortak krus sınırları otomatik ayrıştırmayla çizildi. Hepsi yaklaşıktır.',
     kaynakOnsoz: 'Kaynaklar:',
     kaynaklar: [
       { metin: 'Sieber D. ve ark., OpenEar kütüphanesi, örnek ZETA (CC BY 4.0)', adres: 'https://zenodo.org/records/1473724' },
       { metin: 'Artec 3D kulak taraması (CC BY 3.0)', adres: 'https://www.artec3d.com/3d-models/ear' }
     ],
-    degisiklikler: 'Değişiklikler: yapılar anatomik yöne çevrildi; kepçe kırpıldı, yüzde 15 küçültüldü, arka yüzü tamamlandı, bölgelere ayrıldı ve kanala bir ara parçayla birleştirildi; dış kulak yolunun iki ucu açıldı; iç kulak sıvı boşluğu bölgelere ayrıldı; kemik ile sinüs ve dura kırpılıp sadeleştirildi; renklendirildi.'
+    degisiklikler: 'Değişiklikler: yapılar anatomik yöne çevrildi; kepçe kırpıldı, yüzde 15 küçültüldü, arka yüzü tamamlandı, bölgelere ayrıldı ve kanala bir ara parçayla birleştirildi; dış kulak yolunun iki ucu açıldı; iç kulak sıvı boşluğu bölgelere ayrıldı; skala media yaklaşık olarak çizilip eklendi; kemik ile sinüs ve dura kırpılıp sadeleştirildi; renklendirildi.'
   }
 };

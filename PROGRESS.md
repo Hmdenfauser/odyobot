@@ -181,3 +181,12 @@ Proje sahibinin bildirdiği sorun: bir yapı seçilince başka yapıya dokunulam
   - Listeden ya da bölüm düğmesinden seçim yapılınca model ekranda değilse yukarı kaydırılır.
 - `gorsel3d.css`: Geri düğmesi, bölüm ızgarası, görünüm çubuğu, daha sık yapı düğmeleri; telefonda model yüksekliği `min(52vh, 420px)`.
 - Test (açık/koyu): Malleus seçiliyken modelde İnkus'a dokunma → İnkus; boşluğa dokunma → seçim kalktı; Geri zinciri Tragus → Kulak kepçesi → Dış kulak → Tüm sistem, sonda Geri gizli; 400 px taşma yok, 44 px altı hedef yok; önceki testler (düzenleme, internetsiz) yine geçti.
+
+## Skala media eklendi (2026-11-14, sw v20)
+Proje sahibi "iç kulakta skala media nerede" diye sordu; kaynak modelde ayrı parça yok. Proje sahibi elle çizilmesini seçti (2. yol), yedek istedi.
+- **Yedek:** `ham-gorseller/yedek-3d-v19/` (önceki bin/json/js/css/KAYNAKLAR + üretim betikleri + OKU.md; git dışında) ve git etiketi `yedek-v19-skala-media-oncesi` (yalnızca yerelde, GitHub'a gönderilmedi). Geri dönüş: dosyaları geri kopyala, VERSION artır, yayınla.
+- **Nasıl çizildi:** Modelde sv ile st birbirine değiyor (aralarında boşluk yok). Bölme = st yüzeyine 0,12 mm'den yakın sv köşeleri (1014 nokta). st'nin merkez çizgisi boyunca her dilimde bölmenin modiolustan en uzak (dış) kenarı bulundu; tüp merkezi bu kenardan skala vestibuli yönüne 1,05·R, içe 0,9·R kaydırıldı. R = 0,28 mm, 12 kenarlı tüp, uçlar yarım küre; uzunluk ~21 mm, 1358 köşe / 2712 üçgen, +28 KB.
+- **Kontrol:** 54 merkez noktasından 50'si sv tarafında, 0'ı st içinde, 4'ü uçlarda dışarıda. Eski 31 parçanın baytları birebir aynı (ilk 3 944 972 bayt md5 aynı); yeni parça dosya sonuna eklendi (`periferik.json` `surum: 2`, `bayt: 3973466`).
+- **Veri:** `sm` → Tüm sistem ve İç kulak listelerinde sv ile st arasında; renk `--g3d-sm: #C8D63A`; açıklama "tarama verisi değildir, yaklaşıktır" diyor (proje sahibi doğrulayacak). Ekrandaki not ve değişiklikler satırı, `KAYNAKLAR.md` güncellendi.
+- **Sınır:** Seçilmediğinde sv'nin içinde kaldığı için neredeyse görünmez; modelde dokunarak seçilemez (önce sv'ye isabet eder), listeden seçilir. Kesit gerçekte üçgen; burada yuvarlak tüp.
+- Testler (açık/koyu): önceki bütün senaryolar geçti; İç kulak'ta 9 yapı.
