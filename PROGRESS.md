@@ -132,3 +132,40 @@ Aşağıda "TK" = test kulağı, "KK" = karşı (test edilmeyen) kulak.
 - Karşı kulağın ABG'si en az düzeye **eklenir** (Interacoustics) → s. 105'teki "−" baskı hatası kararı doğrulandı.
 - "TK kemik + KAA − 5" en çok formülü internette bulunamadı (kitaba özgü Lidén formülü); Katz s. 94 esas alındı.
 - Kulak çevresi (HDA 200) için yaygın kabul görmüş ayrı bir KAA değeri yok; tek çalışma 40 dB kuralını öneriyor → seçenek eklenmedi.
+
+---
+
+# PROGRESS — Görsel depo: 3D model (2026-11-14, sw v18)
+
+**Durum:** Kod bitti, yerelde test edildi. **Yayına gönderilmedi** (proje sahibinin onayı bekleniyor). Telefonda denenecek.
+
+## Paket
+Proje sahibinin getirdiği hazır `gorsel3d/` klasörü (görüntüleyici, veri, css, model, KAYNAKLAR.md). `ornek.html` ve `ornek.js` (deneme sayfası) istendiği gibi depoya alınmadı.
+`periferik.bin` / `periferik.json` değiştirilmedi.
+
+## Kaynaklar ve lisanslar
+- Sieber D. ve ark., OpenEar kütüphanesi, örnek ZETA (sağ kulak), https://zenodo.org/records/1473724 — CC BY 4.0. Orta kulak, iç kulak, sinirler, dış kulak yolu, damar ve kemik.
+- Artec 3D kulak taraması, https://www.artec3d.com/3d-models/ear — CC BY 3.0. Kulak kepçesi (başka bir kişiye ait).
+- İki lisans da atıf istiyor: ekrandaki "Kaynaklar" satırı kaldırılmamalı. Ayrıntı ve yapılan değişiklikler: `gorsel3d/KAYNAKLAR.md`.
+- **Kepçenin arka yüzü ve kepçe ile kanal arasındaki ~8 mm'lik ara parça ölçülmüş veri değildir; bölge sınırları yaklaşıktır.** (Ekrandaki not yazısında da yazıyor.)
+
+## Yapılanlar
+- `index.html`: depo düğmelerine "3D model" (`#seg-3d`, düğme grubu `seg4`), panel `#p-3d` > `#g3d-kok`; `gorsel3d/gorsel3d.css` ayrı dosya olarak bağlandı (paket kendi içinde bütün kalsın diye); `gorsel3d-veri.js` ve `gorsel3d.js` `app.js`'ten önce.
+- `app.js`: `SEGS` içine `3d`; `seg('3d')` → `kur3d()`. Tembel yükleme: `Gorsel3D.kur` yalnızca bölüm ilk açılınca çağrılır, sonra aynı örnek kalır. Açılışta `.bin` istenmez (testte doğrulandı).
+- Yönetici düzenlemesi: `editable/applyOv/adminPart`. Anahtarlar `g3d.bolum.<id>`, `g3d.yapi.<id>`, `g3d.kepce` (ad, aciklama), `g3d.metin` (ipucu, not). "Düzenle" bilgi kartında (`kartEki`), "İpucu ve notu düzenle" notun altında. `refresh3d()` `refreshContent()` içinde; `yenile()` çağırır. Görünüm (açık/koyu) değişince de `yenile()` (renkler yeniden okunur).
+- `gorsel3d.js` uyum değişiklikleri (çizim/kamera/dokunma hesapları değişmedi): `yenile()` ipucu ve not yazısını da tazeler; notun altına `kartEki('metin', 'metinler', yuva)` için ek yuva.
+- `gorsel3d.css`: düğme kuralları `.g3d button` yerine `.g3d-satir/.g3d-yapilar/.g3d-durum button` (yöneticinin Kaydet/Düzenle düğmelerini bozmasın diye); kaynak bağlantıları ≥44 px; koyu görünümde `--g3d-silik: #B5C4C9`; model yüklenmeden boş kart gizli.
+- `sw.js`: v18; ASSETS'e `gorsel3d.js`, `gorsel3d-veri.js`, `gorsel3d.css`, `periferik.json`. `.bin` için ayrı kural: önce önbellek, yoksa internet ve kaydet; arka planda yeniden indirmez. VERSION artınca eski önbellek (bin dahil) silinir → dosya adına sürüm eklemeye gerek yok.
+- `firestore.rules`: değişiklik gerekmedi (`icerik/{id}` her anahtara izin veriyor, alan sınırı 20; burada en çok 2 alan). CSP: değişiklik gerekmedi (model `connect-src 'self'`).
+- Temalar: 5 tema yalnızca `--accent`/`--bot` değiştiriyor; 3D bölüm `--accent` kullandığı için hepsine uyar.
+
+## Testler (yerel, http://localhost, görünmez Edge 400 px, sahte Firebase ile admin)
+- Açılışta `.bin` isteği 0; 3D açılınca 1; sekme değiştirip dönünce yine 1, tek canvas.
+- 6 bölüm, bilgi kartı ve sağ üst yazı doğru; iç kulakta yapı seçimi (diğerleri silik); kanvasa dokunma → "Kulak kepçesi" açıldı, 11 bölüm + dış kulak yolu düğmeleri; sonraki dokunuş "Antiheliks".
+- 5 görünüm düğmesi; yatay taşma yok (400/400); 44 px altı hedef yok.
+- Admin: İnkus adı değiştirildi → `icerik/g3d.yapi.inc` yazıldı, kart ve düğme yeni adla; "Varsayılana dön" → kayıt silindi, eski ad döndü. İpucu değişikliği ekrana yansıdı.
+- İnternetsiz: model indirilmemişse "Model indirilemedi…" + "Yeniden dene"; internet gelince "Yeniden dene" ile yüklendi. İndirilmişse internetsiz açıldı. İnternet varken yeniden açılışta `.bin` tekrar indirilmedi.
+- Açık ve koyu görünüm ekran görüntüleriyle kontrol edildi. Mevcut maskeleme testleri: 27/27.
+
+## Sonraki iş (şimdi yapılmayacak)
+- "Vestibüler" başlığı altında kulak kristallerinin (otokoni) hareketi.

@@ -8,7 +8,7 @@
 
    Firebase (Firestore/giriş) istekleri başka adrese gittiği için buraya karışmaz; onların internetsiz kopyasını
    Firestore'un kendi önbelleği tutar. Vaka kayıtları (Vakalarım) zaten yalnızca cihazın yerel deposundadır. */
-var VERSION = 'odyobot-v17';
+var VERSION = 'odyobot-v18';
 var ASSETS = [
   './',
   './index.html',
@@ -21,6 +21,10 @@ var ASSETS = [
   './cikti.js',
   './maskeleme-kural.js',
   './odybot.js',
+  './gorsel3d/gorsel3d-veri.js',
+  './gorsel3d/gorsel3d.js',
+  './gorsel3d/gorsel3d.css',
+  './gorsel3d/periferik.json',
   './firebase-config.js',
   './manifest.webmanifest',
   './vendor/firebase/firebase-app-compat.js',
@@ -94,6 +98,21 @@ self.addEventListener('fetch', function (e) {
       return res;
     }).catch(function () {
       return caches.match(req);
+    }));
+    return;
+  }
+
+  // 3D model verisi (gorsel3d/*.bin, ~4 MB): ASSETS'te yok, kurulumda indirilmez. İlk istekte internetten alınıp
+  // kaydedilir, sonra hep kayıtlı kopyadan gelir; arka planda yeniden indirilmez (veri harcamasın diye).
+  // VERSION artınca eski önbellek (bu dosya dahil) silinir, yeni sürümde model bir kez yeniden indirilir.
+  if (/\/gorsel3d\/[^/]+\.bin$/.test(path)) {
+    e.respondWith(caches.open(VERSION).then(function (c) {
+      return c.match(req).then(function (cached) {
+        return cached || fetch(req).then(function (res) {
+          if (res.status === 200) c.put(req, res.clone());
+          return res;
+        });
+      });
     }));
     return;
   }

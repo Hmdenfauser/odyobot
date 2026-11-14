@@ -1,0 +1,76 @@
+/* Gorsel3D içerik verisi: bölüm ve yapı adları, açıklamalar, arayüz yazıları.
+   Buradaki her metin varsayılandır; yönetici düzenlemesi için uygulamanın editable/applyOv düzenine bağlanmalıdır.
+   Klinik metinler proje sahibi tarafından kendi kaynağıyla doğrulanmalıdır. */
+window.GORSEL3D_VERI = {
+  bolumler: [
+    { id: 'tum', ad: 'Tüm sistem', aciklama: 'Kulak kepçesinden iç kulağa bütün periferik yapılar. Ayrıntı için bir bölüm seç ya da bir yapıya dokun.',
+      yapilar: ['eac', 'tm', 'mal', 'inc', 'sta', 'ct', 'n7', 'n8', 'sv', 'st', 'vest', 'ant', 'post', 'lat', 'crus', 'amp'],
+      ek: ['p_helix', 'p_antihelix', 'p_scapha', 'p_fossa', 'p_crush', 'p_cymba', 'p_cavum', 'p_tragus', 'p_antitragus', 'p_notch', 'p_lobule'] },
+    { id: 'dis', ad: 'Dış kulak', aciklama: 'Kulak kepçesi ve dış kulak yolu. Kepçenin bölümlerini görmek için kepçeye dokun.',
+      yapilar: ['p_helix', 'p_antihelix', 'p_scapha', 'p_fossa', 'p_crush', 'p_cymba', 'p_cavum', 'p_tragus', 'p_antitragus', 'p_notch', 'p_lobule', 'eac'] },
+    { id: 'orta', ad: 'Orta kulak', aciklama: 'Timpanik membran (kulak zarı) ve kemikçik zinciri. Titreşim kulak zarından malleus, inkus ve stapes yoluyla oval pencereye iletilir.',
+      yapilar: ['tm', 'mal', 'inc', 'sta', 'ct'] },
+    { id: 'ic', ad: 'İç kulak', aciklama: 'Koklea (iki skala), vestibül ve üç semisirküler kanal. Model iç kulağın perilenf boşluğunu gösterir.',
+      yapilar: ['sv', 'st', 'vest', 'ant', 'post', 'lat', 'crus', 'amp'] },
+    { id: 'sinir', ad: 'Sinirler', aciklama: 'Fasiyal sinir, vestibulokoklear sinir ve korda timpani.',
+      yapilar: ['n7', 'n8', 'ct'] },
+    { id: 'cevre', ad: 'Çevre yapılar', aciklama: 'Temporal kemik, internal karotis, sigmoid sinüs ve dura. Kulağın çevresindeki komşuluklar.',
+      yapilar: ['car', 'sin', 'bone'] }
+  ],
+  kepce: { ad: 'Kulak kepçesi', aciklama: 'Aurikula. Sesi toplayıp dış kulak yoluna yönlendirir ve sesin yönünü ayırt etmeye yardım eder. Bölümleri şimdi renkli; birine dokununca açıklaması açılır.' },
+  yapilar: {
+    eac: { ad: 'Dış kulak yolu', aciklama: 'Sesi timpanik membrana taşıyan kanal. Dışarıdan içeriye doğru öne ve içe yönelir. Modelde kanal içi boş bir tüp olarak gösteriliyor; dış ucundan içine bakınca timpanik membran görünür.' },
+    p_helix: { ad: 'Heliks', aciklama: 'Kulak kepçesinin dış kenarını çevreleyen kıvrım. Önde heliks krusu olarak konkanın içine uzanır, aşağıda lobüle karışır.' },
+    p_antihelix: { ad: 'Antiheliks', aciklama: 'Heliksin iç tarafında ona paralel uzanan kıvrım. Yukarıda süperior ve inferior krus olarak ikiye ayrılır; konkanın arka sınırını oluşturur.' },
+    p_scapha: { ad: 'Skafa', aciklama: 'Heliks ile antiheliks arasındaki uzun oluk.' },
+    p_fossa: { ad: 'Triangüler fossa', aciklama: 'Antiheliksin süperior ve inferior krusları arasında kalan üçgen çukur.' },
+    p_crush: { ad: 'Heliks krusu', aciklama: 'Heliksin konkanın içine uzanan başlangıç parçası. Konkayı üstte simba, altta kavum olarak ikiye böler.' },
+    p_cymba: { ad: 'Simba konka', aciklama: 'Konkanın heliks krusunun üstünde kalan üst bölümü.' },
+    p_cavum: { ad: 'Kavum konka', aciklama: 'Konkanın alt ve daha derin bölümü. Dış kulak yolu buradan başlar; kulak kalıbı ve kulak içi cihazlar buraya oturur.' },
+    p_tragus: { ad: 'Tragus', aciklama: 'Dış kulak yolu girişinin önündeki kıkırdak çıkıntı. Kanal girişini kısmen örter.' },
+    p_antitragus: { ad: 'Antitragus', aciklama: 'Tragusun karşısında, antiheliksin alt ucundaki küçük çıkıntı.' },
+    p_notch: { ad: 'İntertragik çentik', aciklama: 'Tragus ile antitragus arasındaki çentik (insisura intertragika).' },
+    p_lobule: { ad: 'Lobül', aciklama: 'Kulak memesi. Kepçenin kıkırdak içermeyen, yumuşak alt bölümü.' },
+    tm: { ad: 'Timpanik membran', aciklama: 'Kulak zarı. Dışa, aşağıya ve öne bakacak biçimde eğik durur; konik yapısının tepesi (umbo) malleus sapına tutunur.' },
+    mal: { ad: 'Malleus', aciklama: 'Çekiç. Sapı timpanik membrana gömülüdür, başı epitimpanumda inkus gövdesiyle eklem yapar.' },
+    inc: { ad: 'İnkus', aciklama: 'Örs. Kısa kolu arkaya uzanır; uzun kolunun ucundaki lentiküler çıkıntı stapes başıyla eklem yapar.' },
+    sta: { ad: 'Stapes', aciklama: 'Üzengi. İki bacağı ve tabanı vardır; tabanı oval pencereye oturur ve titreşimi perilenfe aktarır.' },
+    sv: { ad: 'Skala vestibuli', aciklama: 'Kokleanın oval pencere tarafındaki perilenf kanalı. Vestibülden başlar, apekste helikotrema ile skala timpaniye bağlanır.' },
+    st: { ad: 'Skala timpani', aciklama: 'Kokleanın yuvarlak pencere tarafındaki perilenf kanalı. Koklear implant elektrodu genellikle buraya yerleştirilir.' },
+    vest: { ad: 'Vestibül', aciklama: 'Koklea ile semisirküler kanallar arasındaki orta boşluk. Utrikulus ve sakkulus burada yer alır; stapes tabanı dış duvarındaki oval pencereye oturur.' },
+    ant: { ad: 'Anterior kanal', aciklama: 'Süperior kanal. Dikey kanallardan biri ve en yukarı uzananıdır; ampullası önde, diğer ucu ortak krusa katılır.' },
+    post: { ad: 'Posterior kanal', aciklama: 'İkinci dikey kanal. Anterior kanala yaklaşık dik durur ve arkaya uzanır; ampullası alt uçtadır.' },
+    lat: { ad: 'Lateral kanal', aciklama: 'Horizontal kanal. Öne doğru yaklaşık 30 derece yukarı eğimlidir; orta kulağın iç duvarında çıkıntı yapar.' },
+    crus: { ad: 'Ortak krus', aciklama: 'Crus commune. Anterior ve posterior kanalların ampullasız uçlarının birleşerek vestibüle açıldığı ortak bacak.' },
+    amp: { ad: 'Ampullalar', aciklama: 'Kanalların vestibüle açılan genişlemiş uçları. Anterior ve lateral ampullalar yan yanadır; posterior ampulla ayrı ve daha aşağıdadır.' },
+    n7: { ad: 'Fasiyal sinir', aciklama: 'VII. kranial sinir. İç kulak yolundan girer, genikulat gangliyonda döner, oval pencerenin üstünden geçer ve mastoid parçada aşağı iner. Stapedius kasını uyarır.' },
+    n8: { ad: 'VIII. Kranial (Vestibulokoklear) Sinir', aciklama: 'Vestibulokoklear sinir. İç kulak yolunda koklear ve vestibüler dallara ayrılarak kokleaya ve vestibüler uç organlara ulaşır.' },
+    ct: { ad: 'Korda timpani', aciklama: 'Fasiyal sinirin dalı. Orta kulakta malleus sapı ile inkusun uzun kolu arasından geçer; tat ve tükürük bezi liflerini taşır.' },
+    car: { ad: 'İnternal karotis', aciklama: 'Arterin petröz parçası. Kokleanın hemen önünden ve altından geçer.' },
+    sin: { ad: 'Sigmoid sinüs ve dura', aciklama: 'Venöz sinüs ve onu çevreleyen dura. Mastoidin arkasında yer alır; burada yalnızca kulağa yakın bölümü gösteriliyor.' },
+    bone: { ad: 'Temporal kemik', aciklama: 'Bütün bu yapıları barındıran kemik. Burada kulağa yakın bölümü yarı saydam gösteriliyor.' }
+  },
+  metinler: {
+    canvasEtiketi: 'Döndürülebilir periferik işitme sistemi modeli',
+    taraf: 'Sağ kulak',
+    olcek: '10 mm',
+    indiriliyor: 'Model indiriliyor (yaklaşık 4 MB)…',
+    indirilemedi: 'Model indirilemedi. İnternet bağlantını kontrol edip yeniden dene.',
+    yenidenDene: 'Yeniden dene',
+    webglYok: 'Bu cihazda 3D çizim (WebGL) açılamadı. Başka bir tarayıcıda dene.',
+    baslatilamadi: '3D sahne başlatılamadı.',
+    baglamKayboldu: '3D sahne durdu. Sayfayı yenile.',
+    bolumBasligi: 'Bölüm',
+    yapilarBasligi: 'Yapılar',
+    gorunumBasligi: 'Görünüm',
+    gorunumler: { lat: 'Lateralden', med: 'Medialden', ust: 'Üstten', on: 'Önden', arka: 'Arkadan' },
+    ipucu: 'Döndür, iki parmakla yakınlaştır, bir yapıya dokun.',
+    not: 'Kulak kepçesi başka bir kişinin taramasıdır; dış kulak yolunun dış ucuna hizalandı ve aradaki yaklaşık 8 mm\'lik boşluk çizilmiş bir tüp parçasıyla kapatıldı; o kısım tarama verisi değildir. Kepçenin arka yüzü ölçülmüş veri değildir, ön yüzden yaklaşık 3 mm kalınlık verilerek tamamlandı. Kepçe bölümlerinin sınırları tarama üzerinde elle, iç kulaktaki vestibül, kanal, ampulla ve ortak krus sınırları otomatik ayrıştırmayla çizildi. Hepsi yaklaşıktır.',
+    kaynakOnsoz: 'Kaynaklar:',
+    kaynaklar: [
+      { metin: 'Sieber D. ve ark., OpenEar kütüphanesi, örnek ZETA (CC BY 4.0)', adres: 'https://zenodo.org/records/1473724' },
+      { metin: 'Artec 3D kulak taraması (CC BY 3.0)', adres: 'https://www.artec3d.com/3d-models/ear' }
+    ],
+    degisiklikler: 'Değişiklikler: yapılar anatomik yöne çevrildi; kepçe kırpıldı, yüzde 15 küçültüldü, arka yüzü tamamlandı, bölgelere ayrıldı ve kanala bir ara parçayla birleştirildi; dış kulak yolunun iki ucu açıldı; iç kulak sıvı boşluğu bölgelere ayrıldı; kemik ile sinüs ve dura kırpılıp sadeleştirildi; renklendirildi.'
+  }
+};

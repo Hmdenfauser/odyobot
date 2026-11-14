@@ -21,6 +21,7 @@
 <link rel="icon" href="icons/icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="gorsel3d/gorsel3d.css">
 
 
 </head>
@@ -123,10 +124,11 @@
         <h2 data-k="depo.baslik">Görsel depo</h2>
         <p class="lead" data-k="depo.lead">Şemalar ve cihaz görselleri tek yerde.</p>
       </div>
-      <div class="seg" role="group" aria-label="Depo bölümü">
+      <div class="seg seg4" role="group" aria-label="Depo bölümü">
         <button type="button" id="seg-yolak" aria-pressed="true">Yolaklar</button>
         <button type="button" id="seg-refleks" aria-pressed="false">Refleks arkı</button>
         <button type="button" id="seg-cihaz" aria-pressed="false">Cihazlar</button>
+        <button type="button" id="seg-3d" aria-pressed="false">3D model</button>
       </div>
 
       <div id="p-yolak" class="stack">
@@ -169,6 +171,11 @@
           <div class="board" id="dev-implant"></div>
         </div>
         <p class="note" data-k="cihaz.not">Uygun işitme kaybı aralıkları ve endikasyonlar kaynağa, üreticiye ve kliniğe göre değişir.</p>
+      </div>
+
+      <!-- 3D model: içeriği gorsel3d/gorsel3d.js çizer. Model (yaklaşık 4 MB) bölüm ilk kez açılınca indirilir (app.js). -->
+      <div id="p-3d" class="stack" hidden>
+        <div id="g3d-kok"></div>
       </div>
     </div>
   </section>
@@ -524,6 +531,8 @@
 <script src="vendor/firebase/firebase-auth-compat.js"></script>
 <script src="vendor/firebase/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
+<script src="gorsel3d/gorsel3d-veri.js"></script>
+<script src="gorsel3d/gorsel3d.js"></script>
 <script src="app.js"></script>
 <script src="akis.js"></script>
 <script src="odyo-hesap.js"></script>

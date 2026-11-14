@@ -15,7 +15,7 @@ OdyoBOT, odyoloji öğrencileri ve klinisyenler için bir başvuru uygulaması. 
 | # | Sekme | İçerik | Durum |
 |---|---|---|---|
 | 1 | Ana sayfa | Küçük karşılama ("Merhaba, odyolog", saat, tarih) ve fotoğraflı akış (`akis.js`). Filtre çipleri: Tümü / Etkinlikler / İlanlar / Haberler. Etkinlik: 3:4 afiş kartı, tarih aralığı, yer; yaklaşan önce, geçmiş soluk + "Geçti"; Tümü'nde yatay şerit. İş ilanı: kurum, başlık, son başvuru, küçük görsel; süresi geçen soluk. Haber: Twitter benzeri akış (OdyoBOT simgesi, "3 saat önce", ≤280 karakter, 16:9 fotoğraf, tıklanabilir https bağlantıları). Karta dokununca alttan tam ekran ayrıntı sayfası (`#duyuru/<kimlik>`, paylaşılabilir; geri tuşu kapatır). İlk 30 kayıt, "Daha fazla göster". Paylaşımı yalnızca yönetici yapar (formda türe göre alanlar, fotoğraf ekle/kaldır), ayrıntı sayfasında Düzenle/Sil. | Yapıldı (2026-11-11), sw v17. Firestore kuralları konsola yapıştırılacak. |
-| 2 | Görsel depo | (a) İşitme yolakları: koklea'dan işitsel kortekse 9 basamaklı, dokunulabilir şema (akustik striyalar dahil). Her kutuda beyin bölgesi yazıyor; karşıya geçişler iki taraflı. Her basamakta konum, işlev, klinik not ve ABR dalga karşılığı var. (b) Akustik refleks arkı: simetrik, iki kulak da uyarılıyor. Dış kulaktan 7. sinire 7 basamak. (a) ve (b) proje sahibinin `ham-gorseller/` içindeki referans görsellerine bakılarak yeniden çizildi (2026-11-09); görseller uygulamaya konmadı. (c) Cihazlar: 8 işitme cihazı (BTE, RIC, ITE tam/yarım konka, ITC, CIC, IIC, bantlı kemik iletimli) ve 10 implant kartı. Liste `app.js` → `DEVICES`. Açıklamaları yönetici uygulama içinden yazar (kartta "Açıklama ekle/düzenle"). | Hepsi yapıldı (2026-11-09). Açıklamalar boş, proje sahibi yazacak. |
+| 2 | Görsel depo | (a) İşitme yolakları: koklea'dan işitsel kortekse 9 basamaklı, dokunulabilir şema (akustik striyalar dahil). Her kutuda beyin bölgesi yazıyor; karşıya geçişler iki taraflı. Her basamakta konum, işlev, klinik not ve ABR dalga karşılığı var. (b) Akustik refleks arkı: simetrik, iki kulak da uyarılıyor. Dış kulaktan 7. sinire 7 basamak. (a) ve (b) proje sahibinin `ham-gorseller/` içindeki referans görsellerine bakılarak yeniden çizildi (2026-11-09); görseller uygulamaya konmadı. (c) Cihazlar: 8 işitme cihazı (BTE, RIC, ITE tam/yarım konka, ITC, CIC, IIC, bantlı kemik iletimli) ve 10 implant kartı. Liste `app.js` → `DEVICES`. Açıklamaları yönetici uygulama içinden yazar (kartta "Açıklama ekle/düzenle"). (d) 3D model (`gorsel3d/`): periferik işitme sisteminin döndürülebilir modeli (sağ kulak), 6 bölüm (Tüm sistem, Dış kulak, Orta kulak, İç kulak, Sinirler, Çevre yapılar), yapıya dokununca diğerleri silikleşir ve bilgi kartı açılır; kepçeye dokununca 11 bölümü renklenir; 5 görünüm düğmesi. Model (~4 MB) bölüm ilk açılınca iner. Kaynaklar: OpenEar (Sieber ve ark., CC BY 4.0) ve Artec 3D kulak taraması (CC BY 3.0); "Kaynaklar" satırı lisans gereği ekranda kalmalı. Kepçenin arka yüzü ve kepçe–kanal ara parçası ölçülmüş veri değildir; bölge sınırları yaklaşıktır. | (a)–(c) yapıldı (2026-11-09), açıklamalar boş, proje sahibi yazacak. (d) yapıldı (2026-11-14), sw v18, yayın onayı bekliyor; klinik metinleri proje sahibi uygulamadan doğrulayacak. |
 | 3 | OdyoBot | Ortada, turuncu, yükseltilmiş yuvarlak düğme; içinde uygulama logosu. Maskeleme asistanı (bkz. §7): düğmeli sohbet, vakalar Vakalarım'dan gelir (tek ya da çoklu). Kaynak: Katz. | Yapıldı (2026-11-10): kurallar `maskeleme-kural.js` (Katz 7. baskı, Bölüm 6), plato rehberi, testler `testler/maskeleme-test.js` |
 | 4 | Vakalarım (`#vakalarim`; eski adı Geçmiş, `#gecmis` yönlendirilir) | Odyometri vaka kaydı (yalnızca o cihazda). Liste (küçük odyogram + tip/derece özeti), form (kimlik, tarih, 125–8000 Hz hava/kemik eşikleri, ara frekans anahtarı, M/maskeleme düzeyi, NR), canlı odyogram (tek/ayrı grafik, lejant), otomatik PTA/derece/tip (`odyo-hesap.js`), ek ölçümler (SRT, SDS/WRS, sunum düzeyi, MCL, UCL, Weber, Rinne), yedekleme (JSON indir/paylaş, CSV, geri yükle: birleştir/üzerine yaz), 10 kayıtta bir yedek hatırlatması. Odyogram çıktısı JPEG/PDF (detaylı / yalnızca odyogram). Her kartta "OdyoBOT'a gönder" düğmesi; listede "Seç" ile birden çok vaka gönderilir. Sekme simgesi: küçük odyogram (çerçeve; O ve X, aralarında onlara değmeyen kesikli çizgi) (2026-11-10). | Yapıldı (2026-11-09). Ayrıntı: `PROGRESS.md` |
 | 5 | Notlar | Kısa ders notları ve arama kutusu. Konular: saf ses odyometrisi, işitme kaybı tipleri, timpanometri, konuşma odyometrisi, maskeleme kavramları, OAE, ABR, akustik refleks. | Yapıldı |
@@ -51,7 +51,12 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 - Alt çubuk sırası: Ana sayfa, Görsel depo, OdyoBOT, Vakalarım, Notlar.
 - Odyogram çıktısı (`cikti.js`), Vakalarım → OdyoBOT gönderme, düğmeli sohbet (`odybot.js`). sw v12. Ayrıntı: `PROGRESS.md`.
 
-### Kaldığımız yer (2026-11-11 akşamı)
+### Kaldığımız yer (2026-11-14)
+- Görsel depoya **"3D model"** bölümü eklendi (sw v18). Hazır paket `gorsel3d/` proje sahibinden geldi; uyum değişiklikleri yapıldı (ayrıntı `PROGRESS.md`). Yerelde sahte Firebase ile test edildi: model, 6 bölüm, dokunma, kepçe, 5 görünüm, yönetici Düzenle/Varsayılana dön, internetsiz açılış, 400 px, açık/koyu. **Yayına gönderilmedi; proje sahibinin onayı bekleniyor.**
+- firestore.rules değişmedi (icerik kuralı yeni anahtarlara zaten izin veriyor). CSP değişmedi.
+- Telefonda denenecek: modelin döndürülmesi/iki parmakla yakınlaştırma, dokunarak seçme, koyu görünümde silik yapıların okunurluğu, ilk açılışta 4 MB indirme süresi.
+
+### Önceki: kaldığımız yer (2026-11-11 akşamı)
 - Ana sayfa fotoğraflı akışa çevrildi (sw v17, **yayında**). Sahte veriyle yerelde test edildi. Yeni `firestore.rules` proje sahibi tarafından konsola yapıştırıldı ve hatasız yayınlandı (2026-11-11). İlk yapıştırmada dosya bozuktu (düzenleme betiğinde JS `replace` içindeki `$'` deseni metni çoğaltmıştı; düzeltildi). Not: dosyaya kural/metin yazarken `replace(a, () => b)` kullan.
 - **Yarın ilk iş (telefonda, proje sahibiyle):** yönetici girişiyle fotoğraflı birer Haber, Etkinlik, İş ilanı paylaşmak (gerçek yazma ve kurallar ilk kez denenecek; fotoğrafın kaydı bilgisayarda hiç denenmedi), karttan ayrıntı sayfası (geri tuşu, ✕, Paylaş), Düzenle ve Sil, uçak modunda açılış. Hata çıkarsa ekran görüntüsü istenecek.
 - Ayrıca telefonda denenmemiş olanlar: görünüm düğmesi (v16), Vakalarım'dan OdyoBOT'a gönderme ve maskeleme asistanı, JPEG/PDF çıktısı.
@@ -69,8 +74,9 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 - Ayrıca bekleyen küçük işler: cihaz kartlarının açıklamaları (proje sahibi uygulamadan yazacak) ve yenilenecek cihaz görselleri (yukarıdaki liste).
 
 ### Sıradaki işler (bu sırayla)
-1. OdyoBot maskeleme asistanı
-2. Test soruları ve mağaza paketi
+1. ~~OdyoBot maskeleme asistanı~~ (bitti, sw v13)
+2. 3D model: "Vestibüler" başlığı altında kulak kristallerinin (otokoni) hareketi. *Şimdi yapılmayacak; not düşüldü (2026-11-14).*
+3. Test soruları ve mağaza paketi
 
 ## 4. Teknik yapı ve veri modeli
 Uygulama bir **PWA**: tarayıcıdan ana ekrana eklenebilen ve internetsiz de açılabilen web uygulaması. Derleme aracı yok; sade HTML, CSS ve JavaScript.
@@ -86,6 +92,7 @@ Uygulama bir **PWA**: tarayıcıdan ana ekrana eklenebilen ve internetsiz de aç
 | `vakalarim.js` | Vakalarım sekmesi: veri katmanı (`VakaDeposu`, şimdilik localStorage; fotoğraf eklenince IndexedDB'ye yalnızca bu katman değişir), form, odyogram çizimi, liste/ayrıntı, yedekleme ve CSV |
 | `cikti.js` | Odyogram çıktısı: SVG sayfa → JPEG; PDF için küçük el yazımı PDF yazıcı. Renkler `--cikti-*` |
 | `odybot.js` | OdyoBOT sohbet ekranı (düğmeli, kural tabanlı). Mesaj metinleri `index.html` `#b-metinler` |
+| `gorsel3d/` | 3D model bölümü (hazır paket). `gorsel3d.js` görüntüleyici (kütüphanesiz WebGL; çizim/kamera/dokunma hesaplarına dokunulmaz), `gorsel3d-veri.js` adlar, açıklamalar, arayüz yazıları (`window.GORSEL3D_VERI`), `gorsel3d.css` görünüm (yapı renkleri `--g3d-<kimlik>`), `periferik.json` + `periferik.bin` model (değiştirilmez), `KAYNAKLAR.md` lisanslar. `app.js` → `kur3d()` ilk açılışta `Gorsel3D.kur` çağırır. |
 | `maskeleme-kural.js` | Maskeleme kuralları (Katz). Ekrandan bağımsız, Node ile test: `node testler/maskeleme-test.js` |
 | `odyo-hesap.js` | Hesap kuralları (PTA, derece, tip). Ekrandan bağımsız; Node ile `require` edilip test edilebilir. |
 | `firebase-config.js` | Firebase web yapılandırması ve admin UID'si (gizli bilgi değil, bkz. §8) |
@@ -110,7 +117,7 @@ Uygulama bir **PWA**: tarayıcıdan ana ekrana eklenebilen ve internetsiz de aç
 | Firestore | `gorseller` | Herkes okur, yalnızca admin yazar | `veri` ("data:image/jpeg;base64," ile başlar, <900 000 karakter), `olusturma`. Paylaşım silinince ya da fotoğrafı değişince eski görsel de silinir (tek seferde, batch). Firebase Storage ücretsiz planda kapalı olduğu için bu yol seçildi. |
 | Firestore | `notlar` | Herkes okur, yalnızca admin yazar | `baslik` (≤100), `maddeler` (metin listesi, ≤40), `olusturma` |
 | Firestore | `cihazlar/{cihaz kimliği}` | Herkes okur, yalnızca admin yazar | `maddeler` (metin listesi, 1–20), `guncelleme`. Kişisel veri değil. |
-| Firestore | `icerik/{anahtar}` | Herkes okur, yalnızca admin yazar | `alanlar` (yalnızca değiştirilen alanlar: alan → metin, ≤20), `guncelleme`. Anahtarlar: `yolak.<id>`, `refleks.<id>`, `not.<sıra>`, `cihaz.<id>`, `metin.<data-k>`. Silinirse koddaki varsayılan metin döner. |
+| Firestore | `icerik/{anahtar}` | Herkes okur, yalnızca admin yazar | `alanlar` (yalnızca değiştirilen alanlar: alan → metin, ≤20), `guncelleme`. Anahtarlar: `yolak.<id>`, `refleks.<id>`, `not.<sıra>`, `cihaz.<id>`, `metin.<data-k>`, `g3d.bolum.<id>`, `g3d.yapi.<id>`, `g3d.kepce` (ad, aciklama), `g3d.metin` (ipucu, not). Silinirse koddaki varsayılan metin döner. |
 | Firestore | `ayar/tema` | Herkes okur, yalnızca admin yazar | `id` (tema adı), `guncelleme` |
 | Cihaz (localStorage, anahtar `odybot:vakalar`) | vakalar (Vakalarım) | Yalnızca o cihaz | `id`, `surum`, `kimlik` (≤40, ad-soyad değil), `tarih`, `notlar` (≤2000), `olusturma`, `guncelleme`, `esik.{sag,sol}.{hava,kemik}.{Hz}` = `{db (-10..120 tam sayı), maskeli, maskDb, nr}` (boş frekans yazılmaz), `konusma.{sag,sol}` = `{srt, sds (0..100), sunum, maskeli}`, `mcl.{sag,sol}`, `ucl.{sag,sol}`, `weber` (orta/sag/sol/yapilmadi), `rinne.{sag,sol}` (pozitif/negatif/yapilmadi). Eski kayıtlardaki `etiket`/`not` okunurken taşınır. |
 | Cihaz (sessionStorage) | `odybot:gonderilen` | Yalnızca o sekme | Vakalarım'dan OdyoBOT'a gönderilen vaka kimlikleri (değer değil); bot okuyunca siler |
@@ -186,6 +193,7 @@ Uygulama bir **PWA**: tarayıcıdan ana ekrana eklenebilen ve internetsiz de aç
   - Yeni bir dosya eklendiyse veya silindiyse `sw.js` içindeki `ASSETS` listesini güncelle.
   - Her yayında `sw.js` içindeki `VERSION` değerini bir artır (ör. `odyobot-v4`). Böylece telefonlardaki eski kopya yenilenir.
   - `sw.js` sayfa, css, js ve manifest dosyalarını önce internetten alır. Görsel, simge ve yazı tiplerini önce önbellekten alır. Bunun nedeni: v2 yayınında telefon yeni `index.html`'i eski `app.js`/`styles.css` ile açtı ve kartlar görünmedi (2026-11-09). Bu ayrımı bozma.
+  - 3D model verisi (`gorsel3d/*.bin`, ~4 MB) `ASSETS`'te **yok**: ilk istekte indirilip önbelleğe yazılır, sonra hep önbellekten gelir (arka planda yeniden indirilmez). `VERSION` artınca silinir ve bir kez yeniden iner; bu yüzden model değişirse ayrıca dosya adını değiştirmek gerekmez.
 - **Test yöntemi:**
   - Edge görünmez modda (`--headless`), uygulama 400 px genişliğinde bir çerçevenin (iframe) içinde açılır ve ekran görüntüsü alınır.
   - Açık/koyu tema `--blink-settings=preferredColorScheme=1/0` ile seçilir.

@@ -427,12 +427,13 @@
   $('n-ara').addEventListener('input', function () { renderNotes($('n-ara').value); });
 
   /* ---------- depo segmented control ---------- */
-  var SEGS = ['yolak', 'refleks', 'cihaz'];
+  var SEGS = ['yolak', 'refleks', 'cihaz', '3d'];
   function seg(which) {
     SEGS.forEach(function (s) {
       $('seg-' + s).setAttribute('aria-pressed', s === which ? 'true' : 'false');
       $('p-' + s).hidden = s !== which;
     });
+    if (which === '3d') kur3d();   // model yalnızca bu bölüm ilk kez açılınca indirilir
   }
   SEGS.forEach(function (s) { $('seg-' + s).addEventListener('click', function () { seg(s); }); });
 
@@ -648,6 +649,47 @@
   }
   renderDevices();
 
+  /* ---------- 3D model (gorsel3d/) ----------
+     Görüntüleyici gorsel3d/gorsel3d.js, metinler gorsel3d/gorsel3d-veri.js (window.GORSEL3D_VERI).
+     Tembel yükleme: Gorsel3D.kur yalnızca "3D model" bölümü ilk kez açılınca çağrılır (periferik.bin ~4 MB),
+     sonraki açılışlarda aynı örnek kullanılır. Yönetici düzenlemesi: icerik/g3d.bolum.<id>, g3d.yapi.<id>,
+     g3d.kepce (ad, aciklama) ve g3d.metin (ipucu, not). "Düzenle" bilgi kartına kartEki kancasıyla eklenir. */
+  var G3D = window.GORSEL3D_VERI, g3d = null, G3D_ALAN = [{ f: 'ad', ad: 'Ad' }, { f: 'aciklama', ad: 'Açıklama', cok: true }];
+  var G3D_METIN_ALAN = [{ f: 'ipucu', ad: 'İpucu (modelin altında)', cok: true }, { f: 'not', ad: 'Not (sayfanın altında)', cok: true }];
+  if (G3D) {
+    G3D.bolumler.forEach(function (b) { b.key = 'g3d.bolum.' + b.id; editable(b, ['ad', 'aciklama']); });
+    Object.keys(G3D.yapilar).forEach(function (id) { var y = G3D.yapilar[id]; y.key = 'g3d.yapi.' + id; editable(y, ['ad', 'aciklama']); });
+    G3D.kepce.key = 'g3d.kepce'; editable(G3D.kepce, ['ad', 'aciklama']);
+    G3D.metinler.key = 'g3d.metin'; editable(G3D.metinler, ['ipucu', 'not']);
+  }
+  function g3dNesne(tur, kimlik) {
+    if (tur === 'yapi') return G3D.yapilar[kimlik];
+    if (tur === 'kepce') return G3D.kepce;
+    if (tur === 'metin') return G3D.metinler;
+    return G3D.bolumler.filter(function (b) { return b.id === kimlik; })[0];
+  }
+  function g3dKartEki(tur, kimlik, yuva) {
+    var o = g3dNesne(tur, kimlik); if (!o) return;
+    var a = tur === 'metin' ? adminPart(o.key, o, G3D_METIN_ALAN, 'İpucu ve notu düzenle') : adminPart(o.key, o, G3D_ALAN, 'Düzenle');
+    if (a) yuva.appendChild(a);
+  }
+  function kur3d() {
+    if (g3d || !G3D || !window.Gorsel3D) return;
+    g3d = window.Gorsel3D.kur($('g3d-kok'), { veri: G3D, veriYolu: 'gorsel3d/', kartEki: g3dKartEki });
+  }
+  function refresh3d() {
+    if (!G3D) return;
+    G3D.bolumler.forEach(function (b) { applyOv(b.key, b); });
+    Object.keys(G3D.yapilar).forEach(function (id) { applyOv(G3D.yapilar[id].key, G3D.yapilar[id]); });
+    applyOv(G3D.kepce.key, G3D.kepce);
+    applyOv(G3D.metinler.key, G3D.metinler);
+    if (g3d) g3d.yenile();
+  }
+  // Açık/koyu görünüm değişince yapı renkleri (CSS değişkenleri) yeniden okunur.
+  function g3dRenk() { if (g3d) g3d.yenile(); }
+  new MutationObserver(g3dRenk).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  if (window.matchMedia) { var g3dMq = window.matchMedia('(prefers-color-scheme: dark)'); if (g3dMq.addEventListener) g3dMq.addEventListener('change', g3dRenk); }
+
   /* ---------- sayfadaki sabit metinler: index.html'de data-k="..." taşıyan her öğe ---------- */
   var STATIC = [];
   document.querySelectorAll('[data-k]').forEach(function (el) {
@@ -665,7 +707,7 @@
     });
   }
   // Tüm düzenlenebilir içeriği yeniden çizer (yönetici değişikliği geldiğinde, giriş/çıkışta).
-  function refreshContent() { refreshPathway(); refreshReflex(); refreshNotes(); refreshDevices(); refreshStatic(); bildir('odyo:metinler'); }
+  function refreshContent() { refreshPathway(); refreshReflex(); refreshNotes(); refreshDevices(); refresh3d(); refreshStatic(); bildir('odyo:metinler'); }
 
   /* ---------- servis çalışanı: internetsiz açılma (yalnızca https veya localhost'ta çalışır) ---------- */
   if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {

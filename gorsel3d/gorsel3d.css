@@ -1,0 +1,69 @@
+/* Gorsel3D görünümü. Uygulamanın tema değişkenlerini kullanır (--surface, --ink, --muted, --line, --accent, --accent-ink, --bg, --font-*).
+   Yapı renkleri burada isimli değişkenlerdir; gorsel3d.js bunları okur. Koda renk yazılmaz. */
+.g3d {
+  --g3d-sahne: var(--surface);
+  --g3d-silik: #9EADB2;
+  --g3d-kepce: #DEB094;
+  --g3d-eac: #C9917D;
+  --g3d-p_helix: #DBAD94;
+  --g3d-p_antihelix: #C294C2;
+  --g3d-p_scapha: #94C2DB;
+  --g3d-p_fossa: #EDADC7;
+  --g3d-p_crush: #F0CC7A;
+  --g3d-p_cymba: #ADD694;
+  --g3d-p_cavum: #7AC7B8;
+  --g3d-p_tragus: #E07A6B;
+  --g3d-p_antitragus: #85A3E6;
+  --g3d-p_notch: #9E9EA8;
+  --g3d-p_lobule: #F29E80;
+  --g3d-tm: #F2B8A3;
+  --g3d-mal: #F5E6B8;
+  --g3d-inc: #E6BD66;
+  --g3d-sta: #CC8538;
+  --g3d-sv: #2EA88C;
+  --g3d-st: #2B70C2;
+  --g3d-vest: #E3A640;
+  --g3d-ant: #8C80E0;
+  --g3d-post: #D9598A;
+  --g3d-lat: #59C2E6;
+  --g3d-crus: #A666C9;
+  --g3d-amp: #E0663B;
+  --g3d-n7: #F5C41A;
+  --g3d-n8: #F7E08A;
+  --g3d-ct: #ED991F;
+  --g3d-car: #C7404A;
+  --g3d-sin: #6B73C9;
+  --g3d-bone: #D9D4C2;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.g3d-sahne { position: relative; background: var(--g3d-sahne); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.g3d-sahne canvas { display: block; width: 100%; height: min(60vh, 440px); touch-action: none; cursor: grab; }
+.g3d-sahne canvas:active { cursor: grabbing; }
+.g3d-etiket { position: absolute; font: 500 12px/1.3 var(--font-mono); color: var(--muted); pointer-events: none; }
+.g3d-sagust { right: 12px; top: 10px; text-align: right; }
+.g3d-solalt { left: 12px; bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.g3d-cubuk { display: inline-block; height: 2px; background: currentColor; }
+.g3d-durum { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); margin: 0; padding: 0 16px; text-align: center; color: var(--muted); font: 400 14px/1.4 var(--font-body); }
+.g3d-durum button { display: block; margin: 10px auto 0; }
+.g3d-baslik { font: 500 12px/1 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 4px 0 0; }
+.g3d-satir { display: flex; flex-wrap: wrap; gap: 8px; }
+.g3d-yapilar { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.g3d-satir button, .g3d-yapilar button, .g3d-durum button { font: 500 14px/1.2 var(--font-body); color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 10px; min-height: 44px; padding: 8px 12px; cursor: pointer; }
+.g3d-satir button:focus-visible, .g3d-yapilar button:focus-visible, .g3d-durum button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.g3d-satir button[aria-pressed="true"], .g3d-yapilar button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.g3d-yapilar button { display: flex; align-items: center; gap: 8px; text-align: left; }
+.g3d-nokta { flex: none; width: 12px; height: 12px; border-radius: 50%; border: 1px solid var(--line); }
+.g3d-kart { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+.g3d-kart h4 { font: 600 19px/1.2 var(--font-display); margin: 0 0 6px; color: var(--ink); }
+.g3d-kart p { margin: 0; color: var(--muted); }
+.g3d-not { font-size: 14px; color: var(--muted); margin: 0; }
+.g3d-not a { color: var(--accent); display: inline-block; min-height: 44px; padding: 12px 0; }
+.g3d [hidden] { display: none !important; }
+.g3d-kart-ek:empty { display: none; }
+.g3d-kart .editbox { margin-top: 10px; }
+/* Koyu görünüm (OdyoBOT): silik (saydam) yapılar koyu zeminde kaybolmasın diye daha açık gri. Seçiciler styles.css ile aynı. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .g3d { --g3d-silik: #B5C4C9; }
+}
+:root[data-theme="dark"] .g3d { --g3d-silik: #B5C4C9; }
+.g3d-kart:has(> h4:empty) { display: none; }
