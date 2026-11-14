@@ -67,3 +67,28 @@
 }
 :root[data-theme="dark"] .g3d { --g3d-silik: #B5C4C9; }
 .g3d-kart:has(> h4:empty) { display: none; }
+
+/* ---- OdyoBOT telefon düzeni (2026-11-14) ---- */
+.g3d-geri { position: absolute; left: 8px; top: 8px; z-index: 1; font: 600 14px/1 var(--font-body); color: var(--ink);
+  background: var(--surface); border: 1px solid var(--line); border-radius: 22px; min-height: 44px; min-width: 44px; padding: 0 16px; cursor: pointer;
+  box-shadow: 0 1px 4px color-mix(in srgb, var(--ink) 18%, transparent); }
+.g3d-geri:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.g3d-sagust { max-width: 55%; }
+.g3d-ipucu { font-size: 13px; text-align: center; margin-top: -4px; }
+.g3d-kart { padding: 14px 16px; }
+.g3d-kart h4 { font-size: 18px; }
+.g3d-kart p { font-size: 15px; line-height: 1.5; }
+/* Bölüm: eşit genişlikte 3 sütun */
+.g3d-bolumler { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.g3d-bolumler button { padding: 6px 4px; font-size: 13px; text-align: center; }
+/* Görünüm: tek satır, uygulamadaki seçim çubuğu gibi */
+.g3d-gorunumler { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; padding: 3px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+.g3d-gorunumler button { border: none; background: none; color: var(--muted); padding: 4px 2px; font-size: 12px; min-width: 0; border-radius: 7px; overflow-wrap: anywhere; }
+.g3d-gorunumler button:active { background: var(--accent); color: var(--accent-ink); }
+/* Yapılar: daha sık 2 sütun */
+.g3d-yapilar { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 6px; }
+.g3d-yapilar button { font-size: 13px; padding: 6px 10px; gap: 8px; }
+.g3d-baslik { margin-top: 8px; }
+@media (max-width: 480px) {
+  .g3d-sahne canvas { height: min(52vh, 420px); }
+}

@@ -57,6 +57,7 @@ window.GORSEL3D_VERI = {
     indiriliyor: 'Model indiriliyor (yaklaşık 4 MB)…',
     indirilemedi: 'Model indirilemedi. İnternet bağlantını kontrol edip yeniden dene.',
     yenidenDene: 'Yeniden dene',
+    geri: 'Geri',
     webglYok: 'Bu cihazda 3D çizim (WebGL) açılamadı. Başka bir tarayıcıda dene.',
     baslatilamadi: '3D sahne başlatılamadı.',
     baglamKayboldu: '3D sahne durdu. Sayfayı yenile.',

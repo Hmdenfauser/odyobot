@@ -55,13 +55,15 @@
     olcek.appendChild(cubuk); olcek.appendChild(olcekYazi); olcek.hidden = true;
     var durum = h('p', 'g3d-durum', M.indiriliyor);
     durum.setAttribute('role', 'status');
-    sahne.appendChild(cv); sahne.appendChild(neresi); sahne.appendChild(olcek); sahne.appendChild(durum);
-    var ipucu = h('p', 'g3d-not', M.ipucu);
-    var secBox = h('div', 'g3d-satir'), partBox = h('div', 'g3d-yapilar');
+    // OdyoBOT uyarlaması: modelin üstünde "Geri" düğmesi (seçimi kaldırır → kepçeyi kapatır → Tüm sistem'e döner).
+    var geriBtn = h('button', 'g3d-geri', '← ' + (M.geri || 'Geri')); geriBtn.type = 'button'; geriBtn.hidden = true;
+    sahne.appendChild(cv); sahne.appendChild(neresi); sahne.appendChild(olcek); sahne.appendChild(geriBtn); sahne.appendChild(durum);
+    var ipucu = h('p', 'g3d-not g3d-ipucu', M.ipucu);
+    var secBox = h('div', 'g3d-satir g3d-bolumler'), partBox = h('div', 'g3d-yapilar');
     var kart = h('div', 'g3d-kart'), nmEl = h('h4'), dsEl = h('p'), yuva = h('div', 'g3d-kart-ek');
     kart.setAttribute('aria-live', 'polite');
     kart.appendChild(nmEl); kart.appendChild(dsEl); kart.appendChild(yuva);
-    var viewBox = h('div', 'g3d-satir');
+    var viewBox = h('div', 'g3d-satir g3d-gorunumler');
     var notEl = h('p', 'g3d-not', M.not), kaynakEl = h('p', 'g3d-not'), metinYuva = h('div', 'g3d-kart-ek');
     // OdyoBOT uyarlaması: ipucu ve not yenile() ile tazelenir; kartEki('metin', 'metinler', yuva) notun altına ek koyar.
     function metinler() {
@@ -76,8 +78,9 @@
       kaynakEl.appendChild(document.createTextNode(i < M.kaynaklar.length - 1 ? '; ' : '. '));
     });
     kaynakEl.appendChild(document.createTextNode(M.degisiklikler));
-    [sahne, ipucu, h('h3', 'g3d-baslik', M.bolumBasligi), secBox, h('h3', 'g3d-baslik', M.yapilarBasligi), partBox, kart,
-      h('h3', 'g3d-baslik', M.gorunumBasligi), viewBox, notEl, metinYuva, kaynakEl].forEach(function (e) { kok.appendChild(e); });
+    // Telefon düzeni: açıklama kartı modelin hemen altında; sonra bölüm, görünüm, en sonda uzun yapı listesi.
+    [sahne, ipucu, kart, h('h3', 'g3d-baslik', M.bolumBasligi), secBox, h('h3', 'g3d-baslik', M.gorunumBasligi), viewBox,
+      h('h3', 'g3d-baslik', M.yapilarBasligi), partBox, notEl, metinYuva, kaynakEl].forEach(function (e) { kok.appendChild(e); });
     metinler();
 
     function hata(metin, yeniden) {
@@ -181,6 +184,7 @@
       else if (pinOpen) { nmEl.textContent = veri.kepce.ad; dsEl.textContent = veri.kepce.aciklama; tur = 'kepce'; kimlik = 'kepce'; }
       else { nmEl.textContent = sec.ad; dsEl.textContent = sec.aciklama; tur = 'bolum'; kimlik = sec.id; }
       neresi.textContent = M.taraf + ' · ' + sec.ad;
+      geriBtn.hidden = !(sel || pinOpen || sec !== SECS[0]);
       yuva.textContent = '';
       if (typeof ayar.kartEki === 'function') ayar.kartEki(tur, kimlik, yuva);
     }
@@ -193,7 +197,7 @@
     function chip(label, col, fn) {
       var b = h('button'); b.type = 'button'; b.setAttribute('aria-pressed', 'false');
       var d = h('span', 'g3d-nokta'); d.style.background = 'rgb(' + col.map(function (x) { return Math.round(x * 255); }).join(',') + ')';
-      b.appendChild(d); b.appendChild(h('span', null, label)); b.addEventListener('click', fn); partBox.appendChild(b); return b;
+      b.appendChild(d); b.appendChild(h('span', null, label)); b.addEventListener('click', function () { fn(); modeleKaydir(); }); partBox.appendChild(b); return b;
     }
     function chips() {
       partBox.textContent = ''; partBtns = {};
@@ -209,6 +213,18 @@
       secBtns.forEach(function (b, k) { b.setAttribute('aria-pressed', SECS[k] === s ? 'true' : 'false'); });
       chips(); frame(s.id === 'cevre' ? ['eac', 'n8', 'car', 'vest'] : s.yapilar.concat(s.ek || [])); card();
     }
+    // Listeden seçim yapılınca model ekranda değilse yukarı kaydır (telefonda sonucu görmek için).
+    function modeleKaydir() {
+      var r = sahne.getBoundingClientRect();
+      if (r.top < 0 || r.top > window.innerHeight * 0.5) sahne.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    }
+    // Geri: önce seçimi kaldırır, sonra kepçe bölümlerini kapatır, en sonda Tüm sistem'e döner.
+    function geri() {
+      if (sel) pick(sel);
+      else if (pinOpen) setSec(sec);
+      else if (sec !== SECS[0]) setSec(SECS[0]);
+      dirty = true;
+    }
     function openPinna() { if (sec.id !== 'dis') setSec(SECS[1]); pinOpen = true; sel = null; chips(); frame(PIN); card(); dirty = true; }
     function cast(cx, cy) {
       var rc = cv.getBoundingClientRect(), asp = rc.width / rc.height, x = ((cx - rc.left) / rc.width * 2 - 1) * asp * TAN, y = -((cy - rc.top) / rc.height * 2 - 1) * TAN;
@@ -217,7 +233,7 @@
       var d = [R[0] * dv[0] + R[3] * dv[1] + R[6] * dv[2], R[1] * dv[0] + R[4] * dv[1] + R[7] * dv[2], R[2] * dv[0] + R[5] * dv[1] + R[8] * dv[2]];
       var best = 1e9, hit = null, bestT = 1e9, hitT = null;
       ORDER.forEach(function (id) {
-        var st = style(id); if (!st || st.a < 0.3 || id === 'bone') return; var tr = st.a < 1, P = PART[id].P, I = PART[id].I;
+        var eskiSel = sel; sel = null; var st = style(id); sel = eskiSel; if (!st || st.a < 0.3 || id === 'bone') return; var tr = st.a < 1, P = PART[id].P, I = PART[id].I;
         for (var t = 0; t < I.length; t += 3) {
           var a = I[t] * 3, b = I[t + 1] * 3, c = I[t + 2] * 3;
           var e1x = P[b] - P[a], e1y = P[b + 1] - P[a + 1], e1z = P[b + 2] - P[a + 2], e2x = P[c] - P[a], e2y = P[c + 1] - P[a + 1], e2z = P[c + 2] - P[a + 2];
@@ -236,7 +252,7 @@
     function tap(id) {
       if (id.charAt(1) === '_' && !pinOpen) { openPinna(); return; }
       if (sec.yapilar.indexOf(id) < 0) { for (var k = 1; k < SECS.length; k++) if (SECS[k].yapilar.indexOf(id) >= 0) { setSec(SECS[k]); break; } }
-      if (sel !== id) pick(id);
+      pick(id);   // aynı yapıya yeniden dokunmak seçimi kaldırır
     }
 
     function basla(meta, buf) {
@@ -266,7 +282,7 @@
       gl.enable(gl.DEPTH_TEST); gl.clearColor(0, 0, 0, 0);
       renkleriOku();
 
-      SECS.forEach(function (s) { var b = h('button', null, s.ad); b.type = 'button'; b.setAttribute('aria-pressed', 'false'); b.addEventListener('click', function () { setSec(s); }); secBox.appendChild(b); secBtns.push(b); });
+      SECS.forEach(function (s) { var b = h('button', null, s.ad); b.type = 'button'; b.setAttribute('aria-pressed', 'false'); b.addEventListener('click', function () { setSec(s); modeleKaydir(); }); secBox.appendChild(b); secBtns.push(b); });
       Object.keys(M.gorunumler).forEach(function (v) { var b = h('button', null, M.gorunumler[v]); b.type = 'button'; b.addEventListener('click', function () { if (VIEWS[v]) { R = VIEWS[v].slice(); zoom = 1; auto = false; dirty = true; } }); viewBox.appendChild(b); });
 
       var ptr = {}, moved = 0, pd = 0;
@@ -277,13 +293,14 @@
         if (kk.length === 1) { R = mul(mul(ry(dx * 0.01), rx(dy * 0.01)), R); dirty = true; }
         else if (kk.length === 2) { var nd = Math.hypot(ptr[kk[0]].x - ptr[kk[1]].x, ptr[kk[0]].y - ptr[kk[1]].y); if (pd > 0 && nd > 0) { zoom = Math.max(0.25, Math.min(3, zoom * pd / nd)); dirty = true; } pd = nd; }
       });
-      function up(e) { var had = ptr[e.pointerId]; delete ptr[e.pointerId]; if (had && moved < 8 && e.type === 'pointerup') { var hit = cast(e.clientX, e.clientY); if (hit) tap(hit); } }
+      function up(e) { var had = ptr[e.pointerId]; delete ptr[e.pointerId]; if (had && moved < 8 && e.type === 'pointerup') { var hit = cast(e.clientX, e.clientY); if (hit) tap(hit); else if (sel) pick(sel); } }
       dinle(cv, 'pointerup', up); dinle(cv, 'pointercancel', up);
       dinle(cv, 'wheel', function (e) { e.preventDefault(); zoom = Math.max(0.25, Math.min(3, zoom * (1 + e.deltaY * 0.001))); dirty = true; }, { passive: false });
       dinle(cv, 'webglcontextlost', function (e) { e.preventDefault(); hazir = false; hata(M.baglamKayboldu); });
       dinle(window, 'resize', size);
       if (window.ResizeObserver) { var ro = new window.ResizeObserver(size); ro.observe(cv); dinleyiciler.push([{ removeEventListener: function () { ro.disconnect(); } }, '', null]); }
 
+      geriBtn.addEventListener('click', geri);
       durum.hidden = true; hazir = true;
       size(); setSec(SECS[0]); cen = tcen.slice(); rad = trad; auto = !reduce;
     }

@@ -54,6 +54,7 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 ### Kaldığımız yer (2026-11-14)
 - Görsel depoya **"3D model"** bölümü eklendi (sw v18). Hazır paket `gorsel3d/` proje sahibinden geldi; uyum değişiklikleri yapıldı (ayrıntı `PROGRESS.md`). Yerelde sahte Firebase ile test edildi: model, 6 bölüm, dokunma, kepçe, 5 görünüm, yönetici Düzenle/Varsayılana dön, internetsiz açılış, 400 px, açık/koyu. **Yayında** (2026-11-14, proje sahibi onayladı).
 - firestore.rules değişmedi (icerik kuralı yeni anahtarlara zaten izin veriyor). CSP değişmedi.
+- Düzeltme (sw v19): seçiliyken başka yapıya dokunma, "← Geri" düğmesi, boşluğa dokununca seçimin kalkması, telefon düzeni (kart modelin altında). Ayrıntı `PROGRESS.md`.
 - Telefonda denenecek: modelin döndürülmesi/iki parmakla yakınlaştırma, dokunarak seçme, koyu görünümde silik yapıların okunurluğu, ilk açılışta 4 MB indirme süresi.
 
 ### Önceki: kaldığımız yer (2026-11-11 akşamı)

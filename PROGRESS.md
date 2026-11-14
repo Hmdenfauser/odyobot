@@ -169,3 +169,15 @@ Proje sahibinin getirdiği hazır `gorsel3d/` klasörü (görüntüleyici, veri,
 
 ## Sonraki iş (şimdi yapılmayacak)
 - "Vestibüler" başlığı altında kulak kristallerinin (otokoni) hareketi.
+
+## Düzeltme: dokunma ve telefon düzeni (2026-11-14, sw v19)
+Proje sahibinin bildirdiği sorun: bir yapı seçilince başka yapıya dokunulamıyor, genel görünüme dönülemiyordu; telefonda Bölüm/Yapılar/açıklama/Görünüm düzeni zayıftı.
+- Neden: seçim varken öteki yapılar soluk (saydam) çiziliyor ve isabet testi soluk yapıları atlıyordu; seçimi kaldırmanın tek yolu listedeki düğmeydi.
+- `gorsel3d.js` (proje sahibinin isteğiyle dokunma davranışı değişti; çizim ve kamera hesapları aynı):
+  - İsabet testi seçim yokmuş gibi yapılır → seçiliyken başka yapıya dokunulabilir.
+  - Seçili yapıya yeniden dokunmak ya da boşluğa dokunmak seçimi kaldırır.
+  - Modelin sol üstünde "← Geri" düğmesi: seçimi kaldırır → kepçe bölümlerini kapatır → Tüm sistem'e döner; Tüm sistem'deyken gizli. Metni `metinler.geri`.
+  - Sıra: model, ipucu, açıklama kartı, Bölüm (3 sütun), Görünüm (tek satır, 5 sütun), Yapılar (en sonda), not, kaynaklar.
+  - Listeden ya da bölüm düğmesinden seçim yapılınca model ekranda değilse yukarı kaydırılır.
+- `gorsel3d.css`: Geri düğmesi, bölüm ızgarası, görünüm çubuğu, daha sık yapı düğmeleri; telefonda model yüksekliği `min(52vh, 420px)`.
+- Test (açık/koyu): Malleus seçiliyken modelde İnkus'a dokunma → İnkus; boşluğa dokunma → seçim kalktı; Geri zinciri Tragus → Kulak kepçesi → Dış kulak → Tüm sistem, sonda Geri gizli; 400 px taşma yok, 44 px altı hedef yok; önceki testler (düzenleme, internetsiz) yine geçti.
