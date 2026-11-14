@@ -137,7 +137,7 @@ Aşağıda "TK" = test kulağı, "KK" = karşı (test edilmeyen) kulak.
 
 # PROGRESS — Görsel depo: 3D model (2026-11-14, sw v18)
 
-**Durum:** Kod bitti, yerelde test edildi. **Yayına gönderilmedi** (proje sahibinin onayı bekleniyor). Telefonda denenecek.
+**Durum:** Kod bitti, yerelde test edildi. **Yayında** (2026-11-14). Telefonda denenecek.
 
 ## Paket
 Proje sahibinin getirdiği hazır `gorsel3d/` klasörü (görüntüleyici, veri, css, model, KAYNAKLAR.md). `ornek.html` ve `ornek.js` (deneme sayfası) istendiği gibi depoya alınmadı.
