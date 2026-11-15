@@ -195,7 +195,7 @@ Proje sahibi "iç kulakta skala media nerede" diye sordu; kaynak modelde ayrı p
 
 # PROGRESS — Görsel depo yeniden düzenleme ve yeni cihaz görselleri (2026-11-15, sw v21)
 
-**Durum:** Bitti, yerelde test edildi, **yayınlanmadı** (proje sahibi "yayınla" diyecek).
+**Durum:** Bitti, **yayında** (2026-11-15, commit 9ab105e). Telefonda denenecek.
 
 ## Görsel uygunluk tablosu (kaynak: `ham-gorseller/yeni cihaz gorselleri/`, Gemini ile üretilmiş)
 | Dosya (parça) | Kart | Karar | Not |
