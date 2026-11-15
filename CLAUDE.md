@@ -51,6 +51,19 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 - Alt çubuk sırası: Ana sayfa, Görsel depo, OdyoBOT, Vakalarım, Notlar.
 - Odyogram çıktısı (`cikti.js`), Vakalarım → OdyoBOT gönderme, düğmeli sohbet (`odybot.js`). sw v12. Ayrıntı: `PROGRESS.md`.
 
+### Sonraki oturumda proje sahibine hatırlat (2026-11-15 akşamı kaydedildi)
+Her şey yayında (sw v22), bekleyen kod değişikliği yok. Oturum başında bu listeyi sırayla hatırlat:
+1. **Telefonda denenecekler (v21–v22):** sağ üstteki 3D düğmesi ve 3D sayfası (döndürme, iki parmakla yakınlaştırma, dokunarak seçme, "← Ana sayfa" ve geri tuşu); cihaz görsellerini tam ekranda büyütme/kapatma; rozetlerin açık/koyu okunurluğu; Görsel depo → Şemalar → Yenidoğan taraması kutuları; uçak modunda açılış.
+2. **Proje sahibinin doğrulaması gereken içerik:**
+   - Yenidoğan taraması kartlarındaki taslak metinler (özellikle "Risk var" ve yoğun bakım açıklamaları). Yoğun bakım şemasında test zamanları yok ("Ayrıntılar protokol belgesinde"); biliyorsa uygulamadan eklesin.
+   - "Araştırma aşamasında" rozeti (penetran ABI) doğru mu?
+   - Eklenen cihaz görsellerinin anatomik kontrolü (bantlı kemik iletimde "Bağlantı diski" çizgisi, yapışkan adaptörlüde mastoid kemik) ve şüpheli eski fotoğraflar (ITE tam/yarım konka, ITC).
+   - 3D modeldeki klinik metinler (skala media dahil).
+3. **Proje sahibinin yazacakları:** cihaz kartlarının açıklamaları (yeni kartlar dahil: CROS/BiCROS, yapışkan adaptörlü, kulak içi karşılaştırma), uygulamadan "Açıklama ekle/düzenle".
+4. **Önceden kalan, telefonda hiç denenmemiş:** yönetici girişiyle fotoğraflı Haber/Etkinlik/İş ilanı paylaşma, düzenleme, silme; Vakalarım'dan OdyoBOT'a gönderme ve maskeleme asistanı; odyogram JPEG/PDF çıktısı; görünüm düğmesi.
+5. **Sıradaki iş: koklea kesiti şeması (Corti organı)** — aşağıda "Sıradaki işler" 2. madde. Beklenen: parça listesi onayı ve `ham-gorseller/` içine referans görsel.
+6. Açık sorular (§10): 7, 11, 12, 13.
+
 ### Kaldığımız yer (2026-11-15)
 - Görsel depo yeniden düzenlendi ve yeni cihaz görselleri eklendi (sw v21). **Yayında** (2026-11-15). Proje sahibi reddedilen 6 görselin düzeltilmiş hâlini getirecek.
   - 9 görsel eklendi (bte, kemik-bant, ki-elektrot, baha-perkutan, transkutan-aktif, cros-bicros, kemik-yapiskan, ki [alt başlık satırı silindi], orta-kulak-tam [4:3'e beyaz şeritle getirildi]); CROS/BiCROS'ta tekrar eden alt etiketler silindi. 6 görsel reddedildi (liste yukarıda).
