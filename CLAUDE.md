@@ -51,9 +51,11 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 - Alt çubuk sırası: Ana sayfa, Görsel depo, OdyoBOT, Vakalarım, Notlar.
 - Odyogram çıktısı (`cikti.js`), Vakalarım → OdyoBOT gönderme, düğmeli sohbet (`odybot.js`). sw v12. Ayrıntı: `PROGRESS.md`.
 
-### Sonraki oturumda proje sahibine hatırlat (2026-11-15 akşamı kaydedildi)
-**sw v25 yayında** (2026-11-15; kepçe arkasındaki üçgen boşluk ve pürüzler giderildi). **sw v24 yayında** (2026-11-15; 3D modelde kepçe–kanal birleşimi onarıldı, ayrıntı PROGRESS.md; açılışta ana sayfanın en alta kayması düzeltildi: `odybot.js` `asagi()` OdyoBOT sekmesi kapalıyken de kaydırıyordu; Ayarlar herkese açık: tema, dil, yönetici girişi; dişlinin altında 3D). Oturum başında bu listeyi sırayla hatırlat:
-1. **Telefonda denenecekler (v21–v24):** 3D'de kepçe–kanal birleşimi (Dış kulak, önden/arkadan); açılışta sayfanın üstte kalması; dişli → Ayarlar (tema, dil, yönetici girişi); dişlinin altındaki 3D düğmesi ve 3D sayfası (döndürme, iki parmakla yakınlaştırma, dokunarak seçme, "← Ana sayfa" ve geri tuşu); cihaz görsellerini tam ekranda büyütme/kapatma; rozetlerin açık/koyu okunurluğu; Görsel depo → Şemalar → Yenidoğan taraması kutuları; uçak modunda açılış.
+### Sonraki oturumda proje sahibine hatırlat (2026-11-15 gece kaydedildi)
+**Durum:** her şey yayında (son sürüm **sw v25**), bekleyen kod değişikliği yok, çalışma klasörü temiz. Proje sahibi 3D kepçe–kanal onarımını görüp "her şey iyi görünüyor" dedi (2026-11-15).
+Bugün yapılanlar (2026-11-15): v21 Görsel depo yeniden düzeni + yeni cihaz görselleri, rozetler, tam ekran görüntüleyici, 3D ayrı sayfa; v22 Şemalar / İşitme cihazları / İşitsel implantlar, yenidoğan taraması akış şemaları, 6 düzeltilmiş görsel, küçük 3D düğmesi; v23 açılışta en alta kayma düzeltildi (`odybot.js` `asagi()`), herkese açık Ayarlar (tema, dil, yönetici girişi), dişlinin altında 3D; v24–v25 3D modelde kepçe–kanal birleşimi dikişsiz yeniden çizildi (ayrıntı PROGRESS.md, yedek `ham-gorseller/yedek-3d-v23/`).
+Oturum başında bu listeyi sırayla hatırlat:
+1. **Telefonda denenecekler (v21–v25):** 3D'de kepçe–kanal birleşimi (proje sahibi bilgisayarda/telefonda baktı, iyi); açılışta sayfanın üstte kalması; dişli → Ayarlar (tema, dil, yönetici girişi); dişlinin altındaki 3D düğmesi ve 3D sayfası (döndürme, iki parmakla yakınlaştırma, dokunarak seçme, "← Ana sayfa" ve geri tuşu); cihaz görsellerini tam ekranda büyütme/kapatma; rozetlerin açık/koyu okunurluğu; Görsel depo → Şemalar → Yenidoğan taraması kutuları; uçak modunda açılış.
 2. **Proje sahibinin doğrulaması gereken içerik:**
    - Yenidoğan taraması kartlarındaki taslak metinler (özellikle "Risk var" ve yoğun bakım açıklamaları). Yoğun bakım şemasında test zamanları yok ("Ayrıntılar protokol belgesinde"); biliyorsa uygulamadan eklesin.
    - "Araştırma aşamasında" rozeti (penetran ABI) doğru mu?
@@ -65,7 +67,7 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 6. Açık sorular (§10): 7, 11, 12, 13.
 
 ### Kaldığımız yer (2026-11-15)
-- Görsel depo yeniden düzenlendi ve yeni cihaz görselleri eklendi (sw v21). **Yayında** (2026-11-15). Proje sahibi reddedilen 6 görselin düzeltilmiş hâlini getirecek.
+- Görsel depo yeniden düzenlendi ve yeni cihaz görselleri eklendi (sw v21). **Yayında** (2026-11-15). Reddedilen 6 görselin düzeltilmiş hâli de eklendi (v22).
   - 9 görsel eklendi (bte, kemik-bant, ki-elektrot, baha-perkutan, transkutan-aktif, cros-bicros, kemik-yapiskan, ki [alt başlık satırı silindi], orta-kulak-tam [4:3'e beyaz şeritle getirildi]); CROS/BiCROS'ta tekrar eden alt etiketler silindi. 6 görsel reddedildi (liste yukarıda).
   - İşitme cihazları ve İşitsel implantlar ayrı düğme/panel; rozetler; tam ekran görüntüleyici; 3D ayrı sayfa (`#3d`) ve ana sayfada 3D kartı.
   - Test: 360/400 px, açık/koyu, 5 tema, yönetici Düzenle/Kaydet/Varsayılana dön, eski Firestore açıklamaları, internetsiz açılış, hareket azaltma. firestore.rules ve CSP değişmedi.
