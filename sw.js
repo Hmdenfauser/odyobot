@@ -8,7 +8,7 @@
 
    Firebase (Firestore/giriş) istekleri başka adrese gittiği için buraya karışmaz; onların internetsiz kopyasını
    Firestore'un kendi önbelleği tutar. Vaka kayıtları (Vakalarım) zaten yalnızca cihazın yerel deposundadır. */
-var VERSION = 'odyobot-v20';
+var VERSION = 'odyobot-v21';
 var ASSETS = [
   './',
   './index.html',
@@ -21,6 +21,7 @@ var ASSETS = [
   './cikti.js',
   './maskeleme-kural.js',
   './odybot.js',
+  './goruntuleyici.js',
   './gorsel3d/gorsel3d-veri.js',
   './gorsel3d/gorsel3d.js',
   './gorsel3d/gorsel3d.css',
@@ -43,21 +44,24 @@ var ASSETS = [
   './icons/apple-touch-icon.png',
   './icons/icon-maskable-512.png',
   './icons/logo.png',
-  './images/devices/bte.jpg',
+  './images/devices/bte-2.jpg',
   './images/devices/ric.jpg',
   './images/devices/ite-tam.jpg',
   './images/devices/ite-yarim.jpg',
   './images/devices/itc.jpg',
   './images/devices/cic.jpg',
   './images/devices/iic.jpg',
-  './images/devices/kemik-bant.jpg',
-  './images/devices/ki.jpg',
-  './images/devices/ki-elektrot.jpg',
+  './images/devices/cros-bicros.jpg',
+  './images/devices/kemik-bant-2.jpg',
+  './images/devices/kemik-yapiskan.jpg',
+  './images/devices/ki-2.jpg',
+  './images/devices/ki-elektrot-2.jpg',
   './images/devices/eas.jpg',
-  './images/devices/baha-perkutan.jpg',
+  './images/devices/baha-perkutan-2.jpg',
   './images/devices/transkutan-pasif.jpg',
+  './images/devices/transkutan-aktif.jpg',
   './images/devices/orta-kulak-yarim.jpg',
-  './images/devices/orta-kulak-tam.jpg',
+  './images/devices/orta-kulak-tam-2.jpg',
   './images/devices/abi-penetran.jpg'
 ];
 

@@ -190,3 +190,59 @@ Proje sahibi "iç kulakta skala media nerede" diye sordu; kaynak modelde ayrı p
 - **Veri:** `sm` → Tüm sistem ve İç kulak listelerinde sv ile st arasında; renk `--g3d-sm: #C8D63A`; açıklama "tarama verisi değildir, yaklaşıktır" diyor (proje sahibi doğrulayacak). Ekrandaki not ve değişiklikler satırı, `KAYNAKLAR.md` güncellendi.
 - **Sınır:** Seçilmediğinde sv'nin içinde kaldığı için neredeyse görünmez; modelde dokunarak seçilemez (önce sv'ye isabet eder), listeden seçilir. Kesit gerçekte üçgen; burada yuvarlak tüp.
 - Testler (açık/koyu): önceki bütün senaryolar geçti; İç kulak'ta 9 yapı.
+
+---
+
+# PROGRESS — Görsel depo yeniden düzenleme ve yeni cihaz görselleri (2026-11-15, sw v21)
+
+**Durum:** Bitti, yerelde test edildi, **yayınlanmadı** (proje sahibi "yayınla" diyecek).
+
+## Görsel uygunluk tablosu (kaynak: `ham-gorseller/yeni cihaz gorselleri/`, Gemini ile üretilmiş)
+| Dosya (parça) | Kart | Karar | Not |
+|---|---|---|---|
+| d6v3vh | bte | ✅ eklendi → `bte-2.jpg` (87 KB) | |
+| tmvgky | cros-bicros (yeni) | ✅ → `cros-bicros.jpg` (111 KB) | Tekrar eden alt "İşitmeyen kulak: verici (mikrofon)" etiketleri ve çizgileri silindi (zemin rengiyle boyandı) |
+| d98ive | kemik-bant | ✅ → `kemik-bant-2.jpg` (90 KB) | Şüphe: "Bağlantı diski" çizgisi boş noktayı gösteriyor |
+| ts8lxj | kemik-yapiskan (yeni) | ✅ → `kemik-yapiskan.jpg` (98 KB) | Şüphe: mastoid kemik deri üstünde gibi |
+| 1dhnq9 | ki-elektrot | ✅ → `ki-elektrot-2.jpg` (144 KB) | |
+| 4o066o | baha-perkutan | ✅ → `baha-perkutan-2.jpg` (99 KB) | |
+| z5can3 | transkutan-aktif | ✅ → `transkutan-aktif.jpg` (112 KB) | Yer tutucu kalktı |
+| nrr88d | ki | ✅ → `ki-2.jpg` (114 KB) | Anlamsız alt başlık ("…audiologu handbook app") silindi |
+| 6nkrkk | orta-kulak-tam | ✅ → `orta-kulak-tam-2.jpg` (107 KB) | 1408×768 → üst/alta beyaz şerit, 4:3 (1200×900) |
+| gh1mxu | kulak-ici-karsilastirma (yeni) | ❌ | "Simba", Lobule/Lobül, Cavum/Kavum karışık, CIC'de yanlış "Kavum" etiketleri. Kart kodda hazır, `gizli: true` |
+| 9blim8 | eas | ❌ | Oran 1,83; "Eardrum"; "stimüllasyon"; "tiz tiz" |
+| 75ubnp | transkutan-pasif | ❌ | "Titreşim kemik (magnats)" |
+| o24z3q | orta-kulak-yarim | ❌ | Oran 1,83; "Eardrum"; "Kemikçikler" iki kez, biri iç kulakta |
+| ypbavo | abi-yuzey | ❌ | Tekrar eden "Kablo…" etiketi; "Serebellum" beyin sapını gösteriyor (şüphe) |
+| r7c0sm | abi-penetran | ❌ | ypbavo ile aynı sorunlar |
+
+- Toplam yeni görsel: ~970 KB. 1200 px, JPEG kalite 80. Tam çözünürlüklü düzeltilmiş kopyalar: `ham-gorseller/yeni cihaz gorselleri/duzeltilmis/`.
+- Eski görseller: `ham-gorseller/yedek-cihaz-2026-11-15/` (bte, kemik-bant, ki, ki-elektrot, baha-perkutan, orta-kulak-tam).
+- Görünür logo/filigran yok (köşeler ayrıca kontrol edildi). Google'ın görünmez SynthID işareti dosyada olabilir.
+
+## Yapılanlar
+- **Görsel depo:** düğmeler Yolaklar · Refleks arkı · İşitme cihazları · İşitsel implantlar (`.seg4`, 360 px'te 78×44, yazı iki satıra iner). Paneller `p-isitme`, `p-implant`; implantlarda 4 alt başlık (`data-k="implant.grup.*"`). Giriş yazıları `cihaz.lead` (işitme) ve yeni `implant.lead`. `cihaz.not` ortak `#cihaz-alt` içinde, yalnızca iki cihaz panelinden biri açıkken görünür. Mevcut `metin.cihaz.lead/not` düzenlemeleri aynı anahtarla çalışır.
+- **DEVICES** (`app.js`): yeni alanlar `kume` (implant alt başlığı), `gorselAlt` (ekran okuyucu metni, yönetici düzenler), `genis`, `gizli`, `rozetEk`. Yeni kartlar: `cros-bicros`, `kemik-yapiskan`, `kulak-ici-karsilastirma` (gizli). Kimlikler değişmedi.
+- **Rozetler:** `ROZET` nesnesi (`app.js`, cihaz listesinin hemen üstü), yönetici `icerik/cihaz.rozet` ile değiştirir ("Rozet yazılarını düzenle" düğmesi panellerin altında). Renk değişkenleri `--rozet-*` (açık/koyu ayrı), yazı + nokta + çerçeve; araştırma rozeti kesik çerçeveli.
+- **Tam ekran:** `goruntuleyici.js` (yeni). Görsel bir düğmenin içinde; büyütme simgesi görselin üstünde değil rozet satırının sağında (etiketleri kapatıyordu). Geri tuşu için `history.pushState`; kapanınca odak karta döner (50 ms gecikmeyle, yoksa kayboluyordu). Dokunmatikte tarayıcının ürettiği `dblclick` yok sayılır (yoksa çift dokunuş iki kez işleniyordu). Esc `document` üzerinden dinlenir.
+- **3D:** bölüm `#uc-boyut`, adres `#3d`. `route()` içinde `UC_ESKI` listesi (`uc-boyut`, `3d-model`, `gorsel3d`, `depo/3d`, `model`) `#3d`'ye yönlenir. `kur3d()` `setTimeout` ile çağrılır (sayfa `#3d` ile açılınca `G3D` henüz tanımlı olmuyordu). "← Ana sayfa": ana sayfadan gelindiyse `history.back()`, doğrudan açıldıysa `#anasayfa`. Alt çubukta Ana sayfa seçili.
+- **3D kartı:** `index.html` karşılamanın altı, `a.kart3d`; yazıları `data-k="ana.3d.baslik/alt"`. `refreshStatic` düzenleme çubuğunu bağlantının dışına koyar (`closest('a, button')`). Parıltı ve küp sallanması yalnızca `prefers-reduced-motion: no-preference`.
+- **sw.js:** v21, `goruntuleyici.js` ve yeni görseller eklendi, taşınan 6 eski görsel çıkarıldı.
+- firestore.rules ve CSP değişmedi.
+
+## Test (yerel, sahte Firebase, Edge görünmez + DevTools protokolü)
+- 360 ve 400 px, açık/koyu: Ana sayfa, Görsel depo (4 panel), 3D sayfası. Yatay kaydırma yok, 44 px altı dokunma hedefi yok, düğme yazısı taşmıyor.
+- 5 tema (açık/koyu) 3D kartı. Hareket azaltma açıkken animasyon yok.
+- Görüntüleyici: iki parmakla büyütme, sürükleme, çift dokunuş (büyüt/geri al), Esc, ✕, geri tuşu, odak dönüşü.
+- Yönetici: 10/10 kartta Düzenle; yeni kart açıklaması ve alt metni kaydedildi; rozet yazısı değiştirildi ve Varsayılana dön; eski Firestore açıklaması (bte) ve ad/not düzenlemeleri göründü; 3D sayfasında yönetici düzenleme var.
+- Model ana sayfada inmiyor, 3D sayfası açılınca iniyor. İnternetsiz: v21 önbelleği (53 dosya), implant görselleri 9/9.
+- Konsolda hata yok.
+
+## Telefonda denenecekler
+1. Ana sayfada 3D kartı: görünüyor mu, dokununca 3D açılıyor mu, "← Ana sayfa" ve telefonun geri tuşu ana sayfaya dönüyor mu.
+2. Görsel depo: 4 düğme tek satırda okunuyor mu (iki satıra inen yazılar).
+3. Bir cihaz görseline dokun: tam ekran, iki parmakla büyütme, sürükleme, çift dokunuş, ✕ ve geri tuşu.
+4. Rozetler açık ve koyu görünümde okunuyor mu.
+5. Yönetici girişiyle: yeni kartlara (CROS/BiCROS, yapışkan adaptörlü) açıklama yazma; eski açıklamaların yerinde olması; "Rozet yazılarını düzenle".
+6. Uçak modunda açılış: yeni görseller geliyor mu.
+7. Anatomik kontrol: eklenen 9 görsel (özellikle bantlı ve yapışkan kemik iletimdeki şüpheler) ve "Araştırma aşamasında" rozeti.

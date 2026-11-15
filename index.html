@@ -49,6 +49,15 @@
         <div class="hero-zaman"><span class="clock" id="clock" aria-label="Saat">--:--</span><span class="kicker" id="date">—</span></div>
       </div>
 
+      <!-- 3D kartı: uygulamanın öne çıkan bölümü. Renk: temanın ikinci rengi (--bot). -->
+      <a class="kart3d" href="#3d" id="kart3d">
+        <span class="kart3d-yazi">
+          <span class="kart3d-baslik" data-k="ana.3d.baslik">3D</span>
+          <span class="kart3d-alt" data-k="ana.3d.alt">Kulağı üç boyutlu incele</span>
+        </span>
+        <svg class="kart3d-simge" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 4l17 9.500v21L24 44 7 34.500v-21z"/><path d="M7 13.500l17 9.500 17-9.500M24 23v21"/></svg>
+      </a>
+
       <div class="a-cipler" role="group" aria-label="Paylaşımları süz">
         <button type="button" class="a-cip" data-filtre="tumu" aria-pressed="true">Tümü</button>
         <button type="button" class="a-cip" data-filtre="etkinlik" aria-pressed="false">Etkinlikler</button>
@@ -117,6 +126,15 @@
     </div>
   </section>
 
+  <!-- 3D: kendi sayfası (#3d). İçeriği gorsel3d/gorsel3d.js çizer. Model (yaklaşık 4 MB) sayfa ilk kez açılınca indirilir (app.js). -->
+  <section id="uc-boyut" data-tab hidden>
+    <div class="stack">
+      <button type="button" class="back geribtn" id="uc-geri"><span aria-hidden="true">←&nbsp;</span><span data-k="g3d.sayfa.geri">Ana sayfa</span></button>
+      <h2 data-k="g3d.sayfa.baslik">3D</h2>
+      <div id="g3d-kok"></div>
+    </div>
+  </section>
+
   <!-- GÖRSEL DEPO -->
   <section id="depo" data-tab hidden>
     <div class="stack">
@@ -127,8 +145,8 @@
       <div class="seg seg4" role="group" aria-label="Depo bölümü">
         <button type="button" id="seg-yolak" aria-pressed="true">Yolaklar</button>
         <button type="button" id="seg-refleks" aria-pressed="false">Refleks arkı</button>
-        <button type="button" id="seg-cihaz" aria-pressed="false">Cihazlar</button>
-        <button type="button" id="seg-3d" aria-pressed="false">3D model</button>
+        <button type="button" id="seg-isitme" aria-pressed="false">İşitme cihazları</button>
+        <button type="button" id="seg-implant" aria-pressed="false">İşitsel implantlar</button>
       </div>
 
       <div id="p-yolak" class="stack">
@@ -160,22 +178,24 @@
         <p class="note" data-k="refleks.not">Şema basitleştirilmiştir. Karşıya geçişin tam düzeyi kaynaklara göre farklı anlatılır; burada trapezoid cisim düzeyinde gösterilmiştir.</p>
       </div>
 
-      <div id="p-cihaz" class="stack" hidden>
-        <p class="lead" data-k="cihaz.lead">İşitme cihazları ve implantlar. Görseller temsilidir; belirli bir marka veya modeli göstermez.</p>
-        <div class="stack" style="gap:10px">
-          <h3>İşitme cihazları</h3>
-          <div class="board" id="dev-isitme"></div>
-        </div>
-        <div class="stack" style="gap:10px">
-          <h3>İmplantlar</h3>
-          <div class="board" id="dev-implant"></div>
-        </div>
-        <p class="note" data-k="cihaz.not">Uygun işitme kaybı aralıkları ve endikasyonlar kaynağa, üreticiye ve kliniğe göre değişir.</p>
+      <!-- Cihaz kartlarını app.js çizer (DEVICES). Görsele dokununca goruntuleyici.js tam ekran açar. -->
+      <div id="p-isitme" class="stack" hidden>
+        <p class="lead" data-k="cihaz.lead">Ameliyat gerektirmeyen işitme cihazları. Görseller temsilidir; belirli bir marka veya modeli göstermez. Görsele dokununca büyür.</p>
+        <div class="board" id="dev-isitme"></div>
       </div>
 
-      <!-- 3D model: içeriği gorsel3d/gorsel3d.js çizer. Model (yaklaşık 4 MB) bölüm ilk kez açılınca indirilir (app.js). -->
-      <div id="p-3d" class="stack" hidden>
-        <div id="g3d-kok"></div>
+      <div id="p-implant" class="stack" hidden>
+        <p class="lead" data-k="implant.lead">Ameliyatla yerleştirilen işitsel implantlar. Görseller temsilidir; belirli bir marka veya modeli göstermez. Görsele dokununca büyür.</p>
+        <div class="stack dev-kume"><h3 data-k="implant.grup.koklear">Koklear</h3><div class="board" id="dev-koklear"></div></div>
+        <div class="stack dev-kume"><h3 data-k="implant.grup.kemik">Kemik iletim</h3><div class="board" id="dev-kemik"></div></div>
+        <div class="stack dev-kume"><h3 data-k="implant.grup.ortakulak">Orta kulak</h3><div class="board" id="dev-ortakulak"></div></div>
+        <div class="stack dev-kume"><h3 data-k="implant.grup.beyinsapi">Beyin sapı</h3><div class="board" id="dev-beyinsapi"></div></div>
+      </div>
+
+      <!-- İki cihaz panelinin ortak altı: not (cihaz.not) ve yöneticiye rozet yazıları. Yalnızca bu iki panelden biri açıkken görünür. -->
+      <div id="cihaz-alt" class="stack" hidden>
+        <p class="note" data-k="cihaz.not">Uygun işitme kaybı aralıkları ve endikasyonlar kaynağa, üreticiye ve kliniğe göre değişir.</p>
+        <div id="rozet-admin"></div>
       </div>
     </div>
   </section>
@@ -533,6 +553,7 @@
 <script src="firebase-config.js"></script>
 <script src="gorsel3d/gorsel3d-veri.js"></script>
 <script src="gorsel3d/gorsel3d.js"></script>
+<script src="goruntuleyici.js"></script>
 <script src="app.js"></script>
 <script src="akis.js"></script>
 <script src="odyo-hesap.js"></script>

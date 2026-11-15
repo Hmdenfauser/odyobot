@@ -427,37 +427,52 @@
   $('n-ara').addEventListener('input', function () { renderNotes($('n-ara').value); });
 
   /* ---------- depo segmented control ---------- */
-  var SEGS = ['yolak', 'refleks', 'cihaz', '3d'];
+  // 3D artık Görsel depo'da değil, kendi sayfasında (#3d). İşitme cihazları ve implantlar ayrı paneller.
+  var SEGS = ['yolak', 'refleks', 'isitme', 'implant'];
   function seg(which) {
     SEGS.forEach(function (s) {
       $('seg-' + s).setAttribute('aria-pressed', s === which ? 'true' : 'false');
       $('p-' + s).hidden = s !== which;
     });
-    if (which === '3d') kur3d();   // model yalnızca bu bölüm ilk kez açılınca indirilir
+    $('cihaz-alt').hidden = which !== 'isitme' && which !== 'implant';   // ortak not iki cihaz panelinin altında
   }
   SEGS.forEach(function (s) { $('seg-' + s).addEventListener('click', function () { seg(s); }); });
 
   /* ---------- tabs ---------- */
-  var TABS = ['anasayfa', 'depo', 'odybot', 'notlar', 'vakalarim', 'ayarlar', 'giris'];
-  var oncekiHash = '';
+  // 'uc-boyut' = 3D sayfası; adresi #3d. Alt çubukta sekmesi yok, o sırada Ana sayfa seçili görünür.
+  var TABS = ['anasayfa', 'depo', 'odybot', 'notlar', 'vakalarim', 'ayarlar', 'giris', 'uc-boyut'];
+  var UC_ESKI = ['uc-boyut', '3d-model', 'gorsel3d', 'depo/3d', 'model'];   // olası eski/başka adresler -> #3d
+  var oncekiHash = '', ucGeldigi = null, ilkRota = true;
   function route() {
     var t = (location.hash || '').replace('#', '');
     var ham = t, duyuru = t.indexOf('duyuru/') === 0;
     if (duyuru) t = 'anasayfa';
     // Eski adres: Geçmiş sekmesinin adı Vakalarım oldu; eski bağlantılar da çalışsın.
     if (t === 'gecmis') { t = 'vakalarim'; try { history.replaceState(null, '', '#vakalarim'); } catch (e) {} }
+    if (UC_ESKI.indexOf(t) !== -1) { t = '3d'; ham = '3d'; try { history.replaceState(null, '', '#3d'); } catch (e) {} }
+    if (t === '3d') {
+      t = 'uc-boyut';
+      if (oncekiHash !== '3d') ucGeldigi = ilkRota ? null : oncekiHash;   // geri düğmesi için: nereden gelindi (doğrudan açıldıysa null)
+      setTimeout(kur3d, 0);   // model yalnızca 3D sayfası ilk kez açılınca indirilir
+    }
     if (TABS.indexOf(t) === -1) t = 'anasayfa';
     document.querySelectorAll('section[data-tab]').forEach(function (s) { s.hidden = s.id !== t; });
+    var navT = t === 'uc-boyut' ? 'anasayfa' : t;
     document.querySelectorAll('nav.tabs a').forEach(function (a) {
-      if (a.getAttribute('data-go') === t) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+      if (a.getAttribute('data-go') === navT) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
     });
     var oncekiDuyuru = oncekiHash.indexOf('duyuru/') === 0;
-    oncekiHash = ham;
+    oncekiHash = ham; ilkRota = false;
     if (duyuru || oncekiDuyuru) return; // ayrıntı sayfası açılıp kapanırken akıştaki yer korunur
     try { window.scrollTo(0, 0); } catch (e) {}
   }
   window.addEventListener('hashchange', route);
   route();
+  // 3D sayfasındaki "← Ana sayfa": ana sayfadan gelindiyse tarayıcı geçmişinde bir adım geri (telefonun geri tuşuyla aynı).
+  $('uc-geri').addEventListener('click', function () {
+    if ((ucGeldigi === 'anasayfa' || ucGeldigi === '') && history.length > 1) history.back();
+    else location.hash = '#anasayfa';
+  });
 
   /* ---------- ortak veri ----------
      Ana sayfa akışı (etkinlik, iş ilanı, haber) akis.js içinde. app.js bağlantıyı kurar ve olaylarla bildirir:
@@ -587,42 +602,108 @@
      Liste ve görseller kodda sabit (görseller images/devices/ altında, git ile güncellenir).
      Açıklamalar Firestore'da: cihazlar/{id} -> { maddeler: [...], guncelleme }. Herkes okur, yalnızca yönetici yazar.
      img: null olan cihazın görseli yenilenecek; kartta yer tutucu görünür. */
+  /* Rozet yazıları: burada değiştirilir (yönetici de uygulamadan değiştirebilir: icerik/cihaz.rozet).
+     Hangi kartın hangi rozeti aldığı: işitme cihazları "ameliyatsiz", implantlar "ameliyatli";
+     ek rozetler kartın "rozetEk" alanında. */
+  var ROZET = { key: 'cihaz.rozet', ameliyatsiz: 'Ameliyatsız', ameliyatli: 'Ameliyatlı', arastirma: 'Araştırma aşamasında' };
+  var ROZET_ALAN = [{ f: 'ameliyatsiz', ad: 'İşitme cihazı rozeti' }, { f: 'ameliyatli', ad: 'İmplant rozeti' }, { f: 'arastirma', ad: 'Araştırma rozeti' }];
+  editable(ROZET, ['ameliyatsiz', 'ameliyatli', 'arastirma']);
+
+  /* grup: isitme / implant. kume: implant alt başlığı (koklear, kemik, ortakulak, beyinsapi).
+     gorselAlt: ekran okuyucu için görselin anlatımı. genis: listenin başında, ayrışan tam genişlikte kart.
+     gizli: true olan kart gösterilmez (görseli hazır olunca kaldırılır). Kimlikler (id) değiştirilmez: açıklamalar bunlara bağlı. */
   var DEVICES = [
-    { id: 'bte', grup: 'isitme', ad: 'Kulak arkası (BTE)', img: 'bte.jpg' },
-    { id: 'ric', grup: 'isitme', ad: 'Hoparlörü kanalda (RIC)', img: 'ric.jpg' },
-    { id: 'ite-tam', grup: 'isitme', ad: 'Kulak içi, tam konka (ITE)', img: 'ite-tam.jpg' },
-    { id: 'ite-yarim', grup: 'isitme', ad: 'Kulak içi, yarım konka (ITE)', img: 'ite-yarim.jpg' },
-    { id: 'itc', grup: 'isitme', ad: 'Kanal içi (ITC)', img: 'itc.jpg' },
-    { id: 'cic', grup: 'isitme', ad: 'Tamamen kanal içi (CIC)', img: 'cic.jpg' },
-    { id: 'iic', grup: 'isitme', ad: 'Görünmez kanal içi (IIC)', img: 'iic.jpg' },
-    { id: 'kemik-bant', grup: 'isitme', ad: 'Kemik iletimli, bantlı', img: 'kemik-bant.jpg' },
-    { id: 'ki', grup: 'implant', ad: 'Koklear implant', img: 'ki.jpg' },
-    { id: 'ki-elektrot', grup: 'implant', ad: 'Elektrot dizisi karşılaştırması', img: 'ki-elektrot.jpg',
-      alt: 'Solda lateral duvar elektrodu, sağda perimodiolar elektrot.' },
-    { id: 'eas', grup: 'implant', ad: 'Elektroakustik stimülasyon (EAS)', img: 'eas.jpg' },
-    { id: 'baha-perkutan', grup: 'implant', ad: 'Perkütan kemik iletim implantı', img: 'baha-perkutan.jpg' },
-    { id: 'transkutan-pasif', grup: 'implant', ad: 'Pasif transkütanöz kemik iletim implantı', img: 'transkutan-pasif.jpg' },
-    { id: 'transkutan-aktif', grup: 'implant', ad: 'Aktif transkütanöz kemik iletim implantı', img: null },
-    { id: 'orta-kulak-yarim', grup: 'implant', ad: 'Orta kulak implantı, yarı implante', img: 'orta-kulak-yarim.jpg' },
-    { id: 'orta-kulak-tam', grup: 'implant', ad: 'Orta kulak implantı, tam implante', img: 'orta-kulak-tam.jpg' },
-    { id: 'abi-yuzey', grup: 'implant', ad: 'İşitsel beyin sapı implantı (ABI), yüzey elektrotlu', img: null },
-    { id: 'abi-penetran', grup: 'implant', ad: 'Penetran ABI', img: 'abi-penetran.jpg' }
+    { id: 'kulak-ici-karsilastirma', grup: 'isitme', genis: true, gizli: true, ad: 'Kulak içi tipler: yerleşim karşılaştırması', img: null,
+      gorselAlt: 'ITE tam konka, ITE yarım konka, ITC, CIC ve IIC cihazlarının kulak kepçesi ve dış kulak yolundaki yerleşimini yan yana gösteren şema.' },
+    { id: 'bte', grup: 'isitme', ad: 'Kulak arkası (BTE)', img: 'bte-2.jpg',
+      gorselAlt: 'Kulak arkası işitme cihazı şeması: kulak kepçesinin arkasındaki cihaz gövdesi, mikrofonlar, pil bölmesi, kulak kancası, ses hortumu ve kulak kalıbı.' },
+    { id: 'ric', grup: 'isitme', ad: 'Hoparlörü kanalda (RIC)', img: 'ric.jpg',
+      gorselAlt: 'Hoparlörü kanalda (RIC) işitme cihazının kulaktaki yerleşimini gösteren görsel.' },
+    { id: 'ite-tam', grup: 'isitme', ad: 'Kulak içi, tam konka (ITE)', img: 'ite-tam.jpg',
+      gorselAlt: 'Konkanın tamamını dolduran kulak içi (ITE) işitme cihazını gösteren görsel.' },
+    { id: 'ite-yarim', grup: 'isitme', ad: 'Kulak içi, yarım konka (ITE)', img: 'ite-yarim.jpg',
+      gorselAlt: 'Konkanın alt yarısını dolduran kulak içi (ITE) işitme cihazını gösteren görsel.' },
+    { id: 'itc', grup: 'isitme', ad: 'Kanal içi (ITC)', img: 'itc.jpg',
+      gorselAlt: 'Kanal girişine yerleşen kanal içi (ITC) işitme cihazını gösteren görsel.' },
+    { id: 'cic', grup: 'isitme', ad: 'Tamamen kanal içi (CIC)', img: 'cic.jpg',
+      gorselAlt: 'Tamamı kulak kanalında duran (CIC) işitme cihazını gösteren görsel.' },
+    { id: 'iic', grup: 'isitme', ad: 'Görünmez kanal içi (IIC)', img: 'iic.jpg',
+      gorselAlt: 'Kulak kanalının derinine yerleşen görünmez kanal içi (IIC) işitme cihazını gösteren görsel.' },
+    { id: 'cros-bicros', grup: 'isitme', ad: 'CROS / BiCROS', img: 'cros-bicros.jpg',
+      gorselAlt: 'CROS ve BiCROS şeması, iki baş yan yana. Solda CROS: işitmeyen kulaktaki verici mikrofon, sesi kablosuz olarak normal işiten kulaktaki alıcıya aktarır, yükseltme yoktur. Sağda BiCROS: alıcı, işitme kayıplı iyi kulakta aynı zamanda işitme cihazıdır.' },
+    { id: 'kemik-bant', grup: 'isitme', ad: 'Kemik iletimli, bantlı', img: 'kemik-bant-2.jpg',
+      gorselAlt: 'Bantlı kemik iletimli cihaz şeması: esnek kafa bandı, ses işlemcisini kulak arkasında mastoid kemiğin üzerine bastırır; titreşim deriden kemiğe geçer. Ameliyat gerekmez.' },
+    { id: 'kemik-yapiskan', grup: 'isitme', ad: 'Kemik iletimli, yapışkan adaptörlü', img: 'kemik-yapiskan.jpg',
+      gorselAlt: 'Yapışkan adaptörlü kemik iletim cihazı şeması: ses işlemcisi kulak arkasında deriye yapışan bir adaptöre takılır; küçük kesitte titreşimin deriden mastoid kemiğe, oradan kokleaya ulaştığı gösterilir. Ameliyat ve baskı bandı gerekmez.' },
+    { id: 'ki', grup: 'implant', kume: 'koklear', ad: 'Koklear implant', img: 'ki-2.jpg',
+      gorselAlt: 'Koklear implantın dış ve iç parçaları. Dış parça: kulak arkasındaki ses işlemcisi, mikrofonlar, kablo, verici bobin ve mıknatıs. İç parça (ameliyatla yerleştirilir): alıcı bobin ve mıknatıs, uyarıcı, referans elektrot ve kokleaya giren elektrot dizisi. Sinyal deri üzerinden aktarılır.' },
+    { id: 'ki-elektrot', grup: 'implant', kume: 'koklear', ad: 'Elektrot dizisi karşılaştırması', img: 'ki-elektrot-2.jpg',
+      alt: 'Solda lateral duvar elektrodu, sağda perimodiolar elektrot.',
+      gorselAlt: 'Koklea modiolus ekseninden bakılarak iki elektrot dizisi karşılaştırılıyor. Solda lateral duvar elektrodu dış duvara yaslanır ve genellikle daha uzundur. Sağda perimodiolar elektrot modiolusa sarılır ve sinir hücrelerine daha yakındır. İkisi de yuvarlak pencere bölgesinden skala timpaniye girer.' },
+    { id: 'eas', grup: 'implant', kume: 'koklear', ad: 'Elektroakustik stimülasyon (EAS)', img: 'eas.jpg',
+      gorselAlt: 'Elektroakustik stimülasyon (EAS) sistemini gösteren görsel.' },
+    { id: 'baha-perkutan', grup: 'implant', kume: 'kemik', ad: 'Perkütan kemik iletim implantı', img: 'baha-perkutan-2.jpg',
+      gorselAlt: 'Perkütan kemik iletim implantı kesiti: ses işlemcisi, deriden geçen abutment ile temporal kemiğe (mastoid) kaynaşmış titanyum implanta doğrudan bağlanır; titreşim doğrudan kemiğe iletilir.' },
+    { id: 'transkutan-pasif', grup: 'implant', kume: 'kemik', ad: 'Pasif transkütanöz kemik iletim implantı', img: 'transkutan-pasif.jpg',
+      gorselAlt: 'Pasif transkütanöz kemik iletim implantını gösteren görsel.' },
+    { id: 'transkutan-aktif', grup: 'implant', kume: 'kemik', ad: 'Aktif transkütanöz kemik iletim implantı', img: 'transkutan-aktif.jpg',
+      gorselAlt: 'Aktif transkütanöz kemik iletim implantı kesiti: dıştaki ses işlemcisi mıknatısla tutunur; sinyal ve enerji sağlam deri üzerinden deri altındaki alıcı bobine aktarılır. Titreşimi kemik yuvasına vidayla sabitlenmiş transdüser üretir; titreşim kemik yoluyla kokleaya ulaşır.' },
+    { id: 'orta-kulak-yarim', grup: 'implant', kume: 'ortakulak', ad: 'Orta kulak implantı, yarı implante', img: 'orta-kulak-yarim.jpg',
+      gorselAlt: 'Yarı implante orta kulak implantını gösteren görsel.' },
+    { id: 'orta-kulak-tam', grup: 'implant', kume: 'ortakulak', ad: 'Orta kulak implantı, tam implante', img: 'orta-kulak-tam-2.jpg',
+      gorselAlt: 'Tam implante orta kulak implantı şeması: dışarıda parça yoktur. Deri altında pil ve elektronik ünite ile deri altı mikrofon bulunur; iletken kablo, kemikçiğe bağlı titreşim transdüserine gider. Pil deri üzerinden şarj edilir.' },
+    { id: 'abi-yuzey', grup: 'implant', kume: 'beyinsapi', ad: 'İşitsel beyin sapı implantı (ABI), yüzey elektrotlu', img: null,
+      gorselAlt: '' },
+    { id: 'abi-penetran', grup: 'implant', kume: 'beyinsapi', ad: 'Penetran ABI', img: 'abi-penetran.jpg', rozetEk: ['arastirma'],
+      gorselAlt: 'Penetran işitsel beyin sapı implantını gösteren görsel.' }
   ];
   var devText = {};
-  var CIHAZ_ALAN = [{ f: 'ad', ad: 'Cihaz adı' }, { f: 'alt', ad: 'Görsel altı not (isteğe bağlı)' }];
-  DEVICES.forEach(function (d) { if (!d.alt) d.alt = ''; d.key = 'cihaz.' + d.id; editable(d, ['ad', 'alt']); });
+  var CIHAZ_ALAN = [{ f: 'ad', ad: 'Cihaz adı' }, { f: 'alt', ad: 'Görsel altı not (isteğe bağlı)' },
+    { f: 'gorselAlt', ad: 'Görselin sözlü anlatımı (ekran okuyucu için)', cok: true }];
+  DEVICES.forEach(function (d) {
+    if (!d.alt) d.alt = ''; if (!d.gorselAlt) d.gorselAlt = '';
+    d.key = 'cihaz.' + d.id; editable(d, ['ad', 'alt', 'gorselAlt']);
+  });
+  function devKutu(d) { return $('dev-' + (d.grup === 'implant' ? d.kume : 'isitme')); }
   function renderDevices() {
-    ['isitme', 'implant'].forEach(function (g) {
-      var box = $('dev-' + g);
-      box.replaceChildren.apply(box, DEVICES.filter(function (d) { return d.grup === g; }).map(deviceCard));
+    document.querySelectorAll('#p-isitme .board, #p-implant .board').forEach(function (b) { b.replaceChildren(); });
+    DEVICES.forEach(function (d) { if (!d.gizli) devKutu(d).appendChild(deviceCard(d)); });
+    var ra = $('rozet-admin');
+    ra.replaceChildren();
+    var a = adminPart(ROZET.key, ROZET, ROZET_ALAN, 'Rozet yazılarını düzenle');
+    if (a) ra.appendChild(a);
+  }
+  function rozetler(d) {
+    var r = [d.grup === 'implant' ? 'ameliyatli' : 'ameliyatsiz'].concat(d.rozetEk || []);
+    var kutu = h('div', { 'class': 'rozetler' }, r.map(function (k) { return h('span', { 'class': 'rozet rozet-' + k, text: ROZET[k] }); }));
+    // Görselin büyütülebildiğini gösteren küçük simge: görselin üstüne değil (etiketleri kapatmasın), rozet satırının sağına.
+    if (d.img) kutu.appendChild(h('span', { 'class': 'dev-buyut', 'aria-hidden': 'true' }, [svgBuyut()]));
+    return kutu;
+  }
+  function devGorsel(d) {
+    if (!d.img) return h('div', { 'class': 'dev-img dev-ph', text: 'Görsel yenilenecek' });
+    var src = 'images/devices/' + d.img, alt = d.gorselAlt || d.ad;
+    var b = h('button', { 'class': 'dev-img-btn', type: 'button', 'aria-label': d.ad + ': görseli tam ekran aç' }, [
+      h('img', { 'class': 'dev-img', src: src, alt: alt, loading: 'lazy' })
+    ]);
+    b.addEventListener('click', function () {
+      if (window.Goruntuleyici) window.Goruntuleyici.ac({ src: src, alt: alt, baslik: d.ad, geri: b });
     });
+    return b;
+  }
+  function svgBuyut() {
+    var ns = 'http://www.w3.org/2000/svg', s = document.createElementNS(ns, 'svg');
+    s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('width', '18'); s.setAttribute('height', '18');
+    var p = document.createElementNS(ns, 'path');
+    p.setAttribute('d', 'M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5');
+    s.appendChild(p);
+    return s;
   }
   function deviceCard(d) {
     var maddeler = devText[d.id] || [];
-    var card = h('article', { 'class': 'item dev' }, [
-      d.img
-        ? h('img', { 'class': 'dev-img', src: 'images/devices/' + d.img, alt: d.ad, loading: 'lazy' })
-        : h('div', { 'class': 'dev-img dev-ph', text: 'Görsel yenilenecek' }),
+    var card = h('article', { 'class': 'item dev' + (d.genis ? ' genis' : '') }, [
+      devGorsel(d),
+      rozetler(d),
       h('h4', { 'class': 'item-title', text: d.ad }),
       d.alt ? h('div', { 'class': 'meta', text: d.alt }) : null,
       maddeler.length ? h('ul', { 'class': 'dev-list' }, maddeler.map(function (x) { return h('li', { text: x }); })) : null
@@ -645,13 +726,14 @@
   }
   function refreshDevices() {
     DEVICES.forEach(function (d) { applyOv(d.key, d); });
+    applyOv(ROZET.key, ROZET);
     renderDevices();
   }
   renderDevices();
 
   /* ---------- 3D model (gorsel3d/) ----------
      Görüntüleyici gorsel3d/gorsel3d.js, metinler gorsel3d/gorsel3d-veri.js (window.GORSEL3D_VERI).
-     Tembel yükleme: Gorsel3D.kur yalnızca "3D model" bölümü ilk kez açılınca çağrılır (periferik.bin ~4 MB),
+     Tembel yükleme: Gorsel3D.kur yalnızca 3D sayfası (#3d, route) ilk kez açılınca çağrılır (periferik.bin ~4 MB),
      sonraki açılışlarda aynı örnek kullanılır. Yönetici düzenlemesi: icerik/g3d.bolum.<id>, g3d.yapi.<id>,
      g3d.kepce (ad, aciklama) ve g3d.metin (ipucu, not). "Düzenle" bilgi kartına kartEki kancasıyla eklenir. */
   var G3D = window.GORSEL3D_VERI, g3d = null, G3D_ALAN = [{ f: 'ad', ad: 'Ad' }, { f: 'aciklama', ad: 'Açıklama', cok: true }];
@@ -703,7 +785,8 @@
       applyOv(o.key, o);
       o.el.textContent = o.metin;
       var a = adminPart(o.key, o, [{ f: 'metin', ad: 'Metin', cok: true }], 'Bu yazıyı düzenle');
-      if (a) o.el.after(h('div', { 'class': 'k-admin' }, [a]));
+      // Bağlantı/düğme içindeki yazının (ör. 3D kartı) düzenleme çubuğu dışarıya konur; yoksa dokununca sayfa değişir.
+      if (a) (o.el.closest('a, button') || o.el).after(h('div', { 'class': 'k-admin' }, [a]));
     });
   }
   // Tüm düzenlenebilir içeriği yeniden çizer (yönetici değişikliği geldiğinde, giriş/çıkışta).
