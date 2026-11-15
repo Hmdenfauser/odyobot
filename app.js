@@ -349,6 +349,153 @@
   }
   rselect(rsel);
 
+  /* ---------- yenidoğan işitme taraması: iki akış şeması ----------
+     T.C. Sağlık Bakanlığı tarama ABR protokolü akış şemalarına bakılarak sadeleştirilip yeniden çizildi (logo ve slayt kullanılmadı).
+     Klinik metinler taslaktır; proje sahibi doğrular ve uygulamadan düzeltir (icerik/tarama.<id>).
+     ad: şemadaki kısa ad (satırlar), baslik: kartın başlığı. Ortak kutular (Geçti, Kaldı, sonuçlar) iki şemada aynı kaydı kullanır.
+     Renk dili: yeşil = geçti/sağlam, turuncu = kaldı/referans merkeze sevk, gri = risk nedeniyle sevk. Renk yanında her kutuda yazı da var. */
+  var TNODES = {
+    deg: { ad: ['Yenidoğanın değerlendirilmesi'], baslik: 'Yenidoğanın değerlendirilmesi', zaman: '',
+      aciklama: 'Bebek, işitme kaybı için risk faktörü taşıyıp taşımamasına göre "Risk yok" ya da "Risk var" yoluna ayrılır.',
+      not: 'Risk faktörlerinin listesi bu şemada yer almaz; programın güncel belgesine bakılmalıdır.' },
+    riskyok: { ad: ['Risk yok'], baslik: 'Risk yok', zaman: '',
+      aciklama: 'İşitme kaybı için risk faktörü olmayan bebek. Tarama ABR en çok üç kez yapılır; herhangi birinde geçerse sonuç "Sağlam"dır. Üçünde de kalırsa referans merkeze sevk edilir.', not: '' },
+    riskvar: { ad: ['Risk var'], baslik: 'Risk var', zaman: '',
+      aciklama: 'İşitme kaybı için risk faktörü olan bebek. Tarama ABR en çok üç kez yapılır; geçerse sonuç "Sağlam / risk nedeniyle sevk"tir. Üçünde de kalırsa referans merkeze sevk edilir.', not: '' },
+    a1: { ad: ['1. tarama ABR'], baslik: '1. tarama ABR', zaman: 'Doğumdan sonraki ilk 72 saat içinde, taburcu olmadan.',
+      aciklama: 'Geçerse: risk yoksa sağlam, risk varsa sağlam / risk nedeniyle sevk. Kalırsa 2. tarama ABR yapılır.', not: '' },
+    a2: { ad: ['2. tarama ABR'], baslik: '2. tarama ABR', zaman: 'Doğumdan sonraki 7–15 gün içinde.',
+      aciklama: 'Geçerse: risk yoksa sağlam, risk varsa sağlam / risk nedeniyle sevk. Kalırsa 3. tarama ABR yapılır.', not: '' },
+    a3: { ad: ['3. tarama ABR'], baslik: '3. tarama ABR', zaman: 'Doğumdan sonraki 15–30 gün içinde (30. günü geçmemeli).',
+      aciklama: 'Geçerse: risk yoksa sağlam, risk varsa sağlam / risk nedeniyle sevk. Kalırsa referans merkeze sevk edilir.', not: '' },
+    gecti: { ad: ['Geçti'], baslik: 'Geçti', zaman: '',
+      aciklama: 'Tarama ABR geçildi. Bebek bir sonraki taramaya gitmez; sonuç kutusuna yönlenir (risk yoksa sağlam, risk varsa ya da yoğun bakım bebeğiyse sağlam / risk nedeniyle sevk).', not: '' },
+    kaldi: { ad: ['Kaldı'], baslik: 'Kaldı', zaman: '',
+      aciklama: 'Tarama ABR geçilemedi. Bebek bir sonraki tarama ABR’ye yönlenir; son taramada da kalırsa referans merkeze sevk edilir.', not: '' },
+    saglam: { ad: ['Sağlam'], baslik: 'Sağlam', zaman: '',
+      aciklama: 'Risk faktörü olmayan ve tarama ABR’lerden birini geçen bebek.', not: '' },
+    risksevk: { ad: ['Sağlam / risk', 'nedeniyle sevk'], baslik: 'Sağlam / risk nedeniyle sevk', zaman: '',
+      aciklama: 'Taramayı geçen ama risk faktörü taşıyan (ya da 5 günden fazla yoğun bakımda kalan) bebek. Tarama sonucu sağlamdır; risk nedeniyle sevk edilir.', not: '' },
+    referans: { ad: ['Referans', 'merkeze sevk'], baslik: 'Referans merkeze sevk', zaman: '',
+      aciklama: 'Son tarama ABR’de de kalan bebek ileri değerlendirme için referans merkeze sevk edilir.', not: '' },
+    degb: { ad: ['Yenidoğanın değerlendirilmesi'], baslik: 'Yenidoğanın değerlendirilmesi (yoğun bakım)', zaman: '',
+      aciklama: '5 günden fazla yoğun bakımda kalan bebekler, yoğun bakımda kalma süresine göre üç gruba ayrılır.', not: '' },
+    yb1: { ad: ['5–30 gün yoğun bakım'], baslik: '5 günden fazla, 30 günden az yoğun bakımda kalma', zaman: '',
+      aciklama: 'Tarama ABR en çok iki kez yapılır. Geçerse sağlam / risk nedeniyle sevk; ikisinde de kalırsa referans merkeze sevk.', not: '' },
+    yb2: { ad: ['30–90 gün yoğun bakım'], baslik: '30 günden fazla, 90 günden az yoğun bakımda kalma', zaman: '',
+      aciklama: 'Tarama ABR bir kez yapılır. Geçerse sağlam / risk nedeniyle sevk; kalırsa referans merkeze sevk.', not: '' },
+    yb3: { ad: ['90 günden fazla yoğun bakım'], baslik: '90 günden fazla yoğun bakımda kalma', zaman: '',
+      aciklama: 'Tarama ABR bir kez yapılır. Geçerse sağlam / risk nedeniyle sevk; kalırsa referans merkeze sevk.', not: '' },
+    b1: { ad: ['1. tarama ABR'], baslik: '1. tarama ABR (yoğun bakım, 5–30 gün)', zaman: 'Ayrıntılar tarama ABR protokolü belgesinde.',
+      aciklama: 'Geçerse sağlam / risk nedeniyle sevk. Kalırsa 2. tarama ABR yapılır.', not: '' },
+    b2: { ad: ['2. tarama ABR'], baslik: '2. tarama ABR (yoğun bakım, 5–30 gün)', zaman: 'Ayrıntılar tarama ABR protokolü belgesinde.',
+      aciklama: 'Geçerse sağlam / risk nedeniyle sevk. Kalırsa referans merkeze sevk.', not: '' },
+    bt: { ad: ['Tarama ABR'], baslik: 'Tarama ABR (30 günden uzun yoğun bakım)', zaman: 'Ayrıntılar tarama ABR protokolü belgesinde.',
+      aciklama: 'Tek tarama ABR. Geçerse sağlam / risk nedeniyle sevk; kalırsa referans merkeze sevk.', not: '' }
+  };
+  var TARAMA_ALAN = [{ f: 'ad', ad: 'Şemadaki ad (en çok 2 satır)', cok: true }, { f: 'baslik', ad: 'Kart başlığı' }, { f: 'zaman', ad: 'Ne zaman' },
+    { f: 'aciklama', ad: 'Açıklama', cok: true }, { f: 'not', ad: 'Not', cok: true }];
+  Object.keys(TNODES).forEach(function (id) { var n = TNODES[id]; n.id = id; n.key = 'tarama.' + id; n._kutular = []; editable(n, TARAMA_ALAN.map(function (x) { return x.f; })); });
+
+  // Şema tanımı: kutular [id, cx, cy, genişlik, yükseklik, tür] ve oklar (nokta listeleri; son noktada ok başı olup olmadığı).
+  function T(id, cx, cy, w, hh, tur) { return { id: id, cx: cx, cy: cy, w: w, h: hh, tur: tur }; }
+  function sema(svgId, ad, kutular, cizgiler, sira, ilk, detayId) {
+    var s = $(svgId), o = { svg: s, kutular: kutular, sira: sira, sec: ilk, detay: $(detayId) };
+    var defs = se('defs', {}, s);
+    var m = se('marker', { id: 'ah-' + ad, viewBox: '0 0 10 10', refX: '9', refY: '5', markerWidth: '6', markerHeight: '6', orient: 'auto' }, defs);
+    se('path', { d: 'M0,0 L10,5 L0,10 z', 'class': 'ah akis' }, m);
+    cizgiler.forEach(function (c) {
+      var d = c.p.map(function (p, i) { return (i ? 'L' : 'M') + p[0] + ',' + p[1]; }).join(' ');
+      var a = { d: d, 'class': 'lnk akis' }; if (c.ok) a['marker-end'] = 'url(#ah-' + ad + ')';
+      se('path', a, s);
+    });
+    kutular.forEach(function (k) {
+      var n = TNODES[k.id];
+      var g = se('g', { 'class': 'node', tabindex: '0', role: 'button' }, s);
+      se('rect', { x: k.cx - k.w / 2, y: k.cy - k.h / 2, width: k.w, height: k.h, rx: k.tur === 'gecti' || k.tur === 'kaldi' ? k.h / 2 : 8, 'class': 'pill t-' + k.tur }, g);
+      k.t = se('text', { x: k.cx, y: k.cy }, g);
+      k.g = g; n._kutular.push(k);
+      g.addEventListener('click', function () { tsec(o, k.id); });
+      g.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tsec(o, k.id); } });
+    });
+    return o;
+  }
+  function tyaz(k) {
+    var n = TNODES[k.id];
+    rlabel(k.t, Array.isArray(n.ad) ? n.ad : [String(n.ad)], k.cx, k.cy);
+    k.g.setAttribute('aria-label', (Array.isArray(n.ad) ? n.ad.join(' ') : n.ad) + ': ayrıntı');
+  }
+  function tsec(o, id) {
+    o.sec = id;
+    var idx = o.sira.indexOf(id), n = TNODES[id];
+    o.kutular.forEach(function (k) { k.g.classList.toggle('sel', k.id === id); });
+    var prev = h('button', { 'class': 'btn', type: 'button', text: '← Önceki' });
+    var next = h('button', { 'class': 'btn', type: 'button', text: 'Sonraki →' });
+    if (idx <= 0) prev.disabled = true;
+    if (idx === o.sira.length - 1) next.disabled = true;
+    prev.addEventListener('click', function () { tsec(o, o.sira[idx - 1]); });
+    next.addEventListener('click', function () { tsec(o, o.sira[idx + 1]); });
+    fill(o.detay, [
+      h('div', { 'class': 'card-head' }, [h('h2', { text: n.baslik })]),
+      n.zaman ? h('span', { 'class': 'badge', text: 'Ne zaman: ' + n.zaman }) : null,
+      h('dl', null, [n.aciklama ? dlRow('Açıklama', n.aciklama) : null, n.not ? dlRow('Not', n.not) : null].filter(Boolean)),
+      h('div', { 'class': 'stepper' }, [prev, h('span', { 'class': 'pos', text: (idx + 1) + ' / ' + o.sira.length }), next]),
+      adminPart(n.key, n, TARAMA_ALAN, 'Bu kutuyu düzenle')
+    ]);
+  }
+
+  // Şema A: tarama ABR protokolü (risk yok / risk var). Sol sütun risk yok, sağ sütun risk var.
+  var TA_K = [T('deg', 180, 26, 230, 34, 'baslik'), T('riskyok', 95, 84, 120, 32, 'grup'), T('riskvar', 265, 84, 120, 32, 'grup')];
+  var TA_C = [{ p: [[180, 43], [180, 56]] }, { p: [[95, 56], [265, 56]] }, { p: [[95, 56], [95, 67]], ok: 1 }, { p: [[265, 56], [265, 67]], ok: 1 }];
+  [['L', 95, 50, 140, 10], ['R', 265, 310, 220, 350]].forEach(function (c) {
+    var cx = c[1], gx = c[2], kx = c[3], ray = c[4], kenar = gx < cx ? gx - 31 : gx + 31;
+    TA_C.push({ p: [[cx, 100], [cx, 123]], ok: 1 });
+    ['a1', 'a2', 'a3'].forEach(function (id, i) {
+      var y = 140 + i * 98;
+      TA_K.push(T(id, cx, y, 150, 32, 'test'), T('gecti', gx, y + 48, 62, 28, 'gecti'), T('kaldi', kx, y + 48, 62, 28, 'kaldi'));
+      TA_C.push({ p: [[cx, y + 16], [cx, y + 24], [gx, y + 24], [gx, y + 33]], ok: 1 }, { p: [[cx, y + 24], [kx, y + 24], [kx, y + 33]], ok: 1 });
+      TA_C.push({ p: [[kenar, y + 48], [ray, y + 48]] });                                   // Geçti → kenardaki ray
+      if (i < 2) TA_C.push({ p: [[kx, y + 62], [kx, y + 81]], ok: 1 });                    // Kaldı → sonraki tarama
+      else TA_C.push({ p: [[kx, y + 62], [kx, 421]], ok: 1 });                             // son Kaldı → referans merkeze sevk
+    });
+    TA_C.push({ p: [[ray, 188], [ray, 421]], ok: 1 });                                     // ray → sonuç
+  });
+  TA_K.push(T('saglam', 62, 450, 112, 56, 'saglam'), T('referans', 180, 450, 112, 56, 'ref'), T('risksevk', 298, 450, 112, 56, 'sevk'));
+  var TA = sema('tarama-a', 'ta', TA_K, TA_C, ['deg', 'riskyok', 'riskvar', 'a1', 'a2', 'a3', 'gecti', 'kaldi', 'saglam', 'risksevk', 'referans'], 'a1', 'detail-ta');
+
+  // Şema B: 5 günden fazla yoğun bakım. Üç grup alt alta; soldaki omurga değerlendirmeden gruplara iner.
+  var TB_K = [T('degb', 180, 26, 230, 34, 'baslik')];
+  var TB_C = [{ p: [[180, 43], [180, 54], [14, 54], [14, 654]] }];
+  function seritTek(H, grup) {   // grup başlığı → tek tarama ABR → geçti / kaldı → sonuç
+    TB_K.push(T(grup, 184, H, 312, 34, 'grup'), T('bt', 184, H + 52, 150, 32, 'test'), T('gecti', 124, H + 98, 62, 28, 'gecti'), T('kaldi', 244, H + 98, 62, 28, 'kaldi'),
+      T('risksevk', 100, H + 164, 150, 52, 'sevk'), T('referans', 265, H + 164, 150, 52, 'ref'));
+    TB_C.push({ p: [[14, H], [27, H]], ok: 1 }, { p: [[184, H + 17], [184, H + 35]], ok: 1 },
+      { p: [[184, H + 68], [184, H + 76], [124, H + 76], [124, H + 83]], ok: 1 }, { p: [[184, H + 76], [244, H + 76], [244, H + 83]], ok: 1 },
+      { p: [[124, H + 112], [124, H + 137]], ok: 1 }, { p: [[244, H + 112], [244, H + 137]], ok: 1 });
+  }
+  (function () {   // 1. grup: iki tarama
+    var H = 90;
+    TB_K.push(T('yb1', 184, H, 312, 34, 'grup'), T('b1', 184, H + 52, 150, 32, 'test'), T('gecti', 124, H + 98, 62, 28, 'gecti'), T('kaldi', 244, H + 98, 62, 28, 'kaldi'),
+      T('b2', 244, H + 148, 140, 32, 'test'), T('gecti', 200, H + 194, 62, 28, 'gecti'), T('kaldi', 290, H + 194, 62, 28, 'kaldi'),
+      T('risksevk', 100, H + 260, 150, 52, 'sevk'), T('referans', 265, H + 260, 150, 52, 'ref'));
+    TB_C.push({ p: [[14, H], [27, H]], ok: 1 }, { p: [[184, H + 17], [184, H + 35]], ok: 1 },
+      { p: [[184, H + 68], [184, H + 76], [124, H + 76], [124, H + 83]], ok: 1 }, { p: [[184, H + 76], [244, H + 76], [244, H + 83]], ok: 1 },
+      { p: [[244, H + 112], [244, H + 131]], ok: 1 },
+      { p: [[244, H + 164], [244, H + 172], [200, H + 172], [200, H + 179]], ok: 1 }, { p: [[244, H + 172], [290, H + 172], [290, H + 179]], ok: 1 },
+      { p: [[124, H + 112], [124, H + 233]], ok: 1 },                                           // 1. Geçti → sonuç
+      { p: [[200, H + 208], [200, H + 220], [160, H + 220], [160, H + 233]], ok: 1 },           // 2. Geçti → sonuç
+      { p: [[290, H + 208], [290, H + 233]], ok: 1 });                                         // 2. Kaldı → referans
+  })();
+  seritTek(420, 'yb2');
+  seritTek(654, 'yb3');
+  var TB = sema('tarama-b', 'tb', TB_K, TB_C, ['degb', 'yb1', 'yb2', 'yb3', 'b1', 'b2', 'bt', 'gecti', 'kaldi', 'risksevk', 'referans'], 'yb1', 'detail-tb');
+
+  function refreshTarama() {
+    Object.keys(TNODES).forEach(function (id) { var n = TNODES[id]; applyOv(n.key, n); n._kutular.forEach(tyaz); });
+    tsec(TA, TA.sec); tsec(TB, TB.sec);
+  }
+  refreshTarama();
+
   /* ---------- ders notları ---------- */
   var customNotes = [];
   var NOTES = [
@@ -427,16 +574,25 @@
   $('n-ara').addEventListener('input', function () { renderNotes($('n-ara').value); });
 
   /* ---------- depo segmented control ---------- */
-  // 3D artık Görsel depo'da değil, kendi sayfasında (#3d). İşitme cihazları ve implantlar ayrı paneller.
-  var SEGS = ['yolak', 'refleks', 'isitme', 'implant'];
-  function seg(which) {
-    SEGS.forEach(function (s) {
-      $('seg-' + s).setAttribute('aria-pressed', s === which ? 'true' : 'false');
-      $('p-' + s).hidden = s !== which;
-    });
-    $('cihaz-alt').hidden = which !== 'isitme' && which !== 'implant';   // ortak not iki cihaz panelinin altında
+  // 3D artık Görsel depo'da değil, kendi sayfasında (#3d). Üstte 3 düğme: Şemalar, İşitme cihazları, İşitsel implantlar.
+  // Şemalar'ın içinde alt düğmeler: işitme yolağı, refleks arkı, yenidoğan taraması (o da iki akış şeması).
+  // secici: düğme kimliği onEk+ad, panel kimliği panelEk+ad; yalnızca seçilenin paneli görünür.
+  function secici(adlar, onEk, panelEk, sonra) {
+    function sec(which) {
+      adlar.forEach(function (s) {
+        $(onEk + s).setAttribute('aria-pressed', s === which ? 'true' : 'false');
+        $(panelEk + s).hidden = s !== which;
+      });
+      if (sonra) sonra(which);
+    }
+    adlar.forEach(function (s) { $(onEk + s).addEventListener('click', function () { sec(s); }); });
+    return sec;
   }
-  SEGS.forEach(function (s) { $('seg-' + s).addEventListener('click', function () { seg(s); }); });
+  var seg = secici(['sema', 'isitme', 'implant'], 'seg-', 'p-', function (which) {
+    $('cihaz-alt').hidden = which === 'sema';   // ortak not iki cihaz panelinin altında
+  });
+  secici(['yolak', 'refleks', 'tarama'], 'alt-', 'p-');
+  secici(['a', 'b'], 'tr-', 'tp-');
 
   /* ---------- tabs ---------- */
   // 'uc-boyut' = 3D sayfası; adresi #3d. Alt çubukta sekmesi yok, o sırada Ana sayfa seçili görünür.
@@ -613,8 +769,8 @@
      gorselAlt: ekran okuyucu için görselin anlatımı. genis: listenin başında, ayrışan tam genişlikte kart.
      gizli: true olan kart gösterilmez (görseli hazır olunca kaldırılır). Kimlikler (id) değiştirilmez: açıklamalar bunlara bağlı. */
   var DEVICES = [
-    { id: 'kulak-ici-karsilastirma', grup: 'isitme', genis: true, gizli: true, ad: 'Kulak içi tipler: yerleşim karşılaştırması', img: null,
-      gorselAlt: 'ITE tam konka, ITE yarım konka, ITC, CIC ve IIC cihazlarının kulak kepçesi ve dış kulak yolundaki yerleşimini yan yana gösteren şema.' },
+    { id: 'kulak-ici-karsilastirma', grup: 'isitme', genis: true, ad: 'Kulak içi tipler: yerleşim karşılaştırması', img: 'kulak-ici-karsilastirma.jpg',
+      gorselAlt: 'Beş kulak içi cihaz tipinin kulak kepçesi ve dış kulak yolu kesitindeki yerleşimi; turkuaz alan cihazın kapladığı yer. ITE tam konka: konkanın tamamını doldurur. ITE yarım konka: konkanın alt yarısında. Kanal içi (ITC): kanal girişinde, ucu konkada. Tamamen kanal içi (CIC): tamamı kanalda, yüzü kanal ağzında. Görünmez kanal içi (IIC): kanalın derininde, kulak zarına daha yakın. Kulak kepçesinde heliks, antiheliks, simba konka, kavum konka ve lobül işaretli.' },
     { id: 'bte', grup: 'isitme', ad: 'Kulak arkası (BTE)', img: 'bte-2.jpg',
       gorselAlt: 'Kulak arkası işitme cihazı şeması: kulak kepçesinin arkasındaki cihaz gövdesi, mikrofonlar, pil bölmesi, kulak kancası, ses hortumu ve kulak kalıbı.' },
     { id: 'ric', grup: 'isitme', ad: 'Hoparlörü kanalda (RIC)', img: 'ric.jpg',
@@ -640,22 +796,22 @@
     { id: 'ki-elektrot', grup: 'implant', kume: 'koklear', ad: 'Elektrot dizisi karşılaştırması', img: 'ki-elektrot-2.jpg',
       alt: 'Solda lateral duvar elektrodu, sağda perimodiolar elektrot.',
       gorselAlt: 'Koklea modiolus ekseninden bakılarak iki elektrot dizisi karşılaştırılıyor. Solda lateral duvar elektrodu dış duvara yaslanır ve genellikle daha uzundur. Sağda perimodiolar elektrot modiolusa sarılır ve sinir hücrelerine daha yakındır. İkisi de yuvarlak pencere bölgesinden skala timpaniye girer.' },
-    { id: 'eas', grup: 'implant', kume: 'koklear', ad: 'Elektroakustik stimülasyon (EAS)', img: 'eas.jpg',
-      gorselAlt: 'Elektroakustik stimülasyon (EAS) sistemini gösteren görsel.' },
+    { id: 'eas', grup: 'implant', kume: 'koklear', ad: 'Elektroakustik stimülasyon (EAS)', img: 'eas-2.jpg',
+      gorselAlt: 'Elektroakustik stimülasyon şeması: aynı kulakta pes sesler akustik, tiz sesler elektrik uyarımla verilir. Kulak arkasındaki ses işlemcisine bağlı akustik birim kanaldadır; verici bobin ve deri altındaki implant kısa elektrot dizisini kokleaya gönderir. Küçük çizimde koklea: bazal bölüm elektrik (tiz sesler), apikal bölüm akustik (pes sesler).' },
     { id: 'baha-perkutan', grup: 'implant', kume: 'kemik', ad: 'Perkütan kemik iletim implantı', img: 'baha-perkutan-2.jpg',
       gorselAlt: 'Perkütan kemik iletim implantı kesiti: ses işlemcisi, deriden geçen abutment ile temporal kemiğe (mastoid) kaynaşmış titanyum implanta doğrudan bağlanır; titreşim doğrudan kemiğe iletilir.' },
-    { id: 'transkutan-pasif', grup: 'implant', kume: 'kemik', ad: 'Pasif transkütanöz kemik iletim implantı', img: 'transkutan-pasif.jpg',
-      gorselAlt: 'Pasif transkütanöz kemik iletim implantını gösteren görsel.' },
+    { id: 'transkutan-pasif', grup: 'implant', kume: 'kemik', ad: 'Pasif transkütanöz kemik iletim implantı', img: 'transkutan-pasif-2.jpg',
+      gorselAlt: 'Pasif transkütanöz kemik iletim implantı kesiti: titreşimi dıştaki ses işlemcisi üretir; dış mıknatıs, sağlam derinin altındaki ve kemiğe vidayla sabitlenmiş mıknatısa tutunur. Titreşim deri üzerinden temporal kemiğe (mastoid) geçer.' },
     { id: 'transkutan-aktif', grup: 'implant', kume: 'kemik', ad: 'Aktif transkütanöz kemik iletim implantı', img: 'transkutan-aktif.jpg',
       gorselAlt: 'Aktif transkütanöz kemik iletim implantı kesiti: dıştaki ses işlemcisi mıknatısla tutunur; sinyal ve enerji sağlam deri üzerinden deri altındaki alıcı bobine aktarılır. Titreşimi kemik yuvasına vidayla sabitlenmiş transdüser üretir; titreşim kemik yoluyla kokleaya ulaşır.' },
-    { id: 'orta-kulak-yarim', grup: 'implant', kume: 'ortakulak', ad: 'Orta kulak implantı, yarı implante', img: 'orta-kulak-yarim.jpg',
-      gorselAlt: 'Yarı implante orta kulak implantını gösteren görsel.' },
+    { id: 'orta-kulak-yarim', grup: 'implant', kume: 'ortakulak', ad: 'Orta kulak implantı, yarı implante', img: 'orta-kulak-yarim-2.jpg',
+      gorselAlt: 'Yarı implante orta kulak implantı şeması: dıştaki ses işlemcisi deri altındaki alıcıya sinyal gönderir; iletken kablo, kemikçik zincirine bağlı titreşim transdüserine gider ve zinciri doğrudan titreştirir. Kulak zarı, kemikçikler ve koklea işaretli.' },
     { id: 'orta-kulak-tam', grup: 'implant', kume: 'ortakulak', ad: 'Orta kulak implantı, tam implante', img: 'orta-kulak-tam-2.jpg',
       gorselAlt: 'Tam implante orta kulak implantı şeması: dışarıda parça yoktur. Deri altında pil ve elektronik ünite ile deri altı mikrofon bulunur; iletken kablo, kemikçiğe bağlı titreşim transdüserine gider. Pil deri üzerinden şarj edilir.' },
-    { id: 'abi-yuzey', grup: 'implant', kume: 'beyinsapi', ad: 'İşitsel beyin sapı implantı (ABI), yüzey elektrotlu', img: null,
-      gorselAlt: '' },
-    { id: 'abi-penetran', grup: 'implant', kume: 'beyinsapi', ad: 'Penetran ABI', img: 'abi-penetran.jpg', rozetEk: ['arastirma'],
-      gorselAlt: 'Penetran işitsel beyin sapı implantını gösteren görsel.' }
+    { id: 'abi-yuzey', grup: 'implant', kume: 'beyinsapi', ad: 'İşitsel beyin sapı implantı (ABI), yüzey elektrotlu', img: 'abi-yuzey.jpg',
+      gorselAlt: 'Yüzey elektrotlu işitsel beyin sapı implantı, beyin sapı düzeyinden yatay kesit (önde ön, altta arka). Elektrot taşıyıcı koklear çekirdeğin yüzeyine yerleştirilir; alıcı-uyarıcı saçlı deri altındadır ve kablo kafatasındaki cerrahi açıklıktan girer. Beyin sapı, IV. ventrikül ve serebellum işaretli. Küçük çizimde taşıyıcının önden görünüşü.' },
+    { id: 'abi-penetran', grup: 'implant', kume: 'beyinsapi', ad: 'Penetran ABI', img: 'abi-penetran-2.jpg', rozetEk: ['arastirma'],
+      gorselAlt: 'Penetran işitsel beyin sapı implantı (PABI), beyin sapı düzeyinden yatay kesit. İğne elektrotlar koklear çekirdeğin içine girer; alıcı-uyarıcı saçlı deri altındadır ve kablo cerrahi açıklıktan girer. Beyin sapı, IV. ventrikül ve serebellum işaretli. Küçük çizimde taşıyıcının yandan görünüşü.' }
   ];
   var devText = {};
   var CIHAZ_ALAN = [{ f: 'ad', ad: 'Cihaz adı' }, { f: 'alt', ad: 'Görsel altı not (isteğe bağlı)' },
@@ -784,13 +940,13 @@
     STATIC.forEach(function (o) {
       applyOv(o.key, o);
       o.el.textContent = o.metin;
-      var a = adminPart(o.key, o, [{ f: 'metin', ad: 'Metin', cok: true }], 'Bu yazıyı düzenle');
-      // Bağlantı/düğme içindeki yazının (ör. 3D kartı) düzenleme çubuğu dışarıya konur; yoksa dokununca sayfa değişir.
-      if (a) (o.el.closest('a, button') || o.el).after(h('div', { 'class': 'k-admin' }, [a]));
+      var a = adminPart(o.key, o, [{ f: 'metin', ad: 'Metin', cok: true }], o.el.getAttribute('data-etiket') || 'Bu yazıyı düzenle');   // data-etiket: yazı ekranda görünmüyorsa ya da yeri belirsizse
+      // Bağlantı/düğme içindeki yazının (ör. 3D düğmesi) düzenleme çubuğu dışarıya konur; yoksa dokununca sayfa değişir. Üst satırdakiler satırın altına.
+      if (a) (o.el.closest('.hero-ust') || o.el.closest('a, button') || o.el).after(h('div', { 'class': 'k-admin' }, [a]));
     });
   }
   // Tüm düzenlenebilir içeriği yeniden çizer (yönetici değişikliği geldiğinde, giriş/çıkışta).
-  function refreshContent() { refreshPathway(); refreshReflex(); refreshNotes(); refreshDevices(); refresh3d(); refreshStatic(); bildir('odyo:metinler'); }
+  function refreshContent() { refreshPathway(); refreshReflex(); refreshTarama(); refreshNotes(); refreshDevices(); refresh3d(); refreshStatic(); bildir('odyo:metinler'); }
 
   /* ---------- servis çalışanı: internetsiz açılma (yalnızca https veya localhost'ta çalışır) ---------- */
   if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {

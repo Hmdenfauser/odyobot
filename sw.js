@@ -8,7 +8,7 @@
 
    Firebase (Firestore/giriş) istekleri başka adrese gittiği için buraya karışmaz; onların internetsiz kopyasını
    Firestore'un kendi önbelleği tutar. Vaka kayıtları (Vakalarım) zaten yalnızca cihazın yerel deposundadır. */
-var VERSION = 'odyobot-v21';
+var VERSION = 'odyobot-v22';
 var ASSETS = [
   './',
   './index.html',
@@ -44,6 +44,7 @@ var ASSETS = [
   './icons/apple-touch-icon.png',
   './icons/icon-maskable-512.png',
   './icons/logo.png',
+  './images/devices/kulak-ici-karsilastirma.jpg',
   './images/devices/bte-2.jpg',
   './images/devices/ric.jpg',
   './images/devices/ite-tam.jpg',
@@ -56,13 +57,14 @@ var ASSETS = [
   './images/devices/kemik-yapiskan.jpg',
   './images/devices/ki-2.jpg',
   './images/devices/ki-elektrot-2.jpg',
-  './images/devices/eas.jpg',
+  './images/devices/eas-2.jpg',
   './images/devices/baha-perkutan-2.jpg',
-  './images/devices/transkutan-pasif.jpg',
+  './images/devices/transkutan-pasif-2.jpg',
   './images/devices/transkutan-aktif.jpg',
-  './images/devices/orta-kulak-yarim.jpg',
+  './images/devices/orta-kulak-yarim-2.jpg',
   './images/devices/orta-kulak-tam-2.jpg',
-  './images/devices/abi-penetran.jpg'
+  './images/devices/abi-yuzey.jpg',
+  './images/devices/abi-penetran-2.jpg'
 ];
 
 self.addEventListener('install', function (e) {

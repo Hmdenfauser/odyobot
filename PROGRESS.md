@@ -246,3 +246,21 @@ Proje sahibi "iç kulakta skala media nerede" diye sordu; kaynak modelde ayrı p
 5. Yönetici girişiyle: yeni kartlara (CROS/BiCROS, yapışkan adaptörlü) açıklama yazma; eski açıklamaların yerinde olması; "Rozet yazılarını düzenle".
 6. Uçak modunda açılış: yeni görseller geliyor mu.
 7. Anatomik kontrol: eklenen 9 görsel (özellikle bantlı ve yapışkan kemik iletimdeki şüpheler) ve "Araştırma aşamasında" rozeti.
+
+## Ek (2026-11-15 akşamı, sw v22, yayında)
+- **3D:** büyük kart yerine sağ üstte 44 px düğme (görünüm düğmesiyle aynı boy), `--bot` rengi, 5 sn'de bir parıltı + ışıma halkası (hareket azaltmada yok). Ekran okuyucu açıklaması gizli yazı (`ana.3d.alt`). Üst satırdaki yazıların düzenleme bağlantısı satırın altına konur ve `data-etiket` ile ne düzenlediği yazılır.
+- OdyoBOT 21 px, saat 28 px, tarih 13,5 px.
+- **6 düzeltilmiş görsel eklendi** (betik: geçici klasörde `gorsel2.ps1`; tam boylar `ham-gorseller/yeni cihaz gorselleri/duzeltilmis/`):
+  | Dosya | Kart | Claude'un düzeltmesi |
+  |---|---|---|
+  | bfwaqj | kulak-ici-karsilastirma (gizlilik kalktı) | — |
+  | rk4a0k | eas → `eas-2.jpg` | — |
+  | 5jqm9j | orta-kulak-yarim → `orta-kulak-yarim-2.jpg` | — |
+  | wuxb2l | transkutan-pasif → `transkutan-pasif-2.jpg` | "( vidayla" boşluğu kapatıldı; "Temporal kemik (mastoid)" çizgisi dalgadan kemiğe taşındı |
+  | 9zkdi8 | abi-penetran → `abi-penetran-2.jpg` | şeklin içindeki ikinci "IV. ventrikül" yazısı silindi |
+  | 6ffw5h | abi-yuzey → `abi-yuzey.jpg` (yer tutucu kalktı) | yarım "Alıcı-uyarı" satırı ve alttaki tekrar eden "Alıcı-uyarıcı (saçlı deri altında)" etiketi ve çizgisi silindi |
+  Eski görseller `ham-gorseller/yedek-cihaz-2026-11-15/` içine taşındı. Yüzey ABI'deki "İşlev görmeyen VIII. kranial sinir" etiketi ve oku proje sahibinin isteğiyle silindi (yanlış yeri gösteriyordu).
+- **Görsel depo:** üstte 3 düğme (Şemalar, İşitme cihazları, İşitsel implantlar; `secici()` yardımcı), Şemalar içinde sekme biçiminde alt düğmeler (`.alt-seg`).
+- **Yenidoğan taraması:** `TNODES` + `sema()` çizici (kutu/ok tanımları koordinatla), kart `tsec()`. İki şemada ortak kutular (Geçti, Kaldı, sonuçlar) aynı kaydı kullanır. Referans: `ham-gorseller/yenidogan-tarama/image-1.png`, `image-2.png` (Sağlık Bakanlığı slaytları, uygulamaya konmadı).
+- Test: 360/400 px açık/koyu taşma yok, 44 px altı hedef yok; kutuya dokunma, kart, Önceki/Sonraki; yönetici Düzenle/Kaydet/Varsayılana dön; işitme 11 kart, implantlarda yer tutucu yok; internetsiz v22 (55 dosya), konsolda hata yok.
+- **Proje sahibi doğrulayacak:** akış şemalarındaki taslak metinler (özellikle "Risk var" ve yoğun bakım açıklamaları).

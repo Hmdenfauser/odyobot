@@ -35,6 +35,8 @@
         <div class="hero-ust">
           <span class="brand">OdyoBOT</span>
           <span class="ust-dugmeler">
+          <!-- 3D düğmesi: görünüm düğmesiyle aynı boyda, temanın ikinci rengi (--bot), hafif parıltı. Açıklama ekran okuyucu için gizli yazı. -->
+          <a class="iconbtn kart3d" href="#3d" id="kart3d"><span class="kart3d-baslik" data-k="ana.3d.baslik" data-etiket="3D düğmesinin yazısını düzenle">3D</span><span class="gizli-yazi" data-k="ana.3d.alt" data-etiket="3D düğmesinin ekran okuyucu açıklamasını düzenle">Kulağı üç boyutlu incele</span></a>
           <button class="iconbtn" id="gorunum-dugme" type="button" aria-label="Görünüm: Otomatik. Değiştirmek için dokun.">
             <svg data-ikon="auto" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg>
             <svg data-ikon="light" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" hidden><circle cx="12" cy="12" r="4.500" fill="currentColor"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.900 4.900l1.400 1.400M17.700 17.700l1.400 1.400M19.100 4.900l-1.400 1.400M6.300 17.700l-1.400 1.400"/></svg>
@@ -48,15 +50,6 @@
         <h1 data-k="ana.baslik">Merhaba, odyolog</h1>
         <div class="hero-zaman"><span class="clock" id="clock" aria-label="Saat">--:--</span><span class="kicker" id="date">—</span></div>
       </div>
-
-      <!-- 3D kartı: uygulamanın öne çıkan bölümü. Renk: temanın ikinci rengi (--bot). -->
-      <a class="kart3d" href="#3d" id="kart3d">
-        <span class="kart3d-yazi">
-          <span class="kart3d-baslik" data-k="ana.3d.baslik">3D</span>
-          <span class="kart3d-alt" data-k="ana.3d.alt">Kulağı üç boyutlu incele</span>
-        </span>
-        <svg class="kart3d-simge" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 4l17 9.500v21L24 44 7 34.500v-21z"/><path d="M7 13.500l17 9.500 17-9.500M24 23v21"/></svg>
-      </a>
 
       <div class="a-cipler" role="group" aria-label="Paylaşımları süz">
         <button type="button" class="a-cip" data-filtre="tumu" aria-pressed="true">Tümü</button>
@@ -142,11 +135,18 @@
         <h2 data-k="depo.baslik">Görsel depo</h2>
         <p class="lead" data-k="depo.lead">Şemalar ve cihaz görselleri tek yerde.</p>
       </div>
-      <div class="seg seg4" role="group" aria-label="Depo bölümü">
-        <button type="button" id="seg-yolak" aria-pressed="true">Yolaklar</button>
-        <button type="button" id="seg-refleks" aria-pressed="false">Refleks arkı</button>
+      <div class="seg seg3 depo-seg" role="group" aria-label="Depo bölümü">
+        <button type="button" id="seg-sema" aria-pressed="true">Şemalar</button>
         <button type="button" id="seg-isitme" aria-pressed="false">İşitme cihazları</button>
         <button type="button" id="seg-implant" aria-pressed="false">İşitsel implantlar</button>
+      </div>
+
+      <!-- Şemalar: işitme yolağı, refleks arkı, yenidoğan işitme taraması (alt düğmelerle) -->
+      <div id="p-sema" class="stack">
+      <div class="alt-seg" role="group" aria-label="Şema seç">
+        <button type="button" id="alt-yolak" aria-pressed="true">İşitme yolağı</button>
+        <button type="button" id="alt-refleks" aria-pressed="false">Refleks arkı</button>
+        <button type="button" id="alt-tarama" aria-pressed="false">Yenidoğan taraması</button>
       </div>
 
       <div id="p-yolak" class="stack">
@@ -176,6 +176,41 @@
         </div>
         <article class="card" id="detail-r" aria-live="polite"></article>
         <p class="note" data-k="refleks.not">Şema basitleştirilmiştir. Karşıya geçişin tam düzeyi kaynaklara göre farklı anlatılır; burada trapezoid cisim düzeyinde gösterilmiştir.</p>
+      </div>
+
+      <!-- Yenidoğan işitme taraması: iki akış şeması (app.js, TARAMA). Sağlık Bakanlığı akış şemalarına bakılarak yeniden çizildi. -->
+      <div id="p-tarama" class="stack" hidden>
+        <p class="lead" data-k="tarama.lead">Tarama ABR protokolünün akış şemaları. Bir kutuya dokun; ne zaman yapıldığı ve sonrasında ne olduğu aşağıda açılır.</p>
+        <div class="seg seg2" role="group" aria-label="Akış şeması seç">
+          <button type="button" id="tr-a" aria-pressed="true">Tarama ABR protokolü</button>
+          <button type="button" id="tr-b" aria-pressed="false">Yoğun bakım (5 günden fazla)</button>
+        </div>
+        <div id="tp-a" class="stack">
+          <div class="figure">
+            <svg id="tarama-a" viewBox="0 0 360 490" role="group" aria-label="Tarama ABR protokolü akış şeması"></svg>
+            <div class="legend">
+              <span><i class="akis-renk gecti"></i>Geçti</span>
+              <span><i class="akis-renk kaldi"></i>Kaldı</span>
+              <span><i class="akis-renk sevk"></i>Sevk</span>
+            </div>
+          </div>
+          <article class="card" id="detail-ta" aria-live="polite"></article>
+          <p class="note" data-k="tarama.a.not">1. tarama ABR doğumdan sonraki ilk 72 saat içinde (taburcu olmadan), 2. tarama ABR doğumdan sonraki 7–15 gün içinde, 3. tarama ABR doğumdan sonraki 15–30 gün içinde (30. günü geçmemeli) yapılır.</p>
+        </div>
+        <div id="tp-b" class="stack" hidden>
+          <div class="figure">
+            <svg id="tarama-b" viewBox="0 0 360 860" role="group" aria-label="5 günden fazla yoğun bakımda kalan bebeklerde tarama ABR akış şeması"></svg>
+            <div class="legend">
+              <span><i class="akis-renk gecti"></i>Geçti</span>
+              <span><i class="akis-renk kaldi"></i>Kaldı</span>
+              <span><i class="akis-renk sevk"></i>Sevk</span>
+            </div>
+          </div>
+          <article class="card" id="detail-tb" aria-live="polite"></article>
+          <p class="note" data-k="tarama.b.not">Test zamanlarıyla ilgili ayrıntılar «Yenidoğan İşitme Tarama Programında Tarama ABR Protokolü» belgesindedir.</p>
+        </div>
+        <p class="note" data-k="tarama.kaynak">Kaynak: T.C. Sağlık Bakanlığı Yenidoğan İşitme Taraması Programı, tarama ABR protokolü akış şemaları. Şemalar bu kaynağa bakılarak sadeleştirilip yeniden çizildi; güncel uygulama için programın son belgesine bakılmalıdır.</p>
+      </div>
       </div>
 
       <!-- Cihaz kartlarını app.js çizer (DEVICES). Görsele dokununca goruntuleyici.js tam ekran açar. -->
