@@ -942,7 +942,7 @@
       o.el.textContent = o.metin;
       var a = adminPart(o.key, o, [{ f: 'metin', ad: 'Metin', cok: true }], o.el.getAttribute('data-etiket') || 'Bu yazıyı düzenle');   // data-etiket: yazı ekranda görünmüyorsa ya da yeri belirsizse
       // Bağlantı/düğme içindeki yazının (ör. 3D düğmesi) düzenleme çubuğu dışarıya konur; yoksa dokununca sayfa değişir. Üst satırdakiler satırın altına.
-      if (a) (o.el.closest('.hero-ust') || o.el.closest('a, button') || o.el).after(h('div', { 'class': 'k-admin' }, [a]));
+      if (a) ((o.el.closest('.ust-dugmeler') && o.el.closest('.hero')) || o.el.closest('a, button') || o.el).after(h('div', { 'class': 'k-admin' }, [a]));
     });
   }
   // Tüm düzenlenebilir içeriği yeniden çizer (yönetici değişikliği geldiğinde, giriş/çıkışta).
@@ -974,11 +974,9 @@
   var authRef = null;
   function setEditMode(on, email) {
     canEdit = !!on;
-    $('gear').hidden = !canEdit;
     $('ayar-body').hidden = !canEdit;
-    $('ayar-denied').hidden = canEdit;
+    $('ayar-giris').hidden = canEdit;   // girişliyken "Yönetici girişi" düğmesi gizlenir
     $('compose').hidden = !canEdit;
-    $('login-link').hidden = canEdit;
     $('who').textContent = canEdit ? 'Giriş yapan: ' + (email || '') : '';
     // Yalnızca yöneticiye görünen bölümler (ör. OdyoBOT mesaj metinleri) CSS'te .yonetici ile açılır.
     document.documentElement.classList.toggle('yonetici', canEdit);

@@ -22,7 +22,8 @@
   }
 
   /* ---------- sohbet balonları ve seçenek düğmeleri ---------- */
-  function asagi() { setTimeout(function () { try { window.scrollTo(0, document.body.scrollHeight); } catch (e) {} }, 30); }
+  // Sohbetin sonuna kaydır: yalnızca OdyoBOT sekmesi açıkken. (Sekme kapalıyken de çalışınca uygulama açılışta ana sayfanın en altına kayıyordu, 2026-11-15.)
+  function asagi() { setTimeout(function () { var s = document.getElementById('odybot'); if (!s || s.hidden) return; try { window.scrollTo(0, document.body.scrollHeight); } catch (e) {} }, 30); }
   function bot(icerik) {
     var kids = typeof icerik === 'string' ? [h('p', { text: icerik })] : icerik;
     $('b-sohbet').appendChild(h('div', { 'class': 'balon bot' }, kids));
