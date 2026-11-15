@@ -264,3 +264,11 @@ Proje sahibi "iç kulakta skala media nerede" diye sordu; kaynak modelde ayrı p
 - **Yenidoğan taraması:** `TNODES` + `sema()` çizici (kutu/ok tanımları koordinatla), kart `tsec()`. İki şemada ortak kutular (Geçti, Kaldı, sonuçlar) aynı kaydı kullanır. Referans: `ham-gorseller/yenidogan-tarama/image-1.png`, `image-2.png` (Sağlık Bakanlığı slaytları, uygulamaya konmadı).
 - Test: 360/400 px açık/koyu taşma yok, 44 px altı hedef yok; kutuya dokunma, kart, Önceki/Sonraki; yönetici Düzenle/Kaydet/Varsayılana dön; işitme 11 kart, implantlarda yer tutucu yok; internetsiz v22 (55 dosya), konsolda hata yok.
 - **Proje sahibi doğrulayacak:** akış şemalarındaki taslak metinler (özellikle "Risk var" ve yoğun bakım açıklamaları).
+
+## Kepçe–kanal birleşimi onarımı (2026-11-15, sw v24)
+Proje sahibi: "kulak kepçesi ile kulak kanalı tam geçmemiş, arada boşluklar var".
+- **Neden:** kanal iki ayrı parçaydı (asıl kanal z≈15,7 mm'de biter; elle eklenmiş 936 köşelik ara parça z 15,1–23,9) ve üst üste bindirilmişti; ara parça kepçedeki deliğin kenarına dikili değildi, kavumun içine taşıyordu. Kepçede delik iki açık kenar bırakıyor: ön yüz (kavum, z 22,6) ve arka yüz (z 20,4).
+- **Yapılan:** ara parça silindi; asıl kanal düzensiz ucundan önce eksene dik düzlemle kesildi (z≈13,2, kenar düzleme yaslandı); kesim kenarından kavum kenarına 22 halkalı tüp çizildi (Hermite eğrisi, taşınan çerçeve, kenarlar açıya göre eşleştirildi; uçlar mevcut köşelere birebir dikili); arka yüz kenarı tüpe 4 ara halkalı bir bağlantıyla kapatıldı (p_cavum'a eklendi; tüpün içine taşmıyor, en dar 0,54 mm).
+- **Kontrol:** kanalda yalnızca 2 açık uç kaldı (kulak zarı tarafı ve kavum); 31 parçadan 29'u bayt bayt aynı (değişen: eac, p_cavum); dosya 3 973 466 → 4 011 334 bayt (`surum: 3`). Uygulamada beş görünüm ve kanala dokunma ("Dış kulak yolu") denendi, hata yok.
+- **Yedek:** `ham-gorseller/yedek-3d-v23/` (önceki model + betikler + OKU.md), yerel git etiketi `yedek-v23-kanal-oncesi`.
+- Ekrandaki not ve KAYNAKLAR.md güncellendi: kanalın kepçeye bağlanan son ~9 mm'si çizilmiş tüptür.

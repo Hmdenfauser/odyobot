@@ -67,12 +67,12 @@ window.GORSEL3D_VERI = {
     gorunumBasligi: 'Görünüm',
     gorunumler: { lat: 'Lateralden', med: 'Medialden', ust: 'Üstten', on: 'Önden', arka: 'Arkadan' },
     ipucu: 'Döndür, iki parmakla yakınlaştır, bir yapıya dokun.',
-    not: 'Kulak kepçesi başka bir kişinin taramasıdır; dış kulak yolunun dış ucuna hizalandı ve aradaki yaklaşık 8 mm\'lik boşluk çizilmiş bir tüp parçasıyla kapatıldı; o kısım tarama verisi değildir. Skala media da tarama verisi değildir; iki skala arasındaki bölmeye göre yaklaşık olarak çizildi. Kepçenin arka yüzü ölçülmüş veri değildir, ön yüzden yaklaşık 3 mm kalınlık verilerek tamamlandı. Kepçe bölümlerinin sınırları tarama üzerinde elle, iç kulaktaki vestibül, kanal, ampulla ve ortak krus sınırları otomatik ayrıştırmayla çizildi. Hepsi yaklaşıktır.',
+    not: 'Kulak kepçesi başka bir kişinin taramasıdır; dış kulak yolunun dış ucuna hizalandı; kanalın kepçeye bağlanan son yaklaşık 9 mm\'si çizilmiş bir tüptür, tarama verisi değildir. Skala media da tarama verisi değildir; iki skala arasındaki bölmeye göre yaklaşık olarak çizildi. Kepçenin arka yüzü ölçülmüş veri değildir, ön yüzden yaklaşık 3 mm kalınlık verilerek tamamlandı. Kepçe bölümlerinin sınırları tarama üzerinde elle, iç kulaktaki vestibül, kanal, ampulla ve ortak krus sınırları otomatik ayrıştırmayla çizildi. Hepsi yaklaşıktır.',
     kaynakOnsoz: 'Kaynaklar:',
     kaynaklar: [
       { metin: 'Sieber D. ve ark., OpenEar kütüphanesi, örnek ZETA (CC BY 4.0)', adres: 'https://zenodo.org/records/1473724' },
       { metin: 'Artec 3D kulak taraması (CC BY 3.0)', adres: 'https://www.artec3d.com/3d-models/ear' }
     ],
-    degisiklikler: 'Değişiklikler: yapılar anatomik yöne çevrildi; kepçe kırpıldı, yüzde 15 küçültüldü, arka yüzü tamamlandı, bölgelere ayrıldı ve kanala bir ara parçayla birleştirildi; dış kulak yolunun iki ucu açıldı; iç kulak sıvı boşluğu bölgelere ayrıldı; skala media yaklaşık olarak çizilip eklendi; kemik ile sinüs ve dura kırpılıp sadeleştirildi; renklendirildi.'
+    degisiklikler: 'Değişiklikler: yapılar anatomik yöne çevrildi; kepçe kırpıldı, yüzde 15 küçültüldü, arka yüzü tamamlandı, bölgelere ayrıldı ve kanala çizilmiş bir ara tüple dikişsiz birleştirildi; dış kulak yolunun iki ucu açıldı; iç kulak sıvı boşluğu bölgelere ayrıldı; skala media yaklaşık olarak çizilip eklendi; kemik ile sinüs ve dura kırpılıp sadeleştirildi; renklendirildi.'
   }
 };
