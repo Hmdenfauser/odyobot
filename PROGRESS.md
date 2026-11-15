@@ -272,3 +272,9 @@ Proje sahibi: "kulak kepçesi ile kulak kanalı tam geçmemiş, arada boşluklar
 - **Kontrol:** kanalda yalnızca 2 açık uç kaldı (kulak zarı tarafı ve kavum); 31 parçadan 29'u bayt bayt aynı (değişen: eac, p_cavum); dosya 3 973 466 → 4 011 334 bayt (`surum: 3`). Uygulamada beş görünüm ve kanala dokunma ("Dış kulak yolu") denendi, hata yok.
 - **Yedek:** `ham-gorseller/yedek-3d-v23/` (önceki model + betikler + OKU.md), yerel git etiketi `yedek-v23-kanal-oncesi`.
 - Ekrandaki not ve KAYNAKLAR.md güncellendi: kanalın kepçeye bağlanan son ~9 mm'si çizilmiş tüptür.
+
+### Ek: kepçe arkası pürüzleri (2026-11-15, sw v25)
+Proje sahibi: "kepçenin arkasında kanala yakın bölgede üçgen bir boşluk kalmış; ufak tefek pürüzleri de kapat".
+- **Neden:** v24'te tüp kavum (ön) kenarına dikiliydi, arka yüz kenarı tüpe bir "yaka" ile bağlanıyordu; yaka tragus yakınında katlanıp küçük üçgen açıklıklar bırakıyordu. İki delik kenarı da testere dişliydi (bölge sınırlarından), tüp ucu sivri dişler yapıyordu.
+- **Yapılan (onar5.js):** iki delik kenarı Taubin ile yumuşatıldı (12 tur, en çok 0,49 mm; aynı konumdaki köşeler komşu kepçe parçalarında da taşındı: p_tragus, p_antitragus, p_notch, p_cavum); kanal z≈12,4'te kesildi; tüp arka yüz kenarına dikildi; arka ve ön kenar arasına 3 halkalı iç duvar (p_cavum); kesim kenarı normalleri iki tarafın ortalaması (dikiş çizgisi kalmadı).
+- **Kontrol:** kepçe+kanal birleşik yüzeyde kanal ağzı çevresinde açık kenar yok (kalanlar kulak zarı ucundaki bilerek açık ağız ve kaynaktaki konum çakışmaları; ham parçada delik değil). 26/31 parça bayt bayt aynı. Açık/koyu, beş görünüm, yakın çekim, kanala dokunma ("Dış kulak yolu"), konsol hatası yok. Dosya 4 001 488 bayt.

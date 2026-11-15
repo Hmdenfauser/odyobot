@@ -52,7 +52,7 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 - Odyogram çıktısı (`cikti.js`), Vakalarım → OdyoBOT gönderme, düğmeli sohbet (`odybot.js`). sw v12. Ayrıntı: `PROGRESS.md`.
 
 ### Sonraki oturumda proje sahibine hatırlat (2026-11-15 akşamı kaydedildi)
-**sw v24 yayında** (2026-11-15; 3D modelde kepçe–kanal birleşimi onarıldı, ayrıntı PROGRESS.md; açılışta ana sayfanın en alta kayması düzeltildi: `odybot.js` `asagi()` OdyoBOT sekmesi kapalıyken de kaydırıyordu; Ayarlar herkese açık: tema, dil, yönetici girişi; dişlinin altında 3D). Oturum başında bu listeyi sırayla hatırlat:
+**sw v25 yayında** (2026-11-15; kepçe arkasındaki üçgen boşluk ve pürüzler giderildi). **sw v24 yayında** (2026-11-15; 3D modelde kepçe–kanal birleşimi onarıldı, ayrıntı PROGRESS.md; açılışta ana sayfanın en alta kayması düzeltildi: `odybot.js` `asagi()` OdyoBOT sekmesi kapalıyken de kaydırıyordu; Ayarlar herkese açık: tema, dil, yönetici girişi; dişlinin altında 3D). Oturum başında bu listeyi sırayla hatırlat:
 1. **Telefonda denenecekler (v21–v24):** 3D'de kepçe–kanal birleşimi (Dış kulak, önden/arkadan); açılışta sayfanın üstte kalması; dişli → Ayarlar (tema, dil, yönetici girişi); dişlinin altındaki 3D düğmesi ve 3D sayfası (döndürme, iki parmakla yakınlaştırma, dokunarak seçme, "← Ana sayfa" ve geri tuşu); cihaz görsellerini tam ekranda büyütme/kapatma; rozetlerin açık/koyu okunurluğu; Görsel depo → Şemalar → Yenidoğan taraması kutuları; uçak modunda açılış.
 2. **Proje sahibinin doğrulaması gereken içerik:**
    - Yenidoğan taraması kartlarındaki taslak metinler (özellikle "Risk var" ve yoğun bakım açıklamaları). Yoğun bakım şemasında test zamanları yok ("Ayrıntılar protokol belgesinde"); biliyorsa uygulamadan eklesin.

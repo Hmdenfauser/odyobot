@@ -67,7 +67,7 @@ window.GORSEL3D_VERI = {
     gorunumBasligi: 'Görünüm',
     gorunumler: { lat: 'Lateralden', med: 'Medialden', ust: 'Üstten', on: 'Önden', arka: 'Arkadan' },
     ipucu: 'Döndür, iki parmakla yakınlaştır, bir yapıya dokun.',
-    not: 'Kulak kepçesi başka bir kişinin taramasıdır; dış kulak yolunun dış ucuna hizalandı; kanalın kepçeye bağlanan son yaklaşık 9 mm\'si çizilmiş bir tüptür, tarama verisi değildir. Skala media da tarama verisi değildir; iki skala arasındaki bölmeye göre yaklaşık olarak çizildi. Kepçenin arka yüzü ölçülmüş veri değildir, ön yüzden yaklaşık 3 mm kalınlık verilerek tamamlandı. Kepçe bölümlerinin sınırları tarama üzerinde elle, iç kulaktaki vestibül, kanal, ampulla ve ortak krus sınırları otomatik ayrıştırmayla çizildi. Hepsi yaklaşıktır.',
+    not: 'Kulak kepçesi başka bir kişinin taramasıdır; dış kulak yolunun dış ucuna hizalandı; kanalın kepçeye bağlanan son yaklaşık 10 mm\'si ve kepçedeki kanal ağzının iç duvarı çizilmiştir, tarama verisi değildir. Skala media da tarama verisi değildir; iki skala arasındaki bölmeye göre yaklaşık olarak çizildi. Kepçenin arka yüzü ölçülmüş veri değildir, ön yüzden yaklaşık 3 mm kalınlık verilerek tamamlandı. Kepçe bölümlerinin sınırları tarama üzerinde elle, iç kulaktaki vestibül, kanal, ampulla ve ortak krus sınırları otomatik ayrıştırmayla çizildi. Hepsi yaklaşıktır.',
     kaynakOnsoz: 'Kaynaklar:',
     kaynaklar: [
       { metin: 'Sieber D. ve ark., OpenEar kütüphanesi, örnek ZETA (CC BY 4.0)', adres: 'https://zenodo.org/records/1473724' },
