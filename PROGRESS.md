@@ -1,11 +1,11 @@
 # PROGRESS — Yol haritası 1. adım: tasarım yenilemesi (2026-11-17)
 
-Yol haritası: `YOL-HARITASI.md`. Dal: `adim1-tasarim` (**main'e birleştirilmedi, yayında değil**; proje sahibinin önizleme onayı bekleniyor). sw **v26**.
+Yol haritası: `YOL-HARITASI.md`. Dal: `adim1-tasarim` (**main'e birleştirilmedi, yayında değil**; proje sahibinin önizleme onayı bekleniyor). sw **v27**.
 
 | Bölüm | Durum | Not |
 |---|---|---|
 | A) Renkler | ✅ | `PALETTES.logo` varsayılan (`ai`: ana renk üstü yazı, `k`: 3D kartı zemini). Yönetici seçimi artık `ayar/renk` belgesinde; eski `ayar/tema`'da "petrol" kayıtlıydı ve yeni varsayılanı ezecekti. Eski belge yalnızca canlıdaki eski sürüm için kalıyor. firestore.rules değişmedi (`ayar/{id}` zaten herkes okur, yönetici yazar). |
-| B) Alt çubuk, logo | ✅ | Kaynak `ham-gorseller/logo/OdyoBOT.jpg`'den yeniden temizlendi: renkli alan maskesi → 30 px kapatma (iç beyazlar korunur) → pürüz yumuşatma → 8 px düzgün beyaz kenar → 264 px PNG `icons/odyobot-logo-seffaf.png`. Fable'ın dosyası, 512 px kopya ve betik: `ham-gorseller/yedek-logo-2026-11-17/`. PWA simgeleri ve `icons/logo.png` değişmedi. Logonun arkasında, çubuğun üstünde sayfa zemini renginde yarım daire (içerik arkadan görünmez). Seçili OdyoBOT: yazı ana renk + altında kısa çizgi. |
+| B) Alt çubuk, logo | ✅ (v27: proje sahibinin isteğiyle dış beyaz çerçeve kaldırıldı; kenara değen beyaz ayırıcılar da 40 px içinde saydam, iç beyazlar korundu. Eski dosya ve betik v2: `ham-gorseller/yedek-logo-2026-11-17/`) | Kaynak `ham-gorseller/logo/OdyoBOT.jpg`'den yeniden temizlendi: renkli alan maskesi → 30 px kapatma (iç beyazlar korunur) → pürüz yumuşatma → 8 px düzgün beyaz kenar → 264 px PNG `icons/odyobot-logo-seffaf.png`. Fable'ın dosyası, 512 px kopya ve betik: `ham-gorseller/yedek-logo-2026-11-17/`. PWA simgeleri ve `icons/logo.png` değişmedi. Logonun arkasında, çubuğun üstünde sayfa zemini renginde yarım daire (içerik arkadan görünmez). Seçili OdyoBOT: yazı ana renk + altında kısa çizgi. |
 | C) Ana sayfa | ✅ | Üst satır, arama (`araListe`/`araCiz`, Türkçe harf farkı gözetmez), hızlı erişim, büyük 3D kartı (`images/3d-onizleme.jpg`, modelin ekran görüntüsü), Kaldığın yerden, Favori notlar, Duyurular (akis.js `anaListeCiz`: süresi geçmemiş en yeni 5 kayıt; "Yeni" rozeti `odybot:sonZiyaret`). Tam liste ve yönetici formu yeni alt sayfada `#duyurular`. Ana sayfa yazıları `#ana-metinler` (yönetici). |
 | D) Cihazlar | ✅ | İki sütun; geniş kart ve düzenlenen kart tam genişlik. İşitme cihazlarında rozet yok (implantlarda var). Sayfa başı açıklamalar kaldırıldı; `cihaz.temsili` notu sonda. |
 | E) Ders notları | ✅ | `NOT_GRUPLARI` + `GRUP_AD` (yönetici düzenler: `icerik/not.gruplar`). Not sayfası `#not/<anahtar>` (koddaki `not.<sıra>`, eklenen `nd.<belge>`). |
