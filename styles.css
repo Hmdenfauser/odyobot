@@ -96,7 +96,10 @@ section[hidden] { display: none !important; }
 /* Announcement lists */
 .board { display: flex; flex-direction: column; gap: 10px; }
 .item { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.item.past { opacity: .6; }
+/* Süresi geçen ilan: kart soluk değil (yazı okunur kalsın, 2026-11-17 kontrast ölçümü); yalnızca görsel soluk, başlık ikincil renkte, "Geçti" etiketi var */
+.item.past { border-style: dashed; }
+.item.past .item-title { color: var(--muted); }
+.item.past .a-gorsel { opacity: .5; }
 .item-top { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
 .item-title { font-weight: 600; overflow-wrap: anywhere; min-width: 0; }
 .meta { font-size: 13px; color: var(--muted); overflow-wrap: anywhere; }
@@ -438,9 +441,12 @@ button.btn.b-vaka[aria-pressed="true"] .b-vaka-kutu { background: var(--accent);
 .a-afis-baslik { font-weight: 600; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
 .a-afis-tarih { font-family: var(--font-mono); font-size: 12px; color: var(--accent); }
 .a-afis .meta { display: -webkit-box; -webkit-line-clamp: 1; line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
-.a-afis.gecmis { opacity: .55; }
+/* Geçmiş etkinlik: yalnızca afiş görseli soluk; yazılar ikincil renkte ama okunur */
+.a-afis.gecmis .a-gorsel img { opacity: .45; }
+.a-afis.gecmis .a-afis-yer { color: var(--muted); }
+.a-afis.gecmis .a-afis-baslik { color: var(--muted); }
 .a-afis.gecmis .a-afis-tarih { color: var(--muted); }
-.a-gecti { position: absolute; top: 8px; left: 8px; background: var(--surface); }
+.a-gecti { position: absolute; top: 8px; left: 8px; z-index: 1; background: var(--surface); color: var(--ink); }
 /* Tümü: yatay şerit. Kaydırma yalnızca şeridin içinde; sayfa yatay kaymaz. */
 .a-serit { display: flex; gap: 12px; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding-inline: 16px; margin: 0 -16px; padding: 2px 16px 6px; scrollbar-width: none; }
 .a-serit::-webkit-scrollbar { display: none; }
@@ -743,3 +749,6 @@ button.btn.esik-tg[aria-pressed="true"] { background: var(--accent); border-colo
 .grup-ekle { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: end; }
 @media (max-width: 380px) { .grup-satir { grid-template-columns: 1fr 1fr; } .grup-satir .fld { grid-column: 1 / -1; } }
 .not-grup-sec { border-top: 1px solid var(--line); padding-top: 12px; }
+
+/* Yer tutucu (örnek) yazılar: tarayıcının silik varsayılanı yerine ikincil yazı rengi (kontrast 4.5 üstü) */
+input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }

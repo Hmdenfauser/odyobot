@@ -26,6 +26,12 @@ Yol haritası: `YOL-HARITASI.md`. Dal: `adim1-tasarim` (**main'e birleştirilmed
 - Hareket azaltma açıkken 3D kartında animasyon yok. İnternetsiz açılış (v26, 57 dosya). Konsolda hata yok. Maskeleme testleri 27/27.
 - Test sırasında görülen ve düzeltilen: hücre seçimi yalnız odaklanmaya bağlıydı (dokunma/yazma da seçiyor); 3D kartının dört düzenleme düğmesi aynı yazıyı taşıyordu (`data-etiket`); "Kaldığın yerden" kartında 360 px'te kelime bölünüyordu.
 
+## Renk kontrastı ölçümü (WCAG, 2026-11-17)
+- Betik: geçici klasörde t-kontrast.js. 14 sayfa × açık/koyu, 360 px; görünen her yazı ve yer tutucu, gerçek zemin ve saydamlık hesaba katılarak. Eşik: normal yazı 4,5, büyük yazı 3. SVG şemalardaki yazılar bu ölçüme girmedi.
+- Düzeltilen: süresi geçen etkinlik/ilan kartları bütünüyle soluktu (2,0–3,6) → yalnızca görsel soluk, yazı ikincil renkte; yer tutucu yazılar (3,4–4,2) → ikincil yazı rengi.
+- Kalan tek bulgu: seçili hücre yokken kapalı duran "Maskeli" düğmesi (3,1). Kapalı (kullanılamaz) düğmeler WCAG'de muaf; bilerek bırakıldı.
+- Proje sahibinin kararları: hızlı erişimdeki "Ders notları" kısayolu 4. adımdaki Kütüphane birleşmesine kadar kalıyor; eşik tablosu yayından sonra telefonda denenecek; OAE başlığı şimdilik kalıyor.
+
 ## Proje sahibine bildirilecek
 - Not grubu adları (Temel odyometri, İmmitansmetri, Elektrofizyoloji) referans görseldeki örneklerden alındı. OAE'nin "Elektrofizyoloji" altında olması tartışılabilir; uygulamadan değiştirilebilir.
 - Önizleme sonrası onay → main'e birleştirme ve yayın.
