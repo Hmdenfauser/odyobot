@@ -670,6 +670,18 @@
           <div class="msg" id="v-form-msg" role="status"></div>
         </form>
       </div>
+
+      <!-- Kaydetme bildirimleri (ekranın üstünde kısa süre görünür): yalnızca yöneticiye görünür, buradan düzenlenir. {n} yerine sayı gelir. -->
+      <details class="compose b-metinler" id="v-metinler">
+        <summary>Vaka kaydetme bildirimleri (yönetici)</summary>
+        <div class="yedek-ic">
+          <p data-k="vakalarim.b.kaydedildi" data-m="kaydedildi">Vaka kaydedildi.</p>
+          <p data-k="vakalarim.b.guncellendi" data-m="guncellendi">Değişiklikler kaydedildi.</p>
+          <p data-k="vakalarim.b.hataAlan" data-m="hataAlan">Kaydedilmedi: kırmızı alanları düzelt ({n} alan).</p>
+          <p data-k="vakalarim.b.hataKimlik" data-m="hataKimlik">Kaydedilmedi: vaka kimliği gerekli.</p>
+          <p data-k="vakalarim.b.hataDepo" data-m="hataDepo">Kaydedilemedi. Tarayıcının depolama alanı dolu ya da kapalı olabilir (örneğin gizli sekmede).</p>
+        </div>
+      </details>
     </div>
   </section>
 </div>

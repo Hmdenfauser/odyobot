@@ -619,6 +619,9 @@
   $('v-ayri').addEventListener('click', function () { grafikDuzeni(true); });
 
   $('v-form').addEventListener('input', function (e) { if (!e.target.classList.contains('db')) formDegisti = true; });
+  // Kaydetme bildirimi: ekranın üstünde kısa süre görünür (app.js OdyoUI.bildirim). Yazılar index.html #v-metinler (yönetici düzenler).
+  function BM(ad) { var el = document.querySelector('#v-metinler [data-m="' + ad + '"]'); return el ? el.textContent.trim() : ad; }
+  function bildirimGoster(metin, hata) { if (U.bildirim) U.bildirim(metin, hata ? 'hata' : 'tamam'); }
   $('v-form').addEventListener('submit', function (e) {
     e.preventDefault();
     var msg = $('v-form-msg'); msg.className = 'msg'; msg.textContent = '';
@@ -629,12 +632,15 @@
       if (ilk.f != null && araMi(ilk.f) && !$('v-ara').checked) araGoster(true);
       if (ilk.ek) $('v-ek').open = true;
       msg.textContent = 'Kırmızı alanları düzelt (' + r.hatalar.length + ' alan).'; msg.className = 'msg err';
+      bildirimGoster(BM('hataAlan').replace('{n}', r.hatalar.length), true);
       ilk.giris.focus();
       araclariCiz();
       return;
     }
     if (!r.vaka.kimlik) {
-      msg.textContent = 'Vaka kimliği gerekli.'; msg.className = 'msg err'; $('v-kimlik').focus(); return;
+      msg.textContent = 'Vaka kimliği gerekli.'; msg.className = 'msg err';
+      bildirimGoster(BM('hataKimlik'), true);
+      $('v-kimlik').focus(); return;
     }
     var yeni = !duzenlenen, simdi = Date.now(), v = r.vaka;
     v.id = yeni ? yeniId() : duzenlenen.id;
@@ -645,9 +651,11 @@
     VakaDeposu.kaydet(v).then(function () {
       if (yeni) ayarYaz(SAYAC_ANAHTAR, sayacOku() + 1);
       formDegisti = false;
+      bildirimGoster(BM(yeni ? 'kaydedildi' : 'guncellendi'), false);   // kayıt yazıldı: ekranın üstünde kısa bildirim
       return yenile().then(function () { ayrintiAc(v.id); });
-    }).catch(function () {
+    }, function () {
       msg.textContent = 'Kaydedilemedi. Tarayıcının depolama alanı dolu ya da kapalı olabilir (örneğin gizli sekmede).'; msg.className = 'msg err';
+      bildirimGoster(BM('hataDepo'), true);
     }).then(function () { $('v-kaydet').disabled = false; });
   });
 

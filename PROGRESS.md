@@ -26,6 +26,10 @@ Yol haritası: `YOL-HARITASI.md`. Dal: `adim1-tasarim` (**onaylandı, main'e bir
 - Hareket azaltma açıkken 3D kartında animasyon yok. İnternetsiz açılış (v26, 57 dosya). Konsolda hata yok. Maskeleme testleri 27/27.
 - Test sırasında görülen ve düzeltilen: hücre seçimi yalnız odaklanmaya bağlıydı (dokunma/yazma da seçiyor); 3D kartının dört düzenleme düğmesi aynı yazıyı taşıyordu (`data-etiket`); "Kaldığın yerden" kartında 360 px'te kelime bölünüyordu.
 
+## Yayından sonraki düzeltmeler (2026-11-17, dal adim1-tasarim, yayında DEĞİL, sw v28)
+- Alt çubuk: logonun arkasındaki zemin renginde yarım daire kaldırıldı (proje sahibi "çıkıntı" diye beğenmedi), logo 66 → 56 px, üstten 22 px taşar.
+- Vakalarım: kaydetme bildirimi. `OdyoUI.bildirim(metin, 'tamam'|'hata')` (app.js, ortak): ekranın üstünde, başarı 3 sn, hata 6 sn, dokununca kapanır; ekran okuyucu okur (status/alert). Yazılar `#v-metinler` (yönetici düzenler): kaydedildi, guncellendi, hataAlan ({n}), hataKimlik, hataDepo. Formun altındaki eski ileti de duruyor. Renkler iki temada aynı (beyaz yazıyla kontrast 6 üstü). Test 16/16 (açık/koyu).
+
 ## Renk kontrastı ölçümü (WCAG, 2026-11-17)
 - Betik: geçici klasörde t-kontrast.js. 14 sayfa × açık/koyu, 360 px; görünen her yazı ve yer tutucu, gerçek zemin ve saydamlık hesaba katılarak. Eşik: normal yazı 4,5, büyük yazı 3. SVG şemalardaki yazılar bu ölçüme girmedi.
 - Düzeltilen: süresi geçen etkinlik/ilan kartları bütünüyle soluktu (2,0–3,6) → yalnızca görsel soluk, yazı ikincil renkte; yer tutucu yazılar (3,4–4,2) → ikincil yazı rengi.

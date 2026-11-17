@@ -25,6 +25,34 @@
   // vakalarim.js ve akis.js de kullanır. db/yonetici bağlantı kurulunca doldurulur.
   window.OdyoUI = { h: h, $: $, todayISO: todayISO, fmtDate: fmtDate, safeLink: safeLink, db: null, dbYok: false, yonetici: false };
 
+  /* ---------- bildirim (2026-11-17): ekranın üstünde kısa süre görünen ileti ----------
+     OdyoUI.bildirim(metin, 'tamam' | 'hata'). Başarı 3 sn, hata 6 sn görünür; dokununca kapanır.
+     Ekran okuyucu da okur (başarı: status, hata: alert). Üstte durur: telefon klavyesi alttaki iletiyi kapatabilir. */
+  var bildirimKutu = null, bildirimZaman = null;
+  function bildirim(metin, tur) {
+    var hata = tur === 'hata';
+    if (!bildirimKutu) {
+      bildirimKutu = h('div', { 'class': 'bildirim', hidden: '' });
+      bildirimKutu.addEventListener('click', bildirimKapat);
+      document.body.appendChild(bildirimKutu);
+    }
+    clearTimeout(bildirimZaman);
+    bildirimKutu.className = 'bildirim ' + (hata ? 'bildirim-hata' : 'bildirim-tamam');
+    bildirimKutu.setAttribute('role', hata ? 'alert' : 'status');
+    bildirimKutu.replaceChildren(h('span', { 'class': 'bildirim-ik', 'aria-hidden': 'true', text: hata ? '!' : '✓' }), h('span', { 'class': 'bildirim-yazi', text: metin }));
+    bildirimKutu.hidden = false;
+    void bildirimKutu.offsetWidth;   // görünme geçişi her seferinde baştan başlasın
+    bildirimKutu.classList.add('acik');
+    bildirimZaman = setTimeout(bildirimKapat, hata ? 6000 : 3000);
+  }
+  function bildirimKapat() {
+    if (!bildirimKutu) return;
+    clearTimeout(bildirimZaman);
+    bildirimKutu.classList.remove('acik');
+    bildirimZaman = setTimeout(function () { bildirimKutu.hidden = true; }, 250);
+  }
+  window.OdyoUI.bildirim = bildirim;
+
   /* ---------- düzenlenebilir içerik (yönetici) ----------
      Koddaki her metin varsayılandır. Yönetici bir metni değiştirince yalnızca farklı alanlar
      Firestore'da icerik/{anahtar} -> { alanlar: { alan: metin }, guncelleme } olarak saklanır.
