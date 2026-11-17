@@ -331,61 +331,113 @@
   var alanlar = { sag: { hava: {}, kemik: {} }, sol: { hava: {}, kemik: {} } };
   var seciliKulak = 'sag', duzenlenen = null, formDegisti = false;
 
-  function tgDugme(metin, etiket) {
-    var b = h('button', { type: 'button', 'class': 'tg', 'aria-pressed': 'false', 'aria-label': etiket, title: etiket, text: metin });
-    b.addEventListener('click', function () {
-      b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') === 'true' ? 'false' : 'true');
-      b.dispatchEvent(new Event('degisti', { bubbles: true }));
-    });
-    return b;
-  }
   function basili(b) { return b.getAttribute('aria-pressed') === 'true'; }
   function bas(b, on) { b.setAttribute('aria-pressed', on ? 'true' : 'false'); }
 
-  function satirOlustur(k, y, f) {
+  /* Eşik tablosu (2026-11-17): kulak başına bir tablo; sütunlar frekans, satırlar hava ve kemik.
+     Her hücre bir sayı kutusu. "Maskeli" ve "Yanıt yok" düğmeleri seçili hücreye uygulanır; maskeleme düzeyi
+     (isteğe bağlı) seçili maskeli hücre için tablonun altındaki tek kutuya yazılır. "Sonraki" sıradaki frekansa geçer.
+     Kayıt biçimi değişmedi: esik.{kulak}.{yol}.{Hz} = { db, maskeli, maskDb, nr }. */
+  var secili = null;   // seçili hücre (alan nesnesi)
+  function frekansYazi(f) { return f >= 1000 ? String(f / 1000).replace('.', ',') + 'k' : String(f); }
+  function hucreOlustur(k, y, f) {
     var id = 'v-' + k + '-' + y + '-' + f;
     var ad = KULAK_AD[k] + ' kulak ' + YOL_AD[y].toLowerCase() + ' yolu ' + f + ' Hz';
-    var giris = h('input', { id: id, 'class': 'db', type: 'number', step: '1', min: String(DB_EN_AZ), max: String(DB_EN_COK), 'aria-label': ad + ' (dB HL)', 'aria-describedby': id + '-u' });
-    var m = tgDugme('M', ad + ': maskeli');
-    var nr = tgDugme('NR', ad + ': yanıt yok');
-    var mask = h('input', { id: id + '-m', 'class': 'db', type: 'number', step: '1', min: String(DB_EN_AZ), max: String(DB_EN_COK), placeholder: 'dB' });
-    var maskSatir = h('div', { 'class': 'mask-satir', hidden: '' }, [h('label', { 'for': id + '-m', text: 'Maskeleme düzeyi (dB, isteğe bağlı)' }), mask]);
-    var uyari = h('div', { id: id + '-u', 'class': 'alan-uyari' });
-    var satir = h('div', { 'class': 'esik-satir' + (araMi(f) ? ' ara' : ''), 'data-f': String(f) }, [
-      h('div', { 'class': 'esik-ust' }, [h('label', { 'for': id, 'class': 'hz', text: f + ' Hz' }), giris, m, nr]),
-      maskSatir, uyari
-    ]);
-    var a = { giris: giris, m: m, nr: nr, mask: mask, maskSatir: maskSatir, uyari: uyari, satir: satir, k: k, y: y, f: f };
-    function guncelle() { maskSatir.hidden = !basili(m); alanDogrula(a); formDegisti = true; formdanCiz(); }
-    giris.addEventListener('input', guncelle);
-    mask.addEventListener('input', guncelle);
-    satir.addEventListener('degisti', guncelle);
+    var giris = h('input', { id: id, 'class': 'db hucre-giris', type: 'number', step: '1', min: String(DB_EN_AZ), max: String(DB_EN_COK), enterkeyhint: 'next', 'aria-label': ad + ' (dB HL)' });
+    var isaret = h('span', { 'class': 'hucre-isaret', 'aria-hidden': 'true' });
+    var td = h('td', { 'class': 'hucre' + (araMi(f) ? ' ara' : '') }, [giris, isaret]);
+    var a = { giris: giris, td: td, isaret: isaret, ad: ad, maskeli: false, nr: false, maskMetin: '', hata: '', k: k, y: y, f: f };
+    giris.addEventListener('focus', function () { hucreSec(a); });
+    giris.addEventListener('input', function () { alanDogrula(a); formDegisti = true; formdanCiz(); araclariCiz(); });
+    giris.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); sonraki(); } });
     alanlar[k][y][f] = a;
-    return satir;
+    return td;
   }
   document.querySelectorAll('#v-form .esik-blok').forEach(function (blok) {
-    var k = blok.getAttribute('data-kulak'), y = blok.getAttribute('data-yol');
-    var kap = blok.querySelector('.esik-satirlar');
-    TUM_FREKANSLAR.forEach(function (f) { kap.appendChild(satirOlustur(k, y, f)); });
+    var k = blok.getAttribute('data-kulak');
+    var ust = h('tr', null, [h('th', { 'class': 'kose', scope: 'col', text: 'Hz' })].concat(TUM_FREKANSLAR.map(function (f) {
+      return h('th', { scope: 'col', 'class': araMi(f) ? 'ara' : '', 'aria-label': f + ' Hz', text: frekansYazi(f) });
+    })));
+    var govde = YOLLAR.map(function (y) {
+      return h('tr', null, [h('th', { scope: 'row', text: YOL_AD[y] })].concat(TUM_FREKANSLAR.map(function (f) { return hucreOlustur(k, y, f); })));
+    });
+    blok.appendChild(h('div', { 'class': 'esik-kaydir' }, [
+      h('table', { 'class': 'esik-giris ' + k, 'aria-label': KULAK_AD[k] + ' kulak eşikleri (dB HL)' }, [h('thead', null, [ust]), h('tbody', null, govde)])
+    ]));
   });
   function herAlan(fn) { KULAKLAR.forEach(function (k) { YOLLAR.forEach(function (y) { TUM_FREKANSLAR.forEach(function (f) { fn(alanlar[k][y][f]); }); }); }); }
 
-  // Tek alanı doğrular; sonucu döndürür ve alanı kırmızı yapar ya da düzeltir.
+  // Hücrenin işaretleri: maskeli (M) ve yanıt yok (NR, aşağı ok) hücrenin köşesinde görünür.
+  function hucreIsaret(a) {
+    a.td.classList.toggle('m', a.maskeli);
+    a.td.classList.toggle('nr', a.nr);
+    a.isaret.textContent = (a.maskeli ? 'M' : '') + (a.maskeli && a.nr ? ' ' : '') + (a.nr ? 'NR' : '');
+    a.giris.setAttribute('aria-label', a.ad + ' (dB HL)' + (a.maskeli ? ', maskeli' : '') + (a.nr ? ', yanıt yok' : ''));
+  }
+  function hucreSec(a) {
+    if (secili) secili.td.classList.remove('secili');
+    secili = a; a.td.classList.add('secili');
+    araclariCiz();
+  }
+  // Tablonun altındaki düğmeler ve maskeleme düzeyi kutusu seçili hücreyi gösterir.
+  function araclariCiz() {
+    var a = secili && secili.k === seciliKulak ? secili : null;
+    $('v-maskeli').disabled = $('v-nr').disabled = !a;
+    bas($('v-maskeli'), !!(a && a.maskeli)); bas($('v-nr'), !!(a && a.nr));
+    $('v-secili').textContent = a ? 'Seçili: ' + YOL_AD[a.y] + ' yolu, ' + a.f + ' Hz' : 'Bir hücreye dokun.';
+    $('v-mask-kutu').hidden = !(a && a.maskeli);
+    if (a && document.activeElement !== $('v-mask')) $('v-mask').value = a.maskMetin;
+    $('v-mask').setAttribute('aria-label', a ? a.ad + ': maskeleme düzeyi (dB)' : 'Maskeleme düzeyi');
+    // Görünen kulağın hatalı hücreleri: kısa liste
+    var hatalar = [];
+    YOLLAR.forEach(function (y) { TUM_FREKANSLAR.forEach(function (f) { var x = alanlar[seciliKulak][y][f]; if (x.hata) hatalar.push(YOL_AD[x.y] + ' ' + x.f + ' Hz: ' + x.hata); }); });
+    $('v-esik-uyari').textContent = hatalar.join(' · ');
+  }
+  // Düğmeler odağı hücreden almasın (telefonda klavye kapanmasın).
+  ['v-maskeli', 'v-nr', 'v-sonraki'].forEach(function (id) { $(id).addEventListener('mousedown', function (e) { e.preventDefault(); }); });
+  function hucreyeDon() { if (secili) { try { secili.giris.focus({ preventScroll: true }); } catch (e) {} } }
+  $('v-maskeli').addEventListener('click', function () {
+    if (!secili) return;
+    secili.maskeli = !secili.maskeli; hucreIsaret(secili); alanDogrula(secili);
+    formDegisti = true; formdanCiz(); araclariCiz();
+    if (!secili.maskeli) hucreyeDon();
+  });
+  $('v-nr').addEventListener('click', function () {
+    if (!secili) return;
+    secili.nr = !secili.nr; hucreIsaret(secili); alanDogrula(secili);
+    formDegisti = true; formdanCiz(); araclariCiz(); hucreyeDon();
+  });
+  $('v-mask').addEventListener('input', function () {
+    if (!secili) return;
+    secili.maskMetin = $('v-mask').value; alanDogrula(secili); formDegisti = true; formdanCiz(); araclariCiz();
+  });
+  // Sıradaki görünür frekans: aynı satırda sağa; satır bitince kemik satırının başına.
+  function gorunurFrekanslar() { return TUM_FREKANSLAR.filter(function (f) { return !araMi(f) || $('v-ara').checked; }); }
+  function sonraki() {
+    var l = gorunurFrekanslar(), a = secili && secili.k === seciliKulak ? secili : null;
+    var y = a ? a.y : 'hava', i = a ? l.indexOf(a.f) + 1 : 0;
+    if (i >= l.length) { if (y === 'hava') { y = 'kemik'; i = 0; } else i = l.length - 1; }
+    var b = alanlar[seciliKulak][y][l[i]];
+    b.giris.focus();
+    try { b.td.scrollIntoView({ block: 'nearest', inline: 'nearest' }); } catch (e) {}
+  }
+  $('v-sonraki').addEventListener('click', sonraki);
+
+  // Tek hücreyi doğrular; sonucu döndürür ve hücreyi kırmızı yapar ya da düzeltir.
   function alanDogrula(a) {
     var r = alanOku(a.giris, DB_EN_AZ, DB_EN_COK), hata = r.hata || '';
-    var mr = basili(a.m) ? alanOku(a.mask, DB_EN_AZ, DB_EN_COK) : { bos: true };
-    if (!hata && r.bos && basili(a.nr)) hata = 'NR için cihazın en yüksek düzeyini gir.';
-    var maskHata = mr.hata ? 'Maskeleme düzeyi: ' + mr.hata : '';
+    var mr = a.maskeli ? sayiOku(a.maskMetin, DB_EN_AZ, DB_EN_COK) : { bos: true };
+    if (!hata && r.bos && a.nr) hata = 'yanıt yok için cihazın en yüksek düzeyini gir.';
+    if (!hata && mr.hata) hata = 'maskeleme düzeyi ' + mr.hata.charAt(0).toLocaleLowerCase('tr') + mr.hata.slice(1);
+    a.hata = hata;
     a.giris.classList.toggle('hatali', !!hata);
     a.giris.setAttribute('aria-invalid', hata ? 'true' : 'false');
-    a.mask.classList.toggle('hatali', !!maskHata);
-    a.uyari.textContent = [hata, maskHata].filter(Boolean).join(' ');
-    return { hata: !!(hata || maskHata), deger: r.deger, maskDb: mr.deger };
+    return { hata: !!hata, deger: r.deger, maskDb: mr.deger };
   }
 
   function araGoster(on) {
     $('v-ara').checked = on;
-    document.querySelectorAll('#v-form .esik-satir.ara').forEach(function (s) { s.hidden = !on; });
+    document.querySelectorAll('#v-form .esik-giris .ara').forEach(function (s) { s.hidden = !on; });
     ayarYaz('odybot:araFrekans', on ? '1' : '0');
   }
   $('v-ara').addEventListener('change', function () { araGoster($('v-ara').checked); });
@@ -394,6 +446,7 @@
     seciliKulak = k;
     bas($('v-kulak-sag'), k === 'sag'); bas($('v-kulak-sol'), k === 'sol');
     document.querySelectorAll('#v-form .esik-blok').forEach(function (b) { b.hidden = b.getAttribute('data-kulak') !== k; });
+    araclariCiz();
   }
   $('v-kulak-sag').addEventListener('click', function () { kulakSec('sag'); });
   $('v-kulak-sol').addEventListener('click', function () { kulakSec('sol'); });
@@ -468,8 +521,8 @@
       if (r.hata) { hatalar.push(a); return; }
       if (r.deger == null) return;            // boş frekans: kaydedilmez, hiçbir yere girmez
       var e = { db: r.deger };
-      if (basili(a.m)) { e.maskeli = true; if (r.maskDb != null) e.maskDb = r.maskDb; }
-      if (basili(a.nr)) e.nr = true;
+      if (a.maskeli) { e.maskeli = true; if (r.maskDb != null) e.maskDb = r.maskDb; }
+      if (a.nr) e.nr = true;
       v.esik[a.k][a.y][String(a.f)] = e;
     });
     ekleriOku(v, hatalar);
@@ -478,7 +531,7 @@
 
   function formuDoldur(v) {
     duzenlenen = v || null;
-    $('v-form-baslik').textContent = v ? 'Vakayı düzenle' : 'Yeni vaka';
+    $('v-sayfa-ad').textContent = v ? 'Vakayı düzenle' : 'Yeni vaka';
     $('v-kimlik').value = v ? v.kimlik : '';
     $('v-tarih').value = (v && v.tarih) || U.todayISO();
     $('v-notlar').value = v ? v.notlar : '';
@@ -486,14 +539,16 @@
     herAlan(function (a) {
       var e = v && v.esik[a.k][a.y][String(a.f)];
       a.giris.value = e ? String(e.db) : '';
-      bas(a.m, !!(e && e.maskeli)); bas(a.nr, !!(e && e.nr));
-      a.mask.value = e && e.maskDb != null ? String(e.maskDb) : '';
-      a.maskSatir.hidden = !(e && e.maskeli);
-      a.giris.classList.remove('hatali'); a.mask.classList.remove('hatali'); a.uyari.textContent = '';
+      a.maskeli = !!(e && e.maskeli); a.nr = !!(e && e.nr);
+      a.maskMetin = e && e.maskDb != null ? String(e.maskDb) : '';
+      a.hata = ''; a.giris.classList.remove('hatali'); a.giris.removeAttribute('aria-invalid');
+      hucreIsaret(a);
       if (e && araMi(a.f)) araVar = true;
     });
     araGoster(araVar || ayarOku('odybot:araFrekans') === '1');
     ekleriDoldur(v);
+    if (secili) secili.td.classList.remove('secili');
+    secili = null;
     kulakSec('sag');
     $('v-form-msg').textContent = ''; $('v-form-msg').className = 'msg';
     formDegisti = false;
@@ -572,6 +627,7 @@
       if (ilk.ek) $('v-ek').open = true;
       msg.textContent = 'Kırmızı alanları düzelt (' + r.hatalar.length + ' alan).'; msg.className = 'msg err';
       ilk.giris.focus();
+      araclariCiz();
       return;
     }
     if (!r.vaka.kimlik) {
@@ -597,6 +653,7 @@
   function goster(e) {
     ekran = e;
     $('v-liste-ekran').hidden = e !== 'liste';
+    $('v-ust').hidden = e !== 'liste';   // alt sayfalarda sekme başlığı ve açıklaması tekrar etmez; yalnızca geri oku ve sayfa adı
     $('v-vaka-ekran').hidden = e === 'liste';
     $('v-form').hidden = e !== 'form';
     $('v-detay').hidden = e !== 'detay';
@@ -764,6 +821,7 @@
   function ayrintiCiz() {
     var v = bul(acikId);
     if (!v) { goster('liste'); listeCiz(); return; }
+    $('v-sayfa-ad').textContent = v.kimlik;
     var duzenle = h('button', { 'class': 'btn', type: 'button', text: 'Düzenle' });
     duzenle.addEventListener('click', function () { formuDoldur(v); goster('form'); });
     var sil = h('button', { 'class': 'btn' + (silOnay === v.id ? ' tehlike' : ''), type: 'button', text: silOnay === v.id ? 'Emin misin? Sil' : 'Sil' });
@@ -780,7 +838,7 @@
       });
     });
     var parca = [
-      h('div', { 'class': 'card-head' }, [h('h3', { text: v.kimlik }), h('div', { 'class': 'meta', text: U.fmtDate(v.tarih) || 'Tarih yok' })]),
+      h('div', { 'class': 'meta', text: U.fmtDate(v.tarih) || 'Tarih yok' }),
       buyukGrafik(v),
       sonucKarti(v),
       h('h4', { text: 'Eşikler' }),
@@ -797,13 +855,26 @@
   function buyukGrafik(v) { grafikCiz(v); return $('v-grafik'); }
   function sonucKarti(v) { sonucCiz(v); return $('v-sonuc'); }
 
-  function ayrintiAc(id) { acikId = id; silOnay = null; goster('detay'); ayrintiCiz(); }
+  // Son açılan vaka ana sayfadaki "Kaldığın yerden" kartı içindir; yalnızca kimliği (değerleri değil) bu cihazda tutulur.
+  function ayrintiAc(id) { acikId = id; silOnay = null; ayarYaz('odybot:sonVaka', id); goster('detay'); ayrintiCiz(); }
+
+  // Ana sayfa (app.js) için: son vakanın kısa bilgisi ve adresle açma (#vakalarim/yeni, #vakalarim/v/<kimlik>).
+  window.OdyoVakalar = {
+    ozet: function (id) { var v = bul(id); return v ? { kimlik: v.kimlik, tarih: v.tarih } : null; }
+  };
+  window.addEventListener('odyo:vaka-ac', function (e) {
+    var d = e.detail || {};
+    if (ekran === 'form' && formDegisti) return;   // yarım kalmış formun üstüne açma
+    if (d.yeni) { formuDoldur(null); goster('form'); $('v-kimlik').focus(); return; }
+    if (d.id) hazir.then(function () { if (bul(d.id)) ayrintiAc(d.id); });
+  });
 
   function yenile() {
     return VakaDeposu.hepsi().then(function (l) {
       vakalar = siralaVakalar(l);
       if (ekran === 'liste') listeCiz();
       else if (ekran === 'detay') ayrintiCiz();
+      try { window.dispatchEvent(new CustomEvent('odyo:vakalar')); } catch (e) {}
     }, function () {
       $('v-liste').replaceChildren(h('div', { 'class': 'empty', text: 'Kayıtlı vakalar okunamadı. Tarayıcının depolama alanı kapalı olabilir (örneğin gizli sekmede).' }));
     });
@@ -1006,7 +1077,7 @@
 
   /* ---------- başlat ---------- */
   goster('liste');
-  yenile();
+  var hazir = yenile();
   // Test ve sonraki aşamalar için (tarayıcı konsolundan denenebilir).
   window.Vakalarim = { cizOdyogram: cizOdyogram, temizle: temizle, yedekCoz: yedekCoz, csvIcerik: csvIcerik, sayiOku: sayiOku };
 

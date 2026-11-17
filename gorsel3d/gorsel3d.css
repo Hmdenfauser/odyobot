@@ -46,7 +46,7 @@
 .g3d-cubuk { display: inline-block; height: 2px; background: currentColor; }
 .g3d-durum { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); margin: 0; padding: 0 16px; text-align: center; color: var(--muted); font: 400 14px/1.4 var(--font-body); }
 .g3d-durum button { display: block; margin: 10px auto 0; }
-.g3d-baslik { font: 500 12px/1 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 4px 0 0; }
+.g3d-baslik { font: 600 14px/1.2 var(--font-body); color: var(--muted); margin: 4px 0 0; }
 .g3d-satir { display: flex; flex-wrap: wrap; gap: 8px; }
 .g3d-yapilar { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
 .g3d-satir button, .g3d-yapilar button, .g3d-durum button { font: 500 14px/1.2 var(--font-body); color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 10px; min-height: 44px; padding: 8px 12px; cursor: pointer; }

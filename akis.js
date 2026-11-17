@@ -257,6 +257,7 @@
     return h('div', { 'class': 'stack a-bolum' }, [ust, icerik]);
   }
   function ciz() {
+    anaListeCiz();
     var kok = $('akis');
     if (!kok) return;
     var eski = kok.querySelector('.a-serit'), kaydirma = eski ? eski.scrollLeft : 0;
@@ -285,6 +286,54 @@
     var yeni = kok.querySelector('.a-serit');
     if (yeni && kaydirma) yeni.scrollLeft = kaydirma;
   }
+  /* ---------- ana sayfa: tek listede duyurular (2026-11-17) ----------
+     Etkinlik, iş ilanı ve haber birlikte; en yeni paylaşılan önce, süresi geçenler yok, en çok ANA_SAYI kayıt.
+     "Yeni" rozeti: son ziyaretten sonra paylaşılanlar. Son ziyaret zamanı yalnızca bu cihazda tutulur; ilk açılışta rozet yok. */
+  var ANA_SAYI = 5;
+  var SON_ZIYARET = (function () {
+    var k = 'odybot:sonZiyaret', p = 0;
+    try { p = +localStorage.getItem(k) || 0; localStorage.setItem(k, String(Date.now())); } catch (e) {}
+    return p;
+  })();
+  var TUR_IKON = {
+    etkinlik: ['M5 6h14v14H5z', 'M5 10h14', 'M9 4v4M15 4v4'],
+    ilan: ['M4 8h16v11H4z', 'M9 8V6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2', 'M4 13h16'],
+    haber: ['M4 10v4l11 4V6z', 'M15 9a3 3 0 0 1 0 6', 'M7 14l1 5h3l-1-4']
+  };
+  function turIkon(t) {
+    var ns = 'http://www.w3.org/2000/svg', s = document.createElementNS(ns, 'svg');
+    s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('aria-hidden', 'true');
+    TUR_IKON[t].forEach(function (d) { var p = document.createElementNS(ns, 'path'); p.setAttribute('d', d); s.appendChild(p); });
+    return s;
+  }
+  var TUR_METIN = { etkinlik: 'turEtkinlik', ilan: 'turIlan', haber: 'turHaber' };
+  function anaSatir(d) {
+    var kutu = gorselKutu(d.gorselId, 'a-gorsel-kucuk ds-gorsel ds-' + d.tur, '', h('span', { 'class': 'ds-yer' }, [turIkon(d.tur)]));
+    var baslik = d.tur === 'haber' ? d.metin.replace(/\s+/g, ' ').slice(0, 90) + (d.metin.length > 90 ? '…' : '') : d.baslik;
+    var alt = d.tur === 'etkinlik' ? [d.baslangic ? tarihAraligi(d.baslangic, d.bitis) : '', d.yer].filter(Boolean).join(' · ')
+      : d.tur === 'ilan' ? [d.kurum, d.tarih ? M('sonBasvuru') + ': ' + tarihYaz(d.tarih) : ''].filter(Boolean).join(' · ')
+      : kacOnce(d.olusturma);
+    var yeni = SON_ZIYARET && d.olusturma > SON_ZIYARET;
+    var a = h('a', { 'class': 'ds-satir', href: '#duyuru/' + d.id }, [
+      kutu,
+      h('span', { 'class': 'ds-yazi' }, [
+        h('span', { 'class': 'ds-ust' }, [h('span', { 'class': 'tur-etiket tur-' + d.tur, text: M(TUR_METIN[d.tur]) }), yeni ? h('span', { 'class': 'yeni-rozet', text: M('yeni') }) : null]),
+        h('span', { 'class': 'ds-baslik', text: baslik }),
+        alt ? h('span', d.tur === 'haber' ? { 'class': 'ds-alt', text: alt, 'data-zaman': String(d.olusturma) } : { 'class': 'ds-alt', text: alt }) : null
+      ])
+    ]);
+    karta(a, d.id);
+    return a;
+  }
+  function anaListeCiz() {
+    var kok = $('ana-duyuru-liste');
+    if (!kok) return;
+    if (!yuklendi) { kok.replaceChildren(bosKutu(ulasilamadi ? M('ulasilamiyor') : M('yukleniyor'))); return; }
+    var l = kayitlar.filter(function (d) { return !gecti(d); }).sort(function (a, b) { return b.olusturma - a.olusturma; }).slice(0, ANA_SAYI);
+    if (!l.length) { kok.replaceChildren(h('p', { 'class': 'meta ds-bos', text: M('bosDuyuru') })); return; }
+    kok.replaceChildren(h('div', { 'class': 'ds-liste' }, l.map(anaSatir)));
+  }
+
   function filtreSec(f) {
     filtre = f;
     document.querySelectorAll('.a-cip').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-filtre') === f ? 'true' : 'false'); });
@@ -506,7 +555,9 @@
     $('a-gonder').textContent = 'Güncelle'; $('a-vazgec').hidden = false; $('a-form-ozet').textContent = 'Paylaşımı düzenle';
     $('a-msg').textContent = ''; $('a-msg').className = 'msg';
     $('compose').open = true;
-    try { $('compose').scrollIntoView({ block: 'start' }); } catch (e) {}
+    // Form Duyurular sayfasında; ayrıntı sayfası ana sayfadan açıldıysa önce oraya geçilir.
+    if (location.hash !== '#duyurular') location.hash = '#duyurular';
+    setTimeout(function () { try { $('compose').scrollIntoView({ block: 'start' }); } catch (e) {} }, 60);
   }
   $('a-vazgec').addEventListener('click', function () { formSifirla(); $('a-msg').textContent = ''; });
 
@@ -578,6 +629,13 @@
     if (acikId) sayfaIcerik(acikId);
   });
   window.addEventListener('odyo:metinler', function () { ciz(); if (acikId) sayfaIcerik(acikId); });
+  // Ana sayfadaki "Yeni paylaşım ekle" (yalnızca yönetici): Duyurular sayfasında formu açar.
+  window.addEventListener('odyo:paylasim-yeni', function () {
+    if (!yonetici) return;
+    if (!duzenlenen) formSifirla();
+    $('compose').open = true;
+    try { $('compose').scrollIntoView({ block: 'start' }); } catch (e) {}
+  });
 
   turSec('etkinlik');
   ciz();

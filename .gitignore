@@ -10,3 +10,6 @@ desktop.ini
 
 # Ham (küçültülmemiş) görseller: yalnızca kaynak, yayına gitmez.
 ham-gorseller/
+
+# Tasarım referans görselleri (proje sahibinin örnek çizimleri; yayına gitmez)
+tasarim-referans/

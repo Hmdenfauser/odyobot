@@ -96,17 +96,13 @@
     return b;
   }
 
-  /* ---------- clock ---------- */
+  /* ---------- tarih (ana sayfa üst satırı; saat 2026-11-17'de kaldırıldı) ---------- */
   function tick() {
-    var d = new Date(), t;
-    try { t = d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }); }
-    catch (e) { t = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
-    if ($('clock').textContent !== t) $('clock').textContent = t;
-    var ds;
-    try { ds = d.toLocaleDateString('tr-TR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }); } catch (e) { ds = ''; }
+    var d = new Date(), ds;
+    try { ds = d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' }) + ' ' + d.toLocaleDateString('tr-TR', { weekday: 'long' }); } catch (e) { ds = ''; }
     if ($('date').textContent !== ds) $('date').textContent = ds;
   }
-  tick(); setInterval(tick, 1000);
+  tick(); setInterval(tick, 30000);
 
   /* ---------- pathway diagram ---------- */
   var NODES = [
@@ -542,36 +538,101 @@
   // Koddaki temel notlar da yönetici tarafından düzenlenebilir (anahtar: not.<sıra>). Sırayı değiştirme.
   var NOT_ALAN = [{ f: 't', ad: 'Başlık' }, { f: 'p', ad: 'Maddeler (her satıra bir madde)', cok: true }];
   NOTES.forEach(function (n, i) { n.key = 'not.' + i; editable(n, ['t', 'p']); });
+  /* Konu grupları (2026-11-17). Grup adları yöneticiye düzenlenebilir (icerik/not.gruplar).
+     Notlar sıra numarasıyla gruplara bağlanır (NOTES dizisindeki yerleri). Yönetici eklediği notlar (Firestore) "eklenen" grubunda. */
+  var NOT_GRUPLARI = [
+    { id: 'temel', notlar: [0, 1, 3, 4] },
+    { id: 'immitans', notlar: [2, 7] },
+    { id: 'elektro', notlar: [5, 6] },
+    { id: 'eklenen', notlar: [] }
+  ];
+  var GRUP_AD = { key: 'not.gruplar', temel: 'Temel odyometri', immitans: 'İmmitansmetri', elektro: 'Elektrofizyoloji', eklenen: 'Eklenen notlar' };
+  var GRUP_ALAN = [{ f: 'temel', ad: '1. grup adı' }, { f: 'immitans', ad: '2. grup adı' }, { f: 'elektro', ad: '3. grup adı' }, { f: 'eklenen', ad: 'Yöneticinin eklediği notlar' }];
+  editable(GRUP_AD, ['temel', 'immitans', 'elektro', 'eklenen']);
+
+  // Not anahtarı: koddaki notlar "not.<sıra>", yöneticinin eklediği notlar "nd.<belge kimliği>". Adres: #not/<anahtar>.
+  function tumNotlar() { return NOTES.concat(customNotes); }
+  function notBul(key) { var l = tumNotlar(); for (var i = 0; i < l.length; i++) if (l[i].key === key) return l[i]; return null; }
+  function notGrubu(g) {
+    if (g.id === 'eklenen') return customNotes.slice();
+    return g.notlar.map(function (i) { return NOTES[i]; }).filter(Boolean);
+  }
+  function svgOk() {
+    var s = document.createElementNS(NS, 'svg'); s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('aria-hidden', 'true'); s.setAttribute('class', 'satir-ok');
+    var p = document.createElementNS(NS, 'path'); p.setAttribute('d', 'M9 5l7 7-7 7'); s.appendChild(p); return s;
+  }
   function renderNotes(q) {
     var box = $('notes-list');
-    var qq = (q || '').trim().toLocaleLowerCase('tr');
-    var shown = NOTES.concat(customNotes).filter(function (n) {
-      if (!qq) return true;
-      return (n.t + ' ' + n.p.join(' ')).toLocaleLowerCase('tr').indexOf(qq) !== -1;
-    });
-    if (!shown.length) { box.replaceChildren(h('div', { 'class': 'empty', text: 'Bu aramayla eşleşen not yok.' })); return; }
-    box.replaceChildren.apply(box, shown.map(function (n) {
-      var admin = null;
-      if (canEdit && n.key) admin = h('div', { 'class': 'ns-admin' }, [adminPart(n.key, n, NOT_ALAN, 'Bu notu düzenle')]);
-      else if (canEdit) {
-        var go = h('a', { 'class': 'linkbtn', href: '#ayarlar', text: 'Ayarlar’da düzenle' });
-        admin = h('div', { 'class': 'ns-admin admin-bar' }, [go]);
-      }
-      var d = h('details', { 'class': 'ns' }, [
-        h('summary', { text: n.t }),
-        h('ul', null, n.p.map(function (x) { return h('li', { text: x }); })),
-        admin
+    var qq = araNormal(q || '');
+    var gruplar = NOT_GRUPLARI.map(function (g) {
+      var l = notGrubu(g).filter(function (n) { return !qq || araNormal(n.t + ' ' + n.p.join(' ')).indexOf(qq) !== -1; });
+      if (!l.length) return null;
+      return h('div', { 'class': 'stack not-grup' }, [
+        h('h3', { 'class': 'not-grup-bas', text: GRUP_AD[g.id] + ' · ' + l.length + ' not' }),
+        h('div', { 'class': 'satir-liste' }, l.map(function (n) {
+          return h('a', { 'class': 'satir', href: '#not/' + n.key }, [h('span', { 'class': 'satir-ad', text: n.t }), svgOk()]);
+        }))
       ]);
-      if (qq || (n.key && editingKey === n.key)) d.open = true;
-      return d;
-    }));
+    }).filter(Boolean);
+    if (!gruplar.length) { box.replaceChildren(h('div', { 'class': 'empty', text: 'Bu aramayla eşleşen not yok.' })); }
+    else box.replaceChildren.apply(box, gruplar);
+    var ga = $('not-grup-admin'); ga.replaceChildren();
+    var a = adminPart(GRUP_AD.key, GRUP_AD, GRUP_ALAN, 'Grup adlarını düzenle');
+    if (a) ga.appendChild(a);
   }
+
+  /* Not sayfası. Favoriler ve "kaldığın yer" yalnızca bu cihazda (localStorage). */
+  var acikNot = null;
+  function yerelOku(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function yerelYaz(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} }
+  function favoriler() { try { var a = JSON.parse(yerelOku('odybot:favoriNotlar') || '[]'); return Array.isArray(a) ? a.filter(function (x) { return typeof x === 'string'; }) : []; } catch (e) { return []; } }
+  function favoriMi(key) { return favoriler().indexOf(key) !== -1; }
+  function favoriDegistir(key) {
+    var l = favoriler(), i = l.indexOf(key);
+    if (i === -1) l.push(key); else l.splice(i, 1);
+    yerelYaz('odybot:favoriNotlar', JSON.stringify(l));
+  }
+  function notSayfaCiz() {
+    var n = acikNot && notBul(acikNot), govde = $('not-govde');
+    $('not-yildiz').hidden = !n;
+    if (!n) {
+      $('not-baslik').textContent = 'Ders notu';
+      govde.replaceChildren(h('p', { 'class': 'meta', text: customNotes.length || dbRef ? 'Bu not bulunamadı. Silinmiş olabilir.' : 'Yükleniyor…' }));
+      return;
+    }
+    $('not-baslik').textContent = n.t;
+    var fav = favoriMi(n.key);
+    $('not-yildiz').setAttribute('aria-pressed', fav ? 'true' : 'false');
+    $('not-yildiz').setAttribute('aria-label', fav ? 'Favorilerden çıkar' : 'Favorilere ekle');
+    var admin = null;
+    if (canEdit && n.key.indexOf('not.') === 0) admin = adminPart(n.key, n, NOT_ALAN, 'Bu notu düzenle');
+    else if (canEdit) admin = h('div', { 'class': 'admin-bar' }, [h('a', { 'class': 'linkbtn', href: '#ayarlar', text: 'Ayarlar’da düzenle' })]);
+    govde.replaceChildren.apply(govde, [h('ul', { 'class': 'not-maddeler' }, n.p.map(function (x) { return h('li', { text: x }); })), admin].filter(Boolean));
+  }
+  $('not-yildiz').addEventListener('click', function () { if (acikNot) { favoriDegistir(acikNot); notSayfaCiz(); } });
+  var notGeldigi = null;
+  $('not-geri').addEventListener('click', function () {
+    if (notGeldigi !== null && history.length > 1) history.back(); else location.hash = '#notlar';
+  });
+  function notAc(key) {
+    acikNot = key;
+    if (notBul(key)) yerelYaz('odybot:sonNot', key);
+    notSayfaCiz();
+  }
+
   function refreshNotes() {
     NOTES.forEach(function (n) { applyOv(n.key, n); });
+    applyOv(GRUP_AD.key, GRUP_AD);
     renderNotes($('n-ara').value);
+    if (acikNot) notSayfaCiz();
   }
-  renderNotes('');
   $('n-ara').addEventListener('input', function () { renderNotes($('n-ara').value); });
+  renderNotes('');
+
+  // Arama için harf sadeleştirme: büyük/küçük harf ve Türkçe karakter farkı gözetilmez ("isitme" = "İşitme").
+  function araNormal(s) {
+    return String(s).toLocaleLowerCase('tr').replace(/[ıİ]/g, 'i').replace(/ş/g, 's').replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ö/g, 'o').replace(/ç/g, 'c').replace(/â/g, 'a').replace(/\s+/g, ' ').trim();
+  }
 
   /* ---------- depo segmented control ---------- */
   // 3D artık Görsel depo'da değil, kendi sayfasında (#3d). Üstte 3 düğme: Şemalar, İşitme cihazları, İşitsel implantlar.
@@ -591,29 +652,69 @@
   var seg = secici(['sema', 'isitme', 'implant'], 'seg-', 'p-', function (which) {
     $('cihaz-alt').hidden = which === 'sema';   // ortak not iki cihaz panelinin altında
   });
-  secici(['yolak', 'refleks', 'tarama'], 'alt-', 'p-');
-  secici(['a', 'b'], 'tr-', 'tp-');
+  var altSec = secici(['yolak', 'refleks', 'tarama'], 'alt-', 'p-');
+  var trSec = secici(['a', 'b'], 'tr-', 'tp-');
+  // Görsel depo içinde bir yere git (ana sayfadaki arama ve hızlı erişim): #depo/isitme, #depo/implant, #depo/sema,
+  // #depo/yolak/<id>, #depo/refleks/<id>, #depo/tarama/<id>, #depo/cihaz/<id>. Hedef ekrana kaydırılır ve kısa süre vurgulanır.
+  function vurgula(el) {
+    if (!el) return;
+    try { el.scrollIntoView({ block: 'center' }); } catch (e) {}
+    el.classList.remove('vurgu'); void el.offsetWidth; el.classList.add('vurgu');
+    setTimeout(function () { el.classList.remove('vurgu'); }, 1600);
+  }
+  function depoGit(p) {
+    var a = p[0], id = p[1];
+    if (a === 'isitme' || a === 'implant' || a === 'sema') { seg(a); return; }
+    if (a === 'yolak' && byId[id]) { seg('sema'); altSec('yolak'); select(id); vurgula($('detail')); return; }
+    if (a === 'refleks' && RNODES.some(function (n) { return n.id === id; })) { seg('sema'); altSec('refleks'); rselect(id); vurgula($('detail-r')); return; }
+    if (a === 'tarama' && TNODES[id]) {
+      var o = TA.sira.indexOf(id) !== -1 ? TA : TB;
+      seg('sema'); altSec('tarama'); trSec(o === TA ? 'a' : 'b'); tsec(o, id); vurgula(o.detay); return;
+    }
+    if (a === 'cihaz') {
+      var d = DEVICES.filter(function (x) { return x.id === id; })[0];
+      if (!d) return;
+      seg(d.grup); vurgula(document.querySelector('[data-cihaz="' + id + '"]'));
+    }
+  }
 
   /* ---------- tabs ---------- */
   // 'uc-boyut' = 3D sayfası; adresi #3d. Alt çubukta sekmesi yok, o sırada Ana sayfa seçili görünür.
-  var TABS = ['anasayfa', 'depo', 'odybot', 'notlar', 'vakalarim', 'ayarlar', 'giris', 'uc-boyut'];
+  // Alt sayfalar (2026-11-17): 'duyurular' (tam liste), 'not-sayfa' (#not/<anahtar>). Alt çubukta sekmeleri yok; bağlı oldukları sekme seçili görünür.
+  var TABS = ['anasayfa', 'depo', 'odybot', 'notlar', 'vakalarim', 'ayarlar', 'giris', 'uc-boyut', 'duyurular', 'not-sayfa'];
+  var UST_SEKME = { 'uc-boyut': 'anasayfa', duyurular: 'anasayfa', 'not-sayfa': 'notlar' };
   var UC_ESKI = ['uc-boyut', '3d-model', 'gorsel3d', 'depo/3d', 'model'];   // olası eski/başka adresler -> #3d
-  var oncekiHash = '', ucGeldigi = null, ilkRota = true;
+  var oncekiHash = '', ucGeldigi = null, ilkRota = true, gorunen = 'anasayfa';
+  function adresDegistir(yeni) { try { history.replaceState(null, '', yeni); } catch (e) {} }
   function route() {
     var t = (location.hash || '').replace('#', '');
-    var ham = t, duyuru = t.indexOf('duyuru/') === 0;
-    if (duyuru) t = 'anasayfa';
+    var ham = t, duyuru = t.indexOf('duyuru/') === 0, sonra = null;
+    if (duyuru) t = gorunen;   // ayrıntı sayfası açıldığı sayfanın üstünde açılır (ana sayfa ya da duyurular)
     // Eski adres: Geçmiş sekmesinin adı Vakalarım oldu; eski bağlantılar da çalışsın.
-    if (t === 'gecmis') { t = 'vakalarim'; try { history.replaceState(null, '', '#vakalarim'); } catch (e) {} }
-    if (UC_ESKI.indexOf(t) !== -1) { t = '3d'; ham = '3d'; try { history.replaceState(null, '', '#3d'); } catch (e) {} }
+    if (t === 'gecmis') { t = 'vakalarim'; adresDegistir('#vakalarim'); }
+    if (UC_ESKI.indexOf(t) !== -1) { t = '3d'; ham = '3d'; adresDegistir('#3d'); }
     if (t === '3d') {
       t = 'uc-boyut';
       if (oncekiHash !== '3d') ucGeldigi = ilkRota ? null : oncekiHash;   // geri düğmesi için: nereden gelindi (doğrudan açıldıysa null)
       setTimeout(kur3d, 0);   // model yalnızca 3D sayfası ilk kez açılınca indirilir
     }
+    // Derin bağlantılar: işini yapıp adresi sade hâline çevirir (geri tuşu bir önceki sayfaya döner).
+    var p = t.split('/');
+    if (p[0] === 'depo' && p.length > 1) { t = 'depo'; ham = 'depo'; adresDegistir('#depo'); sonra = function () { depoGit(p.slice(1)); }; }
+    else if (p[0] === 'vakalarim' && p.length > 1) {
+      t = 'vakalarim'; ham = 'vakalarim'; adresDegistir('#vakalarim');
+      sonra = function () { bildir('odyo:vaka-ac', p[1] === 'yeni' ? { yeni: true } : { id: p[2] || '' }); };
+    } else if (p[0] === 'duyurular' && p[1] === 'yeni') { t = 'duyurular'; ham = 'duyurular'; adresDegistir('#duyurular'); sonra = function () { bildir('odyo:paylasim-yeni'); }; }
+    else if (p[0] === 'not' && p[1]) {
+      if (oncekiHash !== ham) notGeldigi = ilkRota ? null : oncekiHash;
+      t = 'not-sayfa'; notAc(decodeURIComponent(p.slice(1).join('/')));
+    }
     if (TABS.indexOf(t) === -1) t = 'anasayfa';
+    if (t === 'anasayfa') anaCiz();
+    gorunen = t;
     document.querySelectorAll('section[data-tab]').forEach(function (s) { s.hidden = s.id !== t; });
-    var navT = t === 'uc-boyut' ? 'anasayfa' : t;
+    if (sonra) setTimeout(sonra, 0);
+    var navT = UST_SEKME[t] || t;
     document.querySelectorAll('nav.tabs a').forEach(function (a) {
       if (a.getAttribute('data-go') === navT) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
     });
@@ -630,6 +731,74 @@
     else location.hash = '#anasayfa';
   });
 
+  /* ---------- ana sayfa: kaldığın yerden, favori notlar, arama (2026-11-17) ----------
+     Hepsi bu cihazdaki bilgilerle çalışır: son not ve favoriler localStorage'da, son vaka Vakalarım'ın veri katmanından
+     (vakalarim.js → window.OdyoVakalar), arama koddaki notlar/cihazlar/şemalar ve önbellekteki yönetici notları. */
+  function AM(ad) {   // ana sayfa yazıları: index.html #ana-metinler (yönetici düzenler)
+    var el = document.querySelector('#ana-metinler [data-m="' + ad + '"]');
+    return el ? el.textContent.trim() : ad;
+  }
+  function svgIkon(yollar, sinif) {
+    var s = document.createElementNS(NS, 'svg'); s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('aria-hidden', 'true');
+    if (sinif) s.setAttribute('class', sinif);
+    yollar.forEach(function (d) { var p = document.createElementNS(NS, 'path'); p.setAttribute('d', d); s.appendChild(p); });
+    return s;
+  }
+  // İşlev olarak: route() sayfa açılırken bu satırlardan önce çalışır.
+  function IKON(ad) { return ad === 'not' ? ['M6 4h10a2 2 0 0 1 2 2v14H8a2 2 0 0 1-2-2V4z', 'M6 18a2 2 0 0 1 2-2h10', 'M10 8h5'] : ['M4 4v16h16', 'M8 9l4 5 3-3 4 5']; }
+  function devamKart(href, ikon, ust, ad, alt) {
+    return h('a', { 'class': 'devam-kart', href: href }, [
+      svgIkon(ikon, 'devam-ik'),
+      h('span', { 'class': 'devam-yazi' }, [h('span', { 'class': 'devam-ust', text: ust }), h('span', { 'class': 'devam-ad', text: ad }), alt ? h('span', { 'class': 'devam-alt', text: alt }) : null])
+    ]);
+  }
+  function anaCiz() {
+    var kartlar = [];
+    var sn = yerelOku('odybot:sonNot'), n = sn && notBul(sn);
+    if (n) kartlar.push(devamKart('#not/' + encodeURIComponent(n.key), IKON('not'), AM('devamNot'), n.t, AM('devamEt')));
+    var V = window.OdyoVakalar, sv = yerelOku('odybot:sonVaka'), o = V && sv ? V.ozet(sv) : null;
+    if (o) kartlar.push(devamKart('#vakalarim/v/' + encodeURIComponent(sv), IKON('vaka'), AM('devamVaka'), o.kimlik || AM('kimliksiz'), o.tarih ? fmtDate(o.tarih) : ''));
+    $('ana-devam').hidden = !kartlar.length;
+    fill($('ana-devam-kartlar'), kartlar);
+    var fav = favoriler().map(notBul).filter(Boolean);
+    $('ana-favori').hidden = !fav.length;
+    fill($('ana-favori-cipler'), fav.map(function (x) {
+      return h('a', { 'class': 'favori-cip', href: '#not/' + encodeURIComponent(x.key) }, [h('span', { 'aria-hidden': 'true', text: '★ ' }), h('span', { text: x.t })]);
+    }));
+  }
+  window.addEventListener('odyo:vakalar', function () { if (gorunen === 'anasayfa') anaCiz(); });
+
+  function araListe() {
+    var l = [];
+    tumNotlar().forEach(function (n) { l.push({ tur: AM('araTurNot'), ad: n.t, metin: n.p.join(' '), git: '#not/' + encodeURIComponent(n.key) }); });
+    DEVICES.forEach(function (d) {
+      if (d.gizli) return;
+      l.push({ tur: d.grup === 'implant' ? AM('araTurImplant') : AM('araTurCihaz'), ad: d.ad, metin: d.alt + ' ' + d.gorselAlt, git: '#depo/cihaz/' + d.id });
+    });
+    var sema = AM('araTurSema') + ' · ';
+    NODES.forEach(function (n) { l.push({ tur: sema + $('alt-yolak').textContent, ad: n.label, metin: n.latin + ' ' + n.bolge + ' ' + n.yer, git: '#depo/yolak/' + n.id }); });
+    RNODES.forEach(function (n) { l.push({ tur: sema + $('alt-refleks').textContent, ad: n.title, metin: n.latin + ' ' + n.label.join(' '), git: '#depo/refleks/' + n.id }); });
+    Object.keys(TNODES).forEach(function (id) { var n = TNODES[id]; l.push({ tur: sema + $('alt-tarama').textContent, ad: n.baslik, metin: n.aciklama, git: '#depo/tarama/' + id }); });
+    return l;
+  }
+  function araCiz() {
+    var q = araNormal($('ana-ara').value), kutu = $('ana-ara-sonuc');
+    if (!q) { kutu.hidden = true; kutu.replaceChildren(); return; }
+    var puanli = araListe().map(function (x) {
+      var ad = araNormal(x.ad), p = ad.indexOf(q) === 0 ? 3 : ad.indexOf(q) !== -1 ? 2 : araNormal(x.metin).indexOf(q) !== -1 ? 1 : 0;
+      return { x: x, p: p };
+    }).filter(function (o) { return o.p; });
+    puanli.sort(function (a, b) { return b.p - a.p; });
+    kutu.hidden = false;
+    if (!puanli.length) { kutu.replaceChildren(h('p', { 'class': 'meta ara-yok', text: AM('araYok') })); return; }
+    fill(kutu, puanli.slice(0, 12).map(function (o) {
+      var a = h('a', { 'class': 'ara-satir', href: o.x.git }, [h('span', { 'class': 'ara-tur', text: o.x.tur }), h('span', { 'class': 'ara-ad', text: o.x.ad })]);
+      a.addEventListener('click', function () { setTimeout(function () { $('ana-ara').value = ''; araCiz(); }, 300); });
+      return a;
+    }));
+  }
+  $('ana-ara').addEventListener('input', araCiz);
+
   /* ---------- ortak veri ----------
      Ana sayfa akışı (etkinlik, iş ilanı, haber) akis.js içinde. app.js bağlantıyı kurar ve olaylarla bildirir:
      'odyo:db' (detail: Firestore), 'odyo:db-yok', 'odyo:yetki' (detail: true/false), 'odyo:metinler' (yönetici metinleri yenilendi). */
@@ -638,20 +807,30 @@
   function bildir(ad, deger) { try { window.dispatchEvent(new CustomEvent(ad, { detail: deger })); } catch (e) {} }
 
   /* ---------- ayarlar: renk teması ve ders notları ---------- */
+  /* a: ana renk [açık, koyu], ai: ana rengin üstündeki yazı, b: ikinci renk, bi: onun üstündeki yazı, k: 3D kartı zemini (yazısı beyaz).
+     ai ve k yazılmayan temada: ai = beyaz / #0C1A1F, k = açık ana renk. logo varsayılandır (2026-11-17). */
   var PALETTES = {
+    logo:     { ad: 'Logo',     a: ['#1560B0', '#6DB7F2'], ai: ['#FFFFFF', '#06223F'], b: ['#17B6C8', '#3DCADA'], bi: ['#04303A', '#04303A'], k: ['#0F4C97', '#123E7A'] },
     petrol:   { ad: 'Petrol',   a: ['#0B6E78', '#4FC1CC'], b: ['#E2711D', '#F28B3A'], bi: ['#FFFFFF', '#2B1300'] },
     lacivert: { ad: 'Lacivert', a: ['#254E9E', '#8FB0F5'], b: ['#D9822B', '#F2A649'], bi: ['#FFFFFF', '#2B1300'] },
     orman:    { ad: 'Orman',    a: ['#2E6B3A', '#7CCB8B'], b: ['#C2417B', '#F08CB5'], bi: ['#FFFFFF', '#2B0A18'] },
     bordo:    { ad: 'Bordo',    a: ['#8E2A45', '#F09AB0'], b: ['#1F7A8C', '#5FC3D6'], bi: ['#FFFFFF', '#06242A'] },
     mor:      { ad: 'Mor',      a: ['#5B3FA8', '#B8A2F0'], b: ['#E2A100', '#F5C542'], bi: ['#2B2000', '#2B2000'] }
   };
-  var palId = 'petrol';
+  var VARSAYILAN_TEMA = 'logo';
+  // Yöneticinin seçtiği tema Firestore'da. 2026-11-17'de 'ayar/tema' yerine 'ayar/renk' kullanılmaya başlandı:
+  // eski belgede 'petrol' kayıtlıydı ve yeni varsayılan (logo) görünmüyordu. Eski belge yalnızca eski sürüm içindir.
+  var TEMA_BELGESI = 'ayar/renk';
+  var palId = VARSAYILAN_TEMA;
   var themeStyle = document.createElement('style');
   document.body.appendChild(themeStyle);
   function applyPalette(id) {
-    var p = PALETTES[id] || PALETTES.petrol;
-    palId = PALETTES[id] ? id : 'petrol';
-    function vars(i) { return '--accent:' + p.a[i] + ';--accent-ink:' + (i ? '#0C1A1F' : '#FFFFFF') + ';--bot:' + p.b[i] + ';--bot-ink:' + p.bi[i] + ';'; }
+    var p = PALETTES[id] || PALETTES[VARSAYILAN_TEMA];
+    palId = PALETTES[id] ? id : VARSAYILAN_TEMA;
+    function vars(i) {
+      var ai = p.ai ? p.ai[i] : (i ? '#0C1A1F' : '#FFFFFF'), k = p.k ? p.k[i] : p.a[0];
+      return '--accent:' + p.a[i] + ';--accent-ink:' + ai + ';--bot:' + p.b[i] + ';--bot-ink:' + p.bi[i] + ';--kart3d:' + k + ';';
+    }
     var dark = vars(1) + 'color-scheme:dark;';
     themeStyle.textContent = ':root{' + vars(0) + '}@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){' + dark + '}}:root[data-theme="dark"]{' + dark + '}';
     renderPalettes();
@@ -667,7 +846,7 @@
       ]);
       b.addEventListener('click', function () {
         applyPalette(id);
-        if (dbRef) dbRef.doc('ayar/tema').set({ id: id, guncelleme: Date.now() }).catch(function () {
+        if (dbRef) dbRef.doc(TEMA_BELGESI).set({ id: id, guncelleme: Date.now() }).catch(function () {
           $('an-msg').textContent = 'Tema kaydedilemedi; yalnızca bu ekranda değişti.'; $('an-msg').className = 'msg err';
         });
       });
@@ -727,14 +906,16 @@
   });
   function setupAyarlar(db) {
     renderPalettes(); renderNoteAdmin();
-    db.doc('ayar/tema').onSnapshot(function (s) {
+    db.doc(TEMA_BELGESI).onSnapshot(function (s) {
       var d = s.exists ? s.data() : null;
-      if (d && PALETTES[d.id]) applyPalette(d.id);
+      applyPalette(d && PALETTES[d.id] ? d.id : VARSAYILAN_TEMA);
     }, function () {});
     db.collection('notlar').orderBy('olusturma', 'asc').limit(200).onSnapshot(function (snap) {
       noteDocs = snap.docs.map(function (d) { var o = d.data() || {}; o.id = d.id; return o; });
-      customNotes = noteDocs.map(function (d) { return { t: String(d.baslik || ''), p: (d.maddeler || []).map(String) }; });
+      customNotes = noteDocs.map(function (d) { return { key: 'nd.' + d.id, t: String(d.baslik || ''), p: (d.maddeler || []).map(String) }; });
       renderNotes($('n-ara').value); renderNoteAdmin();
+      if (acikNot) notSayfaCiz();
+      anaCiz();
     }, function () {});
     db.collection('cihazlar').onSnapshot(function (snap) {
       devText = {};
@@ -830,7 +1011,8 @@
     if (a) ra.appendChild(a);
   }
   function rozetler(d) {
-    var r = [d.grup === 'implant' ? 'ameliyatli' : 'ameliyatsiz'].concat(d.rozetEk || []);
+    // İşitme cihazlarında "Ameliyatsız" rozeti her kartta tekrarlandığı için gösterilmez (2026-11-17); implantlarda kalır.
+    var r = (d.grup === 'implant' ? ['ameliyatli'] : []).concat(d.rozetEk || []);
     var kutu = h('div', { 'class': 'rozetler' }, r.map(function (k) { return h('span', { 'class': 'rozet rozet-' + k, text: ROZET[k] }); }));
     // Görselin büyütülebildiğini gösteren küçük simge: görselin üstüne değil (etiketleri kapatmasın), rozet satırının sağına.
     if (d.img) kutu.appendChild(h('span', { 'class': 'dev-buyut', 'aria-hidden': 'true' }, [svgBuyut()]));
@@ -857,7 +1039,8 @@
   }
   function deviceCard(d) {
     var maddeler = devText[d.id] || [];
-    var card = h('article', { 'class': 'item dev' + (d.genis ? ' genis' : '') }, [
+    // İki sütunlu düzen; geniş kart ve düzenlenmekte olan kart iki sütunu birden kaplar.
+    var card = h('article', { 'class': 'item dev' + (d.genis ? ' genis' : '') + (editingKey === d.key ? ' duzenleniyor' : ''), 'data-cihaz': d.id }, [
       devGorsel(d),
       rozetler(d),
       h('h4', { 'class': 'item-title', text: d.ad }),

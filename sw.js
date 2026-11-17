@@ -8,7 +8,7 @@
 
    Firebase (Firestore/giriş) istekleri başka adrese gittiği için buraya karışmaz; onların internetsiz kopyasını
    Firestore'un kendi önbelleği tutar. Vaka kayıtları (Vakalarım) zaten yalnızca cihazın yerel deposundadır. */
-var VERSION = 'odyobot-v25';
+var VERSION = 'odyobot-v26';
 var ASSETS = [
   './',
   './index.html',
@@ -44,6 +44,8 @@ var ASSETS = [
   './icons/apple-touch-icon.png',
   './icons/icon-maskable-512.png',
   './icons/logo.png',
+  './icons/odyobot-logo-seffaf.png',
+  './images/3d-onizleme.jpg',
   './images/devices/kulak-ici-karsilastirma.jpg',
   './images/devices/bte-2.jpg',
   './images/devices/ric.jpg',
