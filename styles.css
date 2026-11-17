@@ -401,6 +401,7 @@ input.db.hatali { border-color: var(--danger); border-width: 2px; background: co
 .t-a-yazi { fill: var(--muted); }
 /* ABR kayıt fotoğrafı */
 .a-foto { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.a-foto-uyari { font-weight: 600; color: var(--ink); }
 .a-foto-liste { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .a-foto-kart { display: flex; flex-direction: column; gap: 4px; }
 .a-foto-ac { display: block; padding: 0; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); overflow: hidden; cursor: zoom-in; min-height: 44px; }
