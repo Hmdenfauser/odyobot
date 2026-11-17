@@ -699,6 +699,17 @@
             </div>
           </details>
 
+          <!-- 2. adım: OAE (vaka-testler.js tabloları çizer). -->
+          <details class="compose ek-olcum" id="v-oae">
+            <summary data-k="vakalarim.oBaslik">OAE (isteğe bağlı)</summary>
+            <div class="yedek-ic">
+              <p class="note" data-k="vakalarim.oFormNot">Cihazın verdiği sinyal (DP ya da TE düzeyi) ve gürültü değerlerini dB SPL olarak yaz (ör. 8,5 ya da −6). Fark kendiliğinden hesaplanır. Ölçmediğin frekansı boş bırak.</p>
+              <div class="ek-kulak sag"><h4 data-k="vakalarim.oSag">Sağ kulak</h4><div class="o-blok" data-kulak="sag"></div></div>
+              <div class="ek-kulak sol"><h4 data-k="vakalarim.oSol">Sol kulak</h4><div class="o-blok" data-kulak="sol"></div></div>
+              <div class="figure timpan-panel" id="v-oae-grafik" hidden></div>
+            </div>
+          </details>
+
           <div class="fld"><label for="v-notlar" data-k="vakalarim.notlarEtiket">Notlar</label><textarea id="v-notlar" maxlength="2000"></textarea></div>
           <div class="admin-bar">
             <button class="btn primary" type="submit" id="v-kaydet">Kaydet</button>
@@ -721,7 +732,7 @@
       </details>
       <!-- Ek test yazıları (vaka-testler.js çizimlerde kullanır): yalnızca yöneticiye görünür, buradan düzenlenir. -->
       <details class="compose b-metinler" id="vt-metinler">
-        <summary>Timpanometri ve refleks yazıları (yönetici)</summary>
+        <summary>Timpanometri, refleks ve OAE yazıları (yönetici)</summary>
         <div class="yedek-ic">
           <p data-k="vakalarim.t.baslik" data-m="baslik">Timpanogram</p>
           <p data-k="vakalarim.t.uretilmis" data-m="uretilmis">Girilen değerlerden üretilmiş çizimdir, cihaz kaydı değildir.</p>
@@ -731,6 +742,14 @@
           <p data-k="vakalarim.r.ipsi" data-m="rIpsi">İpsi</p>
           <p data-k="vakalarim.r.kontra" data-m="rKontra">Kontra</p>
           <p data-k="vakalarim.r.yok" data-m="rYok">Yok</p>
+          <p data-k="vakalarim.o.baslik" data-m="oBaslik">OAE</p>
+          <p data-k="vakalarim.o.sinyal" data-m="oSinyal">Sinyal</p>
+          <p data-k="vakalarim.o.gurultu" data-m="oGurultu">Gürültü</p>
+          <p data-k="vakalarim.o.fark" data-m="oFark">Fark</p>
+          <p data-k="vakalarim.o.repro" data-m="oRepro">TEOAE tekrarlanabilirlik (%)</p>
+          <p data-k="vakalarim.o.stab" data-m="oStab">TEOAE prob stabilitesi (%)</p>
+          <p data-k="vakalarim.o.lejant" data-m="oLejant">Düz çizgi ve renkli çubuk: emisyon (sinyal). Kesikli çizgi ve gri çubuk: gürültü. Sağ kırmızı, sol mavi. Girilen değerlerden üretilmiş çizimdir, cihaz kaydı değildir.</p>
+          <p data-k="vakalarim.o.not" data-m="oNot">Değerler dB SPL: sinyal / gürültü. ✓: fark en az 6 dB (emisyon var). Geçti: en az 3 frekansta emisyon. TEOAE'de tekrarlanabilirlik %80 ya da prob stabilitesi %90 altındaysa kayıt geçersiz sayılır. Tarama ölçütüdür; ölçütler cihaza ve protokole göre değişebilir.</p>
           <p data-k="vakalarim.r.not" data-m="rNot">Eşikler dB. Kulak adı uyaranın verildiği kulaktır (sağ kontra: uyaran sağda, prob solda).</p>
         </div>
       </details>

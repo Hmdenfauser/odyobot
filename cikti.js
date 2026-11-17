@@ -81,7 +81,8 @@
       '.og-hat{fill:none;stroke-width:1.6;stroke-linejoin:round}' +
       '.og-hat.sag{stroke:' + R.sag + '}.og-hat.sol{stroke:' + R.sol + '}' +
       '.og-hat.kemik{stroke-dasharray:5 4}.og-hat.notr{stroke:' + R.soluk + '}' +
-      '.t-duz.sag{fill:' + R.sag + '}.t-duz.sol{fill:' + R.sol + '}';
+      '.t-duz.sag{fill:' + R.sag + '}.t-duz.sol{fill:' + R.sol + '}' +
+      '.oae-cubuk.sag{fill:' + R.sag + ';fill-opacity:.8}.oae-cubuk.sol{fill:' + R.sol + ';fill-opacity:.8}.oae-gurultu{fill:' + R.soluk + ';fill-opacity:.45}';
   }
 
   /* ---------- metin ölçme ve satır kırma (sayfadaki yazı tipiyle) ---------- */

@@ -6,7 +6,7 @@ Her oturumda önce bu dosyaya, `CLAUDE.md` ve `PROGRESS.md`'ye bak. **Yalnızca 
 | # | Adım | Dal | Durum |
 |---|---|---|---|
 | 1 | Tasarım yenilemesi | `adim1-tasarim` | ✅ Onaylandı, yayında (2026-11-17, sw v27). Önceki yayın yedeği: git etiketi `yedek-yayin-v25` + `ham-gorseller/yedek-yayin-2026-11-17/`. Yayından sonra telefonda eşik tablosu denenecek. |
-| 2 | Vakalarım'a yeni testler | `adim2-testler` | Başladı (2026-11-17): timpanometri (tip dahil) ve akustik refleks hazır; sırada OAE. Klinik değerler proje sahibinin Drive'ındaki ders slaytlarından, onaylatılarak. |
+| 2 | Vakalarım'a yeni testler | `adim2-testler` | Başladı (2026-11-17): timpanometri (tip dahil), akustik refleks ve OAE hazır; sırada ABR. Klinik değerler proje sahibinin Drive'ındaki ders slaytlarından, onaylatılarak. |
 | 3 | 3D modeller | — | Bekliyor |
 | 4 | Üye girişi, forum, bildirim | — | Bekliyor |
 | 5 | Vestibüler modül, işitme taraması, gelir | — | Bekliyor |

@@ -369,10 +369,27 @@ input.db.hatali { border-color: var(--danger); border-width: 2px; background: co
 .r-tablo th { font-family: var(--font-mono); font-size: 12px; font-weight: 500; color: var(--muted); text-align: center; padding: 2px; }
 .r-tablo tbody th { text-align: left; font-family: inherit; font-size: 14px; width: 60px; }
 .r-tablo td { padding: 2px; }
-.r-sec { width: 100%; min-height: 44px; padding: 0 2px; font-family: var(--font-mono); font-size: 15px; text-align: center; border: 1px solid var(--line); border-radius: 10px; background: var(--surface, transparent); color: inherit; }
+.r-sec { width: 100%; min-height: 44px; padding: 0 2px; font-family: var(--font-mono); font-size: 16px; text-align: center; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); }
 .r-sec.dolu { border-color: var(--accent); font-weight: 600; }
 .r-sonuc th.sag { color: var(--right); } .r-sonuc th.sol { color: var(--left); }
 .r-sonuc td { text-align: center; }
+/* OAE (vaka-testler.js): kulak başına DPOAE/TEOAE tabloları; fark ≥ 6 dB yeşil onaylı. */
+.o-alt { font-weight: 600; margin-top: 6px; }
+.o-tablo { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.o-tablo th { font-family: var(--font-mono); font-size: 12px; font-weight: 500; color: var(--muted); text-align: center; padding: 2px; }
+.o-tablo tbody th { width: 44px; text-align: left; }
+.o-tablo td { padding: 2px; }
+.o-deger { width: 100%; min-width: 0; min-height: 44px; padding: 0 4px; font: inherit; font-family: var(--font-mono); font-size: 16px; text-align: center; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; -moz-appearance: textfield; appearance: textfield; }
+.o-deger::-webkit-outer-spin-button, .o-deger::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.o-deger:focus-visible, .r-sec:focus-visible { outline: 3px solid var(--accent); outline-offset: 1px; }
+.o-deger.hatali { border-color: var(--danger); border-width: 2px; background: color-mix(in srgb, var(--danger) 10%, var(--bg)); }
+.fld input.hatali { border-color: var(--danger); border-width: 2px; background: color-mix(in srgb, var(--danger) 10%, var(--bg)); }
+.o-fark { font-family: var(--font-mono); font-size: 14px; text-align: center; color: var(--muted); }
+.o-fark.var { color: var(--ink); font-weight: 600; }
+.o-fark.var::after { content: " ✓"; }
+.o-sonuc { font-weight: 600; display: flex; flex-direction: column; gap: 2px; }
+.oae-cubuk.sag { fill: var(--right); fill-opacity: .8; } .oae-cubuk.sol { fill: var(--left); fill-opacity: .8; }
+.oae-gurultu { fill: var(--muted); fill-opacity: .45; }
 .t-deger:disabled { opacity: .55; }
 
 /* Vakalarım: seçim modu (OdyoBOT'a gönderme) */

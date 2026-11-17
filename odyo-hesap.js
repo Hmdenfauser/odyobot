@@ -40,7 +40,29 @@
     kompEnCok: 1.30     // bunun üstü Ad (1,30 dahil A)
   };
 
+  // OAE geçti/kaldı. Kaynak: proje sahibinin ders slaytı "Odyoloji_de Enstrümantasyon OAE 2.pptx"
+  // (DP-NF ve TE-NF ≥ 6 dB, en az 3 frekans; TEOAE tekrarlanabilirlik ≥ %80, prob stabilitesi ≥ %90).
+  // 6 dB / en az 3 frekans yaygın tarama ölçütüyle de uyumlu (Interacoustics, Iowa yenidoğan protokolü).
+  // Proje sahibinin kararı (2026-11-17): en az 3 frekans; tekrarlanabilirlik/stabilite ölçüte katılır.
+  var OAE_KURAL = { snr: 6, enAzFrekans: 3, teRepro: 80, teStab: 90 };
+
   /* ---------- HESAPLAR ---------- */
+
+  // OAE sonucu (tek kulak, tek test). olcum: { '2000': { s: sinyal dB SPL, g: gürültü dB SPL }, ... }
+  // ek (yalnız TEOAE): { repro: %, stab: % } — girilmemişse ölçüte katılmaz.
+  // Dönüş: { kod: 'gecti' | 'kaldi' | 'gecersiz' | 'yetersiz' | null, var: emisyon olan frekans sayısı, girilen, metin }
+  function oaeSonuc(olcum, ek) {
+    var fl = Object.keys(olcum || {}).filter(function (f) { var x = olcum[f]; return x && x.s != null && x.g != null; });
+    if (!fl.length) return { kod: null, var: 0, girilen: 0, metin: '' };
+    var varSay = fl.filter(function (f) { return Math.round((olcum[f].s - olcum[f].g) * 10) / 10 >= OAE_KURAL.snr; }).length;   // fark 0,1 dB'e yuvarlanır (ondalık hesap hatası olmasın)
+    var r = { var: varSay, girilen: fl.length };
+    ek = ek || {};
+    if (ek.repro != null && ek.repro < OAE_KURAL.teRepro) { r.kod = 'gecersiz'; r.metin = 'Geçersiz kayıt (tekrarlanabilirlik %' + ek.repro + ', en az %' + OAE_KURAL.teRepro + ')'; return r; }
+    if (ek.stab != null && ek.stab < OAE_KURAL.teStab) { r.kod = 'gecersiz'; r.metin = 'Geçersiz kayıt (prob stabilitesi %' + ek.stab + ', en az %' + OAE_KURAL.teStab + ')'; return r; }
+    if (varSay >= OAE_KURAL.enAzFrekans) { r.kod = 'gecti'; r.metin = 'Geçti (' + varSay + '/' + fl.length + ' frekansta emisyon var)'; return r; }
+    if (fl.length < OAE_KURAL.enAzFrekans) { r.kod = 'yetersiz'; r.metin = 'Değerlendirilemedi (en az ' + OAE_KURAL.enAzFrekans + ' frekans gerekli)'; return r; }
+    r.kod = 'kaldi'; r.metin = 'Kaldı (' + varSay + '/' + fl.length + ' frekansta emisyon var)'; return r;
+  }
 
   // Timpanogram tipi. e: { basinc, kompliyans, duz } (vaka kaydındaki bir kulak).
   // Dönüş: { kod: 'A' | 'As' | 'Ad' | 'B' | 'C' | null, metin }. Değer eksikse kod null ve metin nedenini söyler.
@@ -145,7 +167,8 @@
     ESIK_TABLOSU: ESIK_TABLOSU, ABG_ESIGI: ABG_ESIGI, PTA_FREKANSLARI: PTA_FREKANSLARI,
     pta: pta, derece: derece, normalMi: normalMi, tip: tip, degerlendir: degerlendir,
     sayiYaz: sayiYaz, ptaMetni: ptaMetni, kisaOzet: kisaOzet,
-    TIMPAN_SINIR: TIMPAN_SINIR, timpanTipi: timpanTipi
+    TIMPAN_SINIR: TIMPAN_SINIR, timpanTipi: timpanTipi,
+    OAE_KURAL: OAE_KURAL, oaeSonuc: oaeSonuc
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else kok.OdyoHesap = api;
