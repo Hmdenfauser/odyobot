@@ -53,9 +53,10 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 
 ### YOL HARİTASI (2026-11-17): önce `YOL-HARITASI.md`'ye bak
 - Proje sahibi 5 adımlı yol haritası verdi (`YOL-HARITASI.md`). **Yalnızca sıradaki adım yapılır**, "sıradaki adıma geç" denmeden yenisine başlanmaz. Her adım ayrı dalda; **main'e birleştirme ve yayın yalnızca onayla.**
-- **1. adım (tasarım yenilemesi) yapıldı, dal `adim1-tasarim`, sw v26, yayında DEĞİL.** Proje sahibinin önizlemesi ve onayı bekleniyor. Ayrıntı ve testler: `PROGRESS.md` en üst bölüm.
+- **1. adım (tasarım yenilemesi) onaylandı ve yayında (2026-11-17, sw v27).** Ayrıntı ve testler: `PROGRESS.md` en üst bölüm. Önceki yayının yedeği: git etiketi `yedek-yayin-v25` (GitHub'da da var) ve `ham-gorseller/yedek-yayin-2026-11-17/odyobot-yayin-v25.zip`. Geri dönmek gerekirse bu etiket kullanılır.
+- **Yayından sonra telefonda denenecek:** eşik tablosu (iPhone sayı klavyesinde Enter yok; klavye Maskeli/Yanıt yok/Sonraki düğmelerini kapatıyor mu), ana sayfa, logo, notlar yönetici paneli. Sıradaki adım (2. adım) proje sahibi "sıradaki adıma geç" deyince.
 - 1. adımdaki yeni yapı (özet): logo teması varsayılan (yönetici seçimi `ayar/renk`); alt çubukta saydam logo `icons/odyobot-logo-seffaf.png`; ana sayfa: üst satır, arama, hızlı erişim, 3D kartı, Kaldığın yerden, Favori notlar, Duyurular (tam liste `#duyurular`); notlar konu gruplarında, her notun sayfası `#not/<anahtar>`; cihazlar iki sütun; alt sayfalarda yalnızca geri oku + sayfa adı; vaka formunda eşik tablosu.
-- Onaydan sonra: main'e birleştir, `git push`, CLAUDE.md §3 tablosunu yeni yapıya göre güncelle, `YOL-HARITASI.md`'de 1. adımı ✅ yap.
+- Yapılacak belge işi: CLAUDE.md §3 sekme tablosu henüz eski yapıyı anlatıyor (Ana sayfa, Notlar satırları); yeni yapı bu bölümde ve PROGRESS.md'de.
 
 ### Sonraki oturumda proje sahibine hatırlat (2026-11-15 gece kaydedildi)
 **Durum:** her şey yayında (son sürüm **sw v25**), bekleyen kod değişikliği yok, çalışma klasörü temiz. Proje sahibi 3D kepçe–kanal onarımını görüp "her şey iyi görünüyor" dedi (2026-11-15).

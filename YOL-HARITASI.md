@@ -5,7 +5,7 @@ Her oturumda önce bu dosyaya, `CLAUDE.md` ve `PROGRESS.md`'ye bak. **Yalnızca 
 ## Durum
 | # | Adım | Dal | Durum |
 |---|---|---|---|
-| 1 | Tasarım yenilemesi | `adim1-tasarim` | 🔶 Yapıldı, proje sahibinin önizleme onayı bekleniyor (main'e birleştirilmedi, yayında değil) |
+| 1 | Tasarım yenilemesi | `adim1-tasarim` | ✅ Onaylandı, yayında (2026-11-17, sw v27). Önceki yayın yedeği: git etiketi `yedek-yayin-v25` + `ham-gorseller/yedek-yayin-2026-11-17/`. Yayından sonra telefonda eşik tablosu denenecek. |
 | 2 | Vakalarım'a yeni testler | — | Bekliyor (onaydan sonra) |
 | 3 | 3D modeller | — | Bekliyor |
 | 4 | Üye girişi, forum, bildirim | — | Bekliyor |

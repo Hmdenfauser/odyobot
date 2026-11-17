@@ -1,6 +1,6 @@
 # PROGRESS — Yol haritası 1. adım: tasarım yenilemesi (2026-11-17)
 
-Yol haritası: `YOL-HARITASI.md`. Dal: `adim1-tasarim` (**main'e birleştirilmedi, yayında değil**; proje sahibinin önizleme onayı bekleniyor). sw **v27**.
+Yol haritası: `YOL-HARITASI.md`. Dal: `adim1-tasarim` (**onaylandı, main'e birleştirildi, yayında 2026-11-17**). sw **v27**.
 
 | Bölüm | Durum | Not |
 |---|---|---|
