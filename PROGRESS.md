@@ -1,6 +1,6 @@
-# PROGRESS — Yol haritası 2. adım: Vakalarım'a yeni testler (2026-11-17, bitti, onay bekliyor)
+# PROGRESS — Yol haritası 2. adım: Vakalarım'a yeni testler (2026-11-17, onaylandı, YAYINDA)
 
-Dal: `adim2-testler` (`adim1-tasarim` + v29 bildirim değişikliği üstüne). sw **v30**. **Yayında değil; proje sahibinin önizleme ve onayı bekleniyor.**
+Dal: `adim2-testler` (`adim1-tasarim` + v29 bildirim değişikliği üstüne). sw **v30**. **Yayında (2026-11-17, main 22e0812). Önceki yayın yedeği: git etiketi `yedek-yayin-v28`.** Canlı kontrol: ana sayfa, notlar, vaka formundaki 5 panel, konsol temiz.
 
 | Bölüm | Durum | Not |
 |---|---|---|
