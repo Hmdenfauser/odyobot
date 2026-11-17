@@ -16,6 +16,7 @@ Dal: `adim2-testler` (`adim1-tasarim` + v29 bildirim değişikliği üstüne). s
 - Timpanogramda **Tip A alanı** (kesikli kutu: −100…+50 daPa, 0,35…1,30 ml; `TIMPAN_SINIR`'dan).
 - "Ek ölçümler" paneli **"Konuşma odyometrisi"** oldu (ayrıntı ve çıktı başlığı da); panel başlıklarındaki "(isteğe bağlı)" ve maskeleme düzeyindeki "isteğe bağlı" kaldırıldı.
 - Proje sahibi yedek alınıp yayınlanmasını istedi.
+- (sw v31, 2026-11-17) ABR fotoğrafında kalın uyarı: uygulama içinden çekilenler galeriye kaydedilmez (Android kamera notu ile); çıktı açıklaması yeni testleri sayıyor; CLAUDE.md §3 sekme tablosu güncellendi; eskimiş yönetici testi (t-yon) güncellendi, 0 hata. Önceki yayın yedeği: git etiketi yedek-yayin-v30.
 
 ## Proje sahibine bildirilecek / bekleyen
 - Refleks sonucuna göre lezyon yeri tahmini: proje sahibinin isteğiyle **OdyoBOT asistanına** yapılacak (ayrı iş, kurallar slayt 25–28'den birlikte netleştirilecek). Vakalarım yalnızca sonucu gösterir.
