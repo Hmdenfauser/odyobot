@@ -51,6 +51,19 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 - Alt çubuk sırası: Ana sayfa, Görsel depo, OdyoBOT, Vakalarım, Notlar.
 - Odyogram çıktısı (`cikti.js`), Vakalarım → OdyoBOT gönderme, düğmeli sohbet (`odybot.js`). sw v12. Ayrıntı: `PROGRESS.md`.
 
+### KALDIĞIMIZ YER (2026-11-17 gece) — oturum başında bunu özetle
+**Durum:** Her şey yayında, son sürüm **sw v32** (main b933f65). Bekleyen kod değişikliği yok. Önceki yayın yedekleri: git etiketleri `yedek-yayin-v25`, `-v27`, `-v28`, `-v30`, `-v31` (GitHub'da). Çalışma dalı `refleks-yorum` (main ile aynı).
+**Bugün yapılanlar (2026-11-17):**
+- 1. adım (tasarım) yayında; ardından küçük logo, kaydetme bildirimi (4 sn / hata 7 sn, açık yeşil).
+- 2. adım (Vakalarım'a yeni testler) yayında: Timpanometri (tip + Tip A alanı), Akustik refleks, OAE, ABR (+ kayıt fotoğrafı, IndexedDB, galeriye kaydedilmez uyarısı). "Ek ölçümler" → "Konuşma odyometrisi".
+- OdyoBOT: artık "vaka yorumlama asistanı"; vaka gelince görev seçilir (Maskeleme kararları / Akustik refleks yorumu). Refleks yorumu: Jerger örüntüleri, 16 birleşimin hepsi açıklanıyor, şemada olası bölge turuncu, girilmeyen yol "yok" sayılıyor. Ayrıntı PROGRESS.md en üst.
+- Klinik değerler proje sahibinin Google Drive'ındaki ders slaytlarından (google-drive MCP; OAuth "test" modunda, ~7 günde bir yeniden onay isteyebilir) ve proje sahibinin izniyle internetten.
+**Oturum başında proje sahibine hatırlat:**
+1. **Telefonda denenecekler (hiç denenmedi):** eşik tablosu (iPhone klavyesi Maskeli/Yanıt yok/Sonraki düğmelerini kapatıyor mu), 4 yeni panel, ABR fotoğrafı (kamera; galeriye düşüyor mu — Android), "Yedeği paylaş" (fotoğraflı), OdyoBOT görev seçimi ve refleks yorumu, yeni logo/bildirim. Uygulamayı kapatıp açınca v32 gelmeli.
+2. **Proje sahibinin doğrulaması:** refleks yorumu metinleri ve "yalnız ipsilateral yok → yer göstermez" kararı (kaynak bulunamadı); OAE frekansları/6 dB ölçütü kendi cihazına uyuyor mu; timpanogram tip sınırları gerçek vakalarda.
+3. **Sıradaki adım: 3. adım (3D modeller)** — yalnızca proje sahibi "sıradaki adıma geç" deyince. İlk iş: Görsel depo/3D kartı "3D modeller" listesi; otolit ve tüylü hücre modeli için **yaklaşım başlamadan onaylatılır** (açık lisanslı model araştırması ya da Blender planı). Bkz. YOL-HARITASI.md.
+4. Eski hatırlatma listesindeki (2026-11-15) bekleyen içerik işleri hâlâ geçerli (cihaz açıklamaları, yenidoğan taraması metinleri vb.).
+
 ### YOL HARİTASI (2026-11-17): önce `YOL-HARITASI.md`'ye bak
 - Proje sahibi 5 adımlı yol haritası verdi (`YOL-HARITASI.md`). **Yalnızca sıradaki adım yapılır**, "sıradaki adıma geç" denmeden yenisine başlanmaz. Her adım ayrı dalda; **main'e birleştirme ve yayın yalnızca onayla.**
 - **2. adım (Vakalarım'a yeni testler) onaylandı ve yayında (2026-11-17, sw v30; önceki yayın yedeği git etiketi `yedek-yayin-v28`). Telefonda denenecek: 4 yeni panel, ABR fotoğrafı (kamera), yedek paylaşma.** Ayrıntı `PROGRESS.md` en üst bölüm. Klinik değerler proje sahibinin Google Drive'ındaki ders slaytlarından (google-drive MCP) okunup onaylatıldı.

@@ -1,4 +1,4 @@
-# PROGRESS — OdyoBOT: akustik refleks örüntüsü yorumu (2026-11-17, dal `refleks-yorum`, sw v32, yayında değil)
+# PROGRESS — OdyoBOT: akustik refleks örüntüsü yorumu (2026-11-17, dal `refleks-yorum`, sw v32, **YAYINDA**; önceki yayın yedeği git etiketi `yedek-yayin-v31`)
 
 Proje sahibinin isteği: refleks sonucuna göre olası bölge OdyoBOT asistanında, şemada gösterilsin; tablo internetten doğrulansın.
 
