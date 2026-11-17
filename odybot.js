@@ -1,4 +1,5 @@
-/* OdyoBOT: düğmeli sohbet ekranı (maskeleme asistanı).
+/* OdyoBOT: düğmeli sohbet ekranı (vaka yorumlama asistanı). Görevler: maskeleme kararları, akustik refleks örüntüsü.
+   Vaka geldikten sonra kullanıcı görevi seçer; vaka sırasında görev değiştirilebilir.
    Kural tabanlıdır: yapay zekâ yok, serbest metin yorumlanmaz; aynı seçimler her zaman aynı sonucu verir (CLAUDE.md §7).
    Eşikler Vakalarım'dan gelir (window.OdyoVaka); vaka verisi cihazdan çıkmaz.
    Mesaj metinleri index.html'deki #b-metinler içinde durur; yönetici uygulamadan düzenler.
@@ -49,7 +50,7 @@
   }
 
   /* ---------- akış ---------- */
-  var durum = { kuyruk: [], i: 0, kulaklik: null };
+  var durum = { kuyruk: [], i: 0, kulaklik: null, gorev: null };   // gorev: 'maskeleme' | 'refleks'
 
   function basla() {
     temizle();
@@ -103,12 +104,36 @@
 
   function vakalarGeldi(idler, sohbetiKoru) {
     if (!sohbetiKoru) temizle();
-    durum = { kuyruk: idler.slice(), i: 0, kulaklik: null };
+    durum = { kuyruk: idler.slice(), i: 0, kulaklik: null, gorev: null };
     bot(m('geldi', { n: idler.length }));
-    bot(m('kulaklik'));
-    secenek(KULAKLIKLAR.map(function (k) {
-      return { metin: k.ad, fn: function () { durum.kulaklik = k.id; vakaGoster(); } };
+    gorevSor();
+  }
+  // Ne yapılacağı seçilir. Maskeleme kulaklık sorusuyla başlar; refleks yorumu doğrudan vakaya geçer.
+  var GOREVLER = [
+    { id: 'maskeleme', metin: function () { return m('gorevMaskeleme') || 'Maskeleme kararları'; } },
+    { id: 'refleks', metin: function () { return m('gorevRefleks') || 'Akustik refleks yorumu'; } }
+  ];
+  function gorevSor(v) {
+    bot(m('gorev'));
+    secenek(GOREVLER.map(function (g) {
+      return { metin: g.metin(), fn: function () { gorevBaslat(g.id, v); } };
     }));
+  }
+  // v verilirse aynı vakada görev değişir; verilmezse kuyruktaki vaka gösterilir.
+  function gorevBaslat(id, v) {
+    durum.gorev = id;
+    function devam() { if (v) gorevCalistir(v); else vakaGoster(); }
+    if (id === 'maskeleme' && !durum.kulaklik) {
+      bot(m('kulaklik'));
+      secenek(KULAKLIKLAR.map(function (k) { return { metin: k.ad, fn: function () { durum.kulaklik = k.id; devam(); } }; }));
+      return;
+    }
+    devam();
+  }
+  function gorevCalistir(v) {
+    if (durum.gorev === 'refleks') { refleksGoster(v); return; }   // refleksGoster seçenekleri kendisi çizer
+    sonucGoster(v);
+    sonrakiSecenekler(v);
   }
 
   function vakaGoster() {
@@ -124,9 +149,10 @@
           V.kucukGrafik(v),
           h('div', { 'class': 'meta', text: V.ozetMetni(v) })
         ]);
-        sonucGoster(v);
+        gorevCalistir(v);
+        return;
       }
-      sonrakiSecenekler(v);
+      sonrakiSecenekler(null);
     });
   }
 
@@ -221,7 +247,7 @@
   }
   var sonDegerlendirme = null;
   function sonucGoster(v) {
-    sonDegerlendirme = MK.degerlendir(v, durum.kulaklik);
+    sonDegerlendirme = MK.degerlendir(v, durum.kulaklik);   // kulaklık gorevBaslat'ta sorulur
     var d = sonDegerlendirme;
     bot([h('p', { text: m('sonucGiris', { kulaklik: MK.KULAKLIKLAR[durum.kulaklik].ad }) }), h('p', { 'class': 'note', text: 'Kaynak: ' + MK.KAYNAK })]);
     if (d.hava.length) bot(yolBalonu(d.hava, 'hava'));
@@ -323,7 +349,7 @@
       return h('li', { text: rkYolAd(y) + ': ' + d.durum + (d.girilmedi ? ' (' + (m('rkGirilmediKisa') || 'girilmedi') + ')' : '') });
     }));
     bot([h('p', { 'class': 'b-vaka-baslik', text: m('rkBaslik') }), h('p', { text: m('rkGiris') }), durumSatir]);
-    if (s.kod === 'veriYok') { bot(m('rkVeriYok')); sonrakiSecenekler(v); return; }
+    if (s.kod === 'veriYok') { bot(m('rkVeriYok')); sonrakiSecenekler(v); return; }   // refleks girilmemiş vaka
     var parca = [rkSema(s), h('p', { 'class': 'note', text: m('rkLejant') })];
     if (s.girilmedi.length) parca.push(h('p', { 'class': 'b-uyari', text: m('rkGirilmedi', { liste: s.girilmedi.map(rkYolAd).join(', ') }) }));
     if (s.kod === 'hepsiVar') parca.push(h('p', { text: m('rkHepsiVar') }));
@@ -359,8 +385,10 @@
   function sonrakiSecenekler(v) {
     var n = durum.kuyruk.length;
     var l = [];
-    if (v && platoAdaylari().length) l.push({ metin: 'Plato rehberini başlat', fn: function () { platoSec(v); } });
-    if (v && v.refleks && RK) l.push({ metin: m('rkSecenek') || 'Akustik refleks örüntüsünü yorumla', fn: function () { refleksGoster(v); } });
+    if (v && durum.gorev === 'maskeleme' && platoAdaylari().length) l.push({ metin: 'Plato rehberini başlat', fn: function () { platoSec(v); } });
+    // Aynı vakada diğer göreve geç
+    if (v && durum.gorev === 'maskeleme' && RK) l.push({ metin: m('gecRefleks') || 'Bu vakada refleks yorumu', fn: function () { gorevBaslat('refleks', v); } });
+    if (v && durum.gorev === 'refleks') l.push({ metin: m('gecMaskeleme') || 'Bu vakada maskeleme', fn: function () { gorevBaslat('maskeleme', v); } });
     if (durum.i + 1 < n) l.push({ metin: 'Sonraki vaka (' + (durum.i + 2) + '/' + n + ')', ana: true, fn: function () { durum.i++; vakaGoster(); } });
     else l.push({ metin: 'Bitir', ana: true, fn: function () {
       bot(m('bitti'));

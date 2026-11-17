@@ -53,7 +53,7 @@
       <!-- 3. Hızlı erişim -->
       <nav class="hizli" aria-label="Hızlı erişim">
         <a href="#vakalarim/yeni"><span class="hizli-ik"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2.500"/><path d="M12 8.500v7M8.500 12h7"/></svg></span><span data-k="ana.hizli.vaka" data-etiket="Hızlı erişim: Yeni vaka yazısını düzenle">Yeni vaka</span></a>
-        <a href="#odybot"><span class="hizli-ik"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3.500" y="14" width="4" height="6" rx="1.500"/><rect x="16.500" y="14" width="4" height="6" rx="1.500"/></svg></span><span data-k="ana.hizli.maske" data-etiket="Hızlı erişim: Maskeleme asistanı yazısını düzenle">Maskeleme asistanı</span></a>
+        <a href="#odybot"><span class="hizli-ik"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3.500" y="14" width="4" height="6" rx="1.500"/><rect x="16.500" y="14" width="4" height="6" rx="1.500"/></svg></span><span data-k="ana.hizli.maske" data-etiket="Hızlı erişim: OdyoBOT asistanı yazısını düzenle">OdyoBOT asistanı</span></a>
         <a href="#notlar"><span class="hizli-ik"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h10a2 2 0 0 1 2 2v14H8a2 2 0 0 1-2-2V4z"/><path d="M6 18a2 2 0 0 1 2-2h10"/><path d="M10 8h5"/></svg></span><span data-k="ana.hizli.not" data-etiket="Hızlı erişim: Ders notları yazısını düzenle">Ders notları</span></a>
         <a href="#depo/isitme"><span class="hizli-ik"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 9a4 4 0 1 1 8 0c0 2.200-1.500 3.200-2.500 4.200-1 1-1 2.300-1.500 3.300a2.500 2.500 0 0 1-4.500-.500"/><path d="M11 9.500a1.500 1.500 0 1 1 2.500 1"/></svg></span><span data-k="ana.hizli.cihaz" data-etiket="Hızlı erişim: Cihazlar yazısını düzenle">Cihazlar</span></a>
       </nav>
@@ -306,7 +306,7 @@
     <div class="stack">
       <div class="stack" style="gap:6px">
         <h2 data-k="odybot.baslik">OdyoBOT</h2>
-        <p class="lead" data-k="odybot.lead2">Maskeleme asistanı. Eşikleri Vakalarım'daki vakalardan alır; hangi kulağa, ne zaman ve ne kadar maskeleme gerektiğini adım adım gösterir. Kuralları sabittir, tanı koymaz.</p>
+        <p class="lead" data-k="odybot.lead2">Vaka yorumlama asistanı. Vakalarım'daki vakaları alır; maskeleme kararlarını (hangi kulağa, ne zaman, ne kadar) ve akustik refleks örüntüsünü adım adım gösterir. Kuralları sabittir, tanı koymaz.</p>
       </div>
 
       <!-- Sohbet: bot mesajları ve kullanıcının seçimleri (odybot.js çizer) -->
@@ -317,10 +317,15 @@
       <details class="compose b-metinler" id="b-metinler">
         <summary>OdyoBOT mesaj metinleri (yönetici)</summary>
         <div class="yedek-ic">
-          <p data-k="odybot.m.merhaba" data-m="merhaba">Merhaba, ben OdyoBOT. Maskeleme kararlarında sana yardım ederim. Eşikleri Vakalarım'daki vakalardan alırım; bir ya da birkaç vaka seçebilirsin.</p>
+          <p data-k="odybot.m.merhaba" data-m="merhaba">Merhaba, ben OdyoBOT. Vakalarım'daki vakalarını yorumlamana yardım ederim: maskeleme kararları ve akustik refleks örüntüsü. Bir ya da birkaç vaka seç, sonra ne yapacağımızı seçersin.</p>
           <p data-k="odybot.m.vakaYok" data-m="vakaYok">Vakalarım'da kayıtlı vaka yok. Önce bir vaka ekle, sonra buraya dön.</p>
           <p data-k="odybot.m.secim" data-m="secim">Hangi vakalara bakalım? Birden fazla seçebilirsin.</p>
           <p data-k="odybot.m.geldi" data-m="geldi">{n} vaka geldi. Sırayla bakacağız.</p>
+          <p data-k="odybot.m.gorev" data-m="gorev">Ne yapalım?</p>
+          <p data-k="odybot.m.gorevMaskeleme" data-m="gorevMaskeleme">Maskeleme kararları</p>
+          <p data-k="odybot.m.gorevRefleks" data-m="gorevRefleks">Akustik refleks yorumu</p>
+          <p data-k="odybot.m.gecRefleks" data-m="gecRefleks">Bu vakada refleks yorumu</p>
+          <p data-k="odybot.m.gecMaskeleme" data-m="gecMaskeleme">Bu vakada maskeleme</p>
           <p data-k="odybot.m.kulaklik" data-m="kulaklik">Ölçümde hangi kulaklığı kullandın? Interaural attenüasyon (sesin bir kulaktan kafatası üzerinden öbür kulağa geçerken zayıflaması) değeri buna göre seçilir.</p>
           <p data-k="odybot.m.vaka" data-m="vaka">Vaka {i}/{n}: {vaka}</p>
           <p data-k="odybot.m.sonucGiris" data-m="sonucGiris">Kulaklık: {kulaklik}. Eşikler bu vakadan alındı. Değerler dB HL, maske düzeyleri dB EM (karşı kulağa).</p>
@@ -340,7 +345,6 @@
           <p data-k="odybot.m.platoAsiri" data-m="platoAsiri">Dikkat: maske hesaplanan en çok düzeyi ({enCok} dB EM) aştı. Eşik bundan sonra kayıyorsa aşırı maskeleme olabilir.</p>
           <p data-k="odybot.m.bulunamadi" data-m="bulunamadi">Bu vaka bulunamadı; silinmiş olabilir.</p>
           <p data-k="odybot.m.bitti" data-m="bitti">Seçtiğin vakaların hepsine baktık.</p>
-          <p data-k="odybot.m.rkSecenek" data-m="rkSecenek">Akustik refleks örüntüsünü yorumla</p>
           <p data-k="odybot.m.rkBaslik" data-m="rkBaslik">Akustik refleks örüntüsü</p>
           <p data-k="odybot.m.rkGiris" data-m="rkGiris">Kulak adı uyaranın verildiği kulaktır (sağ kontra: uyaran sağda, prob solda). Bir yolda girilen frekansların hepsi "Yok" ise ya da o yola hiç değer girilmemişse refleks yok sayılır; yükselmiş eşikler "var" kabul edilir.</p>
           <p data-k="odybot.m.rkVeriYok" data-m="rkVeriYok">Bu vakada akustik refleks girilmemiş.</p>
