@@ -753,10 +753,11 @@ button.btn.esik-tg[aria-pressed="true"] { background: var(--accent); border-colo
 input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
 
 /* Bildirim: ekranın üstünde kısa süre görünen ileti (app.js OdyoUI.bildirim). Başarı yeşil, hata kırmızı; simge ve yazı birlikte. */
-:root { --bildirim-tamam: #1F6E3F; --bildirim-hata: #B3261E; --bildirim-yazi: #FFFFFF; }   /* iki temada aynı: beyaz yazıyla kontrast 6 üstü */
+:root { --bildirim-tamam: #2FBF68; --bildirim-tamam-yazi: #052E16; --bildirim-hata: #B3261E; --bildirim-yazi: #FFFFFF; }   /* iki temada aynı: açık yeşil + koyu yazı (kontrast ~6,3), kırmızı + beyaz yazı (6 üstü) */
 .bildirim { position: fixed; left: 50%; top: calc(env(safe-area-inset-top, 0px) + 12px); z-index: 60; width: max-content; max-width: min(520px, calc(100% - 24px)); transform: translate(-50%, -16px); opacity: 0; display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 14px; color: var(--bildirim-yazi); font-size: 15px; font-weight: 600; line-height: 1.35; box-shadow: 0 6px 20px rgba(0, 0, 0, .25); cursor: pointer; transition: opacity .2s ease, transform .2s ease; }
 .bildirim.acik { opacity: 1; transform: translate(-50%, 0); }
-.bildirim-tamam { background: var(--bildirim-tamam); }
+.bildirim-tamam { background: var(--bildirim-tamam); color: var(--bildirim-tamam-yazi); }
+.bildirim-tamam .bildirim-ik { background: rgba(5, 46, 22, .14); }
 .bildirim-hata { background: var(--bildirim-hata); }
 .bildirim-ik { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; background: rgba(255, 255, 255, .22); font-size: 14px; font-weight: 700; }
 .bildirim-yazi { min-width: 0; overflow-wrap: anywhere; }
