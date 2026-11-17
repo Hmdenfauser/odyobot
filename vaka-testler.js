@@ -46,6 +46,97 @@
     return r;
   }
 
+  /* ---------- fotoğraf deposu (ABR kayıt fotoğrafı) ----------
+     Fotoğraflar tarayıcının cihaz içi büyük deposunda (IndexedDB "odybot-foto") tutulur; vaka kaydına yalnızca
+     fotoğraf kimlikleri yazılır (v.abr.fotolar). Hiçbir sunucuya gönderilmez. Kayıt: { id, veri (JPEG data URL), w, h, olusturma }. */
+  var FotoDeposu = (function () {
+    var acik = null;
+    function ac() {
+      if (acik) return acik;
+      acik = new Promise(function (ok, red) {
+        if (!window.indexedDB) { red(new Error('IndexedDB yok')); return; }
+        var r = indexedDB.open('odybot-foto', 1);
+        r.onupgradeneeded = function () { r.result.createObjectStore('fotolar', { keyPath: 'id' }); };
+        r.onsuccess = function () { ok(r.result); };
+        r.onerror = function () { red(r.error); };
+      });
+      acik.catch(function () { acik = null; });
+      return acik;
+    }
+    function islem(mod, fn) {
+      return ac().then(function (db) {
+        return new Promise(function (ok, red) {
+          var tx = db.transaction('fotolar', mod), istek = fn(tx.objectStore('fotolar'));
+          tx.oncomplete = function () { ok(istek ? istek.result : undefined); };
+          tx.onerror = tx.onabort = function () { red(tx.error || new Error('foto')); };
+        });
+      });
+    }
+    return {
+      yaz: function (k) { return islem('readwrite', function (st) { st.put(k); }); },
+      al: function (id) { return islem('readonly', function (st) { return st.get(id); }); },
+      sil: function (id) { return islem('readwrite', function (st) { st.delete(id); }); },
+      idler: function () { return islem('readonly', function (st) { return st.getAllKeys(); }); }
+    };
+  })();
+  var FOTO_EN_COK = 4, FOTO_KENAR = 1600, FOTO_ID = /^f[a-z0-9]{6,40}$/;
+  function fotoId() { return 'f' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+  // Seçilen görseli küçültür: uzun kenar en çok 1600 px, JPEG; data URL 1,5 milyon karakteri geçmez.
+  function fotoKucult(dosya) {
+    return new Promise(function (ok, red) {
+      var url = URL.createObjectURL(dosya), img = new Image();
+      img.onload = function () {
+        try {
+          var o = Math.min(1, FOTO_KENAR / Math.max(img.naturalWidth, img.naturalHeight));
+          var w = Math.max(1, Math.round(img.naturalWidth * o)), hh = Math.max(1, Math.round(img.naturalHeight * o));
+          var c = document.createElement('canvas'); c.width = w; c.height = hh;
+          var ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, w, hh); ctx.drawImage(img, 0, 0, w, hh);
+          var veri = null;
+          [0.82, 0.7, 0.58, 0.46].some(function (q) { veri = c.toDataURL('image/jpeg', q); return veri.length <= 1500000; });
+          URL.revokeObjectURL(url);
+          if (!veri || veri.length > 1500000) { red(new Error('buyuk')); return; }
+          ok({ veri: veri, w: w, h: hh });
+        } catch (e) { URL.revokeObjectURL(url); red(e); }
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); red(new Error('okunamadi')); };
+      img.src = url;
+    });
+  }
+  function fotoGecerli(k) {
+    return k && typeof k === 'object' && typeof k.veri === 'string' && /^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/.test(k.veri) &&
+      k.veri.length <= 2000000 && tamSayiMi(k.w, 1, 10000) && tamSayiMi(k.h, 1, 10000);
+  }
+  // Yedek ve çıktı için ortak arayüz (vakalarim.js, cikti.js).
+  window.VakaFoto = {
+    // Vakaların fotoğrafları: { id: { veri, w, h } }
+    topla: function (l) {
+      var idler = [];
+      (l || []).forEach(function (vk) { ((vk.abr && vk.abr.fotolar) || []).forEach(function (id) { if (idler.indexOf(id) === -1) idler.push(id); }); });
+      var out = {};
+      return Promise.all(idler.map(function (id) {
+        return FotoDeposu.al(id).then(function (k) { if (k) out[id] = { veri: k.veri, w: k.w, h: k.h }; }, function () {});
+      })).then(function () { return out; });
+    },
+    // Yedek dosyasındaki fotoğrafları doğrular; sorun varsa Türkçe hata fırlatır.
+    dogrula: function (m) {
+      if (m == null) return {};
+      if (typeof m !== 'object' || Array.isArray(m)) throw new Error('fotoğraf bölümü okunamadı');
+      var ids = Object.keys(m);
+      if (ids.length > 2000) throw new Error('fotoğraf sayısı çok fazla');
+      ids.forEach(function (id) { if (!FOTO_ID.test(id) || !fotoGecerli(m[id])) throw new Error('bir fotoğraf okunamadı'); });
+      return m;
+    },
+    yukle: function (m) {
+      return Promise.all(Object.keys(m || {}).map(function (id) { return FotoDeposu.yaz({ id: id, veri: m[id].veri, w: m[id].w, h: m[id].h, olusturma: Date.now() }); }));
+    },
+    // Bir vakanın ABR fotoğrafları (sırasıyla): [{ veri, w, h }]
+    liste: function (vk) {
+      var ids = (vk && vk.abr && vk.abr.fotolar) || [];
+      return Promise.all(ids.map(function (id) { return FotoDeposu.al(id).catch(function () { return null; }); }))
+        .then(function (l) { return l.filter(Boolean); }, function () { return []; });
+    }
+  };
+
   /* ---------- SVG yardımcıları ---------- */
   var SVGNS = 'http://www.w3.org/2000/svg';
   function s(tag, attrs, kids) {
@@ -171,6 +262,13 @@
     svg.appendChild(s('text', { 'class': 'og-yazi og-birim', x: 2, y: T - 6, text: 'ml' }));
     svg.appendChild(s('text', { 'class': 'og-yazi og-birim', x: W - R, y: H - 4, 'text-anchor': 'end', text: 'daPa' }));
     svg.appendChild(s('rect', { 'class': 'og-cerceve', x: L, y: T, width: W - L - R, height: H - T - B }));
+    // Tip A alanı (sınırlar odyo-hesap.js → TIMPAN_SINIR; tepe bu kutudaysa Tip A).
+    var TS = window.OdyoHesap && window.OdyoHesap.TIMPAN_SINIR;
+    if (TS) {
+      var ax = xP(TS.tepeEnAz), ay = yC(TS.kompEnCok);
+      svg.appendChild(s('rect', { 'class': 't-a-alan', x: y1(ax), y: y1(ay), width: y1(xP(TS.tepeEnCok) - ax), height: y1(yC(TS.kompEnAz) - ay) }));
+      svg.appendChild(s('text', { 'class': 'og-yazi t-a-yazi', x: y1(ax + 3), y: y1(ay + 10), text: M('vt-metinler', 'tAAlan') || 'Tip A' }));
+    }
     kulaklar.forEach(function (k) {
       var e = x[k], g = s('g', { 'class': 'og-kulak ' + k }), nok = [];
       if (e.duz) {
@@ -753,6 +851,14 @@
       });
       if (temiz.length) out[k] = aSirala(temiz);
     });
+    if (x.fotolar != null) {
+      if (!Array.isArray(x.fotolar) || x.fotolar.length > FOTO_EN_COK) sorun('ABR fotoğraf listesi okunamadı');
+      else {
+        var fl = x.fotolar.filter(function (id, i) { return typeof id === 'string' && FOTO_ID.test(id) && x.fotolar.indexOf(id) === i; });
+        if (fl.length !== x.fotolar.length) sorun('ABR fotoğraf kimliği geçersiz');
+        if (fl.length) out.fotolar = fl;
+      }
+    }
     return Object.keys(out).length ? out : undefined;
   }
 
@@ -807,8 +913,71 @@
       }
       if (l.length) out[k] = aSirala(l);
     });
+    if (aFotolar.length) out.fotolar = aFotolar.slice();
     return Object.keys(out).length ? out : undefined;
   }
+
+  /* ABR kayıt fotoğrafı (formda). Eklenen fotoğraf hemen cihaz deposuna yazılır; vakaya bağlanması "Kaydet" ile olur.
+     Hiçbir vakaya bağlı olmayan fotoğraflar fotoSupur() ile silinir. */
+  var aFotolar = [];
+  function fotoKucukler(kap, ids, kaldirilabilir) {
+    kap.replaceChildren();
+    ids.forEach(function (id, i) {
+      var img = h('img', { alt: (M('vt-metinler', 'aFotoAlt') || 'ABR kayıt fotoğrafı') + ' ' + (i + 1) });
+      var ac = h('button', { type: 'button', 'class': 'a-foto-ac', 'aria-label': (M('vt-metinler', 'aFotoAc') || 'Fotoğrafı büyüt') + ' ' + (i + 1) }, [img]);
+      var parca = [ac];
+      FotoDeposu.al(id).then(function (k) {
+        if (!k) { img.alt = 'Fotoğraf bulunamadı'; return; }
+        img.src = k.veri;
+        ac.addEventListener('click', function () { if (window.Goruntuleyici) window.Goruntuleyici.ac({ src: k.veri, alt: img.alt, baslik: M('vt-metinler', 'aFotoBaslik') || 'ABR kayıt fotoğrafı', geri: ac }); });
+      }, function () { img.alt = 'Fotoğraf okunamadı'; });
+      if (kaldirilabilir) {
+        var sil = h('button', { type: 'button', 'class': 'btn a-foto-sil', text: M('vt-metinler', 'aFotoKaldir') || 'Kaldır' });
+        sil.addEventListener('click', function () {
+          aFotolar = aFotolar.filter(function (x) { return x !== id; });
+          aFotoCiz(); $('v-form').dispatchEvent(new Event('input'));
+        });
+        parca.push(sil);
+      }
+      kap.appendChild(h('div', { 'class': 'a-foto-kart' }, parca));
+    });
+  }
+  function aFotoCiz() {
+    fotoKucukler($('v-a-foto-liste'), aFotolar, true);
+    $('v-a-foto-ekle').disabled = aFotolar.length >= FOTO_EN_COK;
+  }
+  function aFotoMsg(t, hata) { var m = $('v-a-foto-msg'); m.textContent = t || ''; m.className = 'msg' + (hata ? ' err' : ''); }
+  $('v-a-foto-ekle').addEventListener('click', function () { aFotoMsg(''); $('v-a-foto-dosya').value = ''; $('v-a-foto-dosya').click(); });
+  $('v-a-foto-dosya').addEventListener('change', function () {
+    var dosya = this.files && this.files[0];
+    if (!dosya) return;
+    if (aFotolar.length >= FOTO_EN_COK) { aFotoMsg('En çok ' + FOTO_EN_COK + ' fotoğraf eklenebilir.', true); return; }
+    if (!/^image\//.test(dosya.type || '')) { aFotoMsg('Bir görsel dosyası seç.', true); return; }
+    aFotoMsg('Fotoğraf hazırlanıyor…');
+    fotoKucult(dosya).then(function (k) {
+      var id = fotoId();
+      return FotoDeposu.yaz({ id: id, veri: k.veri, w: k.w, h: k.h, olusturma: Date.now() }).then(function () {
+        aFotolar.push(id); aFotoCiz(); aFotoMsg('');
+        $('v-form').dispatchEvent(new Event('input'));
+      });
+    }).catch(function (e) {
+      aFotoMsg(e && e.message === 'buyuk' ? 'Fotoğraf çok büyük, küçültülemedi.' : 'Fotoğraf eklenemedi. Tarayıcının depolama alanı dolu ya da kapalı olabilir.', true);
+    });
+  });
+  // Hiçbir vakaya (ve açık forma) bağlı olmayan fotoğrafları siler.
+  var supurZaman = null;
+  function fotoSupur() {
+    clearTimeout(supurZaman);
+    supurZaman = setTimeout(function () {
+      if (!window.OdyoVaka) return;
+      Promise.all([window.OdyoVaka.hepsi(), FotoDeposu.idler()]).then(function (r) {
+        var kullanilan = $('v-form').hidden ? [] : aFotolar.slice();   // açık formdaki (henüz kaydedilmemiş) fotoğraflar korunur
+        r[0].forEach(function (vk) { ((vk.abr && vk.abr.fotolar) || []).forEach(function (id) { kullanilan.push(id); }); });
+        r[1].forEach(function (id) { if (kullanilan.indexOf(id) === -1) FotoDeposu.sil(id).catch(function () {}); });
+      }).catch(function () {});
+    }, 800);
+  }
+  window.addEventListener('odyo:vakalar', fotoSupur);
   // Dalgalar arası süreler: [[şiddet, I–III, III–V, I–V], ...]
   function araSatirlari(l) {
     return (l || []).map(function (r) { return [r.db + ' dB nHL'].concat(A_ARALIK.map(function (p) { return iki(aralik(r, p[0], p[1])) || '–'; })); })
@@ -837,6 +1006,8 @@
         ['db'].concat(A_DALGA).forEach(function (a) { var el = aGiris(k, i, a); el.value = r[a] != null ? String(r[a]) : ''; oIsaretle(el, {}); });
       }
     });
+    aFotolar = (x && x.fotolar) ? x.fotolar.slice() : [];
+    aFotoCiz(); aFotoMsg('');
     $('v-abr').open = !!x;
     abrCanli();
   }
@@ -908,16 +1079,23 @@
     return st;
   }
   function abrAyrinti(x) {
-    var st = abrSatirlari(x);
-    if (!st.length) return null;
+    var st = abrSatirlari(x), fl = (x && x.fotolar) || [];
+    if (!st.length && !fl.length) return null;
     var basliklar = A_DALGA.concat(A_ARALIK.map(function (p) { return p[0] + '–' + p[1]; }));
     var parca = [h('h4', { text: M('vt-metinler', 'aBaslik') || 'ABR' })];
     var g = abrGrafik(x); if (g) parca.push(g);
-    parca.push(h('div', { 'class': 'a-kaydir' }, [h('table', { 'class': 'esik-tablo a-sonuc' }, [
-      h('thead', null, [h('tr', null, [h('th', { text: '' })].concat(basliklar.map(function (b) { return h('th', { text: b }); })))]),
-      h('tbody', null, st.map(function (r) { return h('tr', null, [h('th', { 'class': r.kulak, text: r[0] })].concat(r.slice(1).map(function (c) { return h('td', { text: c }); }))); }))
-    ])]));
-    parca.push(h('p', { 'class': 'note', text: M('vt-metinler', 'aNot') }));
+    if (st.length) {
+      parca.push(h('div', { 'class': 'a-kaydir' }, [h('table', { 'class': 'esik-tablo a-sonuc' }, [
+        h('thead', null, [h('tr', null, [h('th', { text: '' })].concat(basliklar.map(function (b) { return h('th', { text: b }); })))]),
+        h('tbody', null, st.map(function (r) { return h('tr', null, [h('th', { 'class': r.kulak, text: r[0] })].concat(r.slice(1).map(function (c) { return h('td', { text: c }); }))); }))
+      ])]));
+      parca.push(h('p', { 'class': 'note', text: M('vt-metinler', 'aNot') }));
+    }
+    if (fl.length) {
+      var kap = h('div', { 'class': 'a-foto-liste' });
+      fotoKucukler(kap, fl, false);
+      parca.push(h('div', { 'class': 'og-baslik a-foto-baslik', text: M('vt-metinler', 'aFotoBaslik') || 'ABR kayıt fotoğrafı' }), kap);
+    }
     return h('div', { 'class': 'tablo-kap' }, parca);
   }
   var abrCsv = [];
@@ -936,7 +1114,12 @@
     formOku: function (hatalar) { return abrFormOku(hatalar, false); },
     formDoldur: abrFormDoldur,
     ayrinti: abrAyrinti,
-    ozet: function (x) { return x ? (M('vt-metinler', 'aBaslik') || 'ABR') + ': ' + KULAKLAR.filter(function (k) { return x[k]; }).map(function (k) { return KULAK_AD[k].toLowerCase() + ' ' + x[k].length + ' şiddet'; }).join(', ') : ''; },
+    ozet: function (x) {
+      if (!x) return '';
+      var p = KULAKLAR.filter(function (k) { return x[k]; }).map(function (k) { return KULAK_AD[k].toLowerCase() + ' ' + x[k].length + ' şiddet'; });
+      if (x.fotolar) p.push(x.fotolar.length + ' fotoğraf');
+      return (M('vt-metinler', 'aBaslik') || 'ABR') + ': ' + p.join(', ');
+    },
     satirlar: abrSatirlari,
     ilkSutun: function () { return ''; },
     sutunlar: function () { return A_DALGA.concat(A_ARALIK.map(function (p) { return p[0] + '–' + p[1]; })); },

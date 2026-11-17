@@ -396,6 +396,18 @@ input.db.hatali { border-color: var(--danger); border-width: 2px; background: co
 .a-sonuc th, .a-sonuc td { text-align: center; white-space: nowrap; }
 .a-sonuc th.sag { color: var(--right); } .a-sonuc th.sol { color: var(--left); }
 .a-kaydir { overflow-x: auto; max-width: 100%; }
+/* Timpanogramda Tip A alanı */
+.t-a-alan { fill: var(--accent); fill-opacity: .10; stroke: var(--accent); stroke-opacity: .5; stroke-dasharray: 3 3; }
+.t-a-yazi { fill: var(--muted); }
+/* ABR kayıt fotoğrafı */
+.a-foto { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.a-foto-liste { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.a-foto-kart { display: flex; flex-direction: column; gap: 4px; }
+.a-foto-ac { display: block; padding: 0; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); overflow: hidden; cursor: zoom-in; min-height: 44px; }
+.a-foto-ac img { display: block; width: 100%; height: 120px; object-fit: cover; }
+.a-foto-ac:focus-visible { outline: 3px solid var(--accent); outline-offset: 1px; }
+.a-foto-sil { min-height: 44px; }
+.a-foto-baslik { padding-left: 0; margin-top: 8px; }
 .t-deger:disabled { opacity: .55; }
 
 /* Vakalarım: seçim modu (OdyoBOT'a gönderme) */

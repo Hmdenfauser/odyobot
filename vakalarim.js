@@ -827,7 +827,7 @@
     var satirlar = ekSatirlari(v).map(function (x) {
       return h('tr', null, [h('th', { text: x[0] }), h('td', { text: x[1] }), h('td', { text: x[2] })]);
     });
-    var parca = [h('h4', { text: 'Ek ölçümler' })];
+    var parca = [h('h4', { text: 'Konuşma odyometrisi' })];
     if (satirlar.length) parca.push(h('table', { 'class': 'esik-tablo ek-tablo' }, [
       h('thead', null, [h('tr', null, [h('th', { text: '' }), h('th', { 'class': 'sag', text: 'Sağ' }), h('th', { 'class': 'sol', text: 'Sol' })])]),
       h('tbody', null, satirlar)]));
@@ -919,9 +919,20 @@
     setTimeout(function () { URL.revokeObjectURL(url); }, 30000);
   }
   function yedekAdi() { return 'odyobot-yedek-' + U.todayISO() + '.json'; }
-  function yedekIcerik(l) {
-    return JSON.stringify({ uygulama: 'OdyoBOT', tur: 'vaka-yedegi', surum: 1, alinma: new Date().toISOString(), vakalar: l }, null, 1);
+  // fotolar: { id: { veri, w, h } } (ABR kayıt fotoğrafları; vaka-testler.js → VakaFoto). Boşsa yazılmaz.
+  function yedekIcerik(l, fotolar) {
+    var o = { uygulama: 'OdyoBOT', tur: 'vaka-yedegi', surum: 1, alinma: new Date().toISOString(), vakalar: l };
+    if (fotolar && Object.keys(fotolar).length) o.fotolar = fotolar;
+    return JSON.stringify(o, null, 1);
   }
+  function fotoTopla(l) { return window.VakaFoto ? window.VakaFoto.topla(l).catch(function () { return {}; }) : Promise.resolve({}); }
+  // Paylaşma, dokunuştan hemen sonra çağrılmalı (iPhone); fotoğraflar yedek paneli açılınca önceden toplanır.
+  var yedekOnbellek = null;
+  $('v-yedek').addEventListener('toggle', function () {
+    yedekOnbellek = null;
+    if (!$('v-yedek').open) return;
+    VakaDeposu.hepsi().then(function (l) { return fotoTopla(l).then(function (f) { yedekOnbellek = { l: l, f: f }; }); }).catch(function () {});
+  });
   function yedekHazirla() {
     return VakaDeposu.hepsi().then(function (l) {
       if (!l.length) throw new Error('bos');
@@ -932,9 +943,12 @@
 
   $('v-yedek-al').addEventListener('click', function () {
     yedekHazirla().then(function (l) {
-      dosyaIndir(yedekAdi(), yedekIcerik(l), 'application/json');
-      sayacSifirla();
-      yedekMsg(l.length + ' vaka yedeklendi: ' + yedekAdi());
+      return fotoTopla(l).then(function (f) {
+        dosyaIndir(yedekAdi(), yedekIcerik(l, f), 'application/json');
+        sayacSifirla();
+        var fs = Object.keys(f).length;
+        yedekMsg(l.length + ' vaka' + (fs ? ' ve ' + fs + ' fotoğraf' : '') + ' yedeklendi: ' + yedekAdi());
+      });
     }).catch(yedekHata);
   });
 
@@ -946,8 +960,10 @@
   } catch (e) { paylasilabilir = false; }
   $('v-yedek-paylas').hidden = !paylasilabilir;
   $('v-yedek-paylas').addEventListener('click', function () {
-    yedekHazirla().then(function (l) {
-      var dosya = new File([yedekIcerik(l)], yedekAdi(), { type: 'application/json' });
+    var hazir = yedekOnbellek;
+    (hazir ? Promise.resolve(hazir.l) : yedekHazirla()).then(function (l) {
+      if (!l.length) throw new Error('bos');
+      var dosya = new File([yedekIcerik(l, hazir ? hazir.f : null)], yedekAdi(), { type: 'application/json' });
       return navigator.share({ files: [dosya], title: 'OdyoBOT vaka yedeği' }).then(function () {
         sayacSifirla(); yedekMsg(l.length + ' vaka paylaşıldı.');
       }, function (e) {
@@ -1038,10 +1054,14 @@
       throw new Error('Bu dosya bir OdyoBOT vaka yedeği değil.');
     if (typeof veri.surum === 'number' && veri.surum > 1)
       throw new Error('Bu yedek uygulamanın daha yeni bir sürümüyle alınmış. Önce uygulamayı güncelle (sayfayı yenile).');
-    return veri.vakalar.map(function (v, i) {
+    var l = veri.vakalar.map(function (v, i) {
       try { return temizle(v, null, true); }
       catch (e) { throw new Error('Dosyadaki ' + (i + 1) + '. vaka okunamadı (' + e.message + ').'); }
     });
+    // ABR kayıt fotoğrafları (varsa): dizinin ek özelliği olarak taşınır, geri yüklemede önce bunlar yazılır.
+    try { l.fotolar = window.VakaFoto ? window.VakaFoto.dogrula(veri.fotolar) : {}; }
+    catch (e) { throw new Error('Dosya okunamadı (' + e.message + ').'); }
+    return l;
   }
   $('v-dosya').addEventListener('change', function () {
     var dosya = $('v-dosya').files && $('v-dosya').files[0];
@@ -1074,7 +1094,8 @@
         if (!eski || (v.guncelleme || 0) >= (eski.guncelleme || 0)) harita[v.id] = v;
       });
       var son = Object.keys(harita).map(function (id) { return harita[id]; });
-      return VakaDeposu.hepsiniYaz(son).then(function () {
+      var fotoYaz = gelen.fotolar && Object.keys(gelen.fotolar).length && window.VakaFoto ? window.VakaFoto.yukle(gelen.fotolar) : Promise.resolve();
+      return fotoYaz.then(function () { return VakaDeposu.hepsiniYaz(son); }).then(function () {
         geriSorKapat();
         yedekMsg((birlestir ? 'Birleştirildi. ' : 'Yedek yüklendi. ') + 'Şu an ' + son.length + ' vaka var.');
       });

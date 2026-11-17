@@ -82,6 +82,7 @@
       '.og-hat.sag{stroke:' + R.sag + '}.og-hat.sol{stroke:' + R.sol + '}' +
       '.og-hat.kemik{stroke-dasharray:5 4}.og-hat.notr{stroke:' + R.soluk + '}' +
       '.t-duz.sag{fill:' + R.sag + '}.t-duz.sol{fill:' + R.sol + '}' +
+      '.t-a-alan{fill:' + R.bant + ';fill-opacity:.12;stroke:' + R.bant + ';stroke-opacity:.5;stroke-dasharray:3 3}.t-a-yazi{fill:' + R.soluk + '}' +
       '.oae-cubuk.sag{fill:' + R.sag + ';fill-opacity:.8}.oae-cubuk.sol{fill:' + R.sol + ';fill-opacity:.8}.oae-gurultu{fill:' + R.soluk + ';fill-opacity:.45}';
   }
 
@@ -120,7 +121,7 @@
     return Math.round(w * oran);
   }
 
-  function sayfaKur(v, detayli, R, fontlar) {
+  function sayfaKur(v, detayli, R, fontlar, fotolar) {
     var kok = s('svg', { xmlns: NS, viewBox: '0 0 ' + GEN + ' 100', width: GEN, height: 100 });
     kok.appendChild(s('style', { text: stilMetni(R, fontlar) }));
     var zemin = s('rect', { x: 0, y: 0, width: GEN, height: 100, fill: R.zemin });
@@ -193,7 +194,7 @@
       var ek = V.ekSatirlari(v), weber = V.weberMetni(v);
       if (ek.length || weber) {
         y += 14; ayrac(); y += 30;
-        yazi(KENAR, y, 'Ek ölçümler', 'bolum'); y += 24;
+        yazi(KENAR, y, 'Konuşma odyometrisi', 'bolum'); y += 24;
         var c1 = KENAR, c2 = KENAR + 260, c3 = KENAR + 470;
         if (ek.length) {
           yazi(c2, y, 'SAĞ', 'mono kulak-sag', { 'font-size': '12px' });
@@ -242,6 +243,20 @@
         st.forEach(function (sr) { yazi(d1, y, sr[0], 'etiket'); yazi(d2, y, sr[1], 'deger'); yazi(d3, y, sr[2], 'deger'); y += 20; });
       });
 
+      // ABR kayıt fotoğrafları (cihaz deposundan; vaka-testler.js → VakaFoto).
+      if (fotolar && fotolar.length) {
+        y += 14; ayrac(); y += 30;
+        yazi(KENAR, y, 'ABR kayıt fotoğrafı', 'bolum'); y += 16;
+        fotolar.forEach(function (f) {
+          var fw = ic, fh = Math.round(ic * f.h / f.w);
+          if (fh > 900) { fh = 900; fw = Math.round(900 * f.w / f.h); }
+          var im = s('image', { x: KENAR + (ic - fw) / 2, y: y, width: fw, height: fh, preserveAspectRatio: 'xMidYMid meet' });
+          im.setAttribute('href', f.veri);
+          im.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', f.veri);
+          kok.appendChild(im); y += fh + 12;
+        });
+      }
+
       // Notlar.
       if (v.notlar) {
         y += 14; ayrac(); y += 30;
@@ -266,8 +281,9 @@
     var hazir = document.fonts && document.fonts.load
       ? Promise.all([document.fonts.load(FONT_GOVDE, 'ğüşiöçİ'), document.fonts.load("500 13.5px 'IBM Plex Sans'", 'ğ')]).catch(function () {})
       : Promise.resolve();
-    return Promise.all([fontCss(), hazir]).then(function (l) {
-      var sayfa = sayfaKur(v, detayli, R, l[0]);
+    var fotoSoz = detayli && window.VakaFoto ? window.VakaFoto.liste(v) : Promise.resolve([]);
+    return Promise.all([fontCss(), hazir, fotoSoz]).then(function (l) {
+      var sayfa = sayfaKur(v, detayli, R, l[0], l[2]);
       var metin = new XMLSerializer().serializeToString(sayfa.svg);
       var url = URL.createObjectURL(new Blob([metin], { type: 'image/svg+xml;charset=utf-8' }));
       return new Promise(function (ok, red) {
