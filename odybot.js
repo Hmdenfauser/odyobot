@@ -2,7 +2,8 @@
    Kural tabanlıdır: yapay zekâ yok, serbest metin yorumlanmaz; aynı seçimler her zaman aynı sonucu verir (CLAUDE.md §7).
    Eşikler Vakalarım'dan gelir (window.OdyoVaka); vaka verisi cihazdan çıkmaz.
    Mesaj metinleri index.html'deki #b-metinler içinde durur; yönetici uygulamadan düzenler.
-   Maskeleme kuralları maskeleme-kural.js içinde (Katz, 7. baskı, Bölüm 6; proje sahibiyle doğrulandı). */
+   Maskeleme kuralları maskeleme-kural.js içinde (Katz, 7. baskı, Bölüm 6; proje sahibiyle doğrulandı).
+   Akustik refleks örüntüsü refleks-kural.js içinde (Jerger ve Jerger 1977; proje sahibinin isteğiyle, 2026-11-17). */
 (function () {
   'use strict';
   var U = window.OdyoUI, V = window.OdyoVaka;
@@ -262,10 +263,90 @@
     ]);
   }
 
+  /* ---------- akustik refleks örüntüsü (kurallar refleks-kural.js'te) ----------
+     Şema: Görsel depodaki refleks arkının sade hâli. Renk uyarılan kulak (sağ kırmızı, sol mavi), noktalı ipsilateral,
+     düz kontralateral; "yok" yollar gri kesikli; olası bölge turuncu. Sağ taraf solda çizilir (Görsel depodaki gibi). */
+  var RK = window.RefleksKural;
+  var SVGNS = 'http://www.w3.org/2000/svg';
+  function sv(tag, a, ana) { var e = document.createElementNS(SVGNS, tag); for (var k in a) { if (k === 'text') e.textContent = a[k]; else e.setAttribute(k, a[k]); } if (ana) ana.appendChild(e); return e; }
+  var RK_DUGUM = [
+    { id: 'orta', x: 62, y: 262, w: 92, ad: 'Orta kulak' },
+    { id: 'koklea', x: 62, y: 208, w: 92, ad: 'Koklea' },
+    { id: 'n8', x: 62, y: 154, w: 92, ad: '8. sinir' },
+    { id: 'kn', x: 62, y: 100, w: 92, ad: 'Koklear çek.' },
+    { id: 'soc', x: 104, y: 40, w: 84, ad: 'Süp. olivar' },
+    { id: 'n7', x: 140, y: 154, w: 56, ad: '7. sinir' }
+  ];
+  function rkTaraf(X) { return X === 'sag' ? 'sağ' : 'sol'; }
+  function rkBuyuk(X) { return X === 'sag' ? 'Sağ' : 'Sol'; }
+  function rkYolAd(y) { var p = y.split('-'); return rkTaraf(p[0]) + ' ' + p[1]; }
+  function rkSema(s) {
+    var vurgu = {};
+    (s.adaylar || []).forEach(function (a) { a.dugumler.forEach(function (d) { vurgu[d] = true; }); });
+    var svg = sv('svg', { viewBox: '0 0 360 300', 'class': 'rk-sema', role: 'img' });
+    var ozet = RK.YOLLAR.map(function (y) { return rkYolAd(y) + ' ' + (s.durumlar[y].durum || 'girilmedi'); }).join(', ');
+    svg.setAttribute('aria-label', 'Refleks arkı: ' + ozet + (s.adaylar && s.adaylar.length ? '. Olası bölge vurgulandı.' : ''));
+    function mx(x, X) { return X === 'sag' ? x : 360 - x; }
+    function cizgi(X, pts, sinif) { sv('polyline', { points: pts.map(function (p) { return mx(p[0], X) + ',' + p[1]; }).join(' '), 'class': sinif }, svg); }
+    ['sag', 'sol'].forEach(function (X) {
+      var renk = X === 'sag' ? ' sag' : ' sol';
+      var ip = s.durumlar[X + '-ipsi'].durum, ko = s.durumlar[X + '-kontra'].durum;
+      function sinif(d, ipsi) { return 'rk-yol' + renk + (ipsi ? ' ip' : '') + (d === 'yok' ? ' yok' : d == null ? ' bos' : ''); }
+      cizgi(X, [[56, 262], [56, 100], [98, 40], [134, 154], [104, 262]], sinif(ip, true));
+      cizgi(X, [[68, 262], [68, 100], [110, 40], [180, 92], [220, 154], [256, 262]], sinif(ko, false));
+      if (vurgu[X + '.gecis']) cizgi(X, [[110, 40], [180, 92]], 'rk-vurgu');
+    });
+    var oh = sv('g', { 'class': 'rk-dugum' + (vurgu.ortaHat ? ' aday' : '') }, svg);
+    sv('rect', { x: 154, y: 79, width: 52, height: 26, rx: 6 }, oh);
+    sv('text', { x: 180, y: 96, 'text-anchor': 'middle', text: 'Orta hat' }, oh);
+    ['sag', 'sol'].forEach(function (X) {
+      RK_DUGUM.forEach(function (d) {
+        var g = sv('g', { 'class': 'rk-dugum' + (vurgu[X + '.' + d.id] ? ' aday' : '') }, svg);
+        sv('rect', { x: mx(d.x, X) - d.w / 2, y: d.y - 13, width: d.w, height: 26, rx: 6 }, g);
+        sv('text', { x: mx(d.x, X), y: d.y + 4, 'text-anchor': 'middle', text: d.ad }, g);
+      });
+      sv('text', { x: mx(62, X), y: 294, 'text-anchor': 'middle', 'class': 'rk-taraf ' + X, text: rkBuyuk(X) + ' kulak' }, svg);
+    });
+    return svg;
+  }
+  function rkNot(n) {
+    return m('rk_' + n.kod, { taraf: rkTaraf(n.taraf), Taraf: rkBuyuk(n.taraf), tip: n.tip, db: n.db, abg: n.abg != null ? String(n.abg).replace('.', ',') : '' });
+  }
+  function refleksGoster(v) {
+    var s = RK.degerlendir(v);
+    var durumSatir = h('ul', { 'class': 'b-liste' }, RK.YOLLAR.map(function (y) {
+      var d = s.durumlar[y].durum;
+      return h('li', { text: rkYolAd(y) + ': ' + (d === 'var' ? 'var' : d === 'yok' ? 'yok' : 'girilmedi') });
+    }));
+    bot([h('p', { 'class': 'b-vaka-baslik', text: m('rkBaslik') }), h('p', { text: m('rkGiris') }), durumSatir]);
+    if (s.kod === 'veriYok') { bot(m('rkVeriYok')); sonrakiSecenekler(v); return; }
+    if (s.kod === 'eksik') { bot(m('rkEksik', { eksik: s.eksik.map(rkYolAd).join(', ') })); sonrakiSecenekler(v); return; }
+    var parca = [rkSema(s), h('p', { 'class': 'note', text: m('rkLejant') })];
+    if (s.kod === 'hepsiVar') parca.push(h('p', { text: m('rkHepsiVar') }));
+    else if (s.kod === 'hepsiYok') {
+      parca.push(h('p', { text: m('rkHepsiYok') }));
+      parca.push(h('ul', { 'class': 'b-liste' }, s.notlar.map(function (n) { return h('li', { text: rkNot(n) }); })));
+    } else if (s.kod === 'tanimsiz') parca.push(h('p', { text: m('rkTanimsiz', { yok: s.yok.map(rkYolAd).join(', ') }) }));
+    else {
+      parca.push(h('p', { 'class': 'b-vaka-baslik', text: m('rkOruntu_' + s.oruntu, { taraf: s.taraf ? rkTaraf(s.taraf) : '' }) }));
+      parca.push(h('p', { text: m('rkOlasi') }));
+      parca.push(h('ul', { 'class': 'b-liste' }, s.adaylar.map(function (a) {
+        var li = h('li', null, [h('strong', { text: m('rkAday_' + a.id, { taraf: a.taraf ? rkTaraf(a.taraf) : '', Taraf: a.taraf ? rkBuyuk(a.taraf) : '' }) })]);
+        a.notlar.forEach(function (n) { li.appendChild(h('div', { 'class': 'meta', text: rkNot(n) })); });
+        return li;
+      })));
+    }
+    if (s.kismi.length) parca.push(h('p', { 'class': 'note', text: m('rkKismi', { liste: s.kismi.map(function (k) { return rkYolAd(k.yol) + ' ' + k.frekanslar.join(', ') + ' Hz'; }).join('; ') }) }));
+    bot(parca);
+    bot([h('p', { 'class': 'note', text: m('rkKaynak') }), h('p', { 'class': 'note', text: m('taniYok') })]);
+    sonrakiSecenekler(v);
+  }
+
   function sonrakiSecenekler(v) {
     var n = durum.kuyruk.length;
     var l = [];
     if (v && platoAdaylari().length) l.push({ metin: 'Plato rehberini başlat', fn: function () { platoSec(v); } });
+    if (v && v.refleks && RK) l.push({ metin: m('rkSecenek') || 'Akustik refleks örüntüsünü yorumla', fn: function () { refleksGoster(v); } });
     if (durum.i + 1 < n) l.push({ metin: 'Sonraki vaka (' + (durum.i + 2) + '/' + n + ')', ana: true, fn: function () { durum.i++; vakaGoster(); } });
     else l.push({ metin: 'Bitir', ana: true, fn: function () {
       bot(m('bitti'));

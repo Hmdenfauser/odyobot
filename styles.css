@@ -16,6 +16,7 @@
 
 /* Layout: tek sütun mobil uygulama. Alt çubukta 5 sekme, ortada yükseltilmiş turuncu OdyoBOT yuvarlağı. Ana sayfa: karşılama + saat + ilanlar + haberler. Görsel depo: yolaklar ve cihazlar. */
 :root {
+  --rk-aday: #F6B356; --rk-aday-cizgi: #A65A00;
   --bg: #F2F5F6;
   --surface: #FFFFFF;
   --ink: #10242B;
@@ -54,6 +55,7 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
+    --rk-aday: #8A5410; --rk-aday-cizgi: #FFC873;
     --bg: #0C1A1F; --surface: #13262D; --ink: #E6EEF0; --muted: #93A8AF; --line: #2A3F47;
     --accent: #6DB7F2; --accent-ink: #06223F; --bot: #3DCADA; --bot-ink: #04303A; --kart3d: #123E7A; --danger: #F2958E;
     --right: #F0776C; --left: #7BA3F5; --cross: #6B8189;
@@ -62,6 +64,7 @@
   }
 }
 :root[data-theme="dark"] {
+  --rk-aday: #8A5410; --rk-aday-cizgi: #FFC873;
   --bg: #0C1A1F; --surface: #13262D; --ink: #E6EEF0; --muted: #93A8AF; --line: #2A3F47;
   --accent: #6DB7F2; --accent-ink: #06223F; --bot: #3DCADA; --bot-ink: #04303A; --kart3d: #123E7A; --danger: #F2958E;
   --right: #F0776C; --left: #7BA3F5; --cross: #6B8189;
@@ -447,6 +450,20 @@ button.btn.b-vaka[aria-pressed="true"] .b-vaka-kutu { background: var(--accent);
 .b-liste li { overflow-wrap: anywhere; }
 .b-uyari { color: var(--danger); font-size: 13.5px; margin-top: 2px; }
 .balon .og-baslik { padding-left: 0; }
+/* OdyoBOT: akustik refleks örüntüsü şeması (odybot.js rkSema). */
+.rk-sema { display: block; width: 100%; max-width: 360px; height: auto; }
+.rk-yol { fill: none; stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round; }
+.rk-yol.sag { stroke: var(--right); } .rk-yol.sol { stroke: var(--left); }
+.rk-yol.ip { stroke-dasharray: 1 4; stroke-width: 2.6; }
+.rk-yol.yok, .rk-yol.bos { stroke: var(--muted); stroke-dasharray: 6 5; stroke-width: 1.6; opacity: .55; }
+.rk-yol.bos { opacity: .25; }
+.rk-vurgu { fill: none; stroke: var(--rk-aday-cizgi); stroke-width: 6; stroke-linecap: round; opacity: .55; }
+.rk-dugum rect { fill: var(--surface); stroke: var(--line); stroke-width: 1.2; }
+.rk-dugum text { font-size: 10.5px; fill: var(--ink); font-family: var(--font-body, inherit); }
+.rk-dugum.aday rect { fill: var(--rk-aday); stroke: var(--rk-aday-cizgi); stroke-width: 2.4; }
+.rk-dugum.aday text { font-weight: 700; }
+.rk-taraf { font-size: 11px; font-weight: 600; }
+.rk-taraf.sag { fill: var(--right); } .rk-taraf.sol { fill: var(--left); }
 
 /* Görünüm değişince altta 1,5 sn görünen kısa yazı (gorunum.js) */
 .gorunum-yazi { position: fixed; left: 50%; bottom: calc(100px + env(safe-area-inset-bottom, 0px)); z-index: 30; transform: translate(-50%, 8px); max-width: calc(100% - 32px); padding: 10px 16px; border-radius: 999px; background: var(--ink); color: var(--bg); font-size: 14px; font-weight: 500; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity .2s ease, transform .2s ease; }

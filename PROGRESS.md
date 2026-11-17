@@ -1,3 +1,16 @@
+# PROGRESS — OdyoBOT: akustik refleks örüntüsü yorumu (2026-11-17, dal `refleks-yorum`, sw v32, yayında değil)
+
+Proje sahibinin isteği: refleks sonucuna göre olası bölge OdyoBOT asistanında, şemada gösterilsin; tablo internetten doğrulansın.
+
+- **Kurallar:** `refleks-kural.js` (ekrandan bağımsız). Tek bir bölgedeki bozukluğun beklenen örüntüsü ölçülen örüntüyle birebir karşılaştırılır (Jerger ve Jerger 1977, Clark "Acoustic (stapedius) reflexes" Tablo 1): dikey (prob kulağı: hafif orta kulak ya da 7. sinir), çapraz (uyaran kulağı: koklea/8. sinir/koklear çekirdek — ayırt edilmez), ters L (belirgin orta kulak ya da bir yana yakın beyin sapı), yatay (beyin sapı orta hat), tek kutu (bir taraftan karşıya geçen yol). Hepsi yok / tanımsız örüntü / eksik yol ayrı mesaj.
+- **Çapraz kontrol (vaka verisi):** orta kulak adayında timpanogram tipi ve ABG; afferent adayda uyaran kulağının hava yolu eşiği (ders slaytı 22: ≥80 açıklayabilir, 50–79 refleks eşiği yükselmiş olabilir, <50 açıklamaz → ABR).
+- Yalnızca "Yok" girilen yol yok sayılır (bir yolda girilen frekansların hepsi yok); yükselmiş eşik "var" (norm yok). Kısmi "yok" frekanslar ayrıca yazılır.
+- **Ekran:** OdyoBOT'ta refleksi girilmiş vakada "Akustik refleks örüntüsünü yorumla" seçeneği; sade refleks arkı şeması (`rkSema`: renk uyaran kulağı, noktalı ipsi, düz kontra, yok yollar gri kesikli, olası bölge turuncu `--rk-aday`). Bütün metinler `#b-metinler` (`rk*`), yönetici düzenler. "Tanı koymaz" notu ve kaynak satırı her yorumda.
+- Test: `testler/refleks-test.js` 24/24; ekran t-rk.js 20/20 (açık/koyu, 360 px). Diğer testler temiz.
+- Proje sahibi onaylarsa main'e birleştirilip yayınlanır.
+
+---
+
 # PROGRESS — Yol haritası 2. adım: Vakalarım'a yeni testler (2026-11-17, onaylandı, YAYINDA)
 
 Dal: `adim2-testler` (`adim1-tasarim` + v29 bildirim değişikliği üstüne). sw **v30**. **Yayında (2026-11-17, main 22e0812). Önceki yayın yedeği: git etiketi `yedek-yayin-v28`.** Canlı kontrol: ana sayfa, notlar, vaka formundaki 5 panel, konsol temiz.
