@@ -239,13 +239,12 @@ nav.tabs a:active { background: color-mix(in srgb, var(--accent) 16%, transparen
 nav.tabs a svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 nav.tabs a[aria-current="page"] { color: var(--accent); }
 nav.tabs a:focus-visible { outline: 3px solid var(--accent); outline-offset: -3px; }
-/* Ortadaki OdyoBOT: logo (~66 px) çubuğun üstüne taşar; daire, halka ve gölge yok (2026-11-17).
-   Logonun arkasında, çubuğun üstünde kalan kısımda sayfa zemini renginde yarım daire: kaydırılan içerik logonun arkasından görünmez. */
+/* Ortadaki OdyoBOT: logo (56 px) çubuğun üstüne biraz taşar; daire, halka, gölge ve arkada yarım daire yok
+   (2026-11-17: proje sahibi arkadaki yarım daireyi "çıkıntı" olarak görüp beğenmedi, logoyu büyük buldu; 66 px → 56 px). */
 nav.tabs a.bot { color: var(--ink); justify-content: flex-end; padding-top: 0; position: relative; overflow: visible; }
-nav.tabs a.bot::before { content: ""; position: absolute; left: 50%; top: -34px; width: 76px; height: 34px; margin-left: -38px; border-radius: 38px 38px 0 0; background: var(--bg); pointer-events: none; }
 nav.tabs a.bot:active { background: none; }
-nav.tabs a.bot .bot-logo { position: absolute; left: 50%; top: -30px; width: 66px; height: 66px; margin-left: -33px; transition: transform .15s ease; }
-nav.tabs a.bot .bot-logo img { display: block; width: 66px; height: 66px; }
+nav.tabs a.bot .bot-logo { position: absolute; left: 50%; top: -22px; width: 56px; height: 56px; margin-left: -28px; transition: transform .15s ease; }
+nav.tabs a.bot .bot-logo img { display: block; width: 56px; height: 56px; }
 nav.tabs a.bot:active .bot-logo { transform: scale(.94); }
 nav.tabs a.bot .bot-ad { position: relative; }
 /* Seçiliyken sade işaret: yazı ana renge döner, altında kısa çizgi */
