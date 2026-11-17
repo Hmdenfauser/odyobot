@@ -51,6 +51,12 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 - Alt çubuk sırası: Ana sayfa, Görsel depo, OdyoBOT, Vakalarım, Notlar.
 - Odyogram çıktısı (`cikti.js`), Vakalarım → OdyoBOT gönderme, düğmeli sohbet (`odybot.js`). sw v12. Ayrıntı: `PROGRESS.md`.
 
+### YOL HARİTASI (2026-11-17): önce `YOL-HARITASI.md`'ye bak
+- Proje sahibi 5 adımlı yol haritası verdi (`YOL-HARITASI.md`). **Yalnızca sıradaki adım yapılır**, "sıradaki adıma geç" denmeden yenisine başlanmaz. Her adım ayrı dalda; **main'e birleştirme ve yayın yalnızca onayla.**
+- **1. adım (tasarım yenilemesi) yapıldı, dal `adim1-tasarim`, sw v26, yayında DEĞİL.** Proje sahibinin önizlemesi ve onayı bekleniyor. Ayrıntı ve testler: `PROGRESS.md` en üst bölüm.
+- 1. adımdaki yeni yapı (özet): logo teması varsayılan (yönetici seçimi `ayar/renk`); alt çubukta saydam logo `icons/odyobot-logo-seffaf.png`; ana sayfa: üst satır, arama, hızlı erişim, 3D kartı, Kaldığın yerden, Favori notlar, Duyurular (tam liste `#duyurular`); notlar konu gruplarında, her notun sayfası `#not/<anahtar>`; cihazlar iki sütun; alt sayfalarda yalnızca geri oku + sayfa adı; vaka formunda eşik tablosu.
+- Onaydan sonra: main'e birleştir, `git push`, CLAUDE.md §3 tablosunu yeni yapıya göre güncelle, `YOL-HARITASI.md`'de 1. adımı ✅ yap.
+
 ### Sonraki oturumda proje sahibine hatırlat (2026-11-15 gece kaydedildi)
 **Durum:** her şey yayında (son sürüm **sw v25**), bekleyen kod değişikliği yok, çalışma klasörü temiz. Proje sahibi 3D kepçe–kanal onarımını görüp "her şey iyi görünüyor" dedi (2026-11-15).
 Bugün yapılanlar (2026-11-15): v21 Görsel depo yeniden düzeni + yeni cihaz görselleri, rozetler, tam ekran görüntüleyici, 3D ayrı sayfa; v22 Şemalar / İşitme cihazları / İşitsel implantlar, yenidoğan taraması akış şemaları, 6 düzeltilmiş görsel, küçük 3D düğmesi; v23 açılışta en alta kayma düzeltildi (`odybot.js` `asagi()`), herkese açık Ayarlar (tema, dil, yönetici girişi), dişlinin altında 3D; v24–v25 3D modelde kepçe–kanal birleşimi dikişsiz yeniden çizildi (ayrıntı PROGRESS.md, yedek `ham-gorseller/yedek-3d-v23/`).
@@ -149,10 +155,10 @@ Uygulama bir **PWA**: tarayıcıdan ana ekrana eklenebilen ve internetsiz de aç
 | Firestore | `notlar` | Herkes okur, yalnızca admin yazar | `baslik` (≤100), `maddeler` (metin listesi, ≤40), `olusturma` |
 | Firestore | `cihazlar/{cihaz kimliği}` | Herkes okur, yalnızca admin yazar | `maddeler` (metin listesi, 1–20), `guncelleme`. Kişisel veri değil. |
 | Firestore | `icerik/{anahtar}` | Herkes okur, yalnızca admin yazar | `alanlar` (yalnızca değiştirilen alanlar: alan → metin, ≤20), `guncelleme`. Anahtarlar: `yolak.<id>`, `refleks.<id>`, `not.<sıra>`, `cihaz.<id>`, `metin.<data-k>`, `g3d.bolum.<id>`, `g3d.yapi.<id>`, `g3d.kepce` (ad, aciklama), `g3d.metin` (ipucu, not), `cihaz.rozet` (ameliyatsiz, ameliyatli, arastirma). `cihaz.<id>` alanları: ad, alt, gorselAlt. Silinirse koddaki varsayılan metin döner. |
-| Firestore | `ayar/tema` | Herkes okur, yalnızca admin yazar | `id` (tema adı), `guncelleme` |
+| Firestore | `ayar/renk` (adim1-tasarim dalından itibaren; eski sürüm `ayar/tema` okur) | Herkes okur, yalnızca admin yazar | `id` (tema adı), `guncelleme`. Belge yoksa varsayılan "logo" teması. |
 | Cihaz (localStorage, anahtar `odybot:vakalar`) | vakalar (Vakalarım) | Yalnızca o cihaz | `id`, `surum`, `kimlik` (≤40, ad-soyad değil), `tarih`, `notlar` (≤2000), `olusturma`, `guncelleme`, `esik.{sag,sol}.{hava,kemik}.{Hz}` = `{db (-10..120 tam sayı), maskeli, maskDb, nr}` (boş frekans yazılmaz), `konusma.{sag,sol}` = `{srt, sds (0..100), sunum, maskeli}`, `mcl.{sag,sol}`, `ucl.{sag,sol}`, `weber` (orta/sag/sol/yapilmadi), `rinne.{sag,sol}` (pozitif/negatif/yapilmadi). Eski kayıtlardaki `etiket`/`not` okunurken taşınır. |
 | Cihaz (sessionStorage) | `odybot:gonderilen` | Yalnızca o sekme | Vakalarım'dan OdyoBOT'a gönderilen vaka kimlikleri (değer değil); bot okuyunca siler |
-| Cihaz (localStorage) | ayarlar | Yalnızca o cihaz | `odybot:gorunum` (light/dark; yoksa otomatik), `odybot:ptaTur` (3/4), `odybot:grafik` (tek/ayri), `odybot:araFrekans`, `odybot:yedekSayac`, `odybot:hatirlatmaKapali` |
+| Cihaz (localStorage) | ayarlar | Yalnızca o cihaz | `odybot:gorunum` (light/dark; yoksa otomatik), `odybot:ptaTur` (3/4), `odybot:grafik` (tek/ayri), `odybot:araFrekans`, `odybot:yedekSayac`, `odybot:hatirlatmaKapali`; 1. adımla: `odybot:favoriNotlar` (not anahtarları), `odybot:sonNot`, `odybot:sonVaka` (yalnızca vaka kimliği), `odybot:sonZiyaret` (zaman, "yeni" rozeti için) |
 
 - 8 temel ders notu veri deposunda değil, kodun içinde (`app.js`, `NOTES` dizisi).
 - Firestore'un çevrimdışı önbelleği açık (`enablePersistence`). İnternet yokken son indirilen ilan ve notlar gösteriliyor.
@@ -178,9 +184,9 @@ Uygulama bir **PWA**: tarayıcıdan ana ekrana eklenebilen ve internetsiz de aç
 
 ## 6. Tasarım kuralları
 - Görünüm sade, klinik ve okunaklı olacak.
-- Yazı tipleri: başlıklarda **Bricolage Grotesque**, metinde **IBM Plex Sans**, etiket, saat ve verilerde **IBM Plex Mono**.
-- Ana renk petrol mavisi-yeşili, OdyoBot yuvarlağı turuncu. Açık ve koyu tema desteklenecek.
-- Uygulama logosu (mavi-turkuaz, kulak + robot) ana ekran simgesi olarak kullanılır. OdyoBot düğmesinde turuncu yuvarlağın içinde, beyaz daire üzerinde durur (2026-11-09 kararı).
+- Yazı tipleri: başlıklarda **Bricolage Grotesque**, metinde **IBM Plex Sans**, sayı ve verilerde **IBM Plex Mono**. Etiketler (form alanı adları, "Tarih", "Bölüm" gibi) büyük harfli daktilo değil, normal yazı tipi ve normal harf (2026-11-17 kararı).
+- Varsayılan tema "Logo" (2026-11-17): açıkta ana #1560B0, ikinci #17B6C8, 3D kartı #0F4C97; koyuda ana #6DB7F2, ikinci #3DCADA, 3D kartı #123E7A. Diğer 5 tema seçilebilir. Açık ve koyu tema desteklenir.
+- Uygulama logosu (mavi-turkuaz, kulak + robot) ana ekran simgesi olarak kullanılır. Alt çubukta saydam logo (`icons/odyobot-logo-seffaf.png`, ~66 px) çubuğun üstüne taşar; daire/halka/gölge yok (2026-11-17 kararı; eski turuncu yuvarlak kaldırıldı).
 - Renkler her zaman isimli değişkenlerle (CSS değişkenleri) tanımlanacak, koda doğrudan renk kodu yazılmayacak.
 - **Odyogram kuralı (bütün şemalarda geçerli):** sağ kulak kırmızı, sol kulak mavi, karşıya geçiş kesik gri çizgi.
   - Odyogram (Vakalarım, 2026-11-09 kararı): hava yolu noktaları düz, kemik yolu noktaları kesikli çizgiyle birleşir; iki kulakta da aynı, renk kulağı gösterir (sağ kırmızı, sol mavi). Boş ana frekansta çizgi kopar, NR noktası çizgiye bağlanmaz.

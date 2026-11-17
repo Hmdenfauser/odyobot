@@ -713,7 +713,8 @@
     if (t === 'anasayfa') anaCiz();
     gorunen = t;
     document.querySelectorAll('section[data-tab]').forEach(function (s) { s.hidden = s.id !== t; });
-    if (sonra) setTimeout(sonra, 0);
+    // Sayfa ilk açılırken diğer dosyalar (vakalarim.js, akis.js) henüz yüklenmemiş olabilir: onlar yüklenince çalıştır.
+    if (sonra) { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', sonra); else setTimeout(sonra, 0); }
     var navT = UST_SEKME[t] || t;
     document.querySelectorAll('nav.tabs a').forEach(function (a) {
       if (a.getAttribute('data-go') === navT) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
@@ -776,6 +777,10 @@
       l.push({ tur: d.grup === 'implant' ? AM('araTurImplant') : AM('araTurCihaz'), ad: d.ad, metin: d.alt + ' ' + d.gorselAlt, git: '#depo/cihaz/' + d.id });
     });
     var sema = AM('araTurSema') + ' · ';
+    // Bölümlerin kendisi (şemalar ve cihaz panelleri)
+    [['alt-yolak', '#depo/yolak/' + sel], ['alt-refleks', '#depo/refleks/' + rsel], ['alt-tarama', '#depo/tarama/' + TA.sec], ['seg-isitme', '#depo/isitme'], ['seg-implant', '#depo/implant']].forEach(function (x) {
+      l.push({ tur: $('depo').querySelector('h2').textContent, ad: $(x[0]).textContent, metin: '', git: x[1] });
+    });
     NODES.forEach(function (n) { l.push({ tur: sema + $('alt-yolak').textContent, ad: n.label, metin: n.latin + ' ' + n.bolge + ' ' + n.yer, git: '#depo/yolak/' + n.id }); });
     RNODES.forEach(function (n) { l.push({ tur: sema + $('alt-refleks').textContent, ad: n.title, metin: n.latin + ' ' + n.label.join(' '), git: '#depo/refleks/' + n.id }); });
     Object.keys(TNODES).forEach(function (id) { var n = TNODES[id]; l.push({ tur: sema + $('alt-tarama').textContent, ad: n.baslik, metin: n.aciklama, git: '#depo/tarama/' + id }); });
@@ -785,7 +790,7 @@
     var q = araNormal($('ana-ara').value), kutu = $('ana-ara-sonuc');
     if (!q) { kutu.hidden = true; kutu.replaceChildren(); return; }
     var puanli = araListe().map(function (x) {
-      var ad = araNormal(x.ad), p = ad.indexOf(q) === 0 ? 3 : ad.indexOf(q) !== -1 ? 2 : araNormal(x.metin).indexOf(q) !== -1 ? 1 : 0;
+      var ad = araNormal(x.ad), p = ad.indexOf(q) === 0 ? 3 : ad.indexOf(q) !== -1 ? 2 : araNormal(x.tur + ' ' + x.metin).indexOf(q) !== -1 ? 1 : 0;
       return { x: x, p: p };
     }).filter(function (o) { return o.p; });
     puanli.sort(function (a, b) { return b.p - a.p; });

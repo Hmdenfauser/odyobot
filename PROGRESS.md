@@ -1,3 +1,37 @@
+# PROGRESS — Yol haritası 1. adım: tasarım yenilemesi (2026-11-17)
+
+Yol haritası: `YOL-HARITASI.md`. Dal: `adim1-tasarim` (**main'e birleştirilmedi, yayında değil**; proje sahibinin önizleme onayı bekleniyor). sw **v26**.
+
+| Bölüm | Durum | Not |
+|---|---|---|
+| A) Renkler | ✅ | `PALETTES.logo` varsayılan (`ai`: ana renk üstü yazı, `k`: 3D kartı zemini). Yönetici seçimi artık `ayar/renk` belgesinde; eski `ayar/tema`'da "petrol" kayıtlıydı ve yeni varsayılanı ezecekti. Eski belge yalnızca canlıdaki eski sürüm için kalıyor. firestore.rules değişmedi (`ayar/{id}` zaten herkes okur, yönetici yazar). |
+| B) Alt çubuk, logo | ✅ | Kaynak `ham-gorseller/logo/OdyoBOT.jpg`'den yeniden temizlendi: renkli alan maskesi → 30 px kapatma (iç beyazlar korunur) → pürüz yumuşatma → 8 px düzgün beyaz kenar → 264 px PNG `icons/odyobot-logo-seffaf.png`. Fable'ın dosyası, 512 px kopya ve betik: `ham-gorseller/yedek-logo-2026-11-17/`. PWA simgeleri ve `icons/logo.png` değişmedi. Logonun arkasında, çubuğun üstünde sayfa zemini renginde yarım daire (içerik arkadan görünmez). Seçili OdyoBOT: yazı ana renk + altında kısa çizgi. |
+| C) Ana sayfa | ✅ | Üst satır, arama (`araListe`/`araCiz`, Türkçe harf farkı gözetmez), hızlı erişim, büyük 3D kartı (`images/3d-onizleme.jpg`, modelin ekran görüntüsü), Kaldığın yerden, Favori notlar, Duyurular (akis.js `anaListeCiz`: süresi geçmemiş en yeni 5 kayıt; "Yeni" rozeti `odybot:sonZiyaret`). Tam liste ve yönetici formu yeni alt sayfada `#duyurular`. Ana sayfa yazıları `#ana-metinler` (yönetici). |
+| D) Cihazlar | ✅ | İki sütun; geniş kart ve düzenlenen kart tam genişlik. İşitme cihazlarında rozet yok (implantlarda var). Sayfa başı açıklamalar kaldırıldı; `cihaz.temsili` notu sonda. |
+| E) Ders notları | ✅ | `NOT_GRUPLARI` + `GRUP_AD` (yönetici düzenler: `icerik/not.gruplar`). Not sayfası `#not/<anahtar>` (koddaki `not.<sıra>`, eklenen `nd.<belge>`). |
+| F) Genel düzen | ✅ | `.alt-bas` (geri oku + sayfa adı): vaka formu/ayrıntısı, not sayfası, 3D, Duyurular, Ayarlar, Yönetici girişi. Büyük harfli daktilo etiketler normal yazıya çevrildi (`.fld label`, `dt`, `.kicker`, `.etiket`, `.fld-ad`, `.og-baslik`, `.tag`, `.rozet`, 3D `.g3d-baslik`). Sayı/veri yazıları (dB, frekans başlıkları, etkinlik tarihi) daktiloda kaldı. |
+| G) Eşik tablosu | ✅ | Kulak başına tablo (`hucreOlustur`), Maskeli / Yanıt yok / Sonraki, maskeleme düzeyi tek kutuda (seçili maskeli hücre). Kayıt biçimi aynı. Sembol açıklaması `<details>` içinde, kapalı. |
+
+## Yeni adresler
+`#duyurular`, `#duyurular/yeni` (yönetici formu açar), `#not/<anahtar>`, `#depo/isitme|implant|sema`, `#depo/yolak|refleks|tarama/<id>`, `#depo/cihaz/<id>`, `#vakalarim/yeni`, `#vakalarim/v/<vaka kimliği>`. Derin bağlantılar işini yapıp adresi sade hâline çevirir. Sayfa ilk açılırken eylem `DOMContentLoaded` sonrasına bırakılır (yoksa vakalarim.js henüz yüklenmemiş oluyordu).
+
+## Yeni cihaz içi anahtarlar (localStorage; kişisel veri değil)
+`odybot:favoriNotlar` (not anahtarları), `odybot:sonNot` (not anahtarı), `odybot:sonVaka` (yalnızca vaka kimliği, değerler değil), `odybot:sonZiyaret` (zaman).
+
+## Test (yerel, sahte Firebase + Edge görünmez; betikler geçici klasörde: server.js, sahte-firebase.js, cdp.js, t-ana/t-etk/t-yon/t-tablo/t-hrk/t-cevrimdisi.js)
+- 360 ve 400 px, açık/koyu: ana sayfa, notlar, not sayfası, cihazlar, implantlar, şemalar, vaka formu, duyurular, 3D, OdyoBOT, Ayarlar. Yatay kaydırma yok; 44 px altı hedef yalnızca 44 px'lik etiketin içindeki onay kutuları ve metin içi bağlantı.
+- Etkileşim 37/37: arama (not, cihaz, şema, Türkçe harfsiz), hızlı erişim, favori, kaldığın yer, eski kaydın tabloda açılması (M, NR, ara frekans, maskeleme düzeyi) ve değiştirmeden kaydedince eşiklerin aynı kalması, yeni vaka (Sonraki, Maskeli + düzey, NR, aralık dışı uyarı, kayıt), geri okları, duyuru ayrıntısı.
+- Yönetici 16/16: ana sayfa yazılarını düzenleme, `#duyurular/yeni`, haber paylaşma, ayrıntıdan Düzenle, grup adları, not düzenleme, tema (Logo varsayılan, `ayar/renk`), cihaz kartını düzenlerken tam genişlik.
+- Eşik tablosu 360 px'te ana frekanslar kaydırmasız sığıyor (hücre 44×48); ara frekanslarla yana kayıyor, satır adları sabit.
+- Hareket azaltma açıkken 3D kartında animasyon yok. İnternetsiz açılış (v26, 57 dosya). Konsolda hata yok. Maskeleme testleri 27/27.
+- Test sırasında görülen ve düzeltilen: hücre seçimi yalnız odaklanmaya bağlıydı (dokunma/yazma da seçiyor); 3D kartının dört düzenleme düğmesi aynı yazıyı taşıyordu (`data-etiket`); "Kaldığın yerden" kartında 360 px'te kelime bölünüyordu.
+
+## Proje sahibine bildirilecek
+- Not grubu adları (Temel odyometri, İmmitansmetri, Elektrofizyoloji) referans görseldeki örneklerden alındı. OAE'nin "Elektrofizyoloji" altında olması tartışılabilir; uygulamadan değiştirilebilir.
+- Önizleme sonrası onay → main'e birleştirme ve yayın.
+
+---
+
 # PROGRESS — Vakalarım sekmesi
 
 Yeni oturumda: "PROGRESS.md'ye bak, devam et". Onaylı plan: `C:\Users\Hmd\.claude\plans\nerede-kalm-t-k-twinkly-dragon.md`.

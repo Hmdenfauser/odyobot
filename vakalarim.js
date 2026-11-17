@@ -347,8 +347,10 @@
     var isaret = h('span', { 'class': 'hucre-isaret', 'aria-hidden': 'true' });
     var td = h('td', { 'class': 'hucre' + (araMi(f) ? ' ara' : '') }, [giris, isaret]);
     var a = { giris: giris, td: td, isaret: isaret, ad: ad, maskeli: false, nr: false, maskMetin: '', hata: '', k: k, y: y, f: f };
-    giris.addEventListener('focus', function () { hucreSec(a); });
-    giris.addEventListener('input', function () { alanDogrula(a); formDegisti = true; formdanCiz(); araclariCiz(); });
+    // Hücre odaklanınca, dokununca ya da yazılınca seçili olur.
+    giris.addEventListener('focus', function () { if (secili !== a) hucreSec(a); });
+    giris.addEventListener('pointerdown', function () { if (secili !== a) hucreSec(a); });
+    giris.addEventListener('input', function () { if (secili !== a) hucreSec(a); alanDogrula(a); formDegisti = true; formdanCiz(); araclariCiz(); });
     giris.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); sonraki(); } });
     alanlar[k][y][f] = a;
     return td;
@@ -419,6 +421,7 @@
     if (i >= l.length) { if (y === 'hava') { y = 'kemik'; i = 0; } else i = l.length - 1; }
     var b = alanlar[seciliKulak][y][l[i]];
     b.giris.focus();
+    if (secili !== b) hucreSec(b);
     try { b.td.scrollIntoView({ block: 'nearest', inline: 'nearest' }); } catch (e) {}
   }
   $('v-sonraki').addEventListener('click', sonraki);

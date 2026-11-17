@@ -52,19 +52,19 @@
 
       <!-- 3. Hızlı erişim -->
       <nav class="hizli" aria-label="Hızlı erişim">
-        <a href="#vakalarim/yeni"><span class="hizli-ik"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2.500"/><path d="M12 8.500v7M8.500 12h7"/></svg></span><span data-k="ana.hizli.vaka">Yeni vaka</span></a>
-        <a href="#odybot"><span class="hizli-ik"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3.500" y="14" width="4" height="6" rx="1.500"/><rect x="16.500" y="14" width="4" height="6" rx="1.500"/></svg></span><span data-k="ana.hizli.maske">Maskeleme asistanı</span></a>
-        <a href="#notlar"><span class="hizli-ik"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h10a2 2 0 0 1 2 2v14H8a2 2 0 0 1-2-2V4z"/><path d="M6 18a2 2 0 0 1 2-2h10"/><path d="M10 8h5"/></svg></span><span data-k="ana.hizli.not">Ders notları</span></a>
-        <a href="#depo/isitme"><span class="hizli-ik"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 9a4 4 0 1 1 8 0c0 2.200-1.500 3.200-2.500 4.200-1 1-1 2.300-1.500 3.300a2.500 2.500 0 0 1-4.500-.500"/><path d="M11 9.500a1.500 1.500 0 1 1 2.500 1"/></svg></span><span data-k="ana.hizli.cihaz">Cihazlar</span></a>
+        <a href="#vakalarim/yeni"><span class="hizli-ik"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2.500"/><path d="M12 8.500v7M8.500 12h7"/></svg></span><span data-k="ana.hizli.vaka" data-etiket="Hızlı erişim: Yeni vaka yazısını düzenle">Yeni vaka</span></a>
+        <a href="#odybot"><span class="hizli-ik"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3.500" y="14" width="4" height="6" rx="1.500"/><rect x="16.500" y="14" width="4" height="6" rx="1.500"/></svg></span><span data-k="ana.hizli.maske" data-etiket="Hızlı erişim: Maskeleme asistanı yazısını düzenle">Maskeleme asistanı</span></a>
+        <a href="#notlar"><span class="hizli-ik"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h10a2 2 0 0 1 2 2v14H8a2 2 0 0 1-2-2V4z"/><path d="M6 18a2 2 0 0 1 2-2h10"/><path d="M10 8h5"/></svg></span><span data-k="ana.hizli.not" data-etiket="Hızlı erişim: Ders notları yazısını düzenle">Ders notları</span></a>
+        <a href="#depo/isitme"><span class="hizli-ik"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 9a4 4 0 1 1 8 0c0 2.200-1.500 3.200-2.500 4.200-1 1-1 2.300-1.500 3.300a2.500 2.500 0 0 1-4.500-.500"/><path d="M11 9.500a1.500 1.500 0 1 1 2.500 1"/></svg></span><span data-k="ana.hizli.cihaz" data-etiket="Hızlı erişim: Cihazlar yazısını düzenle">Cihazlar</span></a>
       </nav>
 
       <!-- 4. 3D kartı (parıltı ve ışıma halkası: hareket azaltma kapalıysa) -->
       <a class="kart3d" href="#3d" id="kart3d">
         <span class="kart3d-sol">
-          <span class="kart3d-etiket" data-k="ana.3d.etiket">Yeni</span>
-          <span class="kart3d-baslik" data-k="ana.3d.kartBaslik">3D kulak modeli</span>
-          <span class="kart3d-alt" data-k="ana.3d.kartAlt">Dış kulaktan iç kulağa döndür, yapılara dokun</span>
-          <span class="kart3d-dugme"><span data-k="ana.3d.incele">İncele</span> <span aria-hidden="true">→</span></span>
+          <span class="kart3d-etiket" data-k="ana.3d.etiket" data-etiket="3D kartı: etiketi düzenle">Yeni</span>
+          <span class="kart3d-baslik" data-k="ana.3d.kartBaslik" data-etiket="3D kartı: başlığı düzenle">3D kulak modeli</span>
+          <span class="kart3d-alt" data-k="ana.3d.kartAlt" data-etiket="3D kartı: açıklamayı düzenle">Dış kulaktan iç kulağa döndür, yapılara dokun</span>
+          <span class="kart3d-dugme"><span data-k="ana.3d.incele" data-etiket="3D kartı: düğme yazısını düzenle">İncele</span> <span aria-hidden="true">→</span></span>
         </span>
         <span class="kart3d-resim"><img src="images/3d-onizleme.jpg" width="330" height="365" alt=""></span>
       </a>
@@ -77,15 +77,15 @@
 
       <!-- 6. Favori notlar (yıldızlar yalnızca bu cihazda; yoksa gizli) -->
       <div class="stack ana-bolum" id="ana-favori" hidden>
-        <div class="row bolum-bas"><h2 data-k="ana.favori.baslik">Favori notlar</h2><a class="linkbtn bolum-link" href="#notlar" data-k="ana.favori.tumu">Tüm notlar</a></div>
+        <div class="row bolum-bas"><h2 data-k="ana.favori.baslik">Favori notlar</h2><a class="linkbtn bolum-link" href="#notlar" data-k="ana.favori.tumu" data-etiket=""Tüm notlar" bağlantısını düzenle">Tüm notlar</a></div>
         <div class="favori-cipler" id="ana-favori-cipler"></div>
       </div>
 
       <!-- 7. Duyurular: etkinlik, iş ilanı ve haber tek listede (akis.js). "Tümünü gör" süzgeçli tam listeyi açar (#duyurular). -->
       <div class="stack ana-bolum" id="ana-duyuru">
-        <div class="row bolum-bas"><h2 data-k="ana.duyuru.baslik">Duyurular</h2><a class="linkbtn bolum-link" href="#duyurular" data-k="ana.duyuru.tumu">Tümünü gör</a></div>
+        <div class="row bolum-bas"><h2 data-k="ana.duyuru.baslik">Duyurular</h2><a class="linkbtn bolum-link" href="#duyurular" data-k="ana.duyuru.tumu" data-etiket=""Tümünü gör" bağlantısını düzenle">Tümünü gör</a></div>
         <div id="ana-duyuru-liste" aria-live="polite"><div class="empty">Yükleniyor…</div></div>
-        <a class="btn yonetici-yalniz" href="#duyurular/yeni" data-k="ana.duyuru.yeni">Yeni paylaşım ekle</a>
+        <a class="btn yonetici-yalniz" href="#duyurular/yeni" data-k="ana.duyuru.yeni" data-etiket=""Yeni paylaşım ekle" yazısını düzenle">Yeni paylaşım ekle</a>
       </div>
 
       <!-- Ana sayfa kartlarının ve aramanın yazıları: yalnızca yöneticiye görünür, buradan düzenlenir. -->
@@ -191,7 +191,7 @@
   <section id="uc-boyut" data-tab hidden>
     <div class="stack">
       <div class="alt-bas">
-        <button type="button" class="geri-ok" id="uc-geri"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="gizli-yazi">Geri: <span data-k="g3d.sayfa.geri">Ana sayfa</span></span></button>
+        <button type="button" class="geri-ok" id="uc-geri"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="gizli-yazi">Geri: <span data-k="g3d.sayfa.geri" data-etiket="3D sayfası: geri okunun ekran okuyucu yazısını düzenle">Ana sayfa</span></span></button>
         <h2 data-k="g3d.sayfa.baslik2">3D kulak modeli</h2>
       </div>
       <div id="g3d-kok"></div>
