@@ -218,9 +218,23 @@
           g.removeAttribute('role'); g.removeAttribute('aria-label');
           g.setAttribute('x', (GEN - gw) / 2); g.setAttribute('y', y); g.setAttribute('width', gw); g.setAttribute('height', gh);
           kok.appendChild(g); y += gh + 14;
-          yazi(KENAR, y, m.not(), 'kucuk'); y += 24;
+          satirKir(m.not(), "11.5px 'IBM Plex Sans', sans-serif", ic).forEach(function (l) { yazi(KENAR, y, l, 'kucuk'); y += 16; }); y += 8;
         } else y += 8;
         var d1 = KENAR, d2 = KENAR + 260, d3 = KENAR + 470;
+        if (m.sutunlar) {
+          // Sütunlu tablo (ör. refleks: 500, 1000, 2000, 4000 Hz)
+          var sut = m.sutunlar(), x0 = KENAR + 200, adim = (GEN - KENAR - x0) / sut.length;
+          yazi(d1, y, 'Hz', 'mono kucuk');
+          sut.forEach(function (sv, si) { yazi(x0 + si * adim, y, sv, 'mono kucuk'); });
+          y += 20;
+          st.forEach(function (sr) {
+            yazi(d1, y, sr[0], 'etiket');
+            sr.slice(1).forEach(function (cv, si) { yazi(x0 + si * adim, y, cv, 'deger'); });
+            y += 20;
+          });
+          if (!g && m.not && m.not()) { y += 4; satirKir(m.not(), "11.5px 'IBM Plex Sans', sans-serif", ic).forEach(function (l) { yazi(KENAR, y, l, 'kucuk'); y += 16; }); }
+          return;
+        }
         yazi(d2, y, 'SAĞ', 'mono kulak-sag', { 'font-size': '12px' });
         yazi(d3, y, 'SOL', 'mono kulak-sol', { 'font-size': '12px' });
         y += 20;

@@ -689,6 +689,16 @@
             </div>
           </details>
 
+          <!-- 2. adım: akustik refleks (vaka-testler.js tabloları çizer). Kulak adı uyaranın verildiği kulaktır. -->
+          <details class="compose ek-olcum" id="v-refleks">
+            <summary data-k="vakalarim.rBaslik">Akustik refleks (isteğe bağlı)</summary>
+            <div class="yedek-ic">
+              <p class="note" data-k="vakalarim.rFormNot">Her hücreden eşiği (dB, 5'er) ya da "Yok" seçeneğini seç. Kulak adı uyaranın verildiği kulaktır: sağ kontra = uyaran sağ kulakta, prob sol kulakta.</p>
+              <div class="ek-kulak sag"><h4 data-k="vakalarim.rSag">Uyaran sağ kulakta</h4><div class="r-blok" data-kulak="sag"></div></div>
+              <div class="ek-kulak sol"><h4 data-k="vakalarim.rSol">Uyaran sol kulakta</h4><div class="r-blok" data-kulak="sol"></div></div>
+            </div>
+          </details>
+
           <div class="fld"><label for="v-notlar" data-k="vakalarim.notlarEtiket">Notlar</label><textarea id="v-notlar" maxlength="2000"></textarea></div>
           <div class="admin-bar">
             <button class="btn primary" type="submit" id="v-kaydet">Kaydet</button>
@@ -711,11 +721,17 @@
       </details>
       <!-- Ek test yazıları (vaka-testler.js çizimlerde kullanır): yalnızca yöneticiye görünür, buradan düzenlenir. -->
       <details class="compose b-metinler" id="vt-metinler">
-        <summary>Timpanogram yazıları (yönetici)</summary>
+        <summary>Timpanometri ve refleks yazıları (yönetici)</summary>
         <div class="yedek-ic">
           <p data-k="vakalarim.t.baslik" data-m="baslik">Timpanogram</p>
           <p data-k="vakalarim.t.uretilmis" data-m="uretilmis">Girilen değerlerden üretilmiş çizimdir, cihaz kaydı değildir.</p>
           <p data-k="vakalarim.t.duz" data-m="duz">tepe yok</p>
+          <p data-k="vakalarim.t.tipKural" data-m="tipKural">Tip: A kompliyans 0,35–1,30 ml ve tepe −100 ile +50 daPa; As 0,35 ml altı; Ad 1,30 ml üstü; C tepe −100 daPa altı; B tepe yok. Tepe +50 daPa üstündeyse sınıflanmaz. Sınırlar kaynağa ve yaşa göre değişebilir; otomatik değerlendirmedir.</p>
+          <p data-k="vakalarim.r.baslik" data-m="rBaslik">Akustik refleks</p>
+          <p data-k="vakalarim.r.ipsi" data-m="rIpsi">İpsi</p>
+          <p data-k="vakalarim.r.kontra" data-m="rKontra">Kontra</p>
+          <p data-k="vakalarim.r.yok" data-m="rYok">Yok</p>
+          <p data-k="vakalarim.r.not" data-m="rNot">Eşikler dB. Kulak adı uyaranın verildiği kulaktır (sağ kontra: uyaran sağda, prob solda).</p>
         </div>
       </details>
     </div>

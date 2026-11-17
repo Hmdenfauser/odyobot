@@ -5,8 +5,8 @@ Dal: `adim2-testler` (`adim1-tasarim` + v29 bildirim değişikliği üstüne). *
 | Bölüm | Durum | Not |
 |---|---|---|
 | Timpanometri: giriş, eğri, kayıt | ✅ (tip sınıflaması bekliyor) | `vaka-testler.js` (yeni dosya, vakalarim.js'ten önce yüklenir). Modül yapısı: `window.VakaTestleri` (temizle, formOku, formDoldur, ayrinti, csv, satirlar, svg). Kayıt `v.timpan.{sag,sol}` = `{basinc (daPa tam sayı −600..400), kompliyans, hacim (ml, 0..9,99, 2 ondalık), duz}`. Eğri tepe noktası + kompliyanstan çan biçiminde, sabit genişlik (σ 42 daPa ≈ yarı yükseklikte 100 daPa); "girilen değerlerden üretilmiş çizimdir" yazısı ekranda ve çıktıda. Yedek/geri yükleme (bozuk değer reddedilir), CSV, JPEG/PDF çıktısı kapsıyor. Eski kayıtlar değişmiyor. Yazılar `#vt-metinler` + form `data-k` (yönetici). Test t-timpan.js 36/36 (açık/koyu, 360 px). |
-| Timpanogram tipi (A, As, Ad, B, C) | ⏳ | **Sınır değerleri proje sahibinden bekleniyor.** |
-| Akustik refleks | ⏳ | Kulak adlandırma kuralı (uyarılan/prob kulağı) ve şemada işaretleme proje sahibine soruldu. |
+| Timpanogram tipi (A, As, Ad, B, C) | ✅ | `odyo-hesap.js` → `TIMPAN_SINIR`, `timpanTipi`. Kaynak: proje sahibinin Drive'ındaki ders slaytı `2.timpanometri.pptx` (slayt 30–34). Proje sahibinin kararları (2026-11-17): As < 0,35 ml (0,35 dahil A), Ad > 1,30, A tepe −100…+50 daPa, C tepe < −100 (kompliyansa bakılmaz), +50 üstü sınıflanmaz, B = tepe yok. Kanal hacmi yorumlanmaz (slayt 26 normları yaş/cinsiyete bağlı; vakada yaş yok). Node testi `testler/timpan-test.js` 15/15. |
+| Akustik refleks | ✅ | `v.refleks.{sag,sol}.{ipsi,kontra}.{500,1000,2000,4000}` = 50–125 (5'in katı) ya da "yok". Kulak adı uyaranın verildiği kulak (`3.dersaksutik refleksler.pptx` slayt 9, 13). Formda her hücre açılır liste (44 px). Ayrıntı, liste özeti, CSV, yedek, JPEG/PDF. **Vakalarım yalnızca sonucu gösterir; lezyon yeri tahmini proje sahibinin isteğiyle ileride OdyoBOT asistanına (kuralları slayt 25–28'den birlikte netleştirilecek).** Test t-refleks.js 28/28. |
 | OAE, ABR | Bekliyor | |
 
 ---

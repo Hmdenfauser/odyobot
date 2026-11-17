@@ -31,7 +31,30 @@
     4: [500, 1000, 2000, 4000]
   };
 
+  // Timpanogram tipi (226 Hz, yetişkin). Kaynak: proje sahibinin ders slaytı "2.timpanometri.pptx" (slayt 30–34);
+  // As/A sınırı ve C/+50 kararları proje sahibinin (2026-11-17). Basınç daPa, kompliyans ml.
+  var TIMPAN_SINIR = {
+    tepeEnAz: -100,     // tepe bundan daha negatifse Tip C (kompliyansa bakılmaz)
+    tepeEnCok: 50,      // tepe bundan daha pozitifse sınıflanmaz
+    kompEnAz: 0.35,     // bunun altı As (0,35 dahil A)
+    kompEnCok: 1.30     // bunun üstü Ad (1,30 dahil A)
+  };
+
   /* ---------- HESAPLAR ---------- */
+
+  // Timpanogram tipi. e: { basinc, kompliyans, duz } (vaka kaydındaki bir kulak).
+  // Dönüş: { kod: 'A' | 'As' | 'Ad' | 'B' | 'C' | null, metin }. Değer eksikse kod null ve metin nedenini söyler.
+  function timpanTipi(e) {
+    if (!e) return { kod: null, metin: '' };
+    if (e.duz) return { kod: 'B', metin: 'Tip B' };
+    if (e.basinc == null) return { kod: null, metin: 'Tip için tepe basıncı gerekli' };
+    if (e.basinc > TIMPAN_SINIR.tepeEnCok) return { kod: null, metin: 'Sınıflanamadı (tepe pozitif basınçta)' };
+    if (e.basinc < TIMPAN_SINIR.tepeEnAz) return { kod: 'C', metin: 'Tip C' };
+    if (e.kompliyans == null) return { kod: null, metin: 'Tip için kompliyans gerekli' };
+    if (e.kompliyans < TIMPAN_SINIR.kompEnAz) return { kod: 'As', metin: 'Tip As' };
+    if (e.kompliyans > TIMPAN_SINIR.kompEnCok) return { kod: 'Ad', metin: 'Tip Ad' };
+    return { kod: 'A', metin: 'Tip A' };
+  }
 
   // Bir yolun (hava ya da kemik) ortalaması.
   // yolEsik: { "500": { db: 40, nr: true/false, maskeli: ... }, ... }  (boş frekans hiç yoktur)
@@ -121,7 +144,8 @@
   var api = {
     ESIK_TABLOSU: ESIK_TABLOSU, ABG_ESIGI: ABG_ESIGI, PTA_FREKANSLARI: PTA_FREKANSLARI,
     pta: pta, derece: derece, normalMi: normalMi, tip: tip, degerlendir: degerlendir,
-    sayiYaz: sayiYaz, ptaMetni: ptaMetni, kisaOzet: kisaOzet
+    sayiYaz: sayiYaz, ptaMetni: ptaMetni, kisaOzet: kisaOzet,
+    TIMPAN_SINIR: TIMPAN_SINIR, timpanTipi: timpanTipi
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else kok.OdyoHesap = api;

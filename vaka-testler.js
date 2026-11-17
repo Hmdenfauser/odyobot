@@ -194,13 +194,23 @@
     });
     return svg;
   }
+  // Tip hesabı odyo-hesap.js'te (sınırlar orada, tek yerde).
+  function tipi(e) { var H = window.OdyoHesap; return H && H.timpanTipi ? H.timpanTipi(e) : { kod: null, metin: '' }; }
+  function tipMetni(x) {
+    return KULAKLAR.filter(function (k) { return x && x[k]; }).map(function (k) {
+      var m = tipi(x[k]).metin; return m ? KULAK_AD[k] + ': ' + m : '';
+    }).filter(Boolean).join(' · ');
+  }
   function timpanGrafik(x, basliksiz) {
     var svg = timpanSvg(x);
     if (!svg) return null;
+    var tm = basliksiz ? '' : tipMetni(x);
     return h('div', { 'class': 'timpan-kap' }, [
       basliksiz ? null : h('div', { 'class': 'og-baslik', text: M('vt-metinler', 'baslik') }),
       svg,
-      h('p', { 'class': 'note t-uretilmis', text: M('vt-metinler', 'uretilmis') })
+      tm ? h('div', { 'class': 't-tip', text: tm }) : null,
+      h('p', { 'class': 'note t-uretilmis', text: M('vt-metinler', 'uretilmis') }),
+      basliksiz ? null : h('p', { 'class': 'note', text: M('vt-metinler', 'tipKural') })
     ]);
   }
   function timpanOzet(e) {
@@ -220,6 +230,7 @@
       var d = KULAKLAR.map(function (k) { return x[k] ? fn(x[k]) : ''; });
       if (d.some(Boolean)) satirlar.push([baslik, d[0] || '–', d[1] || '–']);
     }
+    satir('Tip', function (e) { return tipi(e).metin; });
     satir('Tepe basıncı', function (e) { return e.duz ? 'Tepe yok' : (e.basinc != null ? e.basinc + ' daPa' : ''); });
     satir('Kompliyans', function (e) { return e.kompliyans != null ? ondalikYaz(e.kompliyans) + ' ml' : ''; });
     satir('Kanal hacmi', function (e) { return e.hacim != null ? ondalikYaz(e.hacim) + ' ml' : ''; });
@@ -236,12 +247,14 @@
     if (satirlar.length) parca.push(h('table', { 'class': 'esik-tablo ek-tablo' }, [
       h('thead', null, [h('tr', null, [h('th', { text: '' }), h('th', { 'class': 'sag', text: 'Sağ' }), h('th', { 'class': 'sol', text: 'Sol' })])]),
       h('tbody', null, satirlar)]));
+    parca.push(h('p', { 'class': 'note', text: M('vt-metinler', 'tipKural') }));
     return h('div', { 'class': 'tablo-kap' }, parca);
   }
 
   var timpanCsv = [];
   KULAKLAR.forEach(function (k) {
     timpanCsv.push(
+      { ad: KULAK_AD[k] + ' timpan tip', al: function (x) { var e = x && x[k]; return e ? (tipi(e).kod || '') : ''; } },
       { ad: KULAK_AD[k] + ' timpan tepe basıncı (daPa)', al: function (x) { var e = x && x[k]; return !e ? '' : (e.duz ? 'tepe yok' : (e.basinc != null ? e.basinc : '')); } },
       { ad: KULAK_AD[k] + ' timpan kompliyans (ml)', al: function (x) { var e = x && x[k]; return e ? ondalikYaz(e.kompliyans) : ''; } },
       { ad: KULAK_AD[k] + ' timpan kanal hacmi (ml)', al: function (x) { var e = x && x[k]; return e ? ondalikYaz(e.hacim) : ''; } }
@@ -250,15 +263,153 @@
 
   window.VakaTestleri.push({
     alan: 'timpan',
-    baslik: function () { return M('vt-metinler', 'baslik') || 'Timpanometri'; },
-    not: function () { return M('vt-metinler', 'uretilmis'); },
+    baslik: function () { return 'Timpanometri'; },
+    not: function () { return M('vt-metinler', 'uretilmis') + ' ' + M('vt-metinler', 'tipKural'); },
     temizle: timpanTemizle,
     formOku: function (hatalar) { return timpanFormOku(hatalar, false); },
     formDoldur: timpanFormDoldur,
     ayrinti: timpanAyrinti,
-    ozet: function (x) { return x ? 'Timpanometri: ' + KULAKLAR.filter(function (k) { return x[k]; }).map(function (k) { return KULAK_AD[k].toLowerCase() + ' ' + timpanOzet(x[k]); }).join(', ') : ''; },
+    ozet: function (x) { return x ? 'Timpanometri: ' + KULAKLAR.filter(function (k) { return x[k]; }).map(function (k) { var kod = tipi(x[k]).kod; return KULAK_AD[k].toLowerCase() + ' ' + (kod ? 'tip ' + kod : timpanOzet(x[k])); }).join(', ') : ''; },
     satirlar: timpanSatirlari,
     svg: timpanSvg,
     csv: timpanCsv
   });
+
+  /* =====================================================================
+     AKUSTİK REFLEKS
+     Kayıt: v.refleks = { sag: { ipsi: { '500': 90, '1000': 'yok', ... }, kontra: {...} }, sol: {...} }
+     Kulak adı UYARANIN verildiği kulaktır (ders slaytı "3.dersaksutik refleksler.pptx", slayt 9 ve 13):
+     sağ kontra = uyaran sağda, prob ve ölçüm solda. Eşik 50–125 dB, 5'in katı ya da "yok" (proje sahibi, 2026-11-17).
+     Vakalarım yalnızca sonucu gösterir; yorum (lezyon yeri) ileride OdyoBOT asistanında.
+     ===================================================================== */
+  var R_FREK = [500, 1000, 2000, 4000], R_YOLLAR = ['ipsi', 'kontra'];
+  var R_EN_AZ = 50, R_EN_COK = 125, R_ADIM = 5;
+  function rYolAd(y) { return M('vt-metinler', y === 'ipsi' ? 'rIpsi' : 'rKontra') || y; }
+  function rDegerMi(x) { return x === 'yok' || (tamSayiMi(x, R_EN_AZ, R_EN_COK) && x % R_ADIM === 0); }
+  function rMetin(x) { return x == null ? '' : (x === 'yok' ? (M('vt-metinler', 'rYok') || 'Yok') : String(x)); }
+
+  function refleksTemizle(x, sorun) {
+    if (x == null) return undefined;
+    if (typeof x !== 'object' || Array.isArray(x)) { sorun('akustik refleks verisi okunamadı'); return undefined; }
+    var out = {};
+    KULAKLAR.forEach(function (k) {
+      if (x[k] == null) return;
+      if (typeof x[k] !== 'object' || Array.isArray(x[k])) { sorun(KULAK_AD[k] + ' akustik refleks okunamadı'); return; }
+      R_YOLLAR.forEach(function (y) {
+        var kaynak = x[k][y];
+        if (kaynak == null) return;
+        if (typeof kaynak !== 'object' || Array.isArray(kaynak)) { sorun(KULAK_AD[k] + ' ' + y + ' refleks okunamadı'); return; }
+        Object.keys(kaynak).forEach(function (f) {
+          var ad = KULAK_AD[k] + ' ' + y + ' refleks ' + f + ' Hz';
+          if (R_FREK.indexOf(+f) === -1) { sorun(ad + ': tanınmayan frekans'); return; }
+          if (!rDegerMi(kaynak[f])) { sorun(ad + ': değer geçersiz'); return; }
+          out[k] = out[k] || {}; out[k][y] = out[k][y] || {}; out[k][y][String(+f)] = kaynak[f];
+        });
+      });
+    });
+    return Object.keys(out).length ? out : undefined;
+  }
+
+  // Form: her hücre bir açılır liste (–, 50 … 125, Yok). Geçersiz değer girilemez.
+  var rSecimler = {};   // 'sag-ipsi-500' → select
+  function rTabloKur() {
+    KULAKLAR.forEach(function (k) {
+      var kap = document.querySelector('#v-refleks .r-blok[data-kulak="' + k + '"]');
+      if (!kap) return;
+      var bas = h('tr', null, [h('th', { text: 'Hz' })].concat(R_FREK.map(function (f) { return h('th', { text: f >= 1000 ? (f / 1000) + 'k' : String(f) }); })));
+      var satirlar = R_YOLLAR.map(function (y) {
+        return h('tr', null, [h('th', { text: rYolAd(y) })].concat(R_FREK.map(function (f) {
+          var sec = h('select', { 'class': 'r-sec', id: 'v-r-' + k + '-' + y + '-' + f });
+          sec.setAttribute('aria-label', KULAK_AD[k] + ' ' + rYolAd(y) + ' ' + f + ' Hz');
+          sec.appendChild(h('option', { value: '', text: '–' }));
+          for (var d = R_EN_AZ; d <= R_EN_COK; d += R_ADIM) sec.appendChild(h('option', { value: String(d), text: String(d) }));
+          sec.appendChild(h('option', { value: 'yok', text: M('vt-metinler', 'rYok') || 'Yok' }));
+          rSecimler[k + '-' + y + '-' + f] = sec;
+          return h('td', null, [sec]);
+        })));
+      });
+      kap.replaceChildren(h('table', { 'class': 'r-tablo' }, [h('thead', null, [bas]), h('tbody', null, satirlar)]));
+    });
+  }
+  rTabloKur();
+  function refleksFormOku() {
+    var out = {};
+    KULAKLAR.forEach(function (k) {
+      R_YOLLAR.forEach(function (y) {
+        R_FREK.forEach(function (f) {
+          var sec = rSecimler[k + '-' + y + '-' + f]; if (!sec || !sec.value) return;
+          var x = sec.value === 'yok' ? 'yok' : parseInt(sec.value, 10);
+          out[k] = out[k] || {}; out[k][y] = out[k][y] || {}; out[k][y][String(f)] = x;
+        });
+      });
+    });
+    return Object.keys(out).length ? out : undefined;
+  }
+  function refleksFormDoldur(x) {
+    KULAKLAR.forEach(function (k) {
+      R_YOLLAR.forEach(function (y) {
+        R_FREK.forEach(function (f) {
+          var sec = rSecimler[k + '-' + y + '-' + f]; if (!sec) return;
+          var d = x && x[k] && x[k][y] ? x[k][y][String(f)] : null;
+          sec.value = d == null ? '' : String(d);
+          sec.classList.toggle('dolu', d != null);
+        });
+      });
+    });
+    $('v-refleks').open = !!x;
+  }
+  $('v-refleks').addEventListener('change', function (e) { if (e.target.classList.contains('r-sec')) e.target.classList.toggle('dolu', !!e.target.value); });
+
+  // [[satır adı, 500, 1000, 2000, 4000], ...]; boş satır yazılmaz.
+  function refleksSatirlari(x) {
+    if (!x) return [];
+    var satirlar = [];
+    KULAKLAR.forEach(function (k) {
+      R_YOLLAR.forEach(function (y) {
+        var yv = x[k] && x[k][y];
+        if (!yv || !Object.keys(yv).length) return;
+        var sr = [KULAK_AD[k] + ' ' + rYolAd(y).toLocaleLowerCase('tr-TR')].concat(R_FREK.map(function (f) { return rMetin(yv[String(f)]) || '–'; }));
+        sr.kulak = k;
+        satirlar.push(sr);
+      });
+    });
+    return satirlar;
+  }
+  function refleksAyrinti(x) {
+    var st = refleksSatirlari(x);
+    if (!st.length) return null;
+    return h('div', { 'class': 'tablo-kap' }, [
+      h('h4', { text: M('vt-metinler', 'rBaslik') || 'Akustik refleks' }),
+      h('table', { 'class': 'esik-tablo r-sonuc' }, [
+        h('thead', null, [h('tr', null, [h('th', { text: 'Hz' })].concat(R_FREK.map(function (f) { return h('th', { text: String(f) }); })))]),
+        h('tbody', null, st.map(function (sr) {
+          return h('tr', null, [h('th', { 'class': sr.kulak, text: sr[0] })].concat(sr.slice(1).map(function (c) { return h('td', { text: c }); })));
+        }))
+      ]),
+      h('p', { 'class': 'note', text: M('vt-metinler', 'rNot') })
+    ]);
+  }
+  var refleksCsv = [];
+  KULAKLAR.forEach(function (k) {
+    R_YOLLAR.forEach(function (y) {
+      R_FREK.forEach(function (f) {
+        refleksCsv.push({ ad: KULAK_AD[k] + ' ' + y + ' refleks ' + f + ' (dB)', al: function (x) { return x && x[k] && x[k][y] ? rMetin(x[k][y][String(f)]) : ''; } });
+      });
+    });
+  });
+
+  window.VakaTestleri.push({
+    alan: 'refleks',
+    baslik: function () { return M('vt-metinler', 'rBaslik') || 'Akustik refleks'; },
+    not: function () { return M('vt-metinler', 'rNot'); },
+    temizle: refleksTemizle,
+    formOku: function () { return refleksFormOku(); },
+    formDoldur: refleksFormDoldur,
+    ayrinti: refleksAyrinti,
+    ozet: function (x) { return x ? (M('vt-metinler', 'rBaslik') || 'Akustik refleks') + ': girildi' : ''; },
+    satirlar: refleksSatirlari,
+    sutunlar: function () { return R_FREK.map(String); },
+    csv: refleksCsv
+  });
 })();
+
