@@ -390,6 +390,12 @@ input.db.hatali { border-color: var(--danger); border-width: 2px; background: co
 .o-sonuc { font-weight: 600; display: flex; flex-direction: column; gap: 2px; }
 .oae-cubuk.sag { fill: var(--right); fill-opacity: .8; } .oae-cubuk.sol { fill: var(--left); fill-opacity: .8; }
 .oae-gurultu { fill: var(--muted); fill-opacity: .45; }
+/* ABR: kulak başına 6 satır (şiddet, I, III, V); dalgalar arası tablo; ayrıntı tablosu dar ekranda yana kayar. */
+.a-tablo th { font-size: 11.5px; }
+.a-ara { margin-top: 6px; }
+.a-sonuc th, .a-sonuc td { text-align: center; white-space: nowrap; }
+.a-sonuc th.sag { color: var(--right); } .a-sonuc th.sol { color: var(--left); }
+.a-kaydir { overflow-x: auto; max-width: 100%; }
 .t-deger:disabled { opacity: .55; }
 
 /* Vakalarım: seçim modu (OdyoBOT'a gönderme) */

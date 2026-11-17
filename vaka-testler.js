@@ -717,5 +717,231 @@
     svg: oaeSvg,
     csv: oaeCsv
   });
+
+  /* =====================================================================
+     ABR
+     Kayıt: v.abr = { sag: [ { db: 80, I: 1.62, III: 3.75, V: 5.61 }, ... ], sol: [...] } (şiddete göre büyükten küçüğe)
+     Şiddet dB nHL (tam sayı, −10 ile 120), latans ms (0 ile 20, en çok 2 ondalık). Dalgalar arası süreler hesaplanır;
+     norm ve yorum yok (yol haritası 2. adım). Kaynak: "ABRSONT (1).pptx" (I, III, V; I–III, III–V, I–V; dB nHL).
+     Dalga izi çizilmez. Kayıt fotoğrafı ayrı iş (depolama değişikliği gerektirir).
+     ===================================================================== */
+  var A_SATIR = 6, A_DALGA = ['I', 'III', 'V'];
+  var A_DB = [-10, 120], A_MS = [0, 20];
+  var A_ARALIK = [['I', 'III'], ['III', 'V'], ['I', 'V']];
+  function iki(n) { return n == null ? '' : (Math.round(n * 100) / 100).toFixed(2).replace('.', ','); }
+  function msMi(n) { return typeof n === 'number' && isFinite(n) && n >= A_MS[0] && n <= A_MS[1] && Math.abs(Math.round(n * 100) - n * 100) < 1e-6; }
+  function aralik(r, a, b) { return r[a] != null && r[b] != null ? Math.round((r[b] - r[a]) * 100) / 100 : null; }
+  function aSirala(l) { return l.slice().sort(function (a, b) { return b.db - a.db; }); }
+
+  function abrTemizle(x, sorun) {
+    if (x == null) return undefined;
+    if (typeof x !== 'object' || Array.isArray(x)) { sorun('ABR verisi okunamadı'); return undefined; }
+    var out = {};
+    KULAKLAR.forEach(function (k) {
+      var l = x[k];
+      if (l == null) return;
+      if (!Array.isArray(l) || l.length > 20) { sorun(KULAK_AD[k] + ' ABR okunamadı'); return; }
+      var gorulen = {}, temiz = [];
+      l.forEach(function (r, i) {
+        var ad = KULAK_AD[k] + ' ABR ' + (i + 1) + '. satır';
+        if (!r || typeof r !== 'object' || !tamSayiMi(r.db, A_DB[0], A_DB[1])) { sorun(ad + ': şiddet geçersiz'); return; }
+        if (gorulen[r.db]) { sorun(ad + ': aynı şiddet iki kez'); return; }
+        var t = { db: r.db }, tamam = true;
+        A_DALGA.forEach(function (d) { if (r[d] == null) return; if (msMi(r[d])) t[d] = r[d]; else { sorun(ad + ': ' + d + '. dalga latansı geçersiz'); tamam = false; } });
+        if (!tamam) return;
+        gorulen[r.db] = true; temiz.push(t);
+      });
+      if (temiz.length) out[k] = aSirala(temiz);
+    });
+    return Object.keys(out).length ? out : undefined;
+  }
+
+  function aGiris(k, i, a) { return $('v-a-' + k + '-' + i + '-' + a); }
+  function abrTabloKur() {
+    KULAKLAR.forEach(function (k) {
+      var kap = document.querySelector('#v-abr .a-blok[data-kulak="' + k + '"]');
+      if (!kap) return;
+      var bas = h('tr', null, [h('th', { text: M('vt-metinler', 'aSiddet') || 'dB nHL' })].concat(A_DALGA.map(function (d) { return h('th', { text: d + ' (ms)' }); })));
+      var satirlar = [];
+      for (var i = 0; i < A_SATIR; i++) {
+        satirlar.push(h('tr', null, ['db'].concat(A_DALGA).map(function (a) {
+          var el = h('input', { 'class': 'o-deger a-deger', id: 'v-a-' + k + '-' + i + '-' + a, type: 'number', step: a === 'db' ? '5' : '0.01' });
+          el.setAttribute('aria-label', KULAK_AD[k] + ' ABR ' + (i + 1) + '. satır ' + (a === 'db' ? 'şiddet (dB nHL)' : a + '. dalga latansı (ms)'));
+          return h('td', null, [el]);
+        })));
+      }
+      kap.replaceChildren(h('table', { 'class': 'o-tablo a-tablo' }, [h('thead', null, [bas]), h('tbody', null, satirlar)]), h('div', { 'class': 'a-ara', id: 'v-a-' + k + '-ara' }));
+    });
+  }
+  abrTabloKur();
+  function aOku(el, a) {
+    if (el.validity && el.validity.badInput) return { hata: 'Sayı gir.' };
+    var s = String(el.value || '').trim().replace('−', '-').replace(',', '.');
+    if (s === '') return { bos: true };
+    if (a === 'db') {
+      if (!/^-?\d+$/.test(s)) return { hata: 'Tam sayı gir.' };
+      var n = parseInt(s, 10);
+      return n < A_DB[0] || n > A_DB[1] ? { hata: A_DB[0] + ' ile ' + A_DB[1] + ' arası.' } : { deger: n };
+    }
+    if (!/^\d+(\.\d{1,2})?$/.test(s)) return { hata: 'En çok 2 ondalık.' };
+    var m = parseFloat(s);
+    return m > A_MS[1] ? { hata: A_MS[0] + ' ile ' + A_MS[1] + ' ms arası.' } : { deger: m };
+  }
+  function abrFormOku(hatalar, sessiz) {
+    var out = {};
+    KULAKLAR.forEach(function (k) {
+      var l = [], gorulen = {};
+      for (var i = 0; i < A_SATIR; i++) {
+        var r = {}, sonuc = {};
+        ['db'].concat(A_DALGA).forEach(function (a) { sonuc[a] = aOku(aGiris(k, i, a), a); });
+        var latansVar = A_DALGA.some(function (d) { return sonuc[d].deger != null; });
+        if (!sonuc.db.hata && sonuc.db.bos && latansVar) sonuc.db = { hata: 'Şiddeti gir.' };
+        if (sonuc.db.deger != null && gorulen[sonuc.db.deger]) sonuc.db = { hata: 'Bu şiddet zaten var.' };
+        ['db'].concat(A_DALGA).forEach(function (a) {
+          var el = aGiris(k, i, a);
+          if (!sessiz) oIsaretle(el, sonuc[a]);
+          if (sonuc[a].hata) { if (hatalar) hatalar.push({ giris: el, k: k, f: null, panel: 'v-abr' }); }
+          else if (sonuc[a].deger != null) r[a === 'db' ? 'db' : a] = sonuc[a].deger;
+        });
+        if (r.db != null) { gorulen[r.db] = true; l.push(r); }
+      }
+      if (l.length) out[k] = aSirala(l);
+    });
+    return Object.keys(out).length ? out : undefined;
+  }
+  // Dalgalar arası süreler: [[şiddet, I–III, III–V, I–V], ...]
+  function araSatirlari(l) {
+    return (l || []).map(function (r) { return [r.db + ' dB nHL'].concat(A_ARALIK.map(function (p) { return iki(aralik(r, p[0], p[1])) || '–'; })); })
+      .filter(function (r) { return r.slice(1).some(function (c) { return c !== '–'; }); });
+  }
+  function araTablo(l) {
+    var st = araSatirlari(l);
+    if (!st.length) return null;
+    return h('table', { 'class': 'esik-tablo a-sonuc' }, [
+      h('thead', null, [h('tr', null, [h('th', { text: M('vt-metinler', 'aAraBaslik') || 'Dalgalar arası (ms)' })].concat(A_ARALIK.map(function (p) { return h('th', { text: p[0] + '–' + p[1] }); })))]),
+      h('tbody', null, st.map(function (r) { return h('tr', null, [h('th', { text: r[0] })].concat(r.slice(1).map(function (c) { return h('td', { text: c }); }))); }))
+    ]);
+  }
+  function abrCanli() {
+    var x = abrFormOku(null, true);
+    KULAKLAR.forEach(function (k) { var kap = $('v-a-' + k + '-ara'); var tb = araTablo(x && x[k]); kap.replaceChildren.apply(kap, tb ? [tb] : []); });
+    var kap = $('v-abr-grafik'), g = abrGrafik(x);
+    kap.hidden = !g;
+    kap.replaceChildren.apply(kap, g ? [g] : []);
+  }
+  function abrFormDoldur(x) {
+    KULAKLAR.forEach(function (k) {
+      var l = (x && x[k]) || [];
+      for (var i = 0; i < A_SATIR; i++) {
+        var r = l[i] || {};
+        ['db'].concat(A_DALGA).forEach(function (a) { var el = aGiris(k, i, a); el.value = r[a] != null ? String(r[a]) : ''; oIsaretle(el, {}); });
+      }
+    });
+    $('v-abr').open = !!x;
+    abrCanli();
+  }
+  $('v-abr').addEventListener('input', function (e) {
+    var el = e.target;
+    if (el.classList.contains('a-deger')) oIsaretle(el, aOku(el, el.id.split('-').pop()));
+    abrCanli();
+  });
+
+  // Latans-şiddet grafiği: V. dalga latansı (ms) şiddete (dB nHL) göre; sağ kırmızı O, sol mavi X.
+  function abrSvg(x) {
+    if (!x) return null;
+    var nok = {}, var_ = false, dbAz = 0, dbCok = 100, msCok = 10;
+    KULAKLAR.forEach(function (k) {
+      nok[k] = ((x[k]) || []).filter(function (r) { return r.V != null; }).sort(function (a, b) { return a.db - b.db; });
+      nok[k].forEach(function (r) { var_ = true; dbAz = Math.min(dbAz, Math.floor(r.db / 10) * 10); dbCok = Math.max(dbCok, Math.ceil(r.db / 10) * 10); msCok = Math.max(msCok, Math.ceil(r.V / 2) * 2); });
+    });
+    if (!var_) return null;
+    var W = 360, H = 230, L = 34, R = 18, T = 22, B = 30;
+    function xD(d) { return L + (d - dbAz) / (dbCok - dbAz) * (W - L - R); }
+    function yM(m) { return T + (msCok - m) / msCok * (H - T - B); }
+    var svg = s('svg', { viewBox: '0 0 ' + W + ' ' + H, 'class': 'odyogram abr-grafik', role: 'img' });
+    svg.setAttribute('aria-label', 'ABR latans-şiddet grafiği (V. dalga)');
+    svg.appendChild(s('text', { 'class': 'og-yazi og-birim', x: 2, y: T - 8, text: 'V. dalga · ms' }));
+    for (var m = 0; m <= msCok; m += 2) {
+      svg.appendChild(s('line', { 'class': 'og-cizgi', x1: L, x2: W - R, y1: y1(yM(m)), y2: y1(yM(m)) }));
+      svg.appendChild(s('text', { 'class': 'og-yazi', x: L - 4, y: y1(yM(m) + 3), 'text-anchor': 'end', text: String(m) }));
+    }
+    for (var d = dbAz; d <= dbCok; d += (dbCok - dbAz > 100 ? 20 : 10)) {
+      svg.appendChild(s('line', { 'class': 'og-cizgi og-ara', x1: y1(xD(d)), x2: y1(xD(d)), y1: T, y2: H - B }));
+      svg.appendChild(s('text', { 'class': 'og-yazi', x: y1(xD(d)), y: H - B + 12, 'text-anchor': 'middle', text: String(d) }));
+    }
+    svg.appendChild(s('text', { 'class': 'og-yazi og-birim', x: W - R, y: H - 4, 'text-anchor': 'end', text: 'dB nHL' }));
+    svg.appendChild(s('rect', { 'class': 'og-cerceve', x: L, y: T, width: W - L - R, height: H - T - B }));
+    KULAKLAR.forEach(function (k) {
+      if (!nok[k].length) return;
+      var g = s('g', { 'class': 'og-kulak ' + k });
+      if (nok[k].length > 1) g.appendChild(s('polyline', { 'class': 'og-hat ' + k, points: nok[k].map(function (r) { return y1(xD(r.db)) + ',' + y1(yM(r.V)); }).join(' ') }));
+      nok[k].forEach(function (r) {
+        var px = xD(r.db), py = yM(r.V), rr = 4.5;
+        if (k === 'sag') g.appendChild(s('circle', { 'class': 'os sag', cx: y1(px), cy: y1(py), r: rr }));
+        else {
+          g.appendChild(s('line', { 'class': 'os sol', x1: y1(px - rr * .85), y1: y1(py - rr * .85), x2: y1(px + rr * .85), y2: y1(py + rr * .85) }));
+          g.appendChild(s('line', { 'class': 'os sol', x1: y1(px - rr * .85), y1: y1(py + rr * .85), x2: y1(px + rr * .85), y2: y1(py - rr * .85) }));
+        }
+      });
+      svg.appendChild(g);
+    });
+    return svg;
+  }
+  function abrGrafik(x, basliksiz) {
+    var svg = abrSvg(x);
+    if (!svg) return null;
+    return h('div', { 'class': 'timpan-kap' }, [
+      basliksiz ? null : h('div', { 'class': 'og-baslik', text: M('vt-metinler', 'aGrafik') || 'Latans-şiddet (V. dalga)' }),
+      svg
+    ]);
+  }
+  // Çıktı ve ayrıntı tablosu: [[satır, I, III, V, I–III, III–V, I–V], ...]
+  function abrSatirlari(x) {
+    if (!x) return [];
+    var st = [];
+    KULAKLAR.forEach(function (k) {
+      (x[k] || []).forEach(function (r) {
+        var sr = [KULAK_AD[k] + ' ' + r.db + ' dB nHL'].concat(A_DALGA.map(function (d) { return iki(r[d]) || '–'; })).concat(A_ARALIK.map(function (p) { return iki(aralik(r, p[0], p[1])) || '–'; }));
+        sr.kulak = k; st.push(sr);
+      });
+    });
+    return st;
+  }
+  function abrAyrinti(x) {
+    var st = abrSatirlari(x);
+    if (!st.length) return null;
+    var basliklar = A_DALGA.concat(A_ARALIK.map(function (p) { return p[0] + '–' + p[1]; }));
+    var parca = [h('h4', { text: M('vt-metinler', 'aBaslik') || 'ABR' })];
+    var g = abrGrafik(x); if (g) parca.push(g);
+    parca.push(h('div', { 'class': 'a-kaydir' }, [h('table', { 'class': 'esik-tablo a-sonuc' }, [
+      h('thead', null, [h('tr', null, [h('th', { text: '' })].concat(basliklar.map(function (b) { return h('th', { text: b }); })))]),
+      h('tbody', null, st.map(function (r) { return h('tr', null, [h('th', { 'class': r.kulak, text: r[0] })].concat(r.slice(1).map(function (c) { return h('td', { text: c }); }))); }))
+    ])]));
+    parca.push(h('p', { 'class': 'note', text: M('vt-metinler', 'aNot') }));
+    return h('div', { 'class': 'tablo-kap' }, parca);
+  }
+  var abrCsv = [];
+  KULAKLAR.forEach(function (k) {
+    for (var i = 0; i < A_SATIR; i++) (function (i) {
+      abrCsv.push({ ad: KULAK_AD[k] + ' ABR ' + (i + 1) + ' şiddet (dB nHL)', al: function (x) { var r = x && x[k] && x[k][i]; return r ? r.db : ''; } });
+      A_DALGA.forEach(function (d) { abrCsv.push({ ad: KULAK_AD[k] + ' ABR ' + (i + 1) + ' ' + d + ' (ms)', al: function (x) { var r = x && x[k] && x[k][i]; return r ? iki(r[d]) : ''; } }); });
+    })(i);
+  });
+
+  window.VakaTestleri.push({
+    alan: 'abr',
+    baslik: function () { return M('vt-metinler', 'aBaslik') || 'ABR'; },
+    not: function () { return M('vt-metinler', 'aNot'); },
+    temizle: abrTemizle,
+    formOku: function (hatalar) { return abrFormOku(hatalar, false); },
+    formDoldur: abrFormDoldur,
+    ayrinti: abrAyrinti,
+    ozet: function (x) { return x ? (M('vt-metinler', 'aBaslik') || 'ABR') + ': ' + KULAKLAR.filter(function (k) { return x[k]; }).map(function (k) { return KULAK_AD[k].toLowerCase() + ' ' + x[k].length + ' şiddet'; }).join(', ') : ''; },
+    satirlar: abrSatirlari,
+    ilkSutun: function () { return ''; },
+    sutunlar: function () { return A_DALGA.concat(A_ARALIK.map(function (p) { return p[0] + '–' + p[1]; })); },
+    svg: abrSvg,
+    csv: abrCsv
+  });
 })();
 

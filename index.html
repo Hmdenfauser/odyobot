@@ -710,6 +710,17 @@
             </div>
           </details>
 
+          <!-- 2. adım: ABR (vaka-testler.js tabloları çizer). Dalga izi çizilmez. -->
+          <details class="compose ek-olcum" id="v-abr">
+            <summary data-k="vakalarim.aBaslik">ABR (isteğe bağlı)</summary>
+            <div class="yedek-ic">
+              <p class="note" data-k="vakalarim.aFormNot">Her satıra bir uyaran şiddeti (dB nHL) ve o şiddette okunan I, III, V dalga latanslarını (ms, ör. 5,62) yaz. Görülmeyen dalgayı boş bırak. Dalgalar arası süreler kendiliğinden hesaplanır.</p>
+              <div class="ek-kulak sag"><h4 data-k="vakalarim.aSag">Sağ kulak</h4><div class="a-blok" data-kulak="sag"></div></div>
+              <div class="ek-kulak sol"><h4 data-k="vakalarim.aSol">Sol kulak</h4><div class="a-blok" data-kulak="sol"></div></div>
+              <div class="figure timpan-panel" id="v-abr-grafik" hidden></div>
+            </div>
+          </details>
+
           <div class="fld"><label for="v-notlar" data-k="vakalarim.notlarEtiket">Notlar</label><textarea id="v-notlar" maxlength="2000"></textarea></div>
           <div class="admin-bar">
             <button class="btn primary" type="submit" id="v-kaydet">Kaydet</button>
@@ -732,7 +743,7 @@
       </details>
       <!-- Ek test yazıları (vaka-testler.js çizimlerde kullanır): yalnızca yöneticiye görünür, buradan düzenlenir. -->
       <details class="compose b-metinler" id="vt-metinler">
-        <summary>Timpanometri, refleks ve OAE yazıları (yönetici)</summary>
+        <summary>Timpanometri, refleks, OAE ve ABR yazıları (yönetici)</summary>
         <div class="yedek-ic">
           <p data-k="vakalarim.t.baslik" data-m="baslik">Timpanogram</p>
           <p data-k="vakalarim.t.uretilmis" data-m="uretilmis">Girilen değerlerden üretilmiş çizimdir, cihaz kaydı değildir.</p>
@@ -750,6 +761,11 @@
           <p data-k="vakalarim.o.stab" data-m="oStab">TEOAE prob stabilitesi (%)</p>
           <p data-k="vakalarim.o.lejant" data-m="oLejant">Düz çizgi ve renkli çubuk: emisyon (sinyal). Kesikli çizgi ve gri çubuk: gürültü. Sağ kırmızı, sol mavi. Girilen değerlerden üretilmiş çizimdir, cihaz kaydı değildir.</p>
           <p data-k="vakalarim.o.not" data-m="oNot">Değerler dB SPL: sinyal / gürültü. ✓: fark en az 6 dB (emisyon var). Geçti: en az 3 frekansta emisyon. TEOAE'de tekrarlanabilirlik %80 ya da prob stabilitesi %90 altındaysa kayıt geçersiz sayılır. Tarama ölçütüdür; ölçütler cihaza ve protokole göre değişebilir.</p>
+          <p data-k="vakalarim.a.baslik" data-m="aBaslik">ABR</p>
+          <p data-k="vakalarim.a.siddet" data-m="aSiddet">dB nHL</p>
+          <p data-k="vakalarim.a.grafik" data-m="aGrafik">Latans-şiddet (V. dalga)</p>
+          <p data-k="vakalarim.a.araBaslik" data-m="aAraBaslik">Dalgalar arası (ms)</p>
+          <p data-k="vakalarim.a.not" data-m="aNot">Latanslar ms, şiddet dB nHL. Dalgalar arası süreler girilen latanslardan hesaplanır; norm karşılaştırması ve yorum yapılmaz. Dalga izi çizilmez.</p>
           <p data-k="vakalarim.r.not" data-m="rNot">Eşikler dB. Kulak adı uyaranın verildiği kulaktır (sağ kontra: uyaran sağda, prob solda).</p>
         </div>
       </details>

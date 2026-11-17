@@ -1,6 +1,6 @@
-# PROGRESS — Yol haritası 2. adım: Vakalarım'a yeni testler (2026-11-17, başladı)
+# PROGRESS — Yol haritası 2. adım: Vakalarım'a yeni testler (2026-11-17, bitti, onay bekliyor)
 
-Dal: `adim2-testler` (`adim1-tasarim` + v29 bildirim değişikliği üstüne). **Yayında değil.**
+Dal: `adim2-testler` (`adim1-tasarim` + v29 bildirim değişikliği üstüne). sw **v30**. **Yayında değil; proje sahibinin önizleme ve onayı bekleniyor.**
 
 | Bölüm | Durum | Not |
 |---|---|---|
@@ -8,7 +8,14 @@ Dal: `adim2-testler` (`adim1-tasarim` + v29 bildirim değişikliği üstüne). *
 | Timpanogram tipi (A, As, Ad, B, C) | ✅ | `odyo-hesap.js` → `TIMPAN_SINIR`, `timpanTipi`. Kaynak: proje sahibinin Drive'ındaki ders slaytı `2.timpanometri.pptx` (slayt 30–34). Proje sahibinin kararları (2026-11-17): As < 0,35 ml (0,35 dahil A), Ad > 1,30, A tepe −100…+50 daPa, C tepe < −100 (kompliyansa bakılmaz), +50 üstü sınıflanmaz, B = tepe yok. Kanal hacmi yorumlanmaz (slayt 26 normları yaş/cinsiyete bağlı; vakada yaş yok). Node testi `testler/timpan-test.js` 15/15. |
 | Akustik refleks | ✅ | `v.refleks.{sag,sol}.{ipsi,kontra}.{500,1000,2000,4000}` = 50–125 (5'in katı) ya da "yok". Kulak adı uyaranın verildiği kulak (`3.dersaksutik refleksler.pptx` slayt 9, 13). Formda her hücre açılır liste (44 px). Ayrıntı, liste özeti, CSV, yedek, JPEG/PDF. **Vakalarım yalnızca sonucu gösterir; lezyon yeri tahmini proje sahibinin isteğiyle ileride OdyoBOT asistanına (kuralları slayt 25–28'den birlikte netleştirilecek).** Test t-refleks.js 28/28. |
 | OAE (DPOAE, TEOAE) | ✅ | `v.oae.{sag,sol}` = `{dp:{f2:{s,g}}, te:{bant:{s,g}}, repro, stab}` (dB SPL, −40…50, 1 ondalık; % tam sayı). Ölçüt `odyo-hesap.js` → `OAE_KURAL`, `oaeSonuc`: fark ≥ 6 dB = emisyon var; en az 3 frekansta → Geçti; 3'ten az frekans girildiyse Değerlendirilemedi; TEOAE tekrarlanabilirlik < %80 ya da stabilite < %90 → Geçersiz kayıt. Kaynak: `Odyoloji_de Enstrümantasyon OAE 2.pptx` (proje sahibinin Drive'ı); diğer ders `OAE.pptx` 3 dB / 3–6 dB diyordu, proje sahibi internetten kontrol istedi: 6 dB ve 3/4 yaygın tarama ölçütü (Interacoustics, Iowa yenidoğan protokolü). Frekanslar (internetten, proje sahibinin isteğiyle): DPOAE f2 1, 1,5, 2, 3, 4, 6, 8 kHz; TEOAE yarım oktav bantları 1–4 kHz. Grafik: DP-gram (sinyal düz + O/X, gürültü kesikli) ve TEOAE çubukları. Node testi `testler/oae-test.js` 9/9, ekran t-oae.js 26/26. |
-| ABR | Bekliyor | |
+| ABR | ✅ | `v.abr.{sag,sol}` = [{ db (dB nHL, −10…120 tam sayı), I, III, V (ms, 0…20, 2 ondalık) }] şiddete göre sıralı, en çok 6 satır (formda). Dalgalar arası I–III, III–V, I–V hesaplanır; **norm ve yorum yok**, dalga izi çizilmez. Latans-şiddet grafiği (V. dalga). Kaynak: `ABRSONT (1).pptx` (birimler, dalgalar). Test t-abr.js 26/26. **Kayıt fotoğrafı yapılmadı:** vakalar localStorage'da (≈5 MB sınır); fotoğraf için `VakaDeposu` IndexedDB'ye taşınmalı, proje sahibine soruldu. |
+| Ortak | ✅ | `vaka-testler.js` modül yapısı (`window.VakaTestleri`): vakalarim.js temizle/form/ayrıntı/liste özeti/CSV, cikti.js çıktı (grafik + tablo; sütunlu tablolar `sutunlar`). Bütün yazılar yönetici düzenler (`#vt-metinler`, form `data-k`). Eski kayıtlar değişmeden açılıp kaydediliyor. Form alanlarında hata kırmızısı (`.fld input.hatali`) eksikti, eklendi. Çıktı alt notu "Odyogram değerleri dB HL." oldu. |
+
+## Proje sahibine bildirilecek / bekleyen
+- Refleks sonucuna göre lezyon yeri tahmini: proje sahibinin isteğiyle **OdyoBOT asistanına** yapılacak (ayrı iş, kurallar slayt 25–28'den birlikte netleştirilecek). Vakalarım yalnızca sonucu gösterir.
+- ABR kayıt fotoğrafı: depolama değişikliği (IndexedDB) gerektiriyor; onay bekliyor.
+- OAE frekansları ve 6 dB ölçütü internet kaynaklarına göre seçildi (proje sahibinin isteği); cihazı farklıysa değiştirilebilir (`O_FREK`, `OAE_KURAL`).
+- Klinik değerlerin kaynağı: proje sahibinin Google Drive'ındaki 2. sınıf Elektrofizyolojik Testler ve Enstrümantasyon ders slaytları (bağlantı: google-drive MCP).
 
 ---
 

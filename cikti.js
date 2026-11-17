@@ -224,8 +224,8 @@
         var d1 = KENAR, d2 = KENAR + 260, d3 = KENAR + 470;
         if (m.sutunlar) {
           // Sütunlu tablo (ör. refleks: 500, 1000, 2000, 4000 Hz)
-          var sut = m.sutunlar(), x0 = KENAR + 200, adim = (GEN - KENAR - x0) / sut.length;
-          yazi(d1, y, 'Hz', 'mono kucuk');
+          var sut = m.sutunlar(), x0 = KENAR + (sut.length > 4 ? 170 : 200), adim = (GEN - KENAR - x0) / sut.length;
+          yazi(d1, y, m.ilkSutun ? m.ilkSutun() : 'Hz', 'mono kucuk');
           sut.forEach(function (sv, si) { yazi(x0 + si * adim, y, sv, 'mono kucuk'); });
           y += 20;
           st.forEach(function (sr) {
@@ -250,7 +250,7 @@
       }
 
       y += 18; ayrac(); y += 20;
-      yazi(KENAR, y, 'OdyoBOT ile oluşturuldu · ' + U.fmtDate(U.todayISO()) + ' · Değerler dB HL.', 'kucuk');
+      yazi(KENAR, y, 'OdyoBOT ile oluşturuldu · ' + U.fmtDate(U.todayISO()) + ' · Odyogram değerleri dB HL.', 'kucuk');
       y += 6;
     }
 
