@@ -662,6 +662,33 @@
             </div>
           </details>
 
+          <!-- 2. adım: timpanometri (vaka-testler.js). Eğri girilen değerlerden çizilir. -->
+          <details class="compose ek-olcum" id="v-timpan">
+            <summary data-k="vakalarim.tBaslik">Timpanometri (isteğe bağlı)</summary>
+            <div class="yedek-ic">
+              <p class="note" data-k="vakalarim.tNot">Hepsi boş bırakılabilir. Tepe basıncı daPa (tam sayı, −600 ile 400), kompliyans ve kanal hacmi ml (ör. 0,6; 0 ile 9,99).</p>
+              <div class="ek-kulak sag" data-kulak="sag">
+                <h4 data-k="vakalarim.tSag">Sağ kulak</h4>
+                <div class="ek-grid">
+                  <div class="fld"><label for="v-t-basinc-sag" data-k="vakalarim.tBasinc">Tepe basıncı (daPa)</label><input class="t-deger" id="v-t-basinc-sag" type="number" step="1"><div class="alan-uyari"></div></div>
+                  <div class="fld"><label for="v-t-kompliyans-sag" data-k="vakalarim.tKompliyans">Kompliyans (ml)</label><input class="t-deger" id="v-t-kompliyans-sag" type="text" inputmode="decimal" maxlength="5"><div class="alan-uyari"></div></div>
+                  <div class="fld"><label for="v-t-hacim-sag" data-k="vakalarim.tHacim">Kanal hacmi (ml)</label><input class="t-deger" id="v-t-hacim-sag" type="text" inputmode="decimal" maxlength="5"><div class="alan-uyari"></div></div>
+                  <label class="anahtar"><input type="checkbox" id="v-t-duz-sag"> <span data-k="vakalarim.tDuz">Tepe yok (düz eğri)</span></label>
+                </div>
+              </div>
+              <div class="ek-kulak sol" data-kulak="sol">
+                <h4 data-k="vakalarim.tSol">Sol kulak</h4>
+                <div class="ek-grid">
+                  <div class="fld"><label for="v-t-basinc-sol" data-k="vakalarim.tBasincSol">Tepe basıncı (daPa)</label><input class="t-deger" id="v-t-basinc-sol" type="number" step="1"><div class="alan-uyari"></div></div>
+                  <div class="fld"><label for="v-t-kompliyans-sol" data-k="vakalarim.tKompliyansSol">Kompliyans (ml)</label><input class="t-deger" id="v-t-kompliyans-sol" type="text" inputmode="decimal" maxlength="5"><div class="alan-uyari"></div></div>
+                  <div class="fld"><label for="v-t-hacim-sol" data-k="vakalarim.tHacimSol">Kanal hacmi (ml)</label><input class="t-deger" id="v-t-hacim-sol" type="text" inputmode="decimal" maxlength="5"><div class="alan-uyari"></div></div>
+                  <label class="anahtar"><input type="checkbox" id="v-t-duz-sol"> <span data-k="vakalarim.tDuzSol">Tepe yok (düz eğri)</span></label>
+                </div>
+              </div>
+              <div class="figure timpan-panel" id="v-timpan-grafik" hidden></div>
+            </div>
+          </details>
+
           <div class="fld"><label for="v-notlar" data-k="vakalarim.notlarEtiket">Notlar</label><textarea id="v-notlar" maxlength="2000"></textarea></div>
           <div class="admin-bar">
             <button class="btn primary" type="submit" id="v-kaydet">Kaydet</button>
@@ -680,6 +707,15 @@
           <p data-k="vakalarim.b.hataAlan" data-m="hataAlan">Kaydedilmedi: kırmızı alanları düzelt ({n} alan).</p>
           <p data-k="vakalarim.b.hataKimlik" data-m="hataKimlik">Kaydedilmedi: vaka kimliği gerekli.</p>
           <p data-k="vakalarim.b.hataDepo" data-m="hataDepo">Kaydedilemedi. Tarayıcının depolama alanı dolu ya da kapalı olabilir (örneğin gizli sekmede).</p>
+        </div>
+      </details>
+      <!-- Ek test yazıları (vaka-testler.js çizimlerde kullanır): yalnızca yöneticiye görünür, buradan düzenlenir. -->
+      <details class="compose b-metinler" id="vt-metinler">
+        <summary>Timpanogram yazıları (yönetici)</summary>
+        <div class="yedek-ic">
+          <p data-k="vakalarim.t.baslik" data-m="baslik">Timpanogram</p>
+          <p data-k="vakalarim.t.uretilmis" data-m="uretilmis">Girilen değerlerden üretilmiş çizimdir, cihaz kaydı değildir.</p>
+          <p data-k="vakalarim.t.duz" data-m="duz">tepe yok</p>
         </div>
       </details>
     </div>
@@ -733,6 +769,7 @@
 <script src="app.js"></script>
 <script src="akis.js"></script>
 <script src="odyo-hesap.js"></script>
+<script src="vaka-testler.js"></script>
 <script src="vakalarim.js"></script>
 <script src="cikti.js"></script>
 <script src="maskeleme-kural.js"></script>

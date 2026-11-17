@@ -1,3 +1,16 @@
+# PROGRESS — Yol haritası 2. adım: Vakalarım'a yeni testler (2026-11-17, başladı)
+
+Dal: `adim2-testler` (`adim1-tasarim` + v29 bildirim değişikliği üstüne). **Yayında değil.**
+
+| Bölüm | Durum | Not |
+|---|---|---|
+| Timpanometri: giriş, eğri, kayıt | ✅ (tip sınıflaması bekliyor) | `vaka-testler.js` (yeni dosya, vakalarim.js'ten önce yüklenir). Modül yapısı: `window.VakaTestleri` (temizle, formOku, formDoldur, ayrinti, csv, satirlar, svg). Kayıt `v.timpan.{sag,sol}` = `{basinc (daPa tam sayı −600..400), kompliyans, hacim (ml, 0..9,99, 2 ondalık), duz}`. Eğri tepe noktası + kompliyanstan çan biçiminde, sabit genişlik (σ 42 daPa ≈ yarı yükseklikte 100 daPa); "girilen değerlerden üretilmiş çizimdir" yazısı ekranda ve çıktıda. Yedek/geri yükleme (bozuk değer reddedilir), CSV, JPEG/PDF çıktısı kapsıyor. Eski kayıtlar değişmiyor. Yazılar `#vt-metinler` + form `data-k` (yönetici). Test t-timpan.js 36/36 (açık/koyu, 360 px). |
+| Timpanogram tipi (A, As, Ad, B, C) | ⏳ | **Sınır değerleri proje sahibinden bekleniyor.** |
+| Akustik refleks | ⏳ | Kulak adlandırma kuralı (uyarılan/prob kulağı) ve şemada işaretleme proje sahibine soruldu. |
+| OAE, ABR | Bekliyor | |
+
+---
+
 # PROGRESS — Yol haritası 1. adım: tasarım yenilemesi (2026-11-17)
 
 Yol haritası: `YOL-HARITASI.md`. Dal: `adim1-tasarim` (**onaylandı, main'e birleştirildi, yayında 2026-11-17**). sw **v27**.

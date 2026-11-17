@@ -358,6 +358,12 @@ input.db.hatali { border-color: var(--danger); border-width: 2px; background: co
 .ek-tablo td, .ek-tablo th { text-align: left; padding-left: 8px; }
 .vek { font-size: 12.5px; }
 .ek-grid .alan-uyari { padding-left: 0; }
+/* Timpanogram (vaka-testler.js): eğri girilen değerlerden üretilir; tepe yok yazısı kulak renginde. */
+.timpan-panel { margin-top: 4px; }
+.timpan-kap { display: flex; flex-direction: column; gap: 4px; }
+.timpan-kap .og-baslik { padding-left: 0; }
+.t-duz.sag { fill: var(--right); } .t-duz.sol { fill: var(--left); }
+.t-deger:disabled { opacity: .55; }
 
 /* Vakalarım: seçim modu (OdyoBOT'a gönderme) */
 .liste-bas { align-items: center; }

@@ -7,6 +7,7 @@
   if (!U || !document.getElementById('vakalarim')) return;
   var h = U.h, $ = U.$;
   var Hesap = window.OdyoHesap;   // hesaplama kuralları: odyo-hesap.js
+  var TESTLER = window.VakaTestleri || [];   // 2. adımın ek testleri (vaka-testler.js): timpanometri, ...
 
   /* ---------- sabitler ---------- */
   var ANA_FREKANSLAR = [125, 250, 500, 1000, 2000, 4000, 8000];
@@ -134,6 +135,8 @@
     if (v.weber != null && v.weber !== '') {
       if (WEBER_AD[v.weber]) out.weber = v.weber; else sorun('Weber değeri geçersiz');
     }
+    // ek testler (her biri kendi alanını doğrular; yoksa kayda yazılmaz)
+    TESTLER.forEach(function (m) { var x = m.temizle(v[m.alan], sorun); if (x !== undefined) out[m.alan] = x; });
     return out;
   }
 
@@ -529,6 +532,7 @@
       v.esik[a.k][a.y][String(a.f)] = e;
     });
     ekleriOku(v, hatalar);
+    TESTLER.forEach(function (m) { var x = m.formOku(hatalar); if (x !== undefined) v[m.alan] = x; });
     return { vaka: v, hatalar: hatalar };
   }
 
@@ -550,6 +554,7 @@
     });
     araGoster(araVar || ayarOku('odybot:araFrekans') === '1');
     ekleriDoldur(v);
+    TESTLER.forEach(function (m) { m.formDoldur(v ? v[m.alan] : undefined); });
     if (secili) secili.td.classList.remove('secili');
     secili = null;
     kulakSec('sag');
@@ -631,6 +636,7 @@
       if (ilk.k !== seciliKulak) kulakSec(ilk.k);
       if (ilk.f != null && araMi(ilk.f) && !$('v-ara').checked) araGoster(true);
       if (ilk.ek) $('v-ek').open = true;
+      if (ilk.panel) $(ilk.panel).open = true;
       msg.textContent = 'Kırmızı alanları düzelt (' + r.hatalar.length + ' alan).'; msg.className = 'msg err';
       bildirimGoster(BM('hataAlan').replace('{n}', r.hatalar.length), true);
       ilk.giris.focus();
@@ -801,6 +807,7 @@
     });
     ikiKulak('Rinne', function (k) { var r = v.rinne && v.rinne[k]; return r && r !== 'yapilmadi' ? RINNE_AD[r].toLowerCase() : ''; });
     if (v.weber && v.weber !== 'yapilmadi') p.push('Weber: ' + WEBER_AD[v.weber].toLowerCase());
+    TESTLER.forEach(function (m) { var o = m.ozet && m.ozet(v[m.alan]); if (o) p.push(o); });
     return p.join(' · ');
   }
   // Ek ölçümler: [[başlık, sağ, sol], ...] (boş satırlar yok). Ekran ve çıktı (cikti.js) ortak kullanır.
@@ -855,7 +862,7 @@
       h('h4', { text: 'Eşikler' }),
       esikTablosu(v),
       ekTablosu(v)
-    ];
+    ].concat(TESTLER.map(function (m) { return m.ayrinti(v[m.alan]); }));
     if (v.notlar) parca.push(h('h4', { text: 'Notlar' }), h('p', { 'class': 'vnot', text: v.notlar }));
     var bota = h('button', { 'class': 'btn bot-gonder', type: 'button', text: 'OdyoBOT\'a gönder' });
     bota.addEventListener('click', function () { botaGonder([v.id]); });
@@ -993,6 +1000,9 @@
     );
   });
   CSV_SUTUNLARI.push({ ad: 'Weber', al: function (v) { return v.weber ? WEBER_AD[v.weber] : ''; } });
+  TESTLER.forEach(function (m) {
+    (m.csv || []).forEach(function (c) { CSV_SUTUNLARI.push({ ad: c.ad, al: function (v) { return c.al(v[m.alan]); } }); });
+  });
   var CSV_SON = [{ ad: 'Notlar', al: function (v) { return v.notlar; } }];
   function csvIcerik(l) {
     var sut = CSV_SUTUNLARI.concat(CSV_SON);
@@ -1104,6 +1114,7 @@
     ptaFrekanslari: function () { return Hesap.PTA_FREKANSLARI[ptaTur]; },
     sonucSatirlari: sonucSatirlari, ekSatirlari: ekSatirlari, ekVarMi: ekVarMi, esikMetni: esikMetni,
     weberMetni: function (v) { return v.weber ? WEBER_AD[v.weber] : ''; },
+    testler: TESTLER,
     ozetMetni: ozetMetni, kucukGrafik: kucukGrafik, botaGonder: botaGonder, GONDERILEN_ANAHTAR: GONDERILEN_ANAHTAR
   };
 })();

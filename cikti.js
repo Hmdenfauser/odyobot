@@ -80,7 +80,8 @@
       '.os.sag{stroke:' + R.sag + '}.os.sol{stroke:' + R.sol + '}.notr .os{stroke:' + R.soluk + '}' +
       '.og-hat{fill:none;stroke-width:1.6;stroke-linejoin:round}' +
       '.og-hat.sag{stroke:' + R.sag + '}.og-hat.sol{stroke:' + R.sol + '}' +
-      '.og-hat.kemik{stroke-dasharray:5 4}.og-hat.notr{stroke:' + R.soluk + '}';
+      '.og-hat.kemik{stroke-dasharray:5 4}.og-hat.notr{stroke:' + R.soluk + '}' +
+      '.t-duz.sag{fill:' + R.sag + '}.t-duz.sol{fill:' + R.sol + '}';
   }
 
   /* ---------- metin ölçme ve satır kırma (sayfadaki yazı tipiyle) ---------- */
@@ -204,6 +205,27 @@
         }
         if (weber) { yazi(c1, y, 'Weber', 'etiket'); yazi(c2, y, weber, 'deger'); y += 20; }
       }
+
+      // Ek testler (vaka-testler.js): başlık, girilen değerlerden üretilmiş çizim, değer tablosu.
+      (V.testler || []).forEach(function (m) {
+        var x = v[m.alan], st = m.satirlar ? m.satirlar(x) : [];
+        if (!x || !st.length) return;
+        y += 14; ayrac(); y += 30;
+        yazi(KENAR, y, m.baslik(), 'bolum'); y += 16;
+        var g = m.svg && m.svg(x);
+        if (g) {
+          var vb = g.getAttribute('viewBox').split(' '), gw = 480, gh = Math.round(gw * (+vb[3]) / (+vb[2]));
+          g.removeAttribute('role'); g.removeAttribute('aria-label');
+          g.setAttribute('x', (GEN - gw) / 2); g.setAttribute('y', y); g.setAttribute('width', gw); g.setAttribute('height', gh);
+          kok.appendChild(g); y += gh + 14;
+          yazi(KENAR, y, m.not(), 'kucuk'); y += 24;
+        } else y += 8;
+        var d1 = KENAR, d2 = KENAR + 260, d3 = KENAR + 470;
+        yazi(d2, y, 'SAĞ', 'mono kulak-sag', { 'font-size': '12px' });
+        yazi(d3, y, 'SOL', 'mono kulak-sol', { 'font-size': '12px' });
+        y += 20;
+        st.forEach(function (sr) { yazi(d1, y, sr[0], 'etiket'); yazi(d2, y, sr[1], 'deger'); yazi(d3, y, sr[2], 'deger'); y += 20; });
+      });
 
       // Notlar.
       if (v.notlar) {
