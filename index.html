@@ -342,13 +342,25 @@
           <p data-k="odybot.m.bitti" data-m="bitti">Seçtiğin vakaların hepsine baktık.</p>
           <p data-k="odybot.m.rkSecenek" data-m="rkSecenek">Akustik refleks örüntüsünü yorumla</p>
           <p data-k="odybot.m.rkBaslik" data-m="rkBaslik">Akustik refleks örüntüsü</p>
-          <p data-k="odybot.m.rkGiris" data-m="rkGiris">Kulak adı uyaranın verildiği kulaktır (sağ kontra: uyaran sağda, prob solda). Bir yolda girilen frekansların hepsi "Yok" ise o refleks yok sayılır; yükselmiş eşikler "var" kabul edilir.</p>
+          <p data-k="odybot.m.rkGiris" data-m="rkGiris">Kulak adı uyaranın verildiği kulaktır (sağ kontra: uyaran sağda, prob solda). Bir yolda girilen frekansların hepsi "Yok" ise ya da o yola hiç değer girilmemişse refleks yok sayılır; yükselmiş eşikler "var" kabul edilir.</p>
           <p data-k="odybot.m.rkVeriYok" data-m="rkVeriYok">Bu vakada akustik refleks girilmemiş.</p>
-          <p data-k="odybot.m.rkEksik" data-m="rkEksik">Örüntü için dört yolun hepsi gerekli (sağ ipsi, sağ kontra, sol ipsi, sol kontra). Girilmeyen: {eksik}.</p>
+          <p data-k="odybot.m.rkGirilmedi" data-m="rkGirilmedi">Değer girilmeyen yollar "yok" sayıldı: {liste}. Bu yolları ölçmediysen yorum yanıltıcı olabilir.</p>
+          <p data-k="odybot.m.rkGirilmediKisa" data-m="rkGirilmediKisa">değer girilmedi</p>
           <p data-k="odybot.m.rkLejant" data-m="rkLejant">Renkli çizgi: refleks var (kırmızı sağdan, mavi soldan uyaran; noktalı ipsilateral, düz kontralateral). Gri kesikli: refleks yok. Turuncu: olası bölge.</p>
           <p data-k="odybot.m.rkHepsiVar" data-m="rkHepsiVar">Bütün refleksler var. Bu, ölçülen frekanslarda orta kulak, koklea, 8. sinir, beyin sapı ve 7. sinir yolunun işlediğiyle uyumludur.</p>
-          <p data-k="odybot.m.rkHepsiYok" data-m="rkHepsiYok">Bütün refleksler yok. Tek bir bölgeyle açıklanamaz. Olası nedenler: iki taraflı orta kulak (iletim) patolojisi, iki taraflı ileri işitme kaybı, işitsel nöropati spektrum bozukluğu ya da prob/cihaz sorunu.</p>
-          <p data-k="odybot.m.rkTanimsiz" data-m="rkTanimsiz">Bu örüntü (yok: {yok}) tanımlı örüntülerden birine uymuyor; tek bir bölgeyle açıklanamaz. Ölçümü tekrarla, prob yerleşimini kontrol et.</p>
+          <p data-k="odybot.m.rkHepsiYokBaslik" data-m="rkHepsiYokBaslik">Bütün refleksler yok.</p>
+          <p data-k="odybot.m.rkHepsiYok" data-m="rkHepsiYok">Tek bir bölgeyle açıklanamaz; iki tarafın birlikte etkilenmesi gerekir. Olası birleşimler aşağıda. İşitsel nöropati spektrum bozukluğunda da refleks beklenmez; prob ya da cihaz sorununu da dışla.</p>
+          <p data-k="odybot.m.rkBirlesimBaslik" data-m="rkBirlesimBaslik">İki örüntünün birleşimi</p>
+          <p data-k="odybot.m.rkBirlesim" data-m="rkBirlesim">Bu örüntü tek bir bölgeyle açıklanamıyor; iki tanımlı örüntünün birlikte görülmesiyle uyumlu. Olası birleşimler (şemada turuncu):</p>
+          <p data-k="odybot.m.rkIpsiTekBaslik" data-m="rkIpsiTekBaslik">Yalnız ipsilateral refleks yok: {liste}</p>
+          <p data-k="odybot.m.rkIpsiTek" data-m="rkIpsiTek">Kontralateral refleksler varken yalnız ipsilateralin yok olması tanımlı bir örüntü değildir ve tek başına yer göstermez. İpsilateral ölçüm artefakta daha yatkındır (uyaran ve prob tonu aynı kulakta). Prob yerleşimini kontrol edip ölçümü tekrarla; sürerse diğer bulgularla birlikte değerlendir.</p>
+          <p data-k="odybot.m.rkAd_dikey" data-m="rkAd_dikey">dikey ({taraf})</p>
+          <p data-k="odybot.m.rkAd_capraz" data-m="rkAd_capraz">çapraz ({taraf})</p>
+          <p data-k="odybot.m.rkAd_tersL" data-m="rkAd_tersL">ters L ({taraf})</p>
+          <p data-k="odybot.m.rkAd_yatay" data-m="rkAd_yatay">yatay</p>
+          <p data-k="odybot.m.rkAd_tekKutu" data-m="rkAd_tekKutu">tek kutu ({taraf})</p>
+          <p data-k="odybot.m.rkAd_ipsiTek" data-m="rkAd_ipsiTek">yalnız {taraf} ipsi</p>
+          <p data-k="odybot.m.rk_ipsiTek" data-m="rk_ipsiTek">Yalnız {taraf} ipsilateral yokluğu yer göstermez; ölçümü tekrarla.</p>
           <p data-k="odybot.m.rkOruntu_dikey" data-m="rkOruntu_dikey">Dikey örüntü: prob {taraf} kulaktayken refleks yok.</p>
           <p data-k="odybot.m.rkOruntu_capraz" data-m="rkOruntu_capraz">Çapraz (diyagonal) örüntü: uyaran {taraf} kulağa verilince refleks yok.</p>
           <p data-k="odybot.m.rkOruntu_tersL" data-m="rkOruntu_tersL">Ters L örüntüsü: iki kontralateral refleks ve {taraf} ipsilateral refleks yok.</p>

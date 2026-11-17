@@ -21,9 +21,9 @@ var s;
 s = R.degerlendir(vaka(D('var', 'var', 'var', 'var')));
 bak('hepsi var', s.kod === 'hepsiVar');
 s = R.degerlendir(vaka(D('yok', 'yok', 'yok', 'yok')));
-bak('hepsi yok: tek bölgeyle açıklanmaz', s.kod === 'hepsiYok');
+bak('hepsi yok: iki taraflı birleşimler (orta kulak, 7. sinir, koklea/8. sinir)', s.kod === 'hepsiYok' && s.birlesimler.map(function (c) { return c[0].id + '+' + c[1].id; }).join() === 'ortaHafif+ortaHafif,n7+n7,afferent+afferent');
 s = R.degerlendir(vaka(D('yok', 'var', 'var', null)));
-bak('eksik yol', s.kod === 'eksik' && s.eksik.join() === 'sol-kontra');
+bak('girilmeyen yol "yok" sayılır (dikey sağ)', s.kod === 'eslesti' && s.oruntu === 'dikey' && s.girilmedi.join() === 'sol-kontra', s.kod + ' ' + s.girilmedi);
 s = R.degerlendir({ esik: {} });
 bak('refleks yok', s.kod === 'veriYok');
 
@@ -52,11 +52,24 @@ s = R.degerlendir(vaka(D('var', 'var', 'var', 'yok')));
 bak('tek kutu sol', s.oruntu === 'tekKutu' && adaylar(s) === 'gecis:sol', adaylar(s));
 // Tanımsız: yalnız sağ ipsi yok; iki ipsi yok
 s = R.degerlendir(vaka(D('yok', 'var', 'var', 'var')));
-bak('yalnız sağ ipsi yok → tanımsız', s.kod === 'tanimsiz');
+bak('yalnız sağ ipsi yok → yer göstermez (ipsiTek)', s.kod === 'ipsiTek' && adaylar(s) === 'ipsiTek:sag', adaylar(s));
 s = R.degerlendir(vaka(D('yok', 'var', 'yok', 'var')));
-bak('iki ipsi yok → tanımsız', s.kod === 'tanimsiz');
+bak('iki ipsi yok → yer göstermez', s.kod === 'ipsiTek' && adaylar(s) === 'ipsiTek:sag,ipsiTek:sol', adaylar(s));
+function bir(s) { return s.birlesimler.map(function (c) { return c.map(function (a) { return a.id + ':' + a.taraf; }).join('+'); }).join(' , '); }
 s = R.degerlendir(vaka(D('yok', 'var', 'yok', 'yok')));
-bak('sağ ipsi + sol ipsi + sol kontra → tanımsız', s.kod === 'tanimsiz');
+bak('sağ ipsi + sol ipsi + sol kontra → sağ dikey + sol çapraz', s.kod === 'birlesim' && bir(s) === 'ortaHafif:sag+afferent:sol , n7:sag+afferent:sol', bir(s));
+s = R.degerlendir(vaka(D('yok', 'yok', 'yok', 'var')));
+bak('sağ ipsi + sağ kontra + sol ipsi → sol dikey + sağ çapraz', s.kod === 'birlesim' && bir(s) === 'ortaHafif:sol+afferent:sag , n7:sol+afferent:sag', bir(s));
+// 16 birleşimin hepsi bir açıklama alıyor
+var adlar = ['var', 'yok'], kodlar = {};
+adlar.forEach(function (a) { adlar.forEach(function (b) { adlar.forEach(function (c) { adlar.forEach(function (d4) {
+  var x = R.degerlendir(vaka(D(a, b, c, d4)));
+  kodlar[[a, b, c, d4].join('/')] = x.kod + (x.kod === 'birlesim' && !x.birlesimler.length ? '!' : '');
+}); }); }); });
+var bos = Object.keys(kodlar).filter(function (k) { return /!|tanimsiz|undefined/.test(kodlar[k]); });
+bak('16 birleşimin hepsi açıklandı', Object.keys(kodlar).length === 16 && !bos.length, JSON.stringify(kodlar));
+s = R.degerlendir({ refleks: {} });
+bak('hiç değer girilmemiş → veri yok', s.kod === 'veriYok');
 
 // Kısmi: bir frekansta yok, diğerinde var → "var" sayılır, kismi listede
 var vk = vaka(D('var', 'var', 'var', 'var')); vk.refleks.sag.ipsi['4000'] = 'yok';

@@ -283,15 +283,16 @@
   function rkSema(s) {
     var vurgu = {};
     (s.adaylar || []).forEach(function (a) { a.dugumler.forEach(function (d) { vurgu[d] = true; }); });
+    (s.birlesimler || []).forEach(function (c) { c.forEach(function (a) { a.dugumler.forEach(function (d) { vurgu[d] = true; }); }); });
     var svg = sv('svg', { viewBox: '0 0 360 300', 'class': 'rk-sema', role: 'img' });
-    var ozet = RK.YOLLAR.map(function (y) { return rkYolAd(y) + ' ' + (s.durumlar[y].durum || 'girilmedi'); }).join(', ');
-    svg.setAttribute('aria-label', 'Refleks arkı: ' + ozet + (s.adaylar && s.adaylar.length ? '. Olası bölge vurgulandı.' : ''));
+    var ozet = RK.YOLLAR.map(function (y) { return rkYolAd(y) + ' ' + s.durumlar[y].durum; }).join(', ');
+    svg.setAttribute('aria-label', 'Refleks arkı: ' + ozet + (Object.keys(vurgu).length ? '. Olası bölge vurgulandı.' : ''));
     function mx(x, X) { return X === 'sag' ? x : 360 - x; }
     function cizgi(X, pts, sinif) { sv('polyline', { points: pts.map(function (p) { return mx(p[0], X) + ',' + p[1]; }).join(' '), 'class': sinif }, svg); }
     ['sag', 'sol'].forEach(function (X) {
       var renk = X === 'sag' ? ' sag' : ' sol';
       var ip = s.durumlar[X + '-ipsi'].durum, ko = s.durumlar[X + '-kontra'].durum;
-      function sinif(d, ipsi) { return 'rk-yol' + renk + (ipsi ? ' ip' : '') + (d === 'yok' ? ' yok' : d == null ? ' bos' : ''); }
+      function sinif(d, ipsi) { return 'rk-yol' + renk + (ipsi ? ' ip' : '') + (d === 'yok' ? ' yok' : ''); }
       cizgi(X, [[56, 262], [56, 100], [98, 40], [134, 154], [104, 262]], sinif(ip, true));
       cizgi(X, [[68, 262], [68, 100], [110, 40], [180, 92], [220, 154], [256, 262]], sinif(ko, false));
       if (vurgu[X + '.gecis']) cizgi(X, [[110, 40], [180, 92]], 'rk-vurgu');
@@ -312,29 +313,42 @@
   function rkNot(n) {
     return m('rk_' + n.kod, { taraf: rkTaraf(n.taraf), Taraf: rkBuyuk(n.taraf), tip: n.tip, db: n.db, abg: n.abg != null ? String(n.abg).replace('.', ',') : '' });
   }
+  function rkAdayAd(a) { return m('rkAday_' + a.id, { taraf: a.taraf ? rkTaraf(a.taraf) : '', Taraf: a.taraf ? rkBuyuk(a.taraf) : '' }); }
+  function rkOruntuAd(a) { return m('rkAd_' + a.oruntu, { taraf: a.taraf ? rkTaraf(a.taraf) : '' }); }
+  function rkNotlar(a, ana) { a.notlar.forEach(function (n) { ana.appendChild(h('div', { 'class': 'meta', text: rkNot(n) })); }); }
   function refleksGoster(v) {
     var s = RK.degerlendir(v);
     var durumSatir = h('ul', { 'class': 'b-liste' }, RK.YOLLAR.map(function (y) {
-      var d = s.durumlar[y].durum;
-      return h('li', { text: rkYolAd(y) + ': ' + (d === 'var' ? 'var' : d === 'yok' ? 'yok' : 'girilmedi') });
+      var d = s.durumlar[y];
+      return h('li', { text: rkYolAd(y) + ': ' + d.durum + (d.girilmedi ? ' (' + (m('rkGirilmediKisa') || 'girilmedi') + ')' : '') });
     }));
     bot([h('p', { 'class': 'b-vaka-baslik', text: m('rkBaslik') }), h('p', { text: m('rkGiris') }), durumSatir]);
     if (s.kod === 'veriYok') { bot(m('rkVeriYok')); sonrakiSecenekler(v); return; }
-    if (s.kod === 'eksik') { bot(m('rkEksik', { eksik: s.eksik.map(rkYolAd).join(', ') })); sonrakiSecenekler(v); return; }
     var parca = [rkSema(s), h('p', { 'class': 'note', text: m('rkLejant') })];
+    if (s.girilmedi.length) parca.push(h('p', { 'class': 'b-uyari', text: m('rkGirilmedi', { liste: s.girilmedi.map(rkYolAd).join(', ') }) }));
     if (s.kod === 'hepsiVar') parca.push(h('p', { text: m('rkHepsiVar') }));
-    else if (s.kod === 'hepsiYok') {
-      parca.push(h('p', { text: m('rkHepsiYok') }));
-      parca.push(h('ul', { 'class': 'b-liste' }, s.notlar.map(function (n) { return h('li', { text: rkNot(n) }); })));
-    } else if (s.kod === 'tanimsiz') parca.push(h('p', { text: m('rkTanimsiz', { yok: s.yok.map(rkYolAd).join(', ') }) }));
-    else {
+    else if (s.kod === 'eslesti') {
       parca.push(h('p', { 'class': 'b-vaka-baslik', text: m('rkOruntu_' + s.oruntu, { taraf: s.taraf ? rkTaraf(s.taraf) : '' }) }));
       parca.push(h('p', { text: m('rkOlasi') }));
       parca.push(h('ul', { 'class': 'b-liste' }, s.adaylar.map(function (a) {
-        var li = h('li', null, [h('strong', { text: m('rkAday_' + a.id, { taraf: a.taraf ? rkTaraf(a.taraf) : '', Taraf: a.taraf ? rkBuyuk(a.taraf) : '' }) })]);
-        a.notlar.forEach(function (n) { li.appendChild(h('div', { 'class': 'meta', text: rkNot(n) })); });
+        var li = h('li', null, [h('strong', { text: rkAdayAd(a) })]);
+        rkNotlar(a, li);
         return li;
       })));
+    } else if (s.kod === 'birlesim' || s.kod === 'hepsiYok') {
+      parca.push(h('p', { 'class': 'b-vaka-baslik', text: m(s.kod === 'hepsiYok' ? 'rkHepsiYokBaslik' : 'rkBirlesimBaslik') }));
+      parca.push(h('p', { text: m(s.kod === 'hepsiYok' ? 'rkHepsiYok' : 'rkBirlesim') }));
+      parca.push(h('ul', { 'class': 'b-liste' }, s.birlesimler.map(function (c) {
+        var li = h('li', null, [h('strong', { text: rkAdayAd(c[0]) + ' + ' + rkAdayAd(c[1]) }),
+          h('div', { 'class': 'meta', text: rkOruntuAd(c[0]) + ' + ' + rkOruntuAd(c[1]) })]);
+        var gor = {};
+        c.forEach(function (a) { a.notlar.forEach(function (n) { var k = JSON.stringify(n); if (gor[k]) return; gor[k] = 1; li.appendChild(h('div', { 'class': 'meta', text: rkNot(n) })); }); });
+        return li;
+      })));
+      if (s.kod === 'hepsiYok') parca.push(h('ul', { 'class': 'b-liste' }, s.notlar.map(function (n) { return h('li', { text: rkNot(n) }); })));
+    } else if (s.kod === 'ipsiTek') {
+      parca.push(h('p', { 'class': 'b-vaka-baslik', text: m('rkIpsiTekBaslik', { liste: s.adaylar.map(function (a) { return rkTaraf(a.taraf) + ' ipsi'; }).join(' ve ') }) }));
+      parca.push(h('p', { text: m('rkIpsiTek') }));
     }
     if (s.kismi.length) parca.push(h('p', { 'class': 'note', text: m('rkKismi', { liste: s.kismi.map(function (k) { return rkYolAd(k.yol) + ' ' + k.frekanslar.join(', ') + ' Hz'; }).join('; ') }) }));
     bot(parca);

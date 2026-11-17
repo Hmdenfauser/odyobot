@@ -7,6 +7,7 @@ Proje sahibinin isteği: refleks sonucuna göre olası bölge OdyoBOT asistanın
 - Yalnızca "Yok" girilen yol yok sayılır (bir yolda girilen frekansların hepsi yok); yükselmiş eşik "var" (norm yok). Kısmi "yok" frekanslar ayrıca yazılır.
 - **Ekran:** OdyoBOT'ta refleksi girilmiş vakada "Akustik refleks örüntüsünü yorumla" seçeneği; sade refleks arkı şeması (`rkSema`: renk uyaran kulağı, noktalı ipsi, düz kontra, yok yollar gri kesikli, olası bölge turuncu `--rk-aday`). Bütün metinler `#b-metinler` (`rk*`), yönetici düzenler. "Tanı koymaz" notu ve kaynak satırı her yorumda.
 - Test: `testler/refleks-test.js` 24/24; ekran t-rk.js 20/20 (açık/koyu, 360 px). Diğer testler temiz.
+- **Güncelleme (proje sahibinin isteği):** değer girilmeyen yol "yok" sayılır (ekranda uyarıyla). 16 birleşimin hepsi açıklanır: tek bölge (11), iki tanımlı örüntünün birleşimi (örn. sağ ipsi + sol ipsi + sol kontra = sağ dikey + sol çapraz), hepsi yok (iki taraflı aynı bölge birleşimleri + işitsel nöropati notu), yalnız ipsilateral yokluğu (tek ya da iki taraflı) tanımlı örüntü değil → "yer göstermez, ölçümü tekrarla" (ders slaytı 21: ipsilateral artefakta yatkın; internette bu örüntüye yer atayan güvenilir kaynak bulunamadı). Test refleks-test.js 27/27 (16 birleşim taraması dahil), t-rk.js 26/26.
 - Proje sahibi onaylarsa main'e birleştirilip yayınlanır.
 
 ---
