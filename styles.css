@@ -733,3 +733,13 @@ button.btn.esik-tg[aria-pressed="true"] { background: var(--accent); border-colo
 .alan-uyari { padding-left: 0; }
 .lejant-ac > summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; padding: 0 6px; font-size: 14px; font-weight: 500; color: var(--accent); }
 .lejant-ac > summary:focus-visible { outline: 3px solid var(--accent); outline-offset: -3px; border-radius: 8px; }
+
+/* Ders notları: yalnızca yöneticiye görünen panel (konu başlıkları, not ekleme) */
+.yonetici-panel { display: none; }
+.yonetici .yonetici-panel { display: block; }
+.yonetici-panel h3 { margin-top: 4px; }
+.grup-yonet { gap: 10px; }
+.grup-satir { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; align-items: end; }
+.grup-ekle { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: end; }
+@media (max-width: 380px) { .grup-satir { grid-template-columns: 1fr 1fr; } .grup-satir .fld { grid-column: 1 / -1; } }
+.not-grup-sec { border-top: 1px solid var(--line); padding-top: 12px; }

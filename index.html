@@ -378,21 +378,9 @@
           <h3>Renk teması</h3>
           <p class="note">Seçtiğin tema uygulamayı açan herkeste değişir.</p>
           <div class="palgrid" id="palettes"></div>
+          <div class="msg" id="pal-msg" role="status"></div>
         </div>
-        <div class="stack" style="gap:10px">
-          <h3>Ders notu ekle</h3>
-          <form class="f" id="an-form" autocomplete="off" style="padding:0">
-            <div class="fld"><label for="an-baslik">Başlık</label><input id="an-baslik" type="text" maxlength="100" required></div>
-            <div class="fld"><label for="an-maddeler">Maddeler (her satıra bir madde)</label><textarea id="an-maddeler" maxlength="3000" style="min-height:140px"></textarea></div>
-            <div class="admin-bar">
-              <button class="btn primary" type="submit" id="an-send">Notu yayınla</button>
-              <button class="btn" type="button" id="an-cancel" hidden>Vazgeç</button>
-            </div>
-            <div class="msg" id="an-msg" role="status"></div>
-          </form>
-          <h3>Eklediğin notlar</h3>
-          <div class="board" id="n-admin-list"></div>
-        </div>
+        <p class="note">Ders notu ekleme, düzenleme ve konu başlıkları Ders notları sayfasındaki "Notları ve başlıkları yönet" panelinde.</p>
         <div class="stack" style="gap:10px">
           <h3>Oturum</h3>
           <p class="note" id="who"></p>
@@ -426,7 +414,35 @@
       <div class="fld"><label for="n-ara">Notlarda ara</label><input id="n-ara" type="search" placeholder="Örn. timpanometri" autocomplete="off"></div>
       <!-- Konu grupları ve not satırları (app.js: NOT_GRUPLARI). Satıra dokununca notun kendi sayfası açılır (#not/<anahtar>). -->
       <div class="stack not-gruplar" id="notes-list"></div>
-      <div id="not-grup-admin"></div>
+
+      <!-- Yönetici paneli: yalnızca yönetici girişi yapınca görünür (CSS .yonetici). Konu başlıkları ayar/notGruplari belgesinde (app.js). -->
+      <details class="compose yonetici-panel" id="not-yonetim">
+        <summary>Notları ve başlıkları yönet (yönetici)</summary>
+        <div class="yedek-ic">
+          <h3>Konu başlıkları</h3>
+          <p class="note">Başlığın adını değiştirip "Kaydet"e dokun. Silinen başlığın notları silinmez, "Diğer notlar" altına geçer. Bir notun başlığını notun kendi sayfasından değiştirebilirsin.</p>
+          <div class="stack grup-yonet" id="grup-liste"></div>
+          <div class="grup-ekle">
+            <div class="fld"><label for="grup-yeni">Yeni başlık</label><input id="grup-yeni" type="text" maxlength="60" placeholder="Örn. Vestibüler testler"></div>
+            <button class="btn" type="button" id="grup-ekle">Başlık ekle</button>
+          </div>
+          <div class="msg" id="grup-msg" role="status"></div>
+
+          <h3>Ders notu ekle</h3>
+          <form class="f" id="an-form" autocomplete="off" style="padding:0">
+            <div class="fld"><label for="an-baslik">Not adı</label><input id="an-baslik" type="text" maxlength="100" required></div>
+            <div class="fld"><label for="an-grup">Konu başlığı</label><select id="an-grup"></select></div>
+            <div class="fld"><label for="an-maddeler">Maddeler (her satıra bir madde)</label><textarea id="an-maddeler" maxlength="3000" style="min-height:140px"></textarea></div>
+            <div class="admin-bar">
+              <button class="btn primary" type="submit" id="an-send">Notu yayınla</button>
+              <button class="btn" type="button" id="an-cancel" hidden>Vazgeç</button>
+            </div>
+            <div class="msg" id="an-msg" role="status"></div>
+          </form>
+          <h3>Eklediğin notlar</h3>
+          <div class="board" id="n-admin-list"></div>
+        </div>
+      </details>
       <p class="note" data-k="notlar.not">Bunlar kısa özetlerdir. Sınır değerler kaynağa, yaşa ve kliniğe göre değişir; kendi ders kaynağınla doğrula.</p>
     </div>
   </section>

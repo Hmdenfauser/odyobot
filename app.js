@@ -538,24 +538,47 @@
   // Koddaki temel notlar da yönetici tarafından düzenlenebilir (anahtar: not.<sıra>). Sırayı değiştirme.
   var NOT_ALAN = [{ f: 't', ad: 'Başlık' }, { f: 'p', ad: 'Maddeler (her satıra bir madde)', cok: true }];
   NOTES.forEach(function (n, i) { n.key = 'not.' + i; editable(n, ['t', 'p']); });
-  /* Konu grupları (2026-11-17). Grup adları yöneticiye düzenlenebilir (icerik/not.gruplar).
-     Notlar sıra numarasıyla gruplara bağlanır (NOTES dizisindeki yerleri). Yönetici eklediği notlar (Firestore) "eklenen" grubunda. */
+  /* Konu başlıkları (grupları). Yönetici ekler, adını değiştirir, siler (Ders notları sayfasındaki yönetici paneli).
+     Kayıt: Firestore ayar/notGruplari -> { gruplar: [{ id, ad, notlar: [not anahtarı, ...] }], digerAd, guncelleme }.
+     Belge yoksa aşağıdaki varsayılan başlıklar kullanılır (adları eski icerik/not.gruplar düzenlemesiyle değişmiş olabilir).
+     Hiçbir başlıkta olmayan notlar (yöneticinin yeni eklediği ya da başlığı silinen notlar) en sonda "Diğer notlar" altında. */
   var NOT_GRUPLARI = [
     { id: 'temel', notlar: [0, 1, 3, 4] },
     { id: 'immitans', notlar: [2, 7] },
-    { id: 'elektro', notlar: [5, 6] },
-    { id: 'eklenen', notlar: [] }
+    { id: 'elektro', notlar: [5, 6] }
   ];
-  var GRUP_AD = { key: 'not.gruplar', temel: 'Temel odyometri', immitans: 'İmmitansmetri', elektro: 'Elektrofizyoloji', eklenen: 'Eklenen notlar' };
-  var GRUP_ALAN = [{ f: 'temel', ad: '1. grup adı' }, { f: 'immitans', ad: '2. grup adı' }, { f: 'elektro', ad: '3. grup adı' }, { f: 'eklenen', ad: 'Yöneticinin eklediği notlar' }];
+  var GRUP_AD = { key: 'not.gruplar', temel: 'Temel odyometri', immitans: 'İmmitansmetri', elektro: 'Elektrofizyoloji', eklenen: 'Diğer notlar' };
   editable(GRUP_AD, ['temel', 'immitans', 'elektro', 'eklenen']);
+  var GRUP_BELGESI = 'ayar/notGruplari', GRUP_EN_COK = 30, GRUP_AD_SINIRI = 60;
+  var notDuzen = null;   // Firestore'daki başlık düzeni (yoksa varsayılan)
 
   // Not anahtarı: koddaki notlar "not.<sıra>", yöneticinin eklediği notlar "nd.<belge kimliği>". Adres: #not/<anahtar>.
   function tumNotlar() { return NOTES.concat(customNotes); }
   function notBul(key) { var l = tumNotlar(); for (var i = 0; i < l.length; i++) if (l[i].key === key) return l[i]; return null; }
-  function notGrubu(g) {
-    if (g.id === 'eklenen') return customNotes.slice();
-    return g.notlar.map(function (i) { return NOTES[i]; }).filter(Boolean);
+  function duzenOku(d) {   // Firestore'dan geleni denetle
+    if (!d || !Array.isArray(d.gruplar)) return null;
+    var g = d.gruplar.filter(function (x) { return x && typeof x.id === 'string' && typeof x.ad === 'string' && Array.isArray(x.notlar); })
+      .slice(0, GRUP_EN_COK).map(function (x) { return { id: x.id.slice(0, 40), ad: x.ad.slice(0, GRUP_AD_SINIRI), notlar: x.notlar.filter(function (k) { return typeof k === 'string'; }) }; });
+    return { gruplar: g, digerAd: typeof d.digerAd === 'string' && d.digerAd.trim() ? d.digerAd.slice(0, GRUP_AD_SINIRI) : '' };
+  }
+  function gruplar() {
+    if (notDuzen) return notDuzen.gruplar;
+    return NOT_GRUPLARI.map(function (g) { return { id: g.id, ad: GRUP_AD[g.id], notlar: g.notlar.map(function (i) { return 'not.' + i; }) }; });
+  }
+  function digerAd() { return (notDuzen && notDuzen.digerAd) || GRUP_AD.eklenen; }
+  // Ekranda gösterilecek gruplar: her başlık kendi notlarıyla, sonda başlıksız notlar. Bir not yalnızca ilk başlığında görünür.
+  function grupluNotlar() {
+    var kullanildi = {};
+    var l = gruplar().map(function (g) {
+      var n = g.notlar.map(notBul).filter(function (x) { if (!x || kullanildi[x.key]) return false; kullanildi[x.key] = true; return true; });
+      return { id: g.id, ad: g.ad, notlar: n };
+    });
+    l.push({ id: '', ad: digerAd(), notlar: tumNotlar().filter(function (x) { return !kullanildi[x.key]; }) });
+    return l;
+  }
+  function notunGrubu(key) {
+    var g = gruplar(); for (var i = 0; i < g.length; i++) if (g[i].notlar.indexOf(key) !== -1) return g[i].id;
+    return '';
   }
   function svgOk() {
     var s = document.createElementNS(NS, 'svg'); s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('aria-hidden', 'true'); s.setAttribute('class', 'satir-ok');
@@ -564,22 +587,90 @@
   function renderNotes(q) {
     var box = $('notes-list');
     var qq = araNormal(q || '');
-    var gruplar = NOT_GRUPLARI.map(function (g) {
-      var l = notGrubu(g).filter(function (n) { return !qq || araNormal(n.t + ' ' + n.p.join(' ')).indexOf(qq) !== -1; });
+    var bloklar = grupluNotlar().map(function (g) {
+      var l = g.notlar.filter(function (n) { return !qq || araNormal(n.t + ' ' + n.p.join(' ')).indexOf(qq) !== -1; });
       if (!l.length) return null;
       return h('div', { 'class': 'stack not-grup' }, [
-        h('h3', { 'class': 'not-grup-bas', text: GRUP_AD[g.id] + ' · ' + l.length + ' not' }),
+        h('h3', { 'class': 'not-grup-bas', text: g.ad + ' · ' + l.length + ' not' }),
         h('div', { 'class': 'satir-liste' }, l.map(function (n) {
-          return h('a', { 'class': 'satir', href: '#not/' + n.key }, [h('span', { 'class': 'satir-ad', text: n.t }), svgOk()]);
+          return h('a', { 'class': 'satir', href: '#not/' + encodeURIComponent(n.key) }, [h('span', { 'class': 'satir-ad', text: n.t }), svgOk()]);
         }))
       ]);
     }).filter(Boolean);
-    if (!gruplar.length) { box.replaceChildren(h('div', { 'class': 'empty', text: 'Bu aramayla eşleşen not yok.' })); }
-    else box.replaceChildren.apply(box, gruplar);
-    var ga = $('not-grup-admin'); ga.replaceChildren();
-    var a = adminPart(GRUP_AD.key, GRUP_AD, GRUP_ALAN, 'Grup adlarını düzenle');
-    if (a) ga.appendChild(a);
+    if (!bloklar.length) box.replaceChildren(h('div', { 'class': 'empty', text: 'Bu aramayla eşleşen not yok.' }));
+    else box.replaceChildren.apply(box, bloklar);
+    grupYonetCiz();
   }
+
+  /* Yönetici: başlıkları kaydet. Her değişiklikte bütün düzen tek belgeye yazılır. */
+  function grupMesaj(t, hata) { var m = $('grup-msg'); m.textContent = t || ''; m.className = 'msg' + (hata ? ' err' : ''); }
+  function grupKaydet(liste, diger) {
+    if (!dbRef) { grupMesaj('Veri deposuna ulaşılamıyor.', true); return Promise.reject(new Error('db yok')); }
+    var v = { gruplar: liste.map(function (g) { return { id: g.id, ad: g.ad, notlar: g.notlar.slice() }; }), digerAd: diger, guncelleme: Date.now() };
+    return dbRef.doc(GRUP_BELGESI).set(v).then(function () { grupMesaj('Kaydedildi.'); }, function (e) {
+      grupMesaj('Kaydedilemedi. Düzenleme yetkin olmayabilir ya da bağlantı yok.', true); throw e;
+    });
+  }
+  function kopya() { return gruplar().map(function (g) { return { id: g.id, ad: g.ad, notlar: g.notlar.slice() }; }); }
+  var grupSilHazir = null, grupSilZaman = null;
+  function grupYonetCiz() {
+    var kutu = $('grup-liste');
+    if (!canEdit) { kutu.replaceChildren(); return; }
+    var say = {}; grupluNotlar().forEach(function (g) { say[g.id] = g.notlar.length; });
+    function satir(g, diger) {
+      var id = 'grup-ad-' + (diger ? 'diger' : g.id);
+      var giris = h('input', { id: id, type: 'text', maxlength: String(GRUP_AD_SINIRI) });
+      giris.value = diger ? digerAd() : g.ad;
+      var kaydet = h('button', { 'class': 'btn', type: 'button', text: 'Kaydet' });
+      kaydet.addEventListener('click', function () {
+        var ad = giris.value.trim();
+        if (!ad) { grupMesaj('Başlık adı boş olamaz.', true); return; }
+        var l = kopya();
+        if (!diger) l.forEach(function (x) { if (x.id === g.id) x.ad = ad; });
+        grupKaydet(l, diger ? ad : digerAd()).catch(function () {});
+      });
+      var parca = [h('div', { 'class': 'fld' }, [h('label', { 'for': id, text: (diger ? 'Başlıksız notlar' : 'Başlık') + ' · ' + (say[diger ? '' : g.id] || 0) + ' not' }), giris]), kaydet];
+      if (!diger) {
+        var hazir = grupSilHazir === g.id;
+        var sil = h('button', { 'class': 'btn' + (hazir ? ' tehlike' : ''), type: 'button', text: hazir ? 'Emin misin? Sil' : 'Sil' });
+        sil.addEventListener('click', function () {
+          if (grupSilHazir !== g.id) {
+            grupSilHazir = g.id; clearTimeout(grupSilZaman);
+            grupSilZaman = setTimeout(function () { grupSilHazir = null; grupYonetCiz(); }, 4000);
+            grupYonetCiz(); return;
+          }
+          grupSilHazir = null; clearTimeout(grupSilZaman);
+          grupKaydet(kopya().filter(function (x) { return x.id !== g.id; }), digerAd()).catch(function () {});
+        });
+        parca.push(sil);
+      }
+      return h('div', { 'class': 'grup-satir' }, parca);
+    }
+    var l = gruplar().map(function (g) { return satir(g, false); });
+    l.push(satir(null, true));
+    kutu.replaceChildren.apply(kutu, l);
+    grupSecenekleri($('an-grup'), $('an-grup').value || (gruplar()[0] ? gruplar()[0].id : ''));
+  }
+  // Başlık seçme kutusu (not ekleme formu ve not sayfası): başlıklar + "Diğer notlar" (boş değer).
+  function grupSecenekleri(sel, secili) {
+    sel.replaceChildren.apply(sel, gruplar().map(function (g) { return h('option', { value: g.id, text: g.ad }); }).concat([h('option', { value: '', text: digerAd() })]));
+    sel.value = secili;
+    if (sel.value !== secili) sel.value = '';
+  }
+  // Notu bir başlığa taşı (diğer başlıklardan çıkarılır). grupId boşsa "Diğer notlar".
+  function notuTasi(key, grupId) {
+    var l = kopya();
+    l.forEach(function (g) { g.notlar = g.notlar.filter(function (k) { return k !== key; }); if (g.id === grupId) g.notlar.push(key); });
+    return grupKaydet(l, digerAd());
+  }
+  $('grup-ekle').addEventListener('click', function () {
+    var ad = $('grup-yeni').value.trim();
+    if (!ad) { grupMesaj('Önce başlığın adını yaz.', true); return; }
+    var l = kopya();
+    if (l.length >= GRUP_EN_COK) { grupMesaj('En çok ' + GRUP_EN_COK + ' başlık olabilir.', true); return; }
+    l.push({ id: 'g' + Date.now().toString(36), ad: ad.slice(0, GRUP_AD_SINIRI), notlar: [] });
+    grupKaydet(l, digerAd()).then(function () { $('grup-yeni').value = ''; grupMesaj('Başlık eklendi. Not eklerken ya da notun sayfasından bu başlığı seçebilirsin; boş başlık listede görünmez.'); }, function () {});
+  });
 
   /* Not sayfası. Favoriler ve "kaldığın yer" yalnızca bu cihazda (localStorage). */
   var acikNot = null;
@@ -604,10 +695,20 @@
     var fav = favoriMi(n.key);
     $('not-yildiz').setAttribute('aria-pressed', fav ? 'true' : 'false');
     $('not-yildiz').setAttribute('aria-label', fav ? 'Favorilerden çıkar' : 'Favorilere ekle');
-    var admin = null;
+    var admin = null, grupSec = null;
     if (canEdit && n.key.indexOf('not.') === 0) admin = adminPart(n.key, n, NOT_ALAN, 'Bu notu düzenle');
-    else if (canEdit) admin = h('div', { 'class': 'admin-bar' }, [h('a', { 'class': 'linkbtn', href: '#ayarlar', text: 'Ayarlar’da düzenle' })]);
-    govde.replaceChildren.apply(govde, [h('ul', { 'class': 'not-maddeler' }, n.p.map(function (x) { return h('li', { text: x }); })), admin].filter(Boolean));
+    else if (canEdit) admin = h('div', { 'class': 'admin-bar' }, [h('a', { 'class': 'linkbtn', href: '#notlar', text: 'Ders notları sayfasındaki yönetici panelinde düzenle' })]);
+    if (canEdit) {   // yönetici: notun konu başlığı
+      var sel = h('select', { id: 'not-grup-sec' });
+      grupSecenekleri(sel, notunGrubu(n.key));
+      var gm = h('div', { 'class': 'msg', role: 'status' });
+      sel.addEventListener('change', function () {
+        notuTasi(n.key, sel.value).then(function () { gm.textContent = 'Başlık değişti.'; gm.className = 'msg'; },
+          function () { gm.textContent = 'Kaydedilemedi.'; gm.className = 'msg err'; });
+      });
+      grupSec = h('div', { 'class': 'fld not-grup-sec' }, [h('label', { 'for': 'not-grup-sec', text: 'Konu başlığı (yönetici)' }), sel, gm]);
+    }
+    govde.replaceChildren.apply(govde, [h('ul', { 'class': 'not-maddeler' }, n.p.map(function (x) { return h('li', { text: x }); })), grupSec, admin].filter(Boolean));
   }
   $('not-yildiz').addEventListener('click', function () { if (acikNot) { favoriDegistir(acikNot); notSayfaCiz(); } });
   var notGeldigi = null;
@@ -852,7 +953,7 @@
       b.addEventListener('click', function () {
         applyPalette(id);
         if (dbRef) dbRef.doc(TEMA_BELGESI).set({ id: id, guncelleme: Date.now() }).catch(function () {
-          $('an-msg').textContent = 'Tema kaydedilemedi; yalnızca bu ekranda değişti.'; $('an-msg').className = 'msg err';
+          $('pal-msg').textContent = 'Tema kaydedilemedi; yalnızca bu ekranda değişti.'; $('pal-msg').className = 'msg err';
         });
       });
       return b;
@@ -862,6 +963,7 @@
   function resetNoteForm() {
     editingNote = null; $('an-form').reset();
     $('an-send').textContent = 'Notu yayınla'; $('an-cancel').hidden = true;
+    grupSecenekleri($('an-grup'), gruplar()[0] ? gruplar()[0].id : '');
   }
   $('an-cancel').addEventListener('click', function () { resetNoteForm(); $('an-msg').textContent = ''; });
   function renderNoteAdmin() {
@@ -872,6 +974,8 @@
       edit.addEventListener('click', function () {
         editingNote = d.id;
         $('an-baslik').value = d.baslik || ''; $('an-maddeler').value = (d.maddeler || []).join('\n');
+        grupSecenekleri($('an-grup'), notunGrubu('nd.' + d.id));
+        $('not-yonetim').open = true;
         $('an-send').textContent = 'Güncelle'; $('an-cancel').hidden = false; $('an-baslik').focus();
       });
       var key = 'n' + d.id;
@@ -905,11 +1009,22 @@
     var p = editingNote
       ? dbRef.collection('notlar').doc(editingNote).update({ baslik: baslik, maddeler: maddeler })
       : dbRef.collection('notlar').add({ baslik: baslik, maddeler: maddeler, olusturma: Date.now() });
-    p.then(function () { resetNoteForm(); msg.textContent = 'Kaydedildi. Notlar sekmesinde görünür.'; })
+    var grup = $('an-grup').value, duzenlenenNot = editingNote, eski = editingNote ? notunGrubu('nd.' + editingNote) : '';
+    // Not kaydedilince seçilen başlığa yerleştirilir (başlık düzeni ayrı belgede: ayar/notGruplari). "Diğer notlar" için kayıt gerekmez.
+    p.then(function (ref) {
+      var key = 'nd.' + (duzenlenenNot || (ref && ref.id));
+      if (grup !== eski) return notuTasi(key, grup);
+    }).then(function () { resetNoteForm(); msg.textContent = 'Kaydedildi. Ders notları listesinde görünür.'; })
      .catch(function () { msg.textContent = 'Kaydedilemedi. Düzenleme yetkin olmayabilir.'; msg.className = 'msg err'; })
      .then(function () { $('an-send').disabled = false; });
   });
   function setupAyarlar(db) {
+    db.doc(GRUP_BELGESI).onSnapshot(function (s) {
+      notDuzen = duzenOku(s.exists ? s.data() : null);
+      renderNotes($('n-ara').value);
+      if (acikNot) notSayfaCiz();
+      if (!editingNote) grupSecenekleri($('an-grup'), $('an-grup').value || (gruplar()[0] ? gruplar()[0].id : ''));
+    }, function () {});
     renderPalettes(); renderNoteAdmin();
     db.doc(TEMA_BELGESI).onSnapshot(function (s) {
       var d = s.exists ? s.data() : null;
