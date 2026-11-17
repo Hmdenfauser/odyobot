@@ -29,6 +29,7 @@ Yol haritası: `YOL-HARITASI.md`. Dal: `adim1-tasarim` (**onaylandı, main'e bir
 ## Yayından sonraki düzeltmeler (2026-11-17, sw v28, yayında; önceki yayın yedeği git etiketi yedek-yayin-v27)
 - Alt çubuk: logonun arkasındaki zemin renginde yarım daire kaldırıldı (proje sahibi "çıkıntı" diye beğenmedi), logo 66 → 56 px, üstten 22 px taşar.
 - Vakalarım: kaydetme bildirimi. `OdyoUI.bildirim(metin, 'tamam'|'hata')` (app.js, ortak): ekranın üstünde, başarı 3 sn, hata 6 sn, dokununca kapanır; ekran okuyucu okur (status/alert). Yazılar `#v-metinler` (yönetici düzenler): kaydedildi, guncellendi, hataAlan ({n}), hataKimlik, hataDepo. Formun altındaki eski ileti de duruyor. Renkler iki temada aynı (beyaz yazıyla kontrast 6 üstü). Test 16/16 (açık/koyu).
+- (sw v29, `adim1-tasarim` dalında, **henüz yayında değil**) Proje sahibinin isteği: bildirim süresi başarıda 4 sn, hatada 7 sn; başarı yeşili açık ton #2FBF68, yazı koyu yeşil #052E16 (kontrast 6,2). Test 17/17.
 
 ## Renk kontrastı ölçümü (WCAG, 2026-11-17)
 - Betik: geçici klasörde t-kontrast.js. 14 sayfa × açık/koyu, 360 px; görünen her yazı ve yer tutucu, gerçek zemin ve saydamlık hesaba katılarak. Eşik: normal yazı 4,5, büyük yazı 3. SVG şemalardaki yazılar bu ölçüme girmedi.
