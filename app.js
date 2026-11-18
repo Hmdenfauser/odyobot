@@ -810,8 +810,8 @@
   /* ---------- tabs ---------- */
   // 'uc-boyut' = 3D sayfası; adresi #3d. Alt çubukta sekmesi yok, o sırada Ana sayfa seçili görünür.
   // Alt sayfalar (2026-11-17): 'duyurular' (tam liste), 'not-sayfa' (#not/<anahtar>). Alt çubukta sekmeleri yok; bağlı oldukları sekme seçili görünür.
-  var TABS = ['anasayfa', 'depo', 'odybot', 'notlar', 'vakalarim', 'ayarlar', 'giris', 'uc-boyut', 'duyurular', 'not-sayfa'];
-  var UST_SEKME = { 'uc-boyut': 'anasayfa', duyurular: 'anasayfa', 'not-sayfa': 'notlar' };
+  var TABS = ['anasayfa', 'depo', 'odybot', 'notlar', 'vakalarim', 'ayarlar', 'giris', 'uc-boyut', 'duyurular', 'not-sayfa', 'sozluk'];
+  var UST_SEKME = { 'uc-boyut': 'anasayfa', duyurular: 'anasayfa', 'not-sayfa': 'notlar', sozluk: 'anasayfa' };
   var UC_ESKI = ['uc-boyut', '3d-model', 'gorsel3d', 'depo/3d', 'model'];   // olası eski/başka adresler -> #3d
   var oncekiHash = '', ucGeldigi = null, ilkRota = true, gorunen = 'anasayfa';
   function adresDegistir(yeni) { try { history.replaceState(null, '', yeni); } catch (e) {} }
@@ -834,6 +834,7 @@
       t = 'vakalarim'; ham = 'vakalarim'; adresDegistir('#vakalarim');
       sonra = function () { bildir('odyo:vaka-ac', p[1] === 'yeni' ? { yeni: true } : { id: p[2] || '' }); };
     } else if (p[0] === 'duyurular' && p[1] === 'yeni') { t = 'duyurular'; ham = 'duyurular'; adresDegistir('#duyurular'); sonra = function () { bildir('odyo:paylasim-yeni'); }; }
+    else if (p[0] === 'sozluk' && p[1] === 'terim') { t = 'sozluk'; ham = 'sozluk'; adresDegistir('#sozluk'); sonra = function () { bildir('odyo:sozluk-terim', decodeURIComponent(p[2] || '')); }; }
     else if (p[0] === 'not' && p[1]) {
       if (oncekiHash !== ham) notGeldigi = ilkRota ? null : oncekiHash;
       t = 'not-sayfa'; notAc(decodeURIComponent(p.slice(1).join('/')));
@@ -856,6 +857,7 @@
   window.addEventListener('hashchange', route);
   route();
   // 3D sayfasındaki "← Ana sayfa": ana sayfadan gelindiyse tarayıcı geçmişinde bir adım geri (telefonun geri tuşuyla aynı).
+  $('sz-geri').addEventListener('click', function () { if (history.length > 1) history.back(); else location.hash = '#anasayfa'; });
   $('uc-geri').addEventListener('click', function () {
     if ((ucGeldigi === 'anasayfa' || ucGeldigi === '') && history.length > 1) history.back();
     else location.hash = '#anasayfa';
@@ -905,6 +907,9 @@
       if (d.gizli) return;
       l.push({ tur: d.grup === 'implant' ? AM('araTurImplant') : AM('araTurCihaz'), ad: d.ad, metin: d.alt + ' ' + d.gorselAlt, git: '#depo/cihaz/' + d.id });
     });
+    l.push({ tur: AM('araTurBolum'), ad: $('sozluk').querySelector('h2').textContent, metin: 'terim sözlük anlam türkçe kart', git: '#sozluk' });
+    // Sözlük terimleri (sozluk.js; internetsizken son indirilenler)
+    if (window.Sozluk) window.Sozluk.terimler().forEach(function (x) { l.push({ tur: AM('araTurTerim'), ad: x.tr + (x.en ? ' (' + x.en + ')' : ''), metin: x.kisaltma + ' ' + x.aciklama, git: '#sozluk/terim/' + encodeURIComponent(x.id) }); });
     var sema = AM('araTurSema') + ' · ';
     // Bölümlerin kendisi (şemalar ve cihaz panelleri)
     [['alt-yolak', '#depo/yolak/' + sel], ['alt-refleks', '#depo/refleks/' + rsel], ['alt-tarama', '#depo/tarama/' + TA.sec], ['seg-isitme', '#depo/isitme'], ['seg-implant', '#depo/implant']].forEach(function (x) {
