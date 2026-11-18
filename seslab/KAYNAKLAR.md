@@ -32,3 +32,5 @@ Lisans gereği OpenEar atfı sayfanın altında kalmalı.
 - Otolit zarı kayması = kuvvetin makula düzlemindeki bileşeni × 0,35 mm/g (çok büyütülmüş). Kristal boyutları da büyütüldü.
 - Posterior kanal yolu modelden çıkarıldı (kanal kesitinin açısal dilimlerdeki ortalaması, yumuşatılmış; krus kommune dahil). Kristaller yol boyunca yerçekimi bileşeniyle kayar (basit sürtünmeli model); kupula sinyali kanaldaki kristallerin ortalama hızıdır.
 - Baş pozisyonları: Dix-Hallpike baş 45° sağa + sırtüstü + 20° sarkık; Epley 2 baş 45° sola; Epley 3 sol yan, baş 135°; Epley 4 oturur, baş solda, 20° öne eğik. Geçişler kısaltıldı.
+- Silik baş: şematik elipsoid baş (labirente göre küçültülmüş); yalnızca pozisyonu göstermek içindir.
+- Otolit zarı: baş döndükten sonra sönümlü yay gibi yeni konumuna geçer (gerçekte kayma anlıktır; görülebilsin diye ertelendi).

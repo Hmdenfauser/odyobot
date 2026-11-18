@@ -207,15 +207,9 @@
     olcek.appendChild(cubuk); olcek.appendChild(olcekYazi); olcek.hidden = true;
     var durum = h('p', 'g3d-durum', M.indiriliyor); durum.setAttribute('role', 'status');
     var oynatBtn = h('button', 'g3d-geri sl-oynat'); oynatBtn.type = 'button';
-    // Denge kipi: "Yer" çizgisi ve baş pozisyonu simgesi (sağdan bakış)
-    var yerEt = h('div', 'sl-yer'), basEt = h('div', 'sl-bas'); yerEt.hidden = true; basEt.hidden = true; basEt.setAttribute('aria-hidden', 'true');
-    var SVGNS = 'http://www.w3.org/2000/svg', basSvg = document.createElementNS(SVGNS, 'svg');
-    basSvg.setAttribute('viewBox', '-32 -32 64 64');
-    function svgEl(ad, oz) { var e = document.createElementNS(SVGNS, ad); Object.keys(oz).forEach(function (k) { e.setAttribute(k, oz[k]); }); basSvg.appendChild(e); return e; }
-    var basBoyun = svgEl('line', { class: 'sl-bas-boyun', x1: 0, y1: 0, x2: 0, y2: 0 }), basKafa = svgEl('circle', { class: 'sl-bas-kafa', cx: 0, cy: 0, r: 13 });
-    var basBurun = svgEl('polygon', { class: 'sl-bas-burun', points: '0,0 0,0 0,0' }), basKulak = svgEl('circle', { class: 'sl-bas-kulak', cx: 0, cy: 0, r: 4 });
-    basEt.appendChild(basSvg);
-    sahne.appendChild(cv); sahne.appendChild(yerEt); sahne.appendChild(basEt); sahne.appendChild(neresi); sahne.appendChild(olcek); sahne.appendChild(oynatBtn); sahne.appendChild(durum);
+    // Denge kipi: "Yer" çizgisi ve uzak/yakın görünüm düğmesi
+    var yerEt = h('div', 'sl-yer'), yakinBtn = h('button', 'g3d-geri sl-yakin'); yerEt.hidden = true; yakinBtn.hidden = true; yakinBtn.type = 'button';
+    sahne.appendChild(cv); sahne.appendChild(yerEt); sahne.appendChild(yakinBtn); sahne.appendChild(neresi); sahne.appendChild(olcek); sahne.appendChild(oynatBtn); sahne.appendChild(durum);
     var uyari = h('p', 'g3d-not g3d-ipucu sl-uyari');
     var kart = h('div', 'g3d-kart'), nmEl = h('h4'), dsEl = h('p'), frEl = h('p', 'sl-frekans-not'), yuva = h('div', 'g3d-kart-ek');
     kart.setAttribute('aria-live', 'polite');
@@ -267,17 +261,19 @@
 
     /* ---- durum ---- */
     var PART = {}, ORDER = [], RENK = {}, SILIK = [0.62, 0.68, 0.70], TEPE = [0.9, 0.2, 0.45], CUKUR = [0.1, 0.2, 0.5], ELEK = [0.5, 0.2, 0.9], TEN = [0.87, 0.69, 0.58];
-    var GORUNEN = ['pinna', 'eac', 'tm', 'mal', 'inc', 'sta', 'sv', 'sm', 'st', 'vest', 'ant', 'post', 'lat', 'crus', 'amp', 'n8', 'utrikulus', 'sakkulus', 'kristal'];
+    var GORUNEN = ['pinna', 'eac', 'tm', 'mal', 'inc', 'sta', 'sv', 'sm', 'st', 'vest', 'ant', 'post', 'lat', 'crus', 'amp', 'n8', 'utrikulus', 'sakkulus', 'kristal', 'bas'];
     // Yalnızca kendi sahnelerinde çizilenler (diğer sahnelerde silik bile görünmez)
-    var KENDI = ['pinna', 'utrikulus', 'sakkulus', 'kristal'];
+    var KENDI = ['pinna', 'utrikulus', 'sakkulus', 'kristal', 'bas'];
     // Kulak kepçesi modelde 11 parça (p_helix …); makulalar 3'er parça (epitel, tüy, otolit zarı). Her biri tek yapı gibi davranır.
-    function grup(id) { return /^p_/.test(id) ? 'pinna' : /^utr_/.test(id) ? 'utrikulus' : /^sak_/.test(id) ? 'sakkulus' : id; }
+    function grup(id) { return /^p_/.test(id) ? 'pinna' : /^utr_/.test(id) ? 'utrikulus' : /^sak_/.test(id) ? 'sakkulus' : /^bas_/.test(id) ? 'bas' : id; }
     var MAKRENK = { ep: [0.85, 0.55, 0.62], tuy: [0.55, 0.45, 0.75], zar: [0.93, 0.93, 0.9] }, KRISTAL = [0.95, 0.95, 0.92];
     // Denge kipi durumu
     var mod = 'isitme', dsah = DSAH[0] || null, adimI = 0, Y = null, KR = [], MAK = null, kupula = 0, kupGor = 0;
     var KAM = [0, 0, 1, 0, 1, 0, -1, 0, 0];   // hastanın sağından bakış: ekranın sağı = hastanın önü, yukarısı = yukarı
     var kul = [1, 0, 0, 0, 1, 0, 0, 0, 1], pozQ = [1, 0, 0, 0], basQ = [1, 0, 0, 0], hedefQ = [1, 0, 0, 0], gecisT = 1, ivme = [0, 0, 0], basIvme = [0, 0, 0], hedefIvme = [0, 0, 0];
-    var KAYMA = 0.35, GECIS_SN = 1.8;   // otolit zarı kayması (mm / g, büyütülmüş); pozlar arası geçiş süresi
+    var KAYMA = 0.35, GECIS_SN = 2.4;
+    // Adım akışı (saniye): 0–UZAK_SN kamera başı gösterecek kadar uzaklaşır, sonra baş döner, sonra yakınlaşır.
+    var UZAK_SN = 0.9, akis = null, uzak = false, zarBas = null, zarHedef = null, zarT = 99;   // otolit zarı kayması (mm / g, büyütülmüş); pozlar arası geçiş süresi
     var sah = SAH[0], sel = null, dirty = true, G = null;
     var reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches), auto = false;
     var oynuyor = !reduce, zaman = 0, sonT = 0, frekans = veri.frekanslar.indexOf(1000) >= 0 ? 1000 : veri.frekanslar[0];
@@ -299,12 +295,13 @@
       TEN = renkCoz(cs.getPropertyValue('--g3d-kepce')) || TEN;
       ORDER.forEach(function (id) {
         var m = /^(utr|sak)_(ep|tuy|zar)$/.exec(id);
-        RENK[id] = grup(id) === 'pinna' ? TEN : m ? MAKRENK[m[2]] : id === 'kristal' ? KRISTAL : (renkCoz(cs.getPropertyValue('--g3d-' + id)) || SILIK);
+        RENK[id] = grup(id) === 'pinna' || id === 'bas_deri' || id === 'bas_boyun' || id === 'bas_burun' ? TEN : id === 'bas_kulak' ? TEPE : id === 'bas_yuz' ? [0.25, 0.3, 0.35] : m ? MAKRENK[m[2]] : id === 'kristal' ? KRISTAL : (renkCoz(cs.getPropertyValue('--g3d-' + id)) || SILIK);
       });
       ELEK = renkCoz(cs.getPropertyValue('--sl-elektrik')) || ELEK;
       SILIK = renkCoz(cs.getPropertyValue('--g3d-silik')) || SILIK;
       TEPE = renkCoz(cs.getPropertyValue('--sl-tepe')) || TEPE;
       CUKUR = renkCoz(cs.getPropertyValue('--sl-cukur')) || CUKUR;
+      if (RENK.bas_kulak) RENK.bas_kulak = TEPE;
     }
     function frame(ids) {
       var mn = [1e9, 1e9, 1e9], mx = [-1e9, -1e9, -1e9];
@@ -319,6 +316,7 @@
       if (GORUNEN.indexOf(id) < 0) return null;
       var c = RENK[pid], on = sah.yapilar.indexOf(id) >= 0, yari = sah.yari && sah.yari.indexOf(id) >= 0;
       if ((KENDI.indexOf(id) >= 0 || mod === 'denge') && !on && !yari) return null;   // kepçe/makulalar yalnızca kendi sahnesinde; denge kipinde yalnızca sahnedekiler
+      if (id === 'bas') return on && uzak ? { c: c, a: pid === 'bas_deri' || pid === 'bas_boyun' ? 0.16 : pid === 'bas_kulak' ? 0.3 : pid === 'bas_burun' ? 0.4 : 0.6, duz: 0.6 } : null;   // silik baş
       if (sel && sel !== id) return { c: SILIK, a: on ? 0.22 : 0.08, duz: 1 };
       if (sel === id) return { c: c, a: 1, duz: 0 };
       if (yari) return { c: c, a: 0.28, duz: 0.4 };
@@ -351,10 +349,23 @@
     var KRISTAL_SAYI = 8, BIRIM_3 = [1, 0, 0, 0, 1, 0, 0, 0, 1];
     // Utrikulusa dönen kristaller orada küçük bir küme olarak durur
     var CIKIS = [[0, 0, 0], [0.3, 0.05, 0.1], [-0.25, 0.05, 0.2], [0.1, 0.05, -0.3], [-0.2, 0.1, -0.15], [0.35, 0.1, -0.2], [-0.05, 0.12, 0.35], [0.2, 0.15, 0.3]];
-    function makulaDurumu() {
-      var fM = DS.kuvvetModelde(dengeW(), ivme);
+    function makulaKaymasi(q, iv) {
+      var fM = DS.kuvvetModelde(DS.q2mat(q), iv);
       return { utr: DS.makulaKayma(MAK.utr, fM, KAYMA), sak: DS.makulaKayma(MAK.sak, fM, KAYMA) };
     }
+    // Otolit zarı: önceki kaymadan yenisine sönümlü yay gibi (kristallerin ağırlığı ve eylemsizliği; zaman büyütülmüş)
+    function makulaDurumu() {
+      if (!zarHedef) zarHedef = makulaKaymasi(pozQ, ivme);
+      if (!zarBas) zarBas = zarHedef;
+      var e = zarT > 6 ? 1 : 1 - Math.exp(-3.2 * zarT) * Math.cos(6.5 * zarT), o = {};
+      ['utr', 'sak'].forEach(function (k) { var a = zarBas[k], b = zarHedef[k]; o[k] = [a[0] + (b[0] - a[0]) * e, a[1] + (b[1] - a[1]) * e, a[2] + (b[2] - a[2]) * e]; });
+      return o;
+    }
+    function uzakYakin(u) {
+      uzak = u; yakinBtn.textContent = u ? (M.yakinlastir || 'Yakınlaştır') : (M.basiGoster || 'Başı göster');
+      if (dsah) frame(u ? ['bas_deri'] : (dsah.cerceve || dsah.yapilar));
+    }
+    yakinBtn.addEventListener('click', function () { akis = null; uzakYakin(!uzak); });
     function kristalCiz(st) {
       var p = PART.kristal; if (!p || !Y) return;
       gl.uniform1f(U.tur, 1); gl.uniform1f(U.zarFaz, 0); gl.uniformMatrix3fv(U.mdlN, false, BIRIM3);
@@ -368,18 +379,6 @@
         gl.uniformMatrix4fv(U.mdl, false, new Float32Array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, q[0], q[1], q[2], 1]));
         gl.drawElements(gl.TRIANGLES, p.n, gl.UNSIGNED_SHORT, 0);
       });
-    }
-    // Baş simgesi: hastanın sağından bakış (ekranın sağı = dünyada hastanın oturuşta baktığı yön). Burun, boyun, sağ kulak.
-    function basCiz() {
-      var W = dengeW(), A = DS.uygula(W, [1, 0, 0]), S = DS.uygula(W, [0, 1, 0]), Rr = DS.uygula(W, [0, 0, 1]);
-      function ek(v) { return [v[2], -v[1]]; }
-      var a = ek(A), s = ek(S), rr = ek(Rr), al = Math.hypot(a[0], a[1]) || 1, dik = [-a[1] / al * 5, a[0] / al * 5];
-      basBoyun.setAttribute('x2', (-s[0] * 28).toFixed(1)); basBoyun.setAttribute('y2', (-s[1] * 28).toFixed(1));
-      var uc = [a[0] * 21, a[1] * 21], k1 = [a[0] * 11 + dik[0], a[1] * 11 + dik[1]], k2 = [a[0] * 11 - dik[0], a[1] * 11 - dik[1]];
-      basBurun.setAttribute('points', [k1, uc, k2].map(function (p) { return p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' '));
-      basBurun.style.opacity = al > 0.25 ? 1 : 0.35;
-      basKulak.setAttribute('cx', (rr[0] * 8).toFixed(1)); basKulak.setAttribute('cy', (rr[1] * 8).toFixed(1));
-      basKulak.style.display = -Rr[0] > 0.2 ? '' : 'none';   // sağ kulak bize dönükse görünür
     }
     function fizik(dt) {
       if (!Y || !KR.length) return;
@@ -442,7 +441,6 @@
       gl.disable(gl.BLEND); gl.depthMask(true);
       var px = 10 * f / d * cv.clientHeight / 2;
       olcek.hidden = mod === 'denge' || !(px > 14 && px < cv.clientWidth * 0.6);
-      if (mod === 'denge') basCiz();
       cubuk.style.width = Math.round(px) + 'px';
     }
     function loop(ts) {
@@ -451,14 +449,21 @@
       if (hazir && cv.clientWidth) {
         if (oynuyor && mod !== 'denge') { zaman += dt * HIZ; dirty = true; }
         if (mod === 'denge' && DS) {
-          if (gecisT < 1) {
+          if (akis && oynuyor) {
+            akis.t += dt;
+            if (akis.t >= UZAK_SN && gecisT === 0 && !akis.basladi) akis.basladi = true;
+            if (akis.basladi && gecisT >= 1 && !akis.yakin) { akis.yakin = true; uzakYakin(false); zarBas = makulaDurumu(); zarHedef = makulaKaymasi(hedefQ, hedefIvme); zarT = 0; }
+            if (akis.yakin) akis = null;
+          }
+          if (zarT < 6 && oynuyor) { zarT += dt; dirty = true; }
+          if (gecisT < 1 && (!akis || akis.basladi)) {
             gecisT = Math.min(1, gecisT + dt / GECIS_SN);
             var e = (1 - Math.cos(Math.PI * gecisT)) / 2;
             pozQ = DS.slerp(basQ, hedefQ, e);
             ivme = [basIvme[0] + (hedefIvme[0] - basIvme[0]) * e, basIvme[1] + (hedefIvme[1] - basIvme[1]) * e, basIvme[2] + (hedefIvme[2] - basIvme[2]) * e];
             dirty = true;
           }
-          if (oynuyor && dsah && dsah.tip === 'bppv') { fizik(dt); dirty = true; }
+          if (oynuyor && dsah && dsah.tip === 'bppv' && (!akis || akis.basladi)) { fizik(dt); dirty = true; }
           var kg = kupGor + (kupula - kupGor) * Math.min(1, dt * 4); if (Math.abs(kg - kupGor) > 1e-4) { kupGor = kg; dirty = true; }
         }
         if (auto) { R = mul(ry(0.004), R); dirty = true; }
@@ -536,9 +541,13 @@
       if (dsah.tip === 'bppv' && (a.sifirla || hemen)) KR = DS.kristaller(Y, KRISTAL_SAYI);
       basQ = pozQ.slice(); hedefQ = DS.mat2q(DS.pozMatris(a.poz || {})); basIvme = ivme.slice(); hedefIvme = (a.ivme || [0, 0, 0]).slice(); gecisT = 0;
       kul = BIRIM_3.slice();
-      if (hemen || reduce || !oynuyor) {
-        pozQ = hedefQ.slice(); ivme = hedefIvme.slice(); gecisT = 1;
+      if (hemen || !oynuyor) {
+        pozQ = hedefQ.slice(); ivme = hedefIvme.slice(); gecisT = 1; akis = null;
         if (dsah.tip === 'bppv') dinlen();
+        zarHedef = makulaKaymasi(pozQ, ivme); zarBas = zarHedef; zarT = 99;
+        uzakYakin(!!hemen);
+      } else {
+        akis = { t: 0 }; uzakYakin(true);
       }
       adimBtns.forEach(function (b, k) { b.setAttribute('aria-pressed', k === i ? 'true' : 'false'); });
       sel = null; card(); dirty = true;
@@ -548,8 +557,8 @@
       mod = m; sesKapat(); sel = null;
       modIs.setAttribute('aria-pressed', m === 'isitme' ? 'true' : 'false'); modDe.setAttribute('aria-pressed', m === 'denge' ? 'true' : 'false');
       [enerjiKutu, bFr, frBox, sesSatir, bGor, viewBox].forEach(function (e) { e.hidden = m === 'denge'; });
-      [bAdim, adimBox, yerEt, basEt].forEach(function (e) { e.hidden = m !== 'denge'; });
-      metinler(); sahneDugmeleri();
+      [bAdim, adimBox, yerEt, yakinBtn].forEach(function (e) { e.hidden = m !== 'denge'; });
+      metinler(); sahneDugmeleri(); uzakYakin(false);
       if (m === 'denge') setSah(dsah || DSAH[0]); else { R = VIEWS.on.slice(); setSah(SAH[0]); }
     }
     modIs.addEventListener('click', function () { setMod('isitme'); });
@@ -646,7 +655,8 @@
         try {
           Y = DS.kanalYolu(PART); MAK = DS.makulalar(PART);
           ['utr', 'sak'].forEach(function (m) { parcaEkle(m + '_ep', MAK[m].epitel); parcaEkle(m + '_tuy', MAK[m].tuy); parcaEkle(m + '_zar', MAK[m].zar); });
-          parcaEkle('kristal', DS.kure(0.2));
+          parcaEkle('kristal', DS.kure(0.3));
+          var BA = DS.basAg(PART); parcaEkle('bas_deri', BA.deri); parcaEkle('bas_yuz', BA.yuz); parcaEkle('bas_kulak', BA.kulak); parcaEkle('bas_boyun', BA.boyun); parcaEkle('bas_burun', BA.burun);
           var AP = PART.amp.P, aw = new Float32Array(AP.length / 3);
           for (var ai = 0; ai < aw.length; ai++) aw[ai] = Math.pow(Math.max(0, 1 - Math.hypot(AP[ai * 3] - Y.ampulla[0], AP[ai * 3 + 1] - Y.ampulla[1], AP[ai * 3 + 2] - Y.ampulla[2]) / 1.8), 1.2);
           var ab = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, ab); gl.bufferData(gl.ARRAY_BUFFER, aw, gl.STATIC_DRAW); PART.amp.sb = ab;

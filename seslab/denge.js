@@ -119,7 +119,7 @@
     for (var i = 0; i < sayi; i++) K.push({ u: 0.6 + i * 0.28, v: 0, cikti: false });
     return K;
   }
-  var IVME = 9, SURTUNME = 2.6, ARALIK = 0.26;
+  var IVME = 5, SURTUNME = 2.2, ARALIK = 0.4;   // yavaş tutuldu: kayış ekranda izlenebilsin
   function adim(Y, K, gModel, dt) {
     var kupula = 0;
     K.forEach(function (k) {
@@ -218,8 +218,42 @@
     return A;
   }
 
+  /* ---------- Silik baş (pozisyonu göstermek için; şematik, ölçekli değil) ----------
+     Labirent başın sağ yarısında, kulak hizasında durur. Baş gerçek oranında değil, labirente göre küçültülmüştür. */
+  function elipsoid(A, c, r, s, kesY) {
+    var Y = 14, X = 24, ilk = A.P.length / 3, i, j;
+    for (i = 0; i <= Y; i++) {
+      var th = i / Y * Math.PI, sy = Math.cos(th), sr = Math.sin(th);
+      for (j = 0; j <= X; j++) {
+        var ph = j / X * 2 * Math.PI, n = [sr * Math.cos(ph), sy, sr * Math.sin(ph)];
+        var k = kesY && n[1] < 0 ? 1 + n[1] * kesY : 1;   // alt kısım (çene) daralır
+        ekle(A, [c[0] + n[0] * r[0] * k, c[1] + n[1] * r[1], c[2] + n[2] * r[2] * k], nrm([n[0] / r[0], n[1] / r[1], n[2] / r[2]]), s);
+      }
+    }
+    for (i = 0; i < Y; i++) for (j = 0; j < X; j++) { var a = ilk + i * (X + 1) + j, b = a + X + 1; A.I.push(a, b, a + 1, a + 1, b, b + 1); }
+  }
+  function silindir(A, alt, ust, r) {
+    var K = 20, ilk = A.P.length / 3, i;
+    for (i = 0; i <= K; i++) { var a = i / K * 2 * Math.PI, n = [Math.cos(a), 0, Math.sin(a)]; ekle(A, add(alt, sc(n, r)), n, 0); ekle(A, add(ust, sc(n, r)), n, 0); }
+    for (i = 0; i < K; i++) { var p = ilk + i * 2; A.I.push(p, p + 2, p + 1, p + 1, p + 2, p + 3); }
+  }
+  function basAg(PART) {
+    var c = merkez(PART.vest.P), H = add(c, [3, 0, -5]), R = [13, 15, 11];
+    var deri = ag(), yuz = ag(), kulak = ag(), boyun = ag(), burun = ag();
+    elipsoid(deri, H, R, 0, 0.25);
+    // Burun: alnın altında, öne çıkan sekizyüzlü; gözler: iki küçük elipsoid
+    elipsoid(burun, add(H, [R[0] - 0.5, -3, 0]), [3.2, 3.6, 1.8], 0);
+    elipsoid(yuz, add(H, [R[0] - 2.4, 2.5, 4.2]), [0.8, 1.2, 1.4], 0);
+    elipsoid(yuz, add(H, [R[0] - 2.4, 2.5, -4.2]), [0.8, 1.2, 1.4], 0);
+    // Kulaklar: sağ (dış, +z) renkli, sol silik
+    elipsoid(kulak, add(H, [-2, -1, R[2] + 0.4]), [2.4, 4, 0.8], 0);
+    elipsoid(deri, add(H, [-2, -1, -R[2] - 0.4]), [2.4, 4, 0.8], 0);
+    silindir(boyun, add(H, [-3, -R[1] - 9, 0]), add(H, [-2, -R[1] + 4, 0]), 6.5);
+    return { deri: deri, yuz: yuz, kulak: kulak, boyun: boyun, burun: burun };
+  }
+
   var api = { pozMatris: pozMatris, kuvvetModelde: kuvvetModelde, mat2q: mat2q, q2mat: q2mat, slerp: slerp, kanalYolu: kanalYolu, yolNokta: yolNokta,
-    kristaller: kristaller, adim: adim, makulalar: makulalar, makulaKayma: makulaKayma, kure: kure, uygula: uygula, devrik: devrik, mul: mul, eksenler: eksenler, merkez: merkez, enYakin: enYakin };
+    kristaller: kristaller, adim: adim, makulalar: makulalar, basAg: basAg, makulaKayma: makulaKayma, kure: kure, uygula: uygula, devrik: devrik, mul: mul, eksenler: eksenler, merkez: merkez, enYakin: enYakin };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else window.SesLabDenge = api;
 })();

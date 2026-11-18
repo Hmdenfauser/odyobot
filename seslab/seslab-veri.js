@@ -34,7 +34,7 @@ window.SESLAB_VERI = {
     sahneler: [
       { id: 'makula', tip: 'makula', ad: 'Otolit organları',
         aciklama: 'Utrikulus ve sakkulusun makulasında tüy hücrelerinin üstünde jel bir zar, onun üstünde de kalsiyum karbonat kristalleri (otokonya) bulunur. Kristaller zarı ağırlaştırır. Baş eğilince ya da doğrusal hızlanmada zar kayar ve tüy hücrelerinin tüycüklerini büker. Utrikulus daha çok yatay, sakkulus dikey yöndeki hareketi algılar.',
-        yapilar: ['utrikulus', 'sakkulus'], yari: ['vest', 'ant', 'post', 'lat', 'crus', 'amp'], cerceve: ['utrikulus', 'sakkulus'],
+        yapilar: ['utrikulus', 'sakkulus', 'bas'], yari: ['vest', 'ant', 'post', 'lat', 'crus', 'amp'], cerceve: ['utrikulus', 'sakkulus'],
         adimlar: [
           { id: 'dik', ad: 'Baş dik', poz: {}, aciklama: 'Utrikulus yatay olduğu için zarı kaymaz. Sakkulus dikey olduğu için zarı yerçekimiyle aşağı çekilir; dik dururken yerçekimini sakkulus algılar.' },
           { id: 'one', ad: 'Baş öne eğik', poz: { egim: 30 }, aciklama: 'Baş öne eğilince utrikulustaki zar öne doğru kayar ve tüy demetleri bükülür. Beyin bu bükülmeden başın eğildiğini anlar.' },
@@ -43,7 +43,7 @@ window.SESLAB_VERI = {
         ] },
       { id: 'bppv', tip: 'bppv', ad: 'BPPV ve Epley',
         aciklama: 'Benign paroksismal pozisyonel vertigo (BPPV): utrikulustan kopan otolit kristalleri bir semisirküler kanala, en sık posterior kanala düşer (kanalolitiyazis). Baş pozisyonu değişince kristaller kanalda kayar, endolenfi sürükler ve kupulayı büker; kısa süreli baş dönmesi ve nistagmus olur. Burada sağ posterior kanal BPPV\'si, Dix-Hallpike testi ve Epley manevrası gösteriliyor.',
-        yapilar: ['kristal'], yari: ['post', 'amp', 'vest', 'ant', 'lat', 'crus'], cerceve: ['post', 'vest', 'ant', 'lat'],
+        yapilar: ['kristal', 'bas'], yari: ['post', 'amp', 'vest', 'ant', 'lat', 'crus'], cerceve: ['post', 'vest', 'ant', 'lat'],
         adimlar: [
           { id: 'basla', ad: 'Başlangıç: oturur', poz: {}, sifirla: true, aciklama: 'Kopmuş kristaller sağ posterior kanalda, ampullaya yakın en alçak kısımda birikmiş. Baş dik ve hareketsizken kupula itilmez, baş dönmesi olmaz.' },
           { id: 'dix', ad: 'Dix-Hallpike (sağ)', poz: { govde: -110, donus: 45 }, aciklama: 'Baş sağa 45° çevrilir, hasta sırtüstü yatırılır ve baş yatak düzeyinin yaklaşık 20° altına sarkıtılır. Kristaller ampulladan uzaklaşarak kanalın en alçak noktasına kayar; kupula ampulladan uzaklaşan yönde bükülür (ampullofugal, posterior kanalda uyarıcı). Kısa bir gecikmeden sonra yukarı vuran, torsiyonel bileşenli (üst kutbu alttaki kulağa dönen) nistagmus ve baş dönmesi olur; genellikle 1 dakikadan kısa sürer.' },
@@ -77,8 +77,8 @@ window.SESLAB_VERI = {
     sesYok: 'Bu tarayıcı ses çalamıyor.',
     sesNot: 'Ses düzeyini düşük tut. Telefon sessizdeyse ses duyulmayabilir. Bu ses kalibre değildir; işitme testi için kullanılamaz.',
     uyari: 'Hareketler büyütüldü ve yavaşlatıldı. Gerçekte titreşim nanometre düzeyindedir ve saniyede yüzlerce, binlerce kez olur. Öğretim çizimidir, ölçülmüş simülasyon değildir. Pembe: içe itilme, mavi: dışa çekilme, mor: sinirdeki elektriksel sinyal.',
-    modIsitme: 'İşitme', modDenge: 'Denge', adimBasligi: 'Adım', yerEtiketi: 'Yer',
-    dengeUyari: 'Kristaller ve otolit zarının kayması görünsün diye çok büyütüldü; gerçek otokonya mikrometre boyutundadır. Pozlar arası geçiş kısaltıldı; gerçekte her pozisyonda 30–60 saniye beklenir. Model sağdan görülüyor, alt kenar yerdir. Ampullada pembe: kupula ampulladan uzaklaşan yönde bükülüyor; mavi: ters yönde. Makulada pembe: tüy demetleri bükülüyor.',
+    modIsitme: 'İşitme', modDenge: 'Denge', adimBasligi: 'Adım', yerEtiketi: 'Yer', yakinlastir: 'Yakınlaştır', basiGoster: 'Başı göster',
+    dengeUyari: 'Kristaller ve otolit zarının kayması görünsün diye çok büyütüldü; gerçek otokonya mikrometre boyutundadır. Pozlar arası geçiş kısaltıldı; gerçekte her pozisyonda 30–60 saniye beklenir. Hasta sağdan görülüyor, alt kenar yerdir; silik baş pozisyonu gösterir (pembe kulak: sağ kulak), oranı gerçek değildir. Her adımda önce baş döner, sonra görüntü yakınlaşır; otolit zarının kayması görülebilsin diye baş döndükten sonra gösterilir (gerçekte anında olur). Ampullada pembe: kupula ampulladan uzaklaşan yönde bükülüyor; mavi: ters yönde. Makulada pembe: tüy demetleri bükülüyor.',
     enerjiBaslik: 'Enerji dönüşümü',
     enerji1Ad: 'Akustik', enerji1Alt: 'Kepçe, dış kulak yolu (hava)',
     enerji2Ad: 'Mekanik', enerji2Alt: 'Zar, kemikçikler',
