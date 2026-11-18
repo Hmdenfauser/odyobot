@@ -810,8 +810,8 @@
   /* ---------- tabs ---------- */
   // 'uc-boyut' = 3D sayfası; adresi #3d. Alt çubukta sekmesi yok, o sırada Ana sayfa seçili görünür.
   // Alt sayfalar (2026-11-17): 'duyurular' (tam liste), 'not-sayfa' (#not/<anahtar>). Alt çubukta sekmeleri yok; bağlı oldukları sekme seçili görünür.
-  var TABS = ['anasayfa', 'depo', 'odybot', 'notlar', 'vakalarim', 'ayarlar', 'giris', 'uc-boyut', 'duyurular', 'not-sayfa', 'seslab', 'sozluk'];
-  var UST_SEKME = { 'uc-boyut': 'anasayfa', duyurular: 'anasayfa', 'not-sayfa': 'notlar', seslab: 'anasayfa', sozluk: 'anasayfa' };
+  var TABS = ['anasayfa', 'depo', 'odybot', 'notlar', 'vakalarim', 'ayarlar', 'giris', 'uc-boyut', 'duyurular', 'not-sayfa', 'seslab'];
+  var UST_SEKME = { 'uc-boyut': 'anasayfa', duyurular: 'anasayfa', 'not-sayfa': 'notlar', seslab: 'anasayfa' };
   var UC_ESKI = ['uc-boyut', '3d-model', 'gorsel3d', 'depo/3d', 'model'];   // olası eski/başka adresler -> #3d
   var oncekiHash = '', ucGeldigi = null, slGeldigi = null, ilkRota = true, gorunen = 'anasayfa';
   function adresDegistir(yeni) { try { history.replaceState(null, '', yeni); } catch (e) {} }
@@ -858,7 +858,6 @@
   }
   window.addEventListener('hashchange', route);
   route();
-  $('sz-geri').addEventListener('click', function () { if (history.length > 1) history.back(); else location.hash = '#anasayfa'; });
   $('sl-geri').addEventListener('click', function () {
     if ((slGeldigi === 'anasayfa' || slGeldigi === '') && history.length > 1) history.back();
     else location.hash = '#anasayfa';
@@ -913,7 +912,6 @@
       if (d.gizli) return;
       l.push({ tur: d.grup === 'implant' ? AM('araTurImplant') : AM('araTurCihaz'), ad: d.ad, metin: d.alt + ' ' + d.gorselAlt, git: '#depo/cihaz/' + d.id });
     });
-    l.push({ tur: AM('araTurBolum'), ad: $('sozluk').querySelector('h2').textContent, metin: 'terim sözlük anlam türkçe', git: '#sozluk' });
     l.push({ tur: AM('araTurBolum'), ad: $('seslab').querySelector('h2').textContent, metin: 'animasyon kulak zarı kemikçik koklea yürüyen dalga frekans', git: '#seslab' });
     var sema = AM('araTurSema') + ' · ';
     // Bölümlerin kendisi (şemalar ve cihaz panelleri)
