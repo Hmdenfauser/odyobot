@@ -27,6 +27,7 @@ var ASSETS = [
   './gorsel3d/gorsel3d.css',
   './gorsel3d/periferik.json',
   './seslab/seslab-veri.js',
+  './seslab/denge.js',
   './seslab/seslab.js',
   './seslab/seslab.css',
   './firebase-config.js',

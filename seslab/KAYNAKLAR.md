@@ -21,3 +21,14 @@ Lisans gereği OpenEar atfı sayfanın altında kalmalı.
 - VIII. sinirdeki mor atımlar: elektriksel sinyalin yönünü gösterir (kokleadan beyin sapına); sinir lifi ya da aksiyon potansiyeli modeli değildir. Modelde koklear ve vestibüler dallar ayrılmadığı için bütün sinir boyunca çizilir.
 - 125 Hz: Greenwood ile bazalden ~%90. En apeks ~20 Hz.
 - Bütün hareketler büyütülmüş ve yavaşlatılmıştır.
+
+## Denge kipi (2026-11-18)
+- Epley J. M. (1992). The canalith repositioning procedure. Otolaryngol Head Neck Surg 107(3):399–404. https://doi.org/10.1177/019459989210700310
+- Bhattacharyya N. ve ark. (2017). Clinical Practice Guideline: BPPV (Update). Otolaryngol Head Neck Surg 156(3 Suppl):S1–S47. https://doi.org/10.1177/0194599816689667
+- Kod: `denge.js` (hesaplar, Node testi `testler/denge-test.js`).
+
+### Yaklaşık olanlar (denge)
+- Utrikulus ve sakkulus makulaları modelde yok; vestibül içine yaklaşık konum ve büyüklükte çizildi. Utrikulus baş dikken yatay, sakkulus dikey kabul edildi (gerçekte utrikulus hafif eğiktir).
+- Otolit zarı kayması = kuvvetin makula düzlemindeki bileşeni × 0,35 mm/g (çok büyütülmüş). Kristal boyutları da büyütüldü.
+- Posterior kanal yolu modelden çıkarıldı (kanal kesitinin açısal dilimlerdeki ortalaması, yumuşatılmış; krus kommune dahil). Kristaller yol boyunca yerçekimi bileşeniyle kayar (basit sürtünmeli model); kupula sinyali kanaldaki kristallerin ortalama hızıdır.
+- Baş pozisyonları: Dix-Hallpike baş 45° sağa + sırtüstü + 20° sarkık; Epley 2 baş 45° sola; Epley 3 sol yan, baş 135°; Epley 4 oturur, baş solda, 20° öne eğik. Geçişler kısaltıldı.
