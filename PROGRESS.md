@@ -1,6 +1,6 @@
 # PROGRESS — OdyoBOT: Terimler sözlüğü (2026-11-18, dal `sozluk`, sw v33, **yayında değil**)
 
-Ses laboratuvarından bağımsız iş (o `adim3-seslab` dalında). Hızlı erişimde "OdyoBOT asistanı" yerine "Terimler sözlüğü" (`ana.hizli.sozluk`).
+Ses laboratuvarından bağımsız iş (o `adim3-seslab` dalında). Hızlı erişimde "Ders notları" yerine "Terimler sözlüğü" (`ana.hizli.sozluk`).
 - **Kartlar:** ön yüz Türkçe karşılık (kalın), altında İngilizce (küçük) ve kısaltma; dokununca 3B döner, arkada açıklama. Sağa kaydır / Biliyorum → kutu +1, yeniden gösterim 1/3/7/16/35 gün sonra; sola kaydır / Tekrar et → tekrar listesi, aynı oturumda 3 kart sonra yeniden gelir. Klavye: Enter çevir, ← →. Hareket azaltmada uçma animasyonu yok.
 - **Liste** (Türkçeye göre alfabetik, harf başlıkları, arama), **Tekrar listesi** (Bu kartları çalış). Ana sayfa aramasında terimler (`#sozluk/terim/<id>`).
 - **Yönetici:** Terim ekle formu, Liste'de Düzenle/Sil; yazılar `#sz-metinler` ve `sozluk.*`.
