@@ -1271,7 +1271,7 @@
   var SL = window.SESLAB_VERI, sl = null;
   var SL_METIN_ALAN = [{ f: 'uyari', ad: 'Uyarı (modelin altında)', cok: true }, { f: 'frekansNot', ad: 'Frekans notu ({f} frekans, {y} yüzde, {bolge} bölge)', cok: true },
     { f: 'sesNot', ad: 'Ses düğmesinin altındaki not', cok: true }, { f: 'not', ad: 'Not (sayfanın altında)', cok: true },
-    { f: 'ovalEtiket', ad: 'Modeldeki oval pencere etiketi' }, { f: 'enerjiBaslik', ad: 'Enerji dönüşümü başlığı' },
+    { f: 'enerjiBaslik', ad: 'Enerji dönüşümü başlığı' },
     { f: 'enerji1Ad', ad: '1. aşama adı' }, { f: 'enerji1Alt', ad: '1. aşama alt yazısı' }, { f: 'enerji2Ad', ad: '2. aşama adı' }, { f: 'enerji2Alt', ad: '2. aşama alt yazısı' },
     { f: 'enerji3Ad', ad: '3. aşama adı' }, { f: 'enerji3Alt', ad: '3. aşama alt yazısı' }, { f: 'enerji4Ad', ad: '4. aşama adı' }, { f: 'enerji4Alt', ad: '4. aşama alt yazısı' },
     { f: 'enerjiNot', ad: 'Enerji dönüşümü açıklaması', cok: true }];

@@ -11,13 +11,6 @@
 :root[data-theme="dark"] .sl { --sl-tepe: #FF6FA3; --sl-cukur: #7FA6FF; --sl-elektrik: #C49BFF; }
 
 .sl .sl-oynat { left: 8px; top: 8px; }
-/* Modelin üstünde oval pencereyi gösteren etiket (konumu seslab.js yazar); nokta tabanın üstünde, yazı sağında. */
-.sl .sl-oval { position: absolute; transform: translate(14px, calc(-100% - 10px)); padding: 3px 8px; border-radius: 999px; background: var(--surface);
-  border: 1px solid var(--sl-tepe); pointer-events: none; font: 600 12px/1.2 var(--font-body); color: var(--ink); white-space: nowrap; }
-.sl .sl-oval::before { content: ""; position: absolute; left: -25px; bottom: -21px; width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--sl-tepe); }
-.sl .sl-oval-sol { transform: translate(calc(-100% - 14px), calc(-100% - 10px)); }
-.sl .sl-oval-sol::before { left: auto; right: -25px; }
-.sl .sl-oval[hidden] { display: none; }
 .sl .sl-uyari { text-align: left; font-size: 13px; line-height: 1.45; margin-top: 0; }
 .sl .sl-frekans-not { margin: 10px 0 0; font: 500 14px/1.45 var(--font-body); color: var(--ink); }
 .sl .sl-frekans-not[hidden] { display: none; }

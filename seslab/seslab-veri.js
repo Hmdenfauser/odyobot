@@ -8,8 +8,8 @@ window.SESLAB_VERI = {
   // 'pinna' = kulak kepçesi (modelde 11 parça, burada tek yapı)
   sahneler: [
     { id: 'yol', ad: 'Ses yolculuğu',
-      aciklama: 'Ses dalgası dış kulak yolunda ilerler ve timpanik membranı titreştirir. Titreşim malleus, inkus ve stapes ile oval pencereye taşınır. Stapes tabanı perilenfi iter; koklea içinde bazalden apekse doğru ilerleyen bir dalga oluşur.',
-      yapilar: ['eac', 'tm', 'mal', 'inc', 'sta', 'sm', 'n8'], yari: ['sv', 'st', 'vest'], cerceve: ['tm', 'mal', 'inc', 'sta', 'sv', 'st', 'vest'], gorunum: 'on', enerji: [1, 2, 3, 4] },
+      aciklama: 'Kulak kepçesi sesi toplar. Ses dalgası dış kulak yolunda ilerler ve timpanik membranı titreştirir. Titreşim malleus, inkus ve stapes ile oval pencereye taşınır. Stapes tabanı perilenfi iter; koklea içinde bazalden apekse doğru ilerleyen bir dalga oluşur.',
+      yapilar: ['pinna', 'eac', 'tm', 'mal', 'inc', 'sta', 'sm', 'n8'], yari: ['sv', 'st', 'vest'], cerceve: ['pinna', 'eac', 'tm', 'mal', 'inc', 'sta', 'sv', 'st', 'vest'], gorunum: 'on', enerji: [1, 2, 3, 4] },
     { id: 'dis', ad: 'Dış kulak',
       aciklama: 'Kulak kepçesi sesi toplar ve dış kulak yoluna yönlendirir. Kepçe ve kanal bazı frekansları (yaklaşık 2–5 kHz) biraz güçlendirir. Ses dalgası kanal boyunca ilerleyip timpanik membrana çarpar ve onu titreştirir.',
       yapilar: ['pinna', 'eac', 'tm'], cerceve: ['pinna', 'eac', 'tm'], gorunum: 'on', enerji: [1, 2] },
@@ -47,7 +47,6 @@ window.SESLAB_VERI = {
     sesYok: 'Bu tarayıcı ses çalamıyor.',
     sesNot: 'Ses düzeyini düşük tut. Telefon sessizdeyse ses duyulmayabilir. Bu ses kalibre değildir; işitme testi için kullanılamaz.',
     uyari: 'Hareketler büyütüldü ve yavaşlatıldı. Gerçekte titreşim nanometre düzeyindedir ve saniyede yüzlerce, binlerce kez olur. Öğretim çizimidir, ölçülmüş simülasyon değildir. Pembe: içe itilme, mavi: dışa çekilme, mor: sinirdeki elektriksel sinyal.',
-    ovalEtiket: 'Oval pencere',
     enerjiBaslik: 'Enerji dönüşümü',
     enerji1Ad: 'Akustik', enerji1Alt: 'Kepçe, dış kulak yolu (hava)',
     enerji2Ad: 'Mekanik', enerji2Alt: 'Zar, kemikçikler',

@@ -204,9 +204,7 @@
     olcek.appendChild(cubuk); olcek.appendChild(olcekYazi); olcek.hidden = true;
     var durum = h('p', 'g3d-durum', M.indiriliyor); durum.setAttribute('role', 'status');
     var oynatBtn = h('button', 'g3d-geri sl-oynat'); oynatBtn.type = 'button';
-    // Oval pencere etiketi: stapes tabanının ekrandaki yerini izler.
-    var ovalEt = h('div', 'sl-oval'); ovalEt.hidden = true; ovalEt.setAttribute('aria-hidden', 'true');
-    sahne.appendChild(cv); sahne.appendChild(ovalEt); sahne.appendChild(neresi); sahne.appendChild(olcek); sahne.appendChild(oynatBtn); sahne.appendChild(durum);
+    sahne.appendChild(cv); sahne.appendChild(neresi); sahne.appendChild(olcek); sahne.appendChild(oynatBtn); sahne.appendChild(durum);
     var uyari = h('p', 'g3d-not g3d-ipucu sl-uyari');
     var kart = h('div', 'g3d-kart'), nmEl = h('h4'), dsEl = h('p'), frEl = h('p', 'sl-frekans-not'), yuva = h('div', 'g3d-kart-ek');
     kart.setAttribute('aria-live', 'polite');
@@ -227,7 +225,7 @@
     function metinler() {
       uyari.textContent = M.uyari; notEl.textContent = M.not;
       bSah.textContent = M.sahneBasligi; bFr.textContent = M.frekansBasligi; bGor.textContent = M.gorunumBasligi;
-      sesNot.textContent = M.sesNot; ovalEt.textContent = M.ovalEtiket || '';
+      sesNot.textContent = M.sesNot;
       bEn.textContent = M.enerjiBaslik || ''; enerjiNot.textContent = M.enerjiNot || '';
       enerjiEl.forEach(function (li, k) { li.firstChild.textContent = M['enerji' + (k + 1) + 'Ad'] || ''; li.lastChild.textContent = M['enerji' + (k + 1) + 'Alt'] || ''; });
       kaynakEl.textContent = '';
@@ -361,15 +359,6 @@
       gl.disable(gl.BLEND); gl.depthMask(true);
       var px = 10 * f / d * cv.clientHeight / 2;
       olcek.hidden = !(px > 14 && px < cv.clientWidth * 0.6);
-      // Oval pencere etiketi: tabanın ekran konumu (o = mvp, sütun düzeni).
-      var tb = G.taban, cx = o[0] * tb[0] + o[4] * tb[1] + o[8] * tb[2] + o[12], cy = o[1] * tb[0] + o[5] * tb[1] + o[9] * tb[2] + o[13], cw = o[3] * tb[0] + o[7] * tb[1] + o[11] * tb[2] + o[15];
-      var gor = !sel && sah.yapilar.indexOf('sta') >= 0 && cw > 0;
-      if (gor) {
-        var sx = (cx / cw * 0.5 + 0.5) * cv.clientWidth, sy = (0.5 - cy / cw * 0.5) * cv.clientHeight;
-        gor = sx > 8 && sx < cv.clientWidth - 8 && sy > 40 && sy < cv.clientHeight - 8;
-        if (gor) { ovalEt.style.left = Math.round(sx) + 'px'; ovalEt.style.top = Math.round(sy) + 'px'; ovalEt.classList.toggle('sl-oval-sol', sx > cv.clientWidth * 0.6); }
-      }
-      ovalEt.hidden = !gor;
       cubuk.style.width = Math.round(px) + 'px';
     }
     function loop(ts) {
