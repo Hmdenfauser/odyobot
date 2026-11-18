@@ -1,4 +1,6 @@
-# PROGRESS — OdyoBOT: Ses laboratuvarı (2026-11-18, dal `adim3-seslab`, sw v33, **yayında değil**, onay bekliyor)
+# PROGRESS — Yayın v33 (2026-11-18): Ses laboratuvarı + Terimler sözlüğü + Cihazlar simgesi (dal `kisayol-cihaz`: kulak arkası işitme cihazı, diğer simgelerle aynı oranda). Hızlı erişim: Yeni vaka · Ses laboratuvarı · Terimler sözlüğü · Cihazlar. Üç dal ayrı yapıldı, yayında birleştirildi (çakışmalar: hızlı erişim satırı, app.js TABS/UST_SEKME, ana sayfa araması — hepsinde ikisi birden alındı).
+
+# PROGRESS — OdyoBOT: Ses laboratuvarı (2026-11-18, dal `adim3-seslab`, sw v33, **YAYINDA**; önceki yayın yedeği git etiketi `yedek-yayin-v32`)
 
 **Denge: Tümünü oynat (2026-11-18):** Adım düğmelerinin üstünde "Tümünü oynat": adımları sırayla oynatır (her adım: uzaklaş → baş döner → yakınlaş, sonra BPPV 4,5 sn / makula 3 sn bekleme), sonda durur; elle adım seçmek, sahne/kip değiştirmek ya da Başı göster düğmesi oynatmayı durdurur. Yazılar `sl.metin` tumunuOynat, tumunuDurdur. Test: iki sahnede son adıma kadar ilerledi, JS hatası yok. Not: animasyon WebGL ile elle yazıldı (kütüphane/HyperFrames yok).
 
@@ -20,7 +22,7 @@ Proje sahibinin isteği: 3D modele animasyon eklenip kulak içi yapıların hare
 - Onaylanırsa main'e birleştirilip yayınlanır (yedek etiketi `yedek-yayin-v32` alınacak).
 
 ---
-# PROGRESS — OdyoBOT: Terimler sözlüğü (2026-11-18, dal `sozluk`, sw v33, **yayında değil**)
+# PROGRESS — OdyoBOT: Terimler sözlüğü (2026-11-18, dal `sozluk`, sw v33, **YAYINDA**; firestore.rules konsola yapıştırıldı)
 
 Ses laboratuvarından bağımsız iş (o `adim3-seslab` dalında). Hızlı erişimde "Ders notları" yerine "Terimler sözlüğü" (`ana.hizli.sozluk`).
 - **Kartlar:** ön yüz Türkçe karşılık (kalın), altında İngilizce (küçük) ve kısaltma; dokununca 3B döner, arkada açıklama. Sağa kaydır / Biliyorum → kutu +1, yeniden gösterim 1/3/7/16/35 gün sonra; sola kaydır / Tekrar et → tekrar listesi, aynı oturumda 3 kart sonra yeniden gelir. Klavye: Enter çevir, ← →. Hareket azaltmada uçma animasyonu yok.
