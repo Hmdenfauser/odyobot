@@ -84,6 +84,20 @@ service cloud.firestore {
         && request.resource.data.maddeler.size() <= 40;
     }
 
+    // Terimler sözlüğü: Türkçe karşılık (zorunlu), İngilizce terim, kısaltma, açıklama (kartın arka yüzü).
+    match /sozluk/{id} {
+      allow read: if true;
+      allow delete: if isAdmin();
+      allow create, update: if isAdmin()
+        && request.resource.data.keys().hasOnly(['tr', 'en', 'kisaltma', 'aciklama', 'olusturma', 'guncelleme'])
+        && request.resource.data.tr is string
+        && request.resource.data.tr.size() > 0
+        && shortString('tr', 100)
+        && shortString('en', 120)
+        && shortString('kisaltma', 30)
+        && shortString('aciklama', 1000);
+    }
+
     // Cihaz açıklamaları: belge adı cihazın kimliği (ör. "bte"), içinde madde listesi.
     match /cihazlar/{id} {
       allow read: if true;

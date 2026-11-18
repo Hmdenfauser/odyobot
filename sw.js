@@ -16,6 +16,7 @@ var ASSETS = [
   './gorunum.js',
   './app.js',
   './akis.js',
+  './sozluk.js',
   './odyo-hesap.js',
   './vaka-testler.js', './vakalarim.js',
   './cikti.js',
