@@ -22,6 +22,7 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="gorsel3d/gorsel3d.css">
+<link rel="stylesheet" href="seslab/seslab.css">
 
 
 </head>
@@ -54,7 +55,7 @@
       <nav class="hizli" aria-label="Hızlı erişim">
         <a href="#vakalarim/yeni"><span class="hizli-ik"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2.500"/><path d="M12 8.500v7M8.500 12h7"/></svg></span><span data-k="ana.hizli.vaka" data-etiket="Hızlı erişim: Yeni vaka yazısını düzenle">Yeni vaka</span></a>
         <a href="#odybot"><span class="hizli-ik"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3.500" y="14" width="4" height="6" rx="1.500"/><rect x="16.500" y="14" width="4" height="6" rx="1.500"/></svg></span><span data-k="ana.hizli.maske" data-etiket="Hızlı erişim: OdyoBOT asistanı yazısını düzenle">OdyoBOT asistanı</span></a>
-        <a href="#notlar"><span class="hizli-ik"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h10a2 2 0 0 1 2 2v14H8a2 2 0 0 1-2-2V4z"/><path d="M6 18a2 2 0 0 1 2-2h10"/><path d="M10 8h5"/></svg></span><span data-k="ana.hizli.not" data-etiket="Hızlı erişim: Ders notları yazısını düzenle">Ders notları</span></a>
+        <a href="#seslab"><span class="hizli-ik"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12h3l2-5 3 10 3-13 3 15 2-7h4"/></svg></span><span data-k="ana.hizli.seslab" data-etiket="Hızlı erişim: Ses laboratuvarı yazısını düzenle">Ses laboratuvarı</span></a>
         <a href="#depo/isitme"><span class="hizli-ik"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 9a4 4 0 1 1 8 0c0 2.200-1.500 3.200-2.500 4.200-1 1-1 2.300-1.500 3.300a2.500 2.500 0 0 1-4.500-.500"/><path d="M11 9.500a1.500 1.500 0 1 1 2.500 1"/></svg></span><span data-k="ana.hizli.cihaz" data-etiket="Hızlı erişim: Cihazlar yazısını düzenle">Cihazlar</span></a>
       </nav>
 
@@ -100,6 +101,7 @@
           <p data-k="ana.y.araTurCihaz" data-m="araTurCihaz">İşitme cihazı</p>
           <p data-k="ana.y.araTurImplant" data-m="araTurImplant">İşitsel implant</p>
           <p data-k="ana.y.araTurSema" data-m="araTurSema">Şema</p>
+          <p data-k="ana.y.araTurBolum" data-m="araTurBolum">Bölüm</p>
           <p data-k="ana.y.araYok" data-m="araYok">Sonuç bulunamadı. Başka bir kelime dene.</p>
         </div>
       </details>
@@ -184,6 +186,17 @@
           <p data-k="ana.m.gorsel" data-m="gorsel">görsel</p>
         </div>
       </details>
+    </div>
+  </section>
+
+  <!-- Ses laboratuvarı: kendi sayfası (#seslab). İçeriği seslab/seslab.js çizer; 3D sayfasının modelini yalnızca okur. -->
+  <section id="seslab" data-tab hidden>
+    <div class="stack">
+      <div class="alt-bas">
+        <button type="button" class="geri-ok" id="sl-geri"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="gizli-yazi">Geri: <span data-k="sl.sayfa.geri" data-etiket="Ses laboratuvarı: geri okunun ekran okuyucu yazısını düzenle">Ana sayfa</span></span></button>
+        <h2 data-k="sl.sayfa.baslik" data-etiket="Ses laboratuvarı: sayfa başlığını düzenle">Ses laboratuvarı</h2>
+      </div>
+      <div id="sl-kok"></div>
     </div>
   </section>
 
@@ -880,6 +893,8 @@
 <script src="firebase-config.js"></script>
 <script src="gorsel3d/gorsel3d-veri.js"></script>
 <script src="gorsel3d/gorsel3d.js"></script>
+<script src="seslab/seslab-veri.js"></script>
+<script src="seslab/seslab.js"></script>
 <script src="goruntuleyici.js"></script>
 <script src="app.js"></script>
 <script src="akis.js"></script>

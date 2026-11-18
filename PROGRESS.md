@@ -1,3 +1,18 @@
+# PROGRESS — OdyoBOT: Ses laboratuvarı (2026-11-18, dal `adim3-seslab`, sw v33, **yayında değil**, onay bekliyor)
+
+Proje sahibinin isteği: 3D modele animasyon eklenip kulak içi yapıların hareketi görülsün; mevcut 3D modele dokunulmadan kopyası üzerinden; ana sayfa hızlı erişimindeki "Ders notları" yerine buradan açılsın (notlar alt çubukta zaten var).
+
+- **Yeni sayfa `#seslab`** (alt çubukta Ana sayfa seçili; geri oku). Hızlı erişimde "Ders notları" kısayolu → "Ses laboratuvarı" (`ana.hizli.seslab`). Ana sayfa aramasında "Bölüm · Ses laboratuvarı".
+- **Kod:** `seslab/seslab.js` = `gorsel3d/gorsel3d.js` kopyasından türetildi; `gorsel3d/` klasörüne (kod, css, model) hiç dokunulmadı. Model `gorsel3d/periferik.json/.bin` yalnızca okunur (aynı önbellek, ikinci 4 MB indirme yok). `seslab/seslab.css` yalnızca sayfaya özgü kurallar (temel düzen gorsel3d.css'ten). Metinler `seslab/seslab-veri.js`. Lisans/yaklaşımlar `seslab/KAYNAKLAR.md`.
+- **Animasyonlar** (yalnızca çizimde; büyütülmüş ve yavaşlatılmış, ekranda uyarı): dış kulak yolunda içeri ilerleyen renk halkaları (sıklık frekansla artar); timpanik membran içe-dışa (kenar sabit, umboya doğru artar); malleus + inkus, malleus–inkus ekleminden geçen, manubriuma ve zar normaline dik eksen etrafında dönme (~8°); stapes piston (inkus ucunun piston yönündeki payı); skala media üzerinde bazalden apekse yürüyen dalga, tepe yeri Greenwood (1990) insan formülü (250 Hz bazalden %82, 1 kHz %60, 8 kHz %19). Taban ucu = oval pencereye en yakın köşe, kanal boyunca uzaklık ağ üzerinde (Dijkstra). Modeldeki skala media ~19 mm.
+- **Arayüz:** sahne (Ses yolculuğu / Orta kulak [kamera dönme ekseni boyunca] / Koklea), frekans 250–8000 Hz, Oynat/Duraklat (hareket azaltma açıksa duraklatılmış başlar), "Sesi çal" (Web Audio sinüs, kazanç 0,06, kalibre değil uyarısı; sayfadan çıkınca/arka plana geçince susar), görünüm düğmeleri, yapıya dokununca ad/açıklama (3D sayfasıyla ortak metin).
+- **Yönetici:** `icerik/sl.sahne.<id>` (ad, aciklama), `sl.metin` (uyari, frekansNot, sesNot, not); sayfa başlığı `sl.sayfa.baslik`; yapı metinleri `g3d.yapi.<id>`. firestore.rules ve CSP değişmedi.
+- **Test:** hareket geometrisi Node ile (zar normali vestibüle bakıyor, umbo içe giderken stapes içe gidiyor, skala media baz→apeks sırası spiral boyunca). Edge headless 400/360 px, açık/koyu: JS hatası yok, yatay kaydırma yok, orta kulakta iki karşıt evrede kemikçik konumu farklı, 250 Hz apekse yakın / 8 kHz bazalde. 3D sayfası değişmeden açılıyor. Ses, telefonda denenecek (headless'te duyulmaz).
+- **Proje sahibi doğrulayacak:** sahne metinleri; kemikçik hareket yönü/ekseninin öğretim için uygun görünmesi; Greenwood formülünün kullanılması.
+- Onaylanırsa main'e birleştirilip yayınlanır (yedek etiketi `yedek-yayin-v32` alınacak).
+
+---
+
 # PROGRESS — OdyoBOT: akustik refleks örüntüsü yorumu (2026-11-17, dal `refleks-yorum`, sw v32, **YAYINDA**; önceki yayın yedeği git etiketi `yedek-yayin-v31`)
 
 Proje sahibinin isteği: refleks sonucuna göre olası bölge OdyoBOT asistanında, şemada gösterilsin; tablo internetten doğrulansın.

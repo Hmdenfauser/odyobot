@@ -51,7 +51,11 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 - Alt çubuk sırası: Ana sayfa, Görsel depo, OdyoBOT, Vakalarım, Notlar.
 - Odyogram çıktısı (`cikti.js`), Vakalarım → OdyoBOT gönderme, düğmeli sohbet (`odybot.js`). sw v12. Ayrıntı: `PROGRESS.md`.
 
-### KALDIĞIMIZ YER (2026-11-17 gece) — oturum başında bunu özetle
+### KALDIĞIMIZ YER (2026-11-18) — oturum başında bunu özetle
+**Durum:** 3. adım başladı, dal `adim3-seslab` (main'e birleştirilmedi, **yayında değil**; canlı sürüm hâlâ sw v32). Yapılan: **Ses laboratuvarı** sayfası `#seslab` (`seslab/`): mevcut 3D modelin kopyası üzerinden animasyon (kulak yolu dalgası, zar, kemikçik zinciri, stapes pistonu, skala media'da frekansa göre yürüyen dalga — Greenwood 1990), frekans seçimi, "Sesi çal". Ana sayfa hızlı erişiminde "Ders notları" yerine "Ses laboratuvarı". `gorsel3d/` hiç değişmedi; model yalnızca okunuyor. Ayrıntı `PROGRESS.md` en üst.
+**Oturum başında hatırlat:** (1) Ses laboratuvarını bilgisayarda/telefonda görüp onaylaması; onaylarsa yedek etiketi `yedek-yayin-v32` + main'e birleştirme + yayın (sw v33). (2) Sahne metinleri ve hareketlerin doğruluğu. (3) Aşağıdaki 2026-11-17 listesi hâlâ geçerli.
+
+### Önceki: KALDIĞIMIZ YER (2026-11-17 gece)
 **Durum:** Her şey yayında, son sürüm **sw v32** (main b933f65). Bekleyen kod değişikliği yok. Önceki yayın yedekleri: git etiketleri `yedek-yayin-v25`, `-v27`, `-v28`, `-v30`, `-v31` (GitHub'da). Çalışma dalı `refleks-yorum` (main ile aynı).
 **Bugün yapılanlar (2026-11-17):**
 - 1. adım (tasarım) yayında; ardından küçük logo, kaydetme bildirimi (4 sn / hata 7 sn, açık yeşil).
@@ -145,6 +149,7 @@ Uygulama bir **PWA**: tarayıcıdan ana ekrana eklenebilen ve internetsiz de aç
 | `goruntuleyici.js` | Cihaz görsellerini tam ekran açar (kütüphanesiz): iki parmakla büyütme, sürükleme, çift dokunuş, ✕ / Esc / geri tuşu ile kapanma. `window.Goruntuleyici.ac({src, alt, baslik, geri})`. Renkler `--gor-*` |
 | `odybot.js` | OdyoBOT sohbet ekranı (düğmeli, kural tabanlı). Mesaj metinleri `index.html` `#b-metinler` |
 | `gorsel3d/` | 3D model bölümü (hazır paket). `gorsel3d.js` görüntüleyici (kütüphanesiz WebGL; çizim/kamera/dokunma hesaplarına dokunulmaz), `gorsel3d-veri.js` adlar, açıklamalar, arayüz yazıları (`window.GORSEL3D_VERI`), `gorsel3d.css` görünüm (yapı renkleri `--g3d-<kimlik>`), `periferik.json` + `periferik.bin` model (değiştirilmez), `KAYNAKLAR.md` lisanslar. `app.js` → `kur3d()` ilk açılışta `Gorsel3D.kur` çağırır. |
+| `seslab/` | Ses laboratuvarı (`#seslab`, 2026-11-18): `seslab.js` gorsel3d.js kopyasından türetilmiş, animasyonlu görüntüleyici (`window.SesLab.kur`); `seslab-veri.js` sahneler/frekanslar/yazılar (`window.SESLAB_VERI`); `seslab.css` (`--sl-*`). Modeli `gorsel3d/`den yalnızca okur. `app.js` → `kurSeslab()`. |
 | `maskeleme-kural.js` | Maskeleme kuralları (Katz). Ekrandan bağımsız, Node ile test: `node testler/maskeleme-test.js` |
 | `odyo-hesap.js` | Hesap kuralları (PTA, derece, tip). Ekrandan bağımsız; Node ile `require` edilip test edilebilir. |
 | `firebase-config.js` | Firebase web yapılandırması ve admin UID'si (gizli bilgi değil, bkz. §8) |

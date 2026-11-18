@@ -810,10 +810,10 @@
   /* ---------- tabs ---------- */
   // 'uc-boyut' = 3D sayfası; adresi #3d. Alt çubukta sekmesi yok, o sırada Ana sayfa seçili görünür.
   // Alt sayfalar (2026-11-17): 'duyurular' (tam liste), 'not-sayfa' (#not/<anahtar>). Alt çubukta sekmeleri yok; bağlı oldukları sekme seçili görünür.
-  var TABS = ['anasayfa', 'depo', 'odybot', 'notlar', 'vakalarim', 'ayarlar', 'giris', 'uc-boyut', 'duyurular', 'not-sayfa'];
-  var UST_SEKME = { 'uc-boyut': 'anasayfa', duyurular: 'anasayfa', 'not-sayfa': 'notlar' };
+  var TABS = ['anasayfa', 'depo', 'odybot', 'notlar', 'vakalarim', 'ayarlar', 'giris', 'uc-boyut', 'duyurular', 'not-sayfa', 'seslab'];
+  var UST_SEKME = { 'uc-boyut': 'anasayfa', duyurular: 'anasayfa', 'not-sayfa': 'notlar', seslab: 'anasayfa' };
   var UC_ESKI = ['uc-boyut', '3d-model', 'gorsel3d', 'depo/3d', 'model'];   // olası eski/başka adresler -> #3d
-  var oncekiHash = '', ucGeldigi = null, ilkRota = true, gorunen = 'anasayfa';
+  var oncekiHash = '', ucGeldigi = null, slGeldigi = null, ilkRota = true, gorunen = 'anasayfa';
   function adresDegistir(yeni) { try { history.replaceState(null, '', yeni); } catch (e) {} }
   function route() {
     var t = (location.hash || '').replace('#', '');
@@ -827,6 +827,9 @@
       if (oncekiHash !== '3d') ucGeldigi = ilkRota ? null : oncekiHash;   // geri düğmesi için: nereden gelindi (doğrudan açıldıysa null)
       setTimeout(kur3d, 0);   // model yalnızca 3D sayfası ilk kez açılınca indirilir
     }
+    // Ses laboratuvarı (#seslab, 2026-11-18): ilk açılışta kurulur; sayfadan çıkınca çalan ses kesilir.
+    if (t === 'seslab') { if (oncekiHash !== 'seslab') slGeldigi = ilkRota ? null : oncekiHash; setTimeout(kurSeslab, 0); }
+    else if (gorunen === 'seslab' && !duyuru && sl) sl.durdur();
     // Derin bağlantılar: işini yapıp adresi sade hâline çevirir (geri tuşu bir önceki sayfaya döner).
     var p = t.split('/');
     if (p[0] === 'depo' && p.length > 1) { t = 'depo'; ham = 'depo'; adresDegistir('#depo'); sonra = function () { depoGit(p.slice(1)); }; }
@@ -855,6 +858,10 @@
   }
   window.addEventListener('hashchange', route);
   route();
+  $('sl-geri').addEventListener('click', function () {
+    if ((slGeldigi === 'anasayfa' || slGeldigi === '') && history.length > 1) history.back();
+    else location.hash = '#anasayfa';
+  });
   // 3D sayfasındaki "← Ana sayfa": ana sayfadan gelindiyse tarayıcı geçmişinde bir adım geri (telefonun geri tuşuyla aynı).
   $('uc-geri').addEventListener('click', function () {
     if ((ucGeldigi === 'anasayfa' || ucGeldigi === '') && history.length > 1) history.back();
@@ -905,6 +912,7 @@
       if (d.gizli) return;
       l.push({ tur: d.grup === 'implant' ? AM('araTurImplant') : AM('araTurCihaz'), ad: d.ad, metin: d.alt + ' ' + d.gorselAlt, git: '#depo/cihaz/' + d.id });
     });
+    l.push({ tur: AM('araTurBolum'), ad: $('seslab').querySelector('h2').textContent, metin: 'animasyon kulak zarı kemikçik koklea yürüyen dalga frekans', git: '#seslab' });
     var sema = AM('araTurSema') + ' · ';
     // Bölümlerin kendisi (şemalar ve cihaz panelleri)
     [['alt-yolak', '#depo/yolak/' + sel], ['alt-refleks', '#depo/refleks/' + rsel], ['alt-tarama', '#depo/tarama/' + TA.sec], ['seg-isitme', '#depo/isitme'], ['seg-implant', '#depo/implant']].forEach(function (x) {
@@ -1254,8 +1262,37 @@
     applyOv(G3D.metinler.key, G3D.metinler);
     if (g3d) g3d.yenile();
   }
+  /* ---------- Ses laboratuvarı (seslab/, 2026-11-18) ----------
+     seslab/seslab.js, gorsel3d.js'in kopyasından türetildi; 3D modelini (gorsel3d/periferik.*) yalnızca okur.
+     Yönetici düzenlemesi: icerik/sl.sahne.<id> (ad, aciklama), sl.metin (uyari, frekansNot, sesNot, not).
+     Yapıya dokununca çıkan ad/açıklama 3D sayfasıyla ortak (g3d.yapi.<id>). */
+  var SL = window.SESLAB_VERI, sl = null;
+  var SL_METIN_ALAN = [{ f: 'uyari', ad: 'Uyarı (modelin altında)', cok: true }, { f: 'frekansNot', ad: 'Frekans notu ({f} frekans, {y} yüzde, {bolge} bölge)', cok: true },
+    { f: 'sesNot', ad: 'Ses düğmesinin altındaki not', cok: true }, { f: 'not', ad: 'Not (sayfanın altında)', cok: true }];
+  if (SL) {
+    SL.sahneler.forEach(function (b) { b.key = 'sl.sahne.' + b.id; editable(b, ['ad', 'aciklama']); });
+    SL.metinler.key = 'sl.metin'; editable(SL.metinler, ['uyari', 'frekansNot', 'sesNot', 'not']);
+  }
+  function slKartEki(tur, kimlik, yuva) {
+    var a = null;
+    if (tur === 'yapi' && G3D && G3D.yapilar[kimlik]) a = adminPart(G3D.yapilar[kimlik].key, G3D.yapilar[kimlik], G3D_ALAN, 'Düzenle');
+    else if (tur === 'sahne') { var o = SL.sahneler.filter(function (b) { return b.id === kimlik; })[0]; if (o) a = adminPart(o.key, o, G3D_ALAN, 'Düzenle'); }
+    else if (tur === 'metin') a = adminPart(SL.metinler.key, SL.metinler, SL_METIN_ALAN, 'Uyarı ve notları düzenle');
+    if (a) yuva.appendChild(a);
+  }
+  function kurSeslab() {
+    if (sl || !SL || !window.SesLab) return;
+    sl = window.SesLab.kur($('sl-kok'), { veri: SL, yapilar: G3D ? G3D.yapilar : {}, veriYolu: 'gorsel3d/', kartEki: slKartEki });
+  }
+  function refreshSeslab() {
+    if (!SL) return;
+    SL.sahneler.forEach(function (b) { applyOv(b.key, b); });
+    applyOv(SL.metinler.key, SL.metinler);
+    if (sl) sl.yenile();
+  }
+
   // Açık/koyu görünüm değişince yapı renkleri (CSS değişkenleri) yeniden okunur.
-  function g3dRenk() { if (g3d) g3d.yenile(); }
+  function g3dRenk() { if (g3d) g3d.yenile(); if (sl) sl.yenile(); }
   new MutationObserver(g3dRenk).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
   if (window.matchMedia) { var g3dMq = window.matchMedia('(prefers-color-scheme: dark)'); if (g3dMq.addEventListener) g3dMq.addEventListener('change', g3dRenk); }
 
@@ -1277,7 +1314,7 @@
     });
   }
   // Tüm düzenlenebilir içeriği yeniden çizer (yönetici değişikliği geldiğinde, giriş/çıkışta).
-  function refreshContent() { refreshPathway(); refreshReflex(); refreshTarama(); refreshNotes(); refreshDevices(); refresh3d(); refreshStatic(); bildir('odyo:metinler'); }
+  function refreshContent() { refreshPathway(); refreshReflex(); refreshTarama(); refreshNotes(); refreshDevices(); refresh3d(); refreshSeslab(); refreshStatic(); bildir('odyo:metinler'); }
 
   /* ---------- servis çalışanı: internetsiz açılma (yalnızca https veya localhost'ta çalışır) ---------- */
   if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
