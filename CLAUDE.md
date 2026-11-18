@@ -60,10 +60,11 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 - **Terimler sözlüğü** (`#sozluk`, `sozluk.js`): öğrenme kartları (ön: Türkçe kalın + İngilizce küçük; dokununca döner, arkada açıklama; sağa at = biliyorum, aralıklı tekrar 1/3/7/16/35 gün; sola at = tekrar listesi), Türkçeye göre alfabetik liste ve arama, Tekrar listesi, yönetici Terim ekle/Düzenle/Sil. Firestore `sozluk`; **firestore.rules proje sahibi tarafından konsola yapıştırıldı** (2026-11-18; okuma dışarıdan doğrulandı). Henüz terim yok.
 **v35 (2026-11-18, dal `denge-duzenleme`, yayında):** doğal otolit taneleri, denge kipinde tek oynatma tuşu (Tümünü oynat), küçük manevra tuşları modelin altında, ↺ ↻ ve Başa dön. Yedek etiketi `yedek-yayin-v34`.
 **Oturum başında hatırlat:**
-1. **Telefonda denenecekler:** uygulamayı kapatıp açınca v35 gelmeli; Ses laboratuvarı (3B akıcılığı, Sesi çal, Denge kipi, Tümünü oynat, Başı göster); sözlük kartları (parmakla sola/sağa atma, çevirme); yeni simgeler.
+1. **Telefonda denenecekler:** uygulamayı kapatıp açınca v35 gelmeli; Ses laboratuvarı (3B akıcılığı, Sesi çal, Denge kipi: otolit taneleri belirgin ve doğal mı, Tümünü oynat, küçük manevra tuşları, ↺ ↻ ve Başa dön, Başı göster/Yakınlaştır); sözlük kartları (parmakla sola/sağa atma, çevirme); yeni simgeler.
 2. **İlk terimleri ekle** (yönetici, Terimler sözlüğü sayfasının altı). Gerçek veritabanına yazma henüz hiç denenmedi; ilk eklemede birlikte kontrol et.
 3. **Klinik doğrulama (taslak metinler):** Ses laboratuvarı sahne metinleri ve frekans notu; Denge: Dix-Hallpike/Epley açıları ve adımları, nistagmus tarifi, makula açıklamaları (Epley 1992, AAO-HNS 2017'den bilgiyle yazıldı, makaleler okunmadı). Bilinen sadeleştirmeler: kristaller utrikulusa 3. adımda geçiyor; baş şematik; bekleme süreleri kısaltıldı.
 4. Aşağıdaki 2026-11-17 listesi (telefonda denenmemiş 2. adım işleri, refleks/OAE doğrulamaları) hâlâ geçerli. Sıradaki işi proje sahibi belirleyecek (YOL-HARITASI.md).
+**Temizlik:** yayına giren dallar (`adim3-seslab`, `sozluk`, `kisayol-cihaz`, `denge-gorunurluk`, `denge-duzenleme`) main'de; `sozluk-yedek` artık gereksiz, proje sahibi onaylarsa silinir. Bu not (2026-11-18 gece) yalnızca yerel commit; bir sonraki yayınla GitHub'a gider.
 **Çalışma notu:** Birbirinden bağımsız işler main'den açılan ayrı dallarda yapılır; ortak satırlar (hızlı erişim, sw VERSION, app.js TABS) yayında birleştirilir.
 
 ### Önceki: KALDIĞIMIZ YER (2026-11-17 gece)
