@@ -18,6 +18,8 @@
 /* İşitme | Denge geçişi (iki eşit düğme), denge adımları (iki sütun) */
 .sl .sl-mod { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
 .sl .sl-mod[hidden], .sl .sl-adimlar[hidden], .sl .sl-yer[hidden] { display: none; }
+.sl .sl-tum { width: 100%; margin-bottom: 8px; }
+.sl .sl-tum[hidden] { display: none; }
 .sl .sl-adimlar { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
 .sl .sl-adimlar button { padding: 6px 6px; font-size: 13px; text-align: center; }
 /* Denge kipinde modelin alt kenarı = yer; sol altta uzak/yakın görünüm düğmesi */

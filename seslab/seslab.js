@@ -227,9 +227,11 @@
     var modBox = h('div', 'g3d-satir sl-mod'), modIs = h('button', null), modDe = h('button', null);
     modIs.type = 'button'; modDe.type = 'button'; modBox.appendChild(modIs); modBox.appendChild(modDe); modBox.hidden = !DSAH.length;
     var bAdim = h('h3', 'g3d-baslik'), adimBox = h('div', 'g3d-satir sl-adimlar'), adimBtns = [];
+    // Tek tıkla izleme: adımları sırayla, her birinin sonunda kısa bekleyerek oynatır
+    var tumBtn = h('button', 'sl-ses-dugme sl-tum'); tumBtn.type = 'button'; tumBtn.hidden = true; tumBtn.setAttribute('aria-pressed', 'false');
     var bSah = h('h3', 'g3d-baslik'), bFr = h('h3', 'g3d-baslik'), bGor = h('h3', 'g3d-baslik');
     var notEl = h('p', 'g3d-not'), kaynakEl = h('p', 'g3d-not sl-kaynak'), metinYuva = h('div', 'g3d-kart-ek');
-    [modBox, sahne, uyari, kart, enerjiKutu, bSah, sahBox, bAdim, adimBox, bFr, frBox, sesSatir, bGor, viewBox, notEl, metinYuva, kaynakEl].forEach(function (e) { kok.appendChild(e); });
+    [modBox, sahne, uyari, kart, enerjiKutu, bSah, sahBox, bAdim, tumBtn, adimBox, bFr, frBox, sesSatir, bGor, viewBox, notEl, metinYuva, kaynakEl].forEach(function (e) { kok.appendChild(e); });
 
     function metinler() {
       uyari.textContent = mod === 'denge' ? (M.dengeUyari || M.uyari) : M.uyari; notEl.textContent = M.not;
@@ -273,6 +275,7 @@
     var kul = [1, 0, 0, 0, 1, 0, 0, 0, 1], pozQ = [1, 0, 0, 0], basQ = [1, 0, 0, 0], hedefQ = [1, 0, 0, 0], gecisT = 1, ivme = [0, 0, 0], basIvme = [0, 0, 0], hedefIvme = [0, 0, 0];
     var KAYMA = 0.35, GECIS_SN = 2.4;
     // Adım akışı (saniye): 0–UZAK_SN kamera başı gösterecek kadar uzaklaşır, sonra baş döner, sonra yakınlaşır.
+    var BEKLE_SN = { bppv: 4.5, makula: 3 }, oto = null;   // tek tıkla izlemede her adımın sonunda bekleme
     var UZAK_SN = 0.9, akis = null, uzak = false, zarBas = null, zarHedef = null, zarT = 99;   // otolit zarı kayması (mm / g, büyütülmüş); pozlar arası geçiş süresi
     var sah = SAH[0], sel = null, dirty = true, G = null;
     var reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches), auto = false;
@@ -365,7 +368,7 @@
       uzak = u; yakinBtn.textContent = u ? (M.yakinlastir || 'Yakınlaştır') : (M.basiGoster || 'Başı göster');
       if (dsah) frame(u ? ['bas_deri'] : (dsah.cerceve || dsah.yapilar));
     }
-    yakinBtn.addEventListener('click', function () { akis = null; uzakYakin(!uzak); });
+    yakinBtn.addEventListener('click', function () { akis = null; if (oto) otoDurdur(); uzakYakin(!uzak); });
     function kristalCiz(st) {
       var p = PART.kristal; if (!p || !Y) return;
       gl.uniform1f(U.tur, 1); gl.uniform1f(U.zarFaz, 0); gl.uniformMatrix3fv(U.mdlN, false, BIRIM3);
@@ -456,6 +459,10 @@
             if (akis.yakin) akis = null;
           }
           if (zarT < 6 && oynuyor) { zarT += dt; dirty = true; }
+          if (oto && oynuyor && !akis && gecisT >= 1) {
+            oto.bekle += dt;
+            if (oto.bekle >= (BEKLE_SN[dsah.tip] || 3)) { if (adimI < dsah.adimlar.length - 1) { oto.bekle = 0; setAdim(adimI + 1, false, true); } else otoDurdur(); }
+          }
           if (gecisT < 1 && (!akis || akis.basladi)) {
             gecisT = Math.min(1, gecisT + dt / GECIS_SN);
             var e = (1 - Math.cos(Math.PI * gecisT)) / 2;
@@ -536,7 +543,15 @@
       dsah.adimlar.forEach(function (a, i) { var b = h('button', null, a.ad); b.type = 'button'; b.setAttribute('aria-pressed', 'false'); b.addEventListener('click', function () { setAdim(i); }); adimBox.appendChild(b); adimBtns.push(b); });
     }
     // Adım seçimi: baş yeni pozisyona yumuşakça döner (duraklatılmışsa ya da hareket azaltma açıksa hemen).
-    function setAdim(i, hemen) {
+    function tumYaz() { tumBtn.textContent = oto ? '❚❚ ' + (M.tumunuDurdur || 'Durdur') : '▶ ' + (M.tumunuOynat || 'Tümünü oynat'); tumBtn.setAttribute('aria-pressed', oto ? 'true' : 'false'); }
+    function otoDurdur() { oto = null; tumYaz(); }
+    tumBtn.addEventListener('click', function () {
+      if (oto) { otoDurdur(); return; }
+      if (!oynuyor) { oynuyor = true; oynatYaz(); }
+      oto = { bekle: 0 }; tumYaz(); setAdim(0, false, true);
+    });
+    function setAdim(i, hemen, otodan) {
+      if (!otodan && oto) otoDurdur();
       var a = dsah.adimlar[i]; adimI = i;
       if (dsah.tip === 'bppv' && (a.sifirla || hemen)) KR = DS.kristaller(Y, KRISTAL_SAYI);
       basQ = pozQ.slice(); hedefQ = DS.mat2q(DS.pozMatris(a.poz || {})); basIvme = ivme.slice(); hedefIvme = (a.ivme || [0, 0, 0]).slice(); gecisT = 0;
@@ -557,8 +572,9 @@
       mod = m; sesKapat(); sel = null;
       modIs.setAttribute('aria-pressed', m === 'isitme' ? 'true' : 'false'); modDe.setAttribute('aria-pressed', m === 'denge' ? 'true' : 'false');
       [enerjiKutu, bFr, frBox, sesSatir, bGor, viewBox].forEach(function (e) { e.hidden = m === 'denge'; });
-      [bAdim, adimBox, yerEt, yakinBtn].forEach(function (e) { e.hidden = m !== 'denge'; });
-      metinler(); sahneDugmeleri(); uzakYakin(false);
+      [bAdim, adimBox, yerEt, yakinBtn, tumBtn].forEach(function (e) { e.hidden = m !== 'denge'; });
+      if (oto) otoDurdur();
+      metinler(); sahneDugmeleri(); uzakYakin(false); tumYaz();
       if (m === 'denge') setSah(dsah || DSAH[0]); else { R = VIEWS.on.slice(); setSah(SAH[0]); }
     }
     modIs.addEventListener('click', function () { setMod('isitme'); });
@@ -567,7 +583,7 @@
     bAdim.hidden = true; adimBox.hidden = true;
     function setSah(s) {
       sah = s; sel = null;
-      if (mod === 'denge') { dsah = s; adimDugmeleri(); }
+      if (mod === 'denge') { dsah = s; adimDugmeleri(); if (oto) otoDurdur(); }
       else if (s.gorunum === 'eksen') R = eksenBakis(); else if (VIEWS[s.gorunum]) R = VIEWS[s.gorunum].slice();
       sahBtns.forEach(function (b, k) { b.setAttribute('aria-pressed', sahneListesi()[k] === s ? 'true' : 'false'); });
       frame(s.cerceve || s.yapilar);
@@ -706,7 +722,7 @@
         metinler(); if (!hazir) return; renkleriOku();
         sahBtns.forEach(function (b, k) { b.textContent = sahneListesi()[k].ad; });
         if (dsah) adimBtns.forEach(function (b, k) { b.textContent = dsah.adimlar[k].ad; });
-        sesYaz(); oynatYaz(); card(); dirty = true;
+        sesYaz(); oynatYaz(); tumYaz(); card(); dirty = true;
       },
       durdur: function () { sesKapat(); },   // sayfadan çıkınca ses kesilir
       kaldir: function () { durdu = true; sesKapat(); dinleyiciler.forEach(function (d) { d[0].removeEventListener(d[1], d[2], d[3]); }); kok.textContent = ''; }

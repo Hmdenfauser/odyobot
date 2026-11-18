@@ -77,7 +77,7 @@ window.SESLAB_VERI = {
     sesYok: 'Bu tarayıcı ses çalamıyor.',
     sesNot: 'Ses düzeyini düşük tut. Telefon sessizdeyse ses duyulmayabilir. Bu ses kalibre değildir; işitme testi için kullanılamaz.',
     uyari: 'Hareketler büyütüldü ve yavaşlatıldı. Gerçekte titreşim nanometre düzeyindedir ve saniyede yüzlerce, binlerce kez olur. Öğretim çizimidir, ölçülmüş simülasyon değildir. Pembe: içe itilme, mavi: dışa çekilme, mor: sinirdeki elektriksel sinyal.',
-    modIsitme: 'İşitme', modDenge: 'Denge', adimBasligi: 'Adım', yerEtiketi: 'Yer', yakinlastir: 'Yakınlaştır', basiGoster: 'Başı göster',
+    modIsitme: 'İşitme', modDenge: 'Denge', adimBasligi: 'Adım', yerEtiketi: 'Yer', yakinlastir: 'Yakınlaştır', basiGoster: 'Başı göster', tumunuOynat: 'Tümünü oynat', tumunuDurdur: 'Durdur',
     dengeUyari: 'Kristaller ve otolit zarının kayması görünsün diye çok büyütüldü; gerçek otokonya mikrometre boyutundadır. Pozlar arası geçiş kısaltıldı; gerçekte her pozisyonda 30–60 saniye beklenir. Hasta sağdan görülüyor, alt kenar yerdir; silik baş pozisyonu gösterir (pembe kulak: sağ kulak), oranı gerçek değildir. Her adımda önce baş döner, sonra görüntü yakınlaşır; otolit zarının kayması görülebilsin diye baş döndükten sonra gösterilir (gerçekte anında olur). Ampullada pembe: kupula ampulladan uzaklaşan yönde bükülüyor; mavi: ters yönde. Makulada pembe: tüy demetleri bükülüyor.',
     enerjiBaslik: 'Enerji dönüşümü',
     enerji1Ad: 'Akustik', enerji1Alt: 'Kepçe, dış kulak yolu (hava)',
