@@ -103,7 +103,8 @@
     // Uzunluklar
     var s = [0];
     for (i = 1; i < yol.length; i++) s.push(s[i - 1] + len(sub(yol[i], yol[i - 1])));
-    return { yol: yol, s: s, L: s[s.length - 1], ampulla: ampM, utrikulus: utr, kanalBitis: s[yum.length - 1] };
+    // n: kanal düzleminin normali (kristallerin kanal içindeki yan konumu için)
+    return { yol: yol, s: s, L: s[s.length - 1], ampulla: ampM, utrikulus: utr, kanalBitis: s[yum.length - 1], n: E[2] };
   }
   function yolNokta(Y, u) {
     u = Math.max(0, Math.min(Y.L, u));
@@ -114,18 +115,26 @@
 
   /* Kristaller: her biri yol üzerinde bir u değeri. Yerçekiminin yol boyunca bileşeni kadar hızlanır, sürtünmeyle yavaşlar.
      Utrikulusa ulaşan (u ≥ L − 0,4) kristal orada kalır. Kupula (u = 0) duvar gibidir. adim(): saniye cinsinden dt. */
+  /* Her kristal ayrı bir tane: boyu (b), sürtünmesi (sur; büyükler biraz daha hızlı kayar), kanal kesitindeki yeri
+     (a açı, d uzaklık; mm) ve duruşu (don) farklıdır. Sabit "rastgele" sayılar: her açılışta aynı görünür, test tekrarlanabilir. */
   function kristaller(Y, sayi) {
     var K = [];
-    for (var i = 0; i < sayi; i++) K.push({ u: 0.6 + i * 0.28, v: 0, cikti: false });
+    for (var i = 0; i < sayi; i++) {
+      var b = 0.55 + sabitRastgele(i * 7 + 1) * 0.75;
+      K.push({ u: 0.4 + sabitRastgele(i * 7 + 2) * 1.6, v: 0, cikti: false, b: b,
+        sur: SURTUNME * (1.25 - (b - 0.55) * 0.45) * (0.85 + sabitRastgele(i * 7 + 3) * 0.3),
+        a: sabitRastgele(i * 7 + 4) * 2 * Math.PI, d: sabitRastgele(i * 7 + 5) * 0.3,
+        don: [sabitRastgele(i * 7 + 6) * 6.28, sabitRastgele(i * 7 + 7) * 6.28] });
+    }
     return K;
   }
-  var IVME = 5, SURTUNME = 2.2, ARALIK = 0.4;   // yavaş tutuldu: kayış ekranda izlenebilsin
+  var IVME = 5, SURTUNME = 2.2, ARALIK = 0.12;   // yavaş tutuldu: kayış ekranda izlenebilsin; taneler birbirine yaklaşabilir (yanlara dağılırlar)
   function adim(Y, K, gModel, dt) {
     var kupula = 0;
     K.forEach(function (k) {
       if (k.cikti) return;
       var y = yolNokta(Y, k.u), a = IVME * dot(y.t, gModel);
-      k.v += (a - SURTUNME * k.v) * dt; k.v = Math.max(-6, Math.min(6, k.v));
+      k.v += (a - (k.sur || SURTUNME) * k.v) * dt; k.v = Math.max(-6, Math.min(6, k.v));
       k.u += k.v * dt;
       if (k.u < 0.15) { k.u = 0.15; if (k.v < 0) k.v = 0; }
       if (k.u >= Y.L - 0.4) { k.u = Y.L - 0.4; k.cikti = true; k.v = 0; }
@@ -136,6 +145,21 @@
     for (var i = 1; i < sirali.length; i++) if (sirali[i].u - sirali[i - 1].u < ARALIK) sirali[i].u = sirali[i - 1].u + ARALIK;
     // kupula > 0: kristaller ampulladan uzaklaşıyor (ampullofugal); < 0: ampullaya doğru (ampullopetal)
     return kupula / (K.length || 1);
+  }
+
+  // Utrikulusa dönen tanenin oradaki yeri (merkeze göre, mm): gelişigüzel küçük küme
+  function cikisYeri(i) { var a = sabitRastgele(i * 3 + 11) * 6.28, d = 0.15 + sabitRastgele(i * 3 + 12) * 0.55; return [Math.cos(a) * d, (sabitRastgele(i * 3 + 13) - 0.5) * 0.3, Math.sin(a) * d]; }
+  // Kristal ağı: köşeleri biraz oynatılmış küçük çokyüzlü (yassı, köşeli; düz yüz normalleri)
+  function kristalAg(r) {
+    var A = ag(), v = [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]], Y = [[0, 2, 4], [2, 1, 4], [1, 3, 4], [3, 0, 4], [2, 0, 5], [1, 2, 5], [3, 1, 5], [0, 3, 5]];
+    var yeni = [];
+    Y.forEach(function (y) { var a = v[y[0]], b = v[y[1]], c = v[y[2]], ab = v.push(nrm(add(a, b))) - 1, bc = v.push(nrm(add(b, c))) - 1, ca = v.push(nrm(add(c, a))) - 1; yeni.push([y[0], ab, ca], [ab, y[1], bc], [ca, bc, y[2]], [ab, bc, ca]); });
+    v = v.map(function (p, i) { var s = 0.78 + sabitRastgele(i + 40) * 0.44; return [p[0] * s * r * 1.25, p[1] * s * r * 0.8, p[2] * s * r]; });
+    yeni.forEach(function (y) {
+      var a = v[y[0]], b = v[y[1]], c = v[y[2]], n = nrm(cross(sub(b, a), sub(c, a)));
+      A.I.push(ekle(A, a, n, 0), ekle(A, b, n, 0), ekle(A, c, n, 0));
+    });
+    return A;
   }
 
   /* ---------- Otolit organları (makulalar): modelde yok, vestibül içine yaklaşık olarak çizilir ---------- */
@@ -253,7 +277,7 @@
   }
 
   var api = { pozMatris: pozMatris, kuvvetModelde: kuvvetModelde, mat2q: mat2q, q2mat: q2mat, slerp: slerp, kanalYolu: kanalYolu, yolNokta: yolNokta,
-    kristaller: kristaller, adim: adim, makulalar: makulalar, basAg: basAg, makulaKayma: makulaKayma, kure: kure, uygula: uygula, devrik: devrik, mul: mul, eksenler: eksenler, merkez: merkez, enYakin: enYakin };
+    kristaller: kristaller, adim: adim, makulalar: makulalar, basAg: basAg, kristalAg: kristalAg, cikisYeri: cikisYeri, rx: rx, ry: ry, makulaKayma: makulaKayma, kure: kure, uygula: uygula, devrik: devrik, mul: mul, eksenler: eksenler, merkez: merkez, enYakin: enYakin };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else window.SesLabDenge = api;
 })();

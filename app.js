@@ -1278,7 +1278,7 @@
     { f: 'enerji1Ad', ad: '1. aşama adı' }, { f: 'enerji1Alt', ad: '1. aşama alt yazısı' }, { f: 'enerji2Ad', ad: '2. aşama adı' }, { f: 'enerji2Alt', ad: '2. aşama alt yazısı' },
     { f: 'enerji3Ad', ad: '3. aşama adı' }, { f: 'enerji3Alt', ad: '3. aşama alt yazısı' }, { f: 'enerji4Ad', ad: '4. aşama adı' }, { f: 'enerji4Alt', ad: '4. aşama alt yazısı' },
     { f: 'enerjiNot', ad: 'Enerji dönüşümü açıklaması', cok: true },
-    { f: 'modIsitme', ad: 'İşitme düğmesi' }, { f: 'modDenge', ad: 'Denge düğmesi' }, { f: 'adimBasligi', ad: 'Adım başlığı (denge)' }, { f: 'yerEtiketi', ad: 'Yer etiketi (denge)' }, { f: 'yakinlastir', ad: 'Yakınlaştır düğmesi' }, { f: 'basiGoster', ad: 'Başı göster düğmesi' }, { f: 'tumunuOynat', ad: 'Tümünü oynat düğmesi' }, { f: 'tumunuDurdur', ad: 'Tümünü oynat → durdur yazısı' },
+    { f: 'modIsitme', ad: 'İşitme düğmesi' }, { f: 'modDenge', ad: 'Denge düğmesi' }, { f: 'adimBasligi', ad: 'Adım başlığı (denge)' }, { f: 'yerEtiketi', ad: 'Yer etiketi (denge)' }, { f: 'yakinlastir', ad: 'Yakınlaştır düğmesi' }, { f: 'basiGoster', ad: 'Başı göster düğmesi' }, { f: 'tumunuOynat', ad: 'Tümünü oynat düğmesi' }, { f: 'tumunuDurdur', ad: 'Tümünü oynat → durdur yazısı' }, { f: 'basaDon', ad: 'Başa dön düğmesi (denge)' },
     { f: 'dengeUyari', ad: 'Uyarı (denge kipinde, modelin altında)', cok: true }];
   if (SL) {
     SL.sahneler.forEach(function (b) { b.key = 'sl.sahne.' + b.id; editable(b, ['ad', 'aciklama']); });
