@@ -3,20 +3,45 @@
 .sl {
   --sl-tepe: #E5397A;    /* yürüyen dalganın tepesi ve kanal dalgası */
   --sl-cukur: #2E5BD8;   /* yürüyen dalganın çukuru */
+  --sl-elektrik: #7B2FF0; /* sinirdeki elektriksel sinyal */
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .sl { --sl-tepe: #FF6FA3; --sl-cukur: #7FA6FF; }
+  :root:not([data-theme="light"]) .sl { --sl-tepe: #FF6FA3; --sl-cukur: #7FA6FF; --sl-elektrik: #C49BFF; }
 }
-:root[data-theme="dark"] .sl { --sl-tepe: #FF6FA3; --sl-cukur: #7FA6FF; }
+:root[data-theme="dark"] .sl { --sl-tepe: #FF6FA3; --sl-cukur: #7FA6FF; --sl-elektrik: #C49BFF; }
 
 .sl .sl-oynat { left: 8px; top: 8px; }
+/* Modelin üstünde oval pencereyi gösteren etiket (konumu seslab.js yazar); nokta tabanın üstünde, yazı sağında. */
+.sl .sl-oval { position: absolute; transform: translate(14px, calc(-100% - 10px)); padding: 3px 8px; border-radius: 999px; background: var(--surface);
+  border: 1px solid var(--sl-tepe); pointer-events: none; font: 600 12px/1.2 var(--font-body); color: var(--ink); white-space: nowrap; }
+.sl .sl-oval::before { content: ""; position: absolute; left: -25px; bottom: -21px; width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--sl-tepe); }
+.sl .sl-oval-sol { transform: translate(calc(-100% - 14px), calc(-100% - 10px)); }
+.sl .sl-oval-sol::before { left: auto; right: -25px; }
+.sl .sl-oval[hidden] { display: none; }
 .sl .sl-uyari { text-align: left; font-size: 13px; line-height: 1.45; margin-top: 0; }
 .sl .sl-frekans-not { margin: 10px 0 0; font: 500 14px/1.45 var(--font-body); color: var(--ink); }
 .sl .sl-frekans-not[hidden] { display: none; }
-.sl .sl-frekanslar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-.sl .sl-frekanslar button { font: 500 14px/1.2 var(--font-mono); padding: 6px 4px; text-align: center; }
+.sl .g3d-bolumler { grid-template-columns: repeat(2, 1fr); }
+.sl .sl-frekanslar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.sl .sl-frekanslar button { font: 500 14px/1.2 var(--font-mono); padding: 6px 2px; text-align: center; min-height: 44px; }
+
+/* Enerji dönüşümü şeridi: 4 aşama; seçili sahnenin aşamaları renkli, diğerleri soluk. */
+.sl .sl-enerji { margin-top: 4px; }
+.sl .sl-enerji-liste { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+.sl .sl-asama { position: relative; display: flex; flex-direction: column; gap: 2px; padding: 8px 6px 8px 8px; border: 1px solid var(--line);
+  border-top: 4px solid var(--line); border-radius: 8px; background: transparent; min-width: 0; }
+.sl .sl-asama strong { font: 500 13px/1.2 var(--font-body); color: var(--muted); overflow-wrap: anywhere; }
+.sl .sl-asama span { font: 400 12px/1.3 var(--font-body); color: var(--muted); overflow-wrap: anywhere; }
+.sl .sl-asama-acik { border-top-color: var(--sl-renk); background: var(--surface); }
+.sl .sl-asama-acik strong { font-weight: 700; color: var(--ink); }
+.sl .sl-asama-1 { --sl-renk: var(--g3d-eac); }
+.sl .sl-asama-2 { --sl-renk: var(--g3d-inc); }
+.sl .sl-asama-3 { --sl-renk: var(--g3d-sv); }
+.sl .sl-asama-4 { --sl-renk: var(--sl-elektrik); }
+.sl .sl-enerji .g3d-not { margin-top: 8px; }
 .sl .sl-ses { display: flex; flex-direction: column; gap: 6px; }
 .sl .sl-ses-dugme { font: 600 15px/1.2 var(--font-body); color: var(--accent-ink); background: var(--accent); border: 1px solid var(--accent);
   border-radius: 10px; min-height: 48px; padding: 10px 14px; cursor: pointer; }
 .sl .sl-ses-dugme[aria-pressed="true"] { color: var(--ink); background: var(--surface); border-color: var(--accent); }
 .sl .sl-ses-dugme:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.sl .sl-kaynak a { display: block; padding: 10px 0; }

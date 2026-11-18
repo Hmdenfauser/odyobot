@@ -1270,25 +1270,35 @@
      Yapıya dokununca çıkan ad/açıklama 3D sayfasıyla ortak (g3d.yapi.<id>). */
   var SL = window.SESLAB_VERI, sl = null;
   var SL_METIN_ALAN = [{ f: 'uyari', ad: 'Uyarı (modelin altında)', cok: true }, { f: 'frekansNot', ad: 'Frekans notu ({f} frekans, {y} yüzde, {bolge} bölge)', cok: true },
-    { f: 'sesNot', ad: 'Ses düğmesinin altındaki not', cok: true }, { f: 'not', ad: 'Not (sayfanın altında)', cok: true }];
+    { f: 'sesNot', ad: 'Ses düğmesinin altındaki not', cok: true }, { f: 'not', ad: 'Not (sayfanın altında)', cok: true },
+    { f: 'ovalEtiket', ad: 'Modeldeki oval pencere etiketi' }, { f: 'enerjiBaslik', ad: 'Enerji dönüşümü başlığı' },
+    { f: 'enerji1Ad', ad: '1. aşama adı' }, { f: 'enerji1Alt', ad: '1. aşama alt yazısı' }, { f: 'enerji2Ad', ad: '2. aşama adı' }, { f: 'enerji2Alt', ad: '2. aşama alt yazısı' },
+    { f: 'enerji3Ad', ad: '3. aşama adı' }, { f: 'enerji3Alt', ad: '3. aşama alt yazısı' }, { f: 'enerji4Ad', ad: '4. aşama adı' }, { f: 'enerji4Alt', ad: '4. aşama alt yazısı' },
+    { f: 'enerjiNot', ad: 'Enerji dönüşümü açıklaması', cok: true }];
   if (SL) {
     SL.sahneler.forEach(function (b) { b.key = 'sl.sahne.' + b.id; editable(b, ['ad', 'aciklama']); });
-    SL.metinler.key = 'sl.metin'; editable(SL.metinler, ['uyari', 'frekansNot', 'sesNot', 'not']);
+    Object.keys(SL.yapilar).forEach(function (k) { SL.yapilar[k].key = 'sl.yapi.' + k; editable(SL.yapilar[k], ['ad', 'aciklama']); });
+    SL.metinler.key = 'sl.metin'; editable(SL.metinler, SL_METIN_ALAN.map(function (a) { return a.f; }));
   }
   function slKartEki(tur, kimlik, yuva) {
     var a = null;
-    if (tur === 'yapi' && G3D && G3D.yapilar[kimlik]) a = adminPart(G3D.yapilar[kimlik].key, G3D.yapilar[kimlik], G3D_ALAN, 'Düzenle');
+    if (tur === 'yapi' && SL.yapilar[kimlik]) a = adminPart(SL.yapilar[kimlik].key, SL.yapilar[kimlik], G3D_ALAN, 'Düzenle');
+    else if (tur === 'yapi' && G3D && G3D.yapilar[kimlik]) a = adminPart(G3D.yapilar[kimlik].key, G3D.yapilar[kimlik], G3D_ALAN, 'Düzenle');
     else if (tur === 'sahne') { var o = SL.sahneler.filter(function (b) { return b.id === kimlik; })[0]; if (o) a = adminPart(o.key, o, G3D_ALAN, 'Düzenle'); }
     else if (tur === 'metin') a = adminPart(SL.metinler.key, SL.metinler, SL_METIN_ALAN, 'Uyarı ve notları düzenle');
     if (a) yuva.appendChild(a);
   }
   function kurSeslab() {
     if (sl || !SL || !window.SesLab) return;
-    sl = window.SesLab.kur($('sl-kok'), { veri: SL, yapilar: G3D ? G3D.yapilar : {}, veriYolu: 'gorsel3d/', kartEki: slKartEki });
+    // Yapı adları 3D sayfasıyla ortak; bu sayfaya özgü yapılar (kepçe) SL.yapilar'dan gelir (sl.yapi.<id>).
+    var yapilar = {}; if (G3D) Object.keys(G3D.yapilar).forEach(function (k) { yapilar[k] = G3D.yapilar[k]; });
+    Object.keys(SL.yapilar).forEach(function (k) { yapilar[k] = SL.yapilar[k]; });
+    sl = window.SesLab.kur($('sl-kok'), { veri: SL, yapilar: yapilar, veriYolu: 'gorsel3d/', kartEki: slKartEki });
   }
   function refreshSeslab() {
     if (!SL) return;
     SL.sahneler.forEach(function (b) { applyOv(b.key, b); });
+    Object.keys(SL.yapilar).forEach(function (k) { applyOv(SL.yapilar[k].key, SL.yapilar[k]); });
     applyOv(SL.metinler.key, SL.metinler);
     if (sl) sl.yenile();
   }

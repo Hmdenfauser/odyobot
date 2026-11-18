@@ -121,8 +121,30 @@
     var smD = agUzaklik(sm.P, sm.I, enYakin(sm.P, taban)), smS = new Float32Array(smD.length), enCok = 0;
     for (i = 0; i < smD.length; i++) if (isFinite(smD[i]) && smD[i] > enCok) enCok = smD[i];
     for (i = 0; i < smD.length; i++) smS[i] = isFinite(smD[i]) ? smD[i] / (enCok || 1) : 0;
+    // Kulak kepçesi: kanal girişine uzaklık, kanaldakiyle aynı ölçekte ve eksi işaretli (dalga kepçeden kanala kesintisiz akar).
+    var eacBoy = (mx - mn) || 1, gs = [0, 0, 0], gn = 0, kepS = {};
+    for (i = 0; i < ne; i++) if (eacS[i] < 0.04) { gs[0] += eac.P[i * 3]; gs[1] += eac.P[i * 3 + 1]; gs[2] += eac.P[i * 3 + 2]; gn++; }
+    var giris = sc(gs, 1 / (gn || 1));
+    Object.keys(PART).forEach(function (id) {
+      if (!/^p_/.test(id)) return;
+      var P = PART[id].P, m = P.length / 3, a = new Float32Array(m);
+      for (var j = 0; j < m; j++) a[j] = -Math.hypot(P[j * 3] - giris[0], P[j * 3 + 1] - giris[1], P[j * 3 + 2] - giris[2]) / eacBoy;
+      kepS[id] = a;
+    });
+    // Oval pencere: vestibülün stapes tabanına yakın köşeleri (tabanda 1, ~2 mm ötede 0) parlar.
+    var nv = vest.P.length / 3, vestW = new Float32Array(nv);
+    for (i = 0; i < nv; i++) { var dv = Math.hypot(vest.P[i * 3] - taban[0], vest.P[i * 3 + 1] - taban[1], vest.P[i * 3 + 2] - taban[2]); vestW[i] = Math.pow(Math.max(0, 1 - dv / 2.8), 1.2); }
+    // VIII. sinir: kokleaya yakın uçtan (0) beyin sapına doğru (1) konum; elektriksel sinyal bu yönde akar.
+    var n8S = null;
+    if (PART.n8) {
+      var n8 = PART.n8, nE = eksenler(n8.P)[0]; if (dot(nE, sub(merkez(n8.P), merkez(sm.P))) < 0) nE = sc(nE, -1);
+      var n8n = n8.P.length / 3, a0 = 1e9, a1 = -1e9; n8S = new Float32Array(n8n);
+      for (i = 0; i < n8n; i++) { var tt = dot(vtx(n8.P, i), nE); n8S[i] = tt; if (tt < a0) a0 = tt; if (tt > a1) a1 = tt; }
+      for (i = 0; i < n8n; i++) n8S[i] = (n8S[i] - a0) / ((a1 - a0) || 1);
+    }
     G.nIc = nIc; G.umbo = umbo; G.pivot = pivot; G.eksen = eksen; G.piston = piston; G.stapesOran = stapesOran;
     G.umboYer = umboYer; G.tmW = tmW; G.eacS = eacS; G.smS = smS; G.smUzunluk = enCok; G.lent = lent; G.taban = taban;
+    G.kepS = kepS; G.giris = giris; G.vestW = vestW; G.n8S = n8S;
     return G;
   }
   // Rodrigues: eksen etrafında dönme matrisi (satır düzeninde 3x3).
@@ -148,21 +170,24 @@
     return null;
   }
 
-  // tur: 0 durağan, 1 katı hareket (mdl), 2 zar (s*disp), 3 yürüyen dalga (skala media), 4 kanal dalgası (dış kulak yolu)
+  // tur: 0 durağan, 1 katı hareket (mdl; zarFaz kadar renk), 2 zar (s*disp), 3 yürüyen dalga (skala media),
+  //      4 hava dalgası (kepçe + dış kulak yolu), 5 oval pencere parıltısı (vestibül), 6 elektriksel sinyal (VIII. sinir)
   var VS = 'attribute vec3 p;attribute vec3 n;attribute float s;uniform mat4 mvp;uniform mat3 rot;uniform mat4 mdl;uniform mat3 mdlN;uniform vec3 disp;' +
-    'uniform float tur;uniform float zaman;uniform float zarFaz;uniform float tepe;uniform float sik;varying vec3 vn;varying float parla;' +
-    'void main(){vec3 q=p;vec3 m=n;parla=0.0;' +
-    'if(tur>0.5&&tur<1.5){q=(mdl*vec4(p,1.0)).xyz;m=mdlN*n;}' +
+    'uniform float tur;uniform float zaman;uniform float zarFaz;uniform float tepe;uniform float sik;varying vec3 vn;varying float parla;varying float elek;varying float opak;' +
+    'void main(){vec3 q=p;vec3 m=n;parla=0.0;elek=0.0;opak=0.0;' +
+    'if(tur>0.5&&tur<1.5){q=(mdl*vec4(p,1.0)).xyz;m=mdlN*n;parla=zarFaz;}' +
     'else if(tur>1.5&&tur<2.5){q=p+s*disp;parla=s*zarFaz*0.8;}' +
     'else if(tur>2.5&&tur<3.5){float g=s<tepe?exp(-pow((s-tepe)/max(0.18,tepe*0.55),2.0)):exp(-pow((s-tepe)/0.05,2.0));' +
     'float faz=6.2832*(zaman-5.0*sqrt(s/max(tepe,0.02)));float y=g*sin(faz);parla=y;q=p+n*y*0.09;}' +
-    'else if(tur>3.5){float f=fract(s*sik-zaman);parla=smoothstep(0.7,1.0,f)*0.85;}' +
+    'else if(tur>3.5&&tur<4.5){float f=fract(s*sik-zaman);parla=smoothstep(0.7,1.0,f)*0.85;}' +
+    'else if(tur>4.5&&tur<5.5){parla=s*(0.45+0.55*zarFaz);opak=s*2.0;}' +
+    'else if(tur>5.5){float f=fract(s*3.0-zaman*1.6);elek=smoothstep(0.78,0.97,f)*(1.0-smoothstep(0.97,1.0,f));}' +
     'vn=rot*m;gl_Position=mvp*vec4(q,1.0);}';
-  var FS = 'precision mediump float;varying vec3 vn;varying float parla;uniform vec4 col;uniform float duz;uniform vec3 tepeRenk;uniform vec3 cukurRenk;' +
+  var FS = 'precision mediump float;varying vec3 vn;varying float parla;varying float elek;varying float opak;uniform vec4 col;uniform float duz;uniform vec3 tepeRenk;uniform vec3 cukurRenk;uniform vec3 elekRenk;' +
     'void main(){vec3 N=normalize(vn);if(!gl_FrontFacing)N=-N;vec3 L=normalize(vec3(0.45,0.6,0.66));float d=max(dot(N,L),0.0);float f=max(dot(N,normalize(vec3(-0.7,-0.25,0.4))),0.0);' +
     'float rim=pow(1.0-max(N.z,0.0),3.0);float s=pow(max(dot(reflect(-L,N),vec3(0.0,0.0,1.0)),0.0),28.0);' +
-    'vec3 b=col.rgb;b=mix(b,tepeRenk,clamp(parla,0.0,1.0));b=mix(b,cukurRenk,clamp(-parla,0.0,1.0));' +
-    'vec3 c=b*(0.34+0.62*d+0.22*f)-b*rim*0.18+vec3(s*0.2);c=mix(c,b*(0.75+0.25*d),duz);gl_FragColor=vec4(c,col.a);}';
+    'vec3 b=col.rgb;b=mix(b,tepeRenk,clamp(parla,0.0,1.0));b=mix(b,cukurRenk,clamp(-parla,0.0,1.0));b=mix(b,elekRenk,clamp(elek,0.0,1.0));' +
+    'vec3 c=b*(0.34+0.62*d+0.22*f)-b*rim*0.18+vec3(s*0.2);c=mix(c,b*(0.75+0.25*d),duz);gl_FragColor=vec4(c,max(col.a,clamp(opak,0.0,1.0)));}';
 
   function kur(kok, ayar) {
     ayar = ayar || {};
@@ -179,31 +204,38 @@
     olcek.appendChild(cubuk); olcek.appendChild(olcekYazi); olcek.hidden = true;
     var durum = h('p', 'g3d-durum', M.indiriliyor); durum.setAttribute('role', 'status');
     var oynatBtn = h('button', 'g3d-geri sl-oynat'); oynatBtn.type = 'button';
-    sahne.appendChild(cv); sahne.appendChild(neresi); sahne.appendChild(olcek); sahne.appendChild(oynatBtn); sahne.appendChild(durum);
+    // Oval pencere etiketi: stapes tabanının ekrandaki yerini izler.
+    var ovalEt = h('div', 'sl-oval'); ovalEt.hidden = true; ovalEt.setAttribute('aria-hidden', 'true');
+    sahne.appendChild(cv); sahne.appendChild(ovalEt); sahne.appendChild(neresi); sahne.appendChild(olcek); sahne.appendChild(oynatBtn); sahne.appendChild(durum);
     var uyari = h('p', 'g3d-not g3d-ipucu sl-uyari');
     var kart = h('div', 'g3d-kart'), nmEl = h('h4'), dsEl = h('p'), frEl = h('p', 'sl-frekans-not'), yuva = h('div', 'g3d-kart-ek');
     kart.setAttribute('aria-live', 'polite');
     kart.appendChild(nmEl); kart.appendChild(dsEl); kart.appendChild(frEl); kart.appendChild(yuva);
+    // Enerji dönüşümü şeridi: akustik → mekanik → hidrolik → elektriksel; seçili sahnenin aşamaları vurgulanır.
+    var enerjiKutu = h('div', 'sl-enerji'), bEn = h('h3', 'g3d-baslik'), enerjiListe = h('ol', 'sl-enerji-liste'), enerjiNot = h('p', 'g3d-not'), enerjiEl = [];
+    for (var ei = 0; ei < 4; ei++) { var li = h('li', 'sl-asama sl-asama-' + (ei + 1)), ad = h('strong'), alt = h('span'); li.appendChild(ad); li.appendChild(alt); enerjiListe.appendChild(li); enerjiEl.push(li); }
+    enerjiKutu.appendChild(bEn); enerjiKutu.appendChild(enerjiListe); enerjiKutu.appendChild(enerjiNot);
     var sahBox = h('div', 'g3d-satir g3d-bolumler'), frBox = h('div', 'g3d-satir sl-frekanslar');
     var sesSatir = h('div', 'sl-ses'), sesBtn = h('button', 'sl-ses-dugme'), sesNot = h('p', 'g3d-not');
     sesBtn.type = 'button'; sesBtn.setAttribute('aria-pressed', 'false');
     sesSatir.appendChild(sesBtn); sesSatir.appendChild(sesNot);
     var viewBox = h('div', 'g3d-satir g3d-gorunumler');
     var bSah = h('h3', 'g3d-baslik'), bFr = h('h3', 'g3d-baslik'), bGor = h('h3', 'g3d-baslik');
-    var notEl = h('p', 'g3d-not'), kaynakEl = h('p', 'g3d-not'), metinYuva = h('div', 'g3d-kart-ek');
-    [sahne, uyari, kart, bSah, sahBox, bFr, frBox, sesSatir, bGor, viewBox, notEl, metinYuva, kaynakEl].forEach(function (e) { kok.appendChild(e); });
+    var notEl = h('p', 'g3d-not'), kaynakEl = h('p', 'g3d-not sl-kaynak'), metinYuva = h('div', 'g3d-kart-ek');
+    [sahne, uyari, kart, enerjiKutu, bSah, sahBox, bFr, frBox, sesSatir, bGor, viewBox, notEl, metinYuva, kaynakEl].forEach(function (e) { kok.appendChild(e); });
 
     function metinler() {
       uyari.textContent = M.uyari; notEl.textContent = M.not;
       bSah.textContent = M.sahneBasligi; bFr.textContent = M.frekansBasligi; bGor.textContent = M.gorunumBasligi;
-      sesNot.textContent = M.sesNot;
+      sesNot.textContent = M.sesNot; ovalEt.textContent = M.ovalEtiket || '';
+      bEn.textContent = M.enerjiBaslik || ''; enerjiNot.textContent = M.enerjiNot || '';
+      enerjiEl.forEach(function (li, k) { li.firstChild.textContent = M['enerji' + (k + 1) + 'Ad'] || ''; li.lastChild.textContent = M['enerji' + (k + 1) + 'Alt'] || ''; });
       kaynakEl.textContent = '';
       kaynakEl.appendChild(document.createTextNode(M.kaynakOnsoz + ' '));
-      M.kaynaklar.forEach(function (k, i) {
+      M.kaynaklar.forEach(function (k) {   // her kaynak kendi satırında (dokunma hedefi 44 px)
         var a = h('a', null, k.metin);
         if (/^https:\/\//.test(k.adres)) { a.href = k.adres; a.target = '_blank'; a.rel = 'noopener noreferrer'; }
         kaynakEl.appendChild(a);
-        kaynakEl.appendChild(document.createTextNode(i < M.kaynaklar.length - 1 ? '; ' : '.'));
       });
       metinYuva.textContent = '';
       if (typeof ayar.kartEki === 'function') ayar.kartEki('metin', 'metinler', metinYuva);
@@ -219,12 +251,16 @@
     if (!gl) { hata(M.webglYok); return { yenile: function () {}, durdur: function () {}, kaldir: function () { kok.textContent = ''; } }; }
 
     /* ---- durum ---- */
-    var PART = {}, ORDER = [], RENK = {}, SILIK = [0.62, 0.68, 0.70], TEPE = [0.9, 0.2, 0.45], CUKUR = [0.1, 0.2, 0.5];
-    var GORUNEN = ['eac', 'tm', 'mal', 'inc', 'sta', 'sv', 'sm', 'st', 'vest', 'ant', 'post', 'lat', 'crus', 'amp', 'n8'];
+    var PART = {}, ORDER = [], RENK = {}, SILIK = [0.62, 0.68, 0.70], TEPE = [0.9, 0.2, 0.45], CUKUR = [0.1, 0.2, 0.5], ELEK = [0.5, 0.2, 0.9], TEN = [0.87, 0.69, 0.58];
+    var GORUNEN = ['pinna', 'eac', 'tm', 'mal', 'inc', 'sta', 'sv', 'sm', 'st', 'vest', 'ant', 'post', 'lat', 'crus', 'amp', 'n8'];
+    // Kulak kepçesi modelde 11 parça (p_helix …); burada tek yapı ("pinna") gibi davranır.
+    function grup(id) { return /^p_/.test(id) ? 'pinna' : id; }
     var sah = SAH[0], sel = null, dirty = true, G = null;
     var reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches), auto = false;
     var oynuyor = !reduce, zaman = 0, sonT = 0, frekans = veri.frekanslar.indexOf(1000) >= 0 ? 1000 : veri.frekanslar[0];
     var HIZ = 0.55, ACI = 0.14;   // görsel titreşim: saniyede 0,55 tur; kemikçik dönmesi en çok ~8 derece (çok büyütülmüş)
+    // İnkus malleusu biraz geriden ve biraz az izler (eklemde küçük göreli hareket; görünsün diye büyütüldü).
+    var INKUS_GECIKME = 0.6, INKUS_ORAN = 0.88;
     var FOV = 34 * Math.PI / 180, TAN = Math.tan(FOV / 2);
     var VIEWS = { lat: mul(rx(0.2), ry(-0.45)), med: mul(rx(0.2), ry(Math.PI - 0.45)), ust: mul(rx(Math.PI / 2 - 0.2), ry(0)), on: mul(rx(0.15), ry(-Math.PI / 2)), arka: mul(rx(0.15), ry(Math.PI / 2)) };
     var R = VIEWS.on.slice(), cen = [0, 0, 0], rad = 20, tcen = [0, 0, 0], trad = 20, zoom = 1, lastD = 60;
@@ -233,21 +269,26 @@
 
     function renkleriOku() {
       var cs = window.getComputedStyle(kok);
-      ORDER.forEach(function (id) { RENK[id] = renkCoz(cs.getPropertyValue('--g3d-' + id)) || SILIK; });
+      TEN = renkCoz(cs.getPropertyValue('--g3d-kepce')) || TEN;
+      ORDER.forEach(function (id) { RENK[id] = grup(id) === 'pinna' ? TEN : (renkCoz(cs.getPropertyValue('--g3d-' + id)) || SILIK); });
+      ELEK = renkCoz(cs.getPropertyValue('--sl-elektrik')) || ELEK;
       SILIK = renkCoz(cs.getPropertyValue('--g3d-silik')) || SILIK;
       TEPE = renkCoz(cs.getPropertyValue('--sl-tepe')) || TEPE;
       CUKUR = renkCoz(cs.getPropertyValue('--sl-cukur')) || CUKUR;
     }
     function frame(ids) {
       var mn = [1e9, 1e9, 1e9], mx = [-1e9, -1e9, -1e9];
-      ids.forEach(function (id) { var p = PART[id]; if (!p) return; for (var a = 0; a < 3; a++) { if (p.mn[a] < mn[a]) mn[a] = p.mn[a]; if (p.mx[a] > mx[a]) mx[a] = p.mx[a]; } });
+      var acik = []; ids.forEach(function (id) { if (id === 'pinna') ORDER.forEach(function (o) { if (grup(o) === 'pinna') acik.push(o); }); else acik.push(id); });
+      acik.forEach(function (id) { var p = PART[id]; if (!p) return; for (var a = 0; a < 3; a++) { if (p.mn[a] < mn[a]) mn[a] = p.mn[a]; if (p.mx[a] > mx[a]) mx[a] = p.mx[a]; } });
       tcen = [(mn[0] + mx[0]) / 2, (mn[1] + mx[1]) / 2, (mn[2] + mx[2]) / 2];
       trad = Math.max(2.5, Math.hypot(mx[0] - mn[0], mx[1] - mn[1], mx[2] - mn[2]) / 2);
       zoom = 1; if (reduce) { cen = tcen.slice(); rad = trad; } dirty = true;
     }
-    function style(id) {
+    function style(pid) {
+      var id = grup(pid);
       if (GORUNEN.indexOf(id) < 0) return null;
-      var c = RENK[id], on = sah.yapilar.indexOf(id) >= 0, yari = sah.yari && sah.yari.indexOf(id) >= 0;
+      var c = RENK[pid], on = sah.yapilar.indexOf(id) >= 0, yari = sah.yari && sah.yari.indexOf(id) >= 0;
+      if (id === 'pinna' && !on && !yari) return null;   // kepçe yalnızca kendi sahnesinde (çok büyük, diğerlerini kapatır)
       if (sel && sel !== id) return { c: SILIK, a: on ? 0.22 : 0.08, duz: 1 };
       if (sel === id) return { c: c, a: 1, duz: 0 };
       if (yari) return { c: c, a: 0.28, duz: 0.4 };
@@ -261,16 +302,21 @@
       gl.viewport(0, 0, w, hh); dirty = true;
     }
     // Animasyonun o anki durumu: açı (kemikçik), stapes kayması, zar yer değiştirmesi.
-    function hareket() {
-      var faz = 2 * Math.PI * zaman, a = ACI * Math.sin(faz);
+    // Eksen etrafında, ortak eklem noktası (pivot) çevresinde dönme: mdl = T(pivot) * R * T(-pivot), sütun düzeninde (WebGL).
+    function pivotDonme(a) {
       var Rm = donme(G.eksen, a), pv = G.pivot;
-      // mdl = T(pivot) * R * T(-pivot), sütun düzeninde (WebGL)
       var t = sub(pv, [Rm[0] * pv[0] + Rm[1] * pv[1] + Rm[2] * pv[2], Rm[3] * pv[0] + Rm[4] * pv[1] + Rm[5] * pv[2], Rm[6] * pv[0] + Rm[7] * pv[1] + Rm[8] * pv[2]]);
-      var mdlK = new Float32Array([Rm[0], Rm[3], Rm[6], 0, Rm[1], Rm[4], Rm[7], 0, Rm[2], Rm[5], Rm[8], 0, t[0], t[1], t[2], 1]);
-      var nK = new Float32Array([Rm[0], Rm[3], Rm[6], Rm[1], Rm[4], Rm[7], Rm[2], Rm[5], Rm[8]]);
-      var kay = sc(G.piston, Math.sin(a) * G.stapesOran);
+      return { m: new Float32Array([Rm[0], Rm[3], Rm[6], 0, Rm[1], Rm[4], Rm[7], 0, Rm[2], Rm[5], Rm[8], 0, t[0], t[1], t[2], 1]),
+        n: new Float32Array([Rm[0], Rm[3], Rm[6], Rm[1], Rm[4], Rm[7], Rm[2], Rm[5], Rm[8]]) };
+    }
+    // Animasyonun o anki durumu: malleus ve inkus açıları, stapes kayması, zar yer değiştirmesi.
+    // İkisi de malleus–inkus eklemi çevresinde döndüğü için eklemde ayrılma olmaz; inkus biraz geriden gelir.
+    function hareket() {
+      var faz = 2 * Math.PI * zaman, fM = Math.sin(faz), fI = Math.sin(faz - INKUS_GECIKME);
+      var aM = ACI * fM, aI = ACI * INKUS_ORAN * fI, M1 = pivotDonme(aM), I1 = pivotDonme(aI);
+      var kay = sc(G.piston, Math.sin(aI) * G.stapesOran);
       var mdlS = new Float32Array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, kay[0], kay[1], kay[2], 1]);
-      return { mdlK: mdlK, nK: nK, mdlS: mdlS, zar: sc(G.umboYer, Math.sin(a)), faz: Math.sin(faz) };
+      return { mdlM: M1.m, nM: M1.n, mdlI: I1.m, nI: I1.n, mdlS: mdlS, zar: sc(G.umboYer, Math.sin(aM)), fM: fM, fI: fI };
     }
     function draw() {
       var asp = cv.width / cv.height, f = 1 / TAN, fit = asp < 1 ? 1 / asp : 1;
@@ -285,19 +331,24 @@
       gl.uniformMatrix3fv(U.rot, false, new Float32Array([R[0], R[3], R[6], R[1], R[4], R[7], R[2], R[5], R[8]]));
       gl.uniform1f(U.zaman, zaman); gl.uniform1f(U.tepe, greenwoodBazalden(frekans));
       gl.uniform1f(U.sik, 1.2 + 1.3 * Math.log(frekans / 125) / Math.LN2 * 0.5);
-      gl.uniform3f(U.tepeRenk, TEPE[0], TEPE[1], TEPE[2]); gl.uniform3f(U.cukurRenk, CUKUR[0], CUKUR[1], CUKUR[2]);
+      gl.uniform3f(U.tepeRenk, TEPE[0], TEPE[1], TEPE[2]); gl.uniform3f(U.cukurRenk, CUKUR[0], CUKUR[1], CUKUR[2]); gl.uniform3f(U.elekRenk, ELEK[0], ELEK[1], ELEK[2]);
       var H = hareket();
-      gl.uniform1f(U.zarFaz, H.faz);
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
       var pass, id, st, p, tur;
       for (pass = 0; pass < 2; pass++) {
         if (pass === 1) { gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false); }
         for (k = 0; k < ORDER.length; k++) {
           id = ORDER[k]; st = style(id); if (!st) continue; if ((st.a < 1) !== (pass === 1)) continue; p = PART[id];
-          tur = id === 'mal' || id === 'inc' ? 1 : id === 'sta' ? 1 : id === 'tm' ? 2 : id === 'sm' ? 3 : id === 'eac' ? 4 : 0;
-          gl.uniform1f(U.tur, tur);
-          gl.uniformMatrix4fv(U.mdl, false, id === 'sta' ? H.mdlS : (tur === 1 ? H.mdlK : BIRIM));
-          gl.uniformMatrix3fv(U.mdlN, false, id === 'sta' ? BIRIM3 : (tur === 1 ? H.nK : BIRIM3));
+          var mdl = BIRIM, mdlN = BIRIM3, fz = 0;
+          tur = id === 'mal' || id === 'inc' || id === 'sta' ? 1 : id === 'tm' ? 2 : id === 'sm' ? 3 : (id === 'eac' || grup(id) === 'pinna') ? 4 : id === 'vest' ? 5 : id === 'n8' ? 6 : 0;
+          if (id === 'mal') { mdl = H.mdlM; mdlN = H.nM; fz = H.fM * 0.45; }
+          else if (id === 'inc') { mdl = H.mdlI; mdlN = H.nI; fz = H.fI * 0.45; }
+          else if (id === 'sta') { mdl = H.mdlS; fz = H.fI * 0.45; }
+          else if (id === 'tm') fz = H.fM;
+          else if (id === 'vest') fz = H.fI;
+          gl.uniform1f(U.tur, tur); gl.uniform1f(U.zarFaz, fz);
+          gl.uniformMatrix4fv(U.mdl, false, mdl);
+          gl.uniformMatrix3fv(U.mdlN, false, mdlN);
           gl.uniform3f(U.disp, H.zar[0], H.zar[1], H.zar[2]);
           gl.uniform4f(U.col, st.c[0], st.c[1], st.c[2], st.a); gl.uniform1f(U.duz, st.duz);
           gl.bindBuffer(gl.ARRAY_BUFFER, p.pb); gl.vertexAttribPointer(aP, 3, gl.FLOAT, false, 0, 0);
@@ -310,6 +361,15 @@
       gl.disable(gl.BLEND); gl.depthMask(true);
       var px = 10 * f / d * cv.clientHeight / 2;
       olcek.hidden = !(px > 14 && px < cv.clientWidth * 0.6);
+      // Oval pencere etiketi: tabanın ekran konumu (o = mvp, sütun düzeni).
+      var tb = G.taban, cx = o[0] * tb[0] + o[4] * tb[1] + o[8] * tb[2] + o[12], cy = o[1] * tb[0] + o[5] * tb[1] + o[9] * tb[2] + o[13], cw = o[3] * tb[0] + o[7] * tb[1] + o[11] * tb[2] + o[15];
+      var gor = !sel && sah.yapilar.indexOf('sta') >= 0 && cw > 0;
+      if (gor) {
+        var sx = (cx / cw * 0.5 + 0.5) * cv.clientWidth, sy = (0.5 - cy / cw * 0.5) * cv.clientHeight;
+        gor = sx > 8 && sx < cv.clientWidth - 8 && sy > 40 && sy < cv.clientHeight - 8;
+        if (gor) { ovalEt.style.left = Math.round(sx) + 'px'; ovalEt.style.top = Math.round(sy) + 'px'; ovalEt.classList.toggle('sl-oval-sol', sx > cv.clientWidth * 0.6); }
+      }
+      ovalEt.hidden = !gor;
       cubuk.style.width = Math.round(px) + 'px';
     }
     function loop(ts) {
@@ -376,6 +436,7 @@
       if (s.gorunum === 'eksen') R = eksenBakis(); else if (VIEWS[s.gorunum]) R = VIEWS[s.gorunum].slice();
       sahBtns.forEach(function (b, k) { b.setAttribute('aria-pressed', SAH[k] === s ? 'true' : 'false'); });
       frame(s.cerceve || s.yapilar); card();
+      enerjiEl.forEach(function (li, k) { var on = !s.enerji || s.enerji.indexOf(k + 1) >= 0; li.classList.toggle('sl-asama-acik', on); if (on) li.setAttribute('aria-current', 'step'); else li.removeAttribute('aria-current'); });
     }
     function setFr(f) {
       frekans = f;
@@ -408,7 +469,7 @@
           if (tt > 0) { if (tr) { if (tt < bestT) { bestT = tt; hitT = id; } } else if (tt < best) { best = tt; hit = id; } }
         }
       });
-      return hit || hitT;
+      var bulunan = hit || hitT; return bulunan ? grup(bulunan) : null;
     }
     function tap(id) { sel = (sel === id || !YAPI[id]) ? null : id; card(); dirty = true; }
 
@@ -422,10 +483,10 @@
       gl.useProgram(prog);
       aP = gl.getAttribLocation(prog, 'p'); aN = gl.getAttribLocation(prog, 'n'); aS = gl.getAttribLocation(prog, 's');
       gl.enableVertexAttribArray(aP); gl.enableVertexAttribArray(aN);
-      ['mvp', 'rot', 'mdl', 'mdlN', 'disp', 'tur', 'zaman', 'zarFaz', 'tepe', 'sik', 'col', 'duz', 'tepeRenk', 'cukurRenk'].forEach(function (u) { U[u] = gl.getUniformLocation(prog, u); });
+      ['mvp', 'rot', 'mdl', 'mdlN', 'disp', 'tur', 'zaman', 'zarFaz', 'tepe', 'sik', 'col', 'duz', 'tepeRenk', 'cukurRenk', 'elekRenk'].forEach(function (u) { U[u] = gl.getUniformLocation(prog, u); });
       var k = meta.scale / 32767;
       meta.parts.forEach(function (m) {
-        if (GORUNEN.indexOf(m.id) < 0) return;   // kemik, kepçe vb. bu sayfada çizilmez
+        if (GORUNEN.indexOf(grup(m.id)) < 0) return;   // kemik, damarlar vb. bu sayfada çizilmez
         var q = new Int16Array(buf, m.off, m.nv * 3), no = new Int8Array(buf, m.off + m.nv * 6, m.nv * 3);
         var ix = new Uint16Array(buf, m.off + m.nv * 9 + (m.nv % 2), m.nf * 3);
         var P = new Float32Array(m.nv * 3), N = new Float32Array(m.nv * 3), j, a, v;
@@ -438,7 +499,10 @@
         PART[m.id] = { P: P, I: ix, pb: pb, nb: nb, ib: ib, n: m.nf * 3, mn: mn, mx: mx }; ORDER.push(m.id);
       });
       try { G = hareketHazirla(PART); } catch (e) { hata(M.baslatilamadi); return; }
-      [['tm', G.tmW], ['sm', G.smS], ['eac', G.eacS]].forEach(function (x) {
+      var ekler = [['tm', G.tmW], ['sm', G.smS], ['eac', G.eacS], ['vest', G.vestW]];
+      if (G.n8S) ekler.push(['n8', G.n8S]);
+      Object.keys(G.kepS).forEach(function (id) { ekler.push([id, G.kepS[id]]); });
+      ekler.forEach(function (x) {
         var b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, x[1], gl.STATIC_DRAW); PART[x[0]].sb = b;
       });
       gl.enable(gl.DEPTH_TEST); gl.clearColor(0, 0, 0, 0);
