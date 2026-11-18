@@ -6,13 +6,13 @@
   --sl-elektrik: #7B2FF0; /* sinirdeki elektriksel sinyal */
   --sl-makula: #D98C9E;   /* makula epiteli */
   --sl-tuy: #8C73C2;      /* tüy demetleri */
-  --sl-otolit: #EDEDE6;   /* otolit zarı ve kristalleri */
-  --sl-kristal: #F4F1E4;  /* BPPV kristalleri */
+  --sl-otolit: #E07A10;   /* otolit zarı ve kristalleri (belirgin turuncu) */
+  --sl-kristal: #E8590C;  /* BPPV kristalleri (belirgin turuncu) */
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .sl { --sl-tepe: #FF6FA3; --sl-cukur: #7FA6FF; --sl-elektrik: #C49BFF; }
+  :root:not([data-theme="light"]) .sl { --sl-tepe: #FF6FA3; --sl-cukur: #7FA6FF; --sl-elektrik: #C49BFF; --sl-otolit: #FFB040; --sl-kristal: #FF9A3C; }
 }
-:root[data-theme="dark"] .sl { --sl-tepe: #FF6FA3; --sl-cukur: #7FA6FF; --sl-elektrik: #C49BFF; }
+:root[data-theme="dark"] .sl { --sl-tepe: #FF6FA3; --sl-cukur: #7FA6FF; --sl-elektrik: #C49BFF; --sl-otolit: #FFB040; --sl-kristal: #FF9A3C; }
 
 .sl .sl-oynat { left: 8px; top: 8px; }
 /* İşitme | Denge geçişi (iki eşit düğme), denge adımları (iki sütun) */

@@ -319,9 +319,15 @@
       if (GORUNEN.indexOf(id) < 0) return null;
       var c = RENK[pid], on = sah.yapilar.indexOf(id) >= 0, yari = sah.yari && sah.yari.indexOf(id) >= 0;
       if ((KENDI.indexOf(id) >= 0 || mod === 'denge') && !on && !yari) return null;   // kepçe/makulalar yalnızca kendi sahnesinde; denge kipinde yalnızca sahnedekiler
-      if (id === 'bas') return on && uzak ? { c: c, a: pid === 'bas_deri' || pid === 'bas_boyun' ? 0.16 : pid === 'bas_kulak' ? 0.3 : pid === 'bas_burun' ? 0.4 : 0.6, duz: 0.6 } : null;   // silik baş
+      if (id === 'bas') return on && uzak ? { c: c, a: pid === 'bas_deri' || pid === 'bas_boyun' ? 0.1 : pid === 'bas_kulak' ? 0.16 : pid === 'bas_burun' ? 0.3 : 0.5, duz: 0.6 } : null;   // silik baş
       if (sel && sel !== id) return { c: SILIK, a: on ? 0.22 : 0.08, duz: 1 };
       if (sel === id) return { c: c, a: 1, duz: 0 };
+      if (yari && mod === 'denge') {
+        if (dsah && dsah.tip === 'makula' && !uzak) return { c: c, a: 0.08, duz: 0.6 };   // makulaya yakınken çevre yapılar ekranı kaplamasın
+        if (id === 'post' && dsah && dsah.tip === 'bppv') return { c: c, a: 0.62, duz: 0.15 };
+        if (KANAL.indexOf(id) >= 0) return { c: c, a: 0.45, duz: 0.2 };
+        return { c: c, a: 0.18, duz: 0.4 };
+      }
       if (yari) return { c: c, a: 0.28, duz: 0.4 };
       if (!on) return { c: SILIK, a: 0.12, duz: 1 };
       return { c: c, a: 1, duz: 0 };
@@ -350,6 +356,8 @@
       return { mdlM: M1.m, nM: M1.n, mdlI: I1.m, nI: I1.n, mdlS: mdlS, zar: sc(G.umboYer, Math.sin(aM)), fM: fM, fI: fI };
     }
     var KRISTAL_SAYI = 8, BIRIM_3 = [1, 0, 0, 0, 1, 0, 0, 0, 1];
+    var ODAK = /^(kristal|utr_|sak_)/;   // denge kipinde en üstte çizilenler
+    var KANAL = ['ant', 'post', 'lat', 'crus', 'amp'];
     // Utrikulusa dönen kristaller orada küçük bir küme olarak durur
     var CIKIS = [[0, 0, 0], [0.3, 0.05, 0.1], [-0.25, 0.05, 0.2], [0.1, 0.05, -0.3], [-0.2, 0.1, -0.15], [0.35, 0.1, -0.2], [-0.05, 0.12, 0.35], [0.2, 0.15, 0.3]];
     function makulaKaymasi(q, iv) {
@@ -410,10 +418,15 @@
       var H = hareket(), DM = mod === 'denge' && MAK ? makulaDurumu() : null;
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
       var pass, id, st, p, tur;
-      for (pass = 0; pass < 2; pass++) {
+      // Geçiş 0: opak, 1: yarı saydam, 2 (yalnızca denge): odak parçaları (kristaller, makulalar) en üstte, soluklaşmasın diye.
+      for (pass = 0; pass < 3; pass++) {
         if (pass === 1) { gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false); }
+        if (pass === 2) { if (mod !== 'denge') break; gl.disable(gl.BLEND); gl.depthMask(true); gl.clear(gl.DEPTH_BUFFER_BIT); }
         for (k = 0; k < ORDER.length; k++) {
-          id = ORDER[k]; st = style(id); if (!st) continue; if ((st.a < 1) !== (pass === 1)) continue; p = PART[id];
+          id = ORDER[k]; st = style(id); if (!st) continue;
+          var odak = mod === 'denge' && ODAK.test(id);
+          if (pass === 2 ? !odak : (odak || (st.a < 1) !== (pass === 1))) continue;
+          p = PART[id];
           var mdl = BIRIM, mdlN = BIRIM3, fz = 0;
           tur = id === 'mal' || id === 'inc' || id === 'sta' ? 1 : id === 'tm' ? 2 : id === 'sm' ? 3 : (id === 'eac' || grup(id) === 'pinna') ? 4 : id === 'vest' ? 5 : id === 'n8' ? 6 : 0;
           var disp = H.zar;

@@ -1,3 +1,5 @@
+# PROGRESS — Yayın v34 (2026-11-18): Denge görünürlük düzeltmesi (dal `denge-gorunurluk`). Proje sahibi kristallerin ve kanalların silik göründüğünü bildirdi. Neden: kristaller neredeyse beyaz; yarı saydam kanal/vestibül/baş katmanları üstlerine çiziliyordu; kanallar %28 saydam. Düzeltme: turuncu kristal/otolit rengi, odak parçaları en üstte (ayrı geçiş, derinlik temizlenir), kanallar daha opak, baş ve vestibül daha silik, makula yakın görünümünde çevre %8. Test: açık/koyu, BPPV ve makula adımları, denge testi 12/12.
+
 # PROGRESS — Yayın v33 (2026-11-18): Ses laboratuvarı + Terimler sözlüğü + Cihazlar simgesi (dal `kisayol-cihaz`: kulak arkası işitme cihazı, diğer simgelerle aynı oranda). Hızlı erişim: Yeni vaka · Ses laboratuvarı · Terimler sözlüğü · Cihazlar. Üç dal ayrı yapıldı, yayında birleştirildi (çakışmalar: hızlı erişim satırı, app.js TABS/UST_SEKME, ana sayfa araması — hepsinde ikisi birden alındı).
 
 # PROGRESS — OdyoBOT: Ses laboratuvarı (2026-11-18, dal `adim3-seslab`, sw v33, **YAYINDA**; önceki yayın yedeği git etiketi `yedek-yayin-v32`)
