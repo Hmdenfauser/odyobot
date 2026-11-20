@@ -499,7 +499,7 @@
             oto.bekle += dt;
             if (oto.bekle >= (BEKLE_SN[dsah.tip] || 3)) { if (adimI < dsah.adimlar.length - 1) { oto.bekle = 0; setAdim(adimI + 1, false, true); } else otoDurdur(); }
           }
-          if (gecisT < 1 && (!akis || akis.basladi)) {
+          if (gecisT < 1 && oynuyor && (!akis || akis.basladi)) {   // duraklatılınca baş da yerinde durur
             gecisT = Math.min(1, gecisT + dt / GECIS_SN);
             var e = (1 - Math.cos(Math.PI * gecisT)) / 2;
             pozQ = DS.slerp(basQ, hedefQ, e);
@@ -587,17 +587,22 @@
     }
     // Adım seçimi: baş yeni pozisyona yumuşakça döner (duraklatılmışsa ya da hareket azaltma açıksa hemen).
     function tumYaz() {
-      var ad = oto ? (M.tumunuDurdur || 'Durdur') : (M.tumunuOynat || 'Tümünü oynat');
-      tumBtn.textContent = oto ? '❚❚' : '▶'; tumBtn.setAttribute('aria-label', ad); tumBtn.title = ad; tumBtn.setAttribute('aria-pressed', oto ? 'true' : 'false');
+      // Üç durum: oynatılmıyor (▶ Tümünü oynat) · oynuyor (❚❚ Duraklat) · duraklatıldı (▶ Devam et)
+      var calisiyor = !!oto && oynuyor;
+      var ad = calisiyor ? (M.tumunuDurdur || 'Duraklat') : oto ? (M.devamEt || 'Devam et') : (M.tumunuOynat || 'Tümünü oynat');
+      tumBtn.textContent = calisiyor ? '❚❚' : '▶'; tumBtn.setAttribute('aria-label', ad); tumBtn.title = ad; tumBtn.setAttribute('aria-pressed', calisiyor ? 'true' : 'false');
     }
     function otoDurdur() { oto = null; tumYaz(); }
     tumBtn.addEventListener('click', function () {
-      if (oto) { otoDurdur(); return; }
+      if (oto) { oynuyor = !oynuyor; tumYaz(); dirty = true; return; }   // duraklat / kaldığı yerden devam et
       if (!oynuyor) { oynuyor = true; oynatYaz(); }
-      oto = { bekle: 0 }; tumYaz(); setAdim(0, false, true);
+      // Elle bir adım seçildiyse oradan başlar; son adımdaysa ya da hiç seçilmediyse en baştan
+      var bas = adimI > 0 && adimI < dsah.adimlar.length - 1 ? adimI : 0;
+      oto = { bekle: 0 }; tumYaz(); setAdim(bas, false, true);
     });
     function setAdim(i, hemen, otodan) {
       if (!otodan && oto) otoDurdur();
+      if (!otodan && !oynuyor) { oynuyor = true; oynatYaz(); }   // duraklatılmışken elle adım seçilirse hareket yeniden açılır
       var a = dsah.adimlar[i]; adimI = i;
       if (dsah.tip === 'bppv' && (a.sifirla || hemen)) KR = DS.kristaller(Y, KRISTAL_SAYI);
       basQ = pozQ.slice(); hedefQ = DS.mat2q(DS.pozMatris(a.poz || {})); basIvme = ivme.slice(); hedefIvme = (a.ivme || [0, 0, 0]).slice(); gecisT = 0;
