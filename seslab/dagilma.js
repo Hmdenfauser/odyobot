@@ -133,8 +133,13 @@
     var cv = el('canvas', { 'class': 'sl-g-tuval', role: 'img' });
     var oynat = el('button', { type: 'button', 'class': 'sl-g-oynat' });
     var cerceve = el('div', { 'class': 'sl-g-sahne' }, [cv, oynat]);
-    var frBaslik = el('h3', { 'class': 'g3d-baslik' });
-    var frTus = el('div', { 'class': 'sl-g-frekans', role: 'group' });
+    // Frekans: İşitme kipindeki gibi sağa sola çekilen sayı doğrusu (seslab.css → .sl-frcizgi); standart frekanslara oturur,
+    // çentiğe dokununca da o frekansa gider. Çentikler sahne değişince o sahnenin frekanslarına göre yeniden dizilir.
+    var frDeger = el('span', { 'class': 'sl-frdeger' }), frBaslik = el('h3', { 'class': 'g3d-baslik' });
+    var frKaydir = el('input', { type: 'range', 'class': 'sl-frkaydir', min: '0', step: '1' }), frOlcek = el('div', { 'class': 'sl-frolcek' });
+    var frTus = el('div', { 'class': 'sl-frust' }, [frBaslik, el('div', { 'class': 'sl-frcizgi' }, [frKaydir, frOlcek])]), olcekSahne = null;
+    function frSec(fr) { if (fr && fr !== fSec[sahne.id]) { fSec[sahne.id] = fr; yaz(); ciz(); } }
+    frKaydir.addEventListener('input', function () { frSec(frekanslar()[+frKaydir.value]); });
     var bilgi = el('p', { 'class': 'sl-g-bilgi' });
     var durum = el('p', { 'class': 'sl-g-durum', 'aria-live': 'polite' });
     var azalma = el('p', { 'class': 'sl-g-azalma' });
@@ -225,15 +230,19 @@
       if (frekanslar().indexOf(fSec[sahne.id]) < 0) fSec[sahne.id] = frekanslar()[1];   // yönetici listeyi değiştirdiyse
       var m = M(), f = fSec[sahne.id], lam = dalgaBoyu(f), s = sinif(f, sahne.engel);
       sTuslar.forEach(function (t) { t.b.textContent = O[t.id === 'duvar' ? 'sahneDuvar' : 'sahneBas']; t.b.setAttribute('aria-pressed', t.id === sahne.id ? 'true' : 'false'); });
-      frTus.replaceChildren();
-      frekanslar().forEach(function (fr) {
-        var b = el('button', { type: 'button', 'class': 'sl-g-ftus', 'aria-pressed': fr === f ? 'true' : 'false', 'aria-label': fr + ' Hz', text: fr >= 1000 ? (fr / 1000) + 'k' : String(fr) });
-        b.addEventListener('click', function () { fSec[sahne.id] = fr; yaz(); ciz(); var y = frTus.querySelector('[aria-pressed="true"]'); if (y) y.focus(); });
-        frTus.appendChild(b);
-      });
+      var fl = frekanslar(), nF = fl.length, fi = fl.indexOf(f);
+      if (olcekSahne !== sahne.id + fl.join()) {   // çentikleri yalnızca sahne/frekans listesi değişince yeniden kur (sürükleme bozulmasın)
+        olcekSahne = sahne.id + fl.join(); frKaydir.max = String(nF - 1); frOlcek.replaceChildren();
+        fl.forEach(function (fr, k) {
+          var e = el('span', { text: fr >= 1000 ? (fr / 1000) + 'k' : String(fr) }); e.style.setProperty('--k', nF > 1 ? k / (nF - 1) : 0);
+          e.addEventListener('click', function () { frSec(fr); }); frOlcek.appendChild(e);
+        });
+      }
+      frKaydir.value = String(fi); frKaydir.setAttribute('aria-label', O.frekansBasligi); frKaydir.setAttribute('aria-valuetext', f + ' Hz');
+      frOlcek.querySelectorAll('span').forEach(function (e, k) { e.classList.toggle('sl-fr-secili', k === fi); });
       oynat.textContent = oynuyor ? '❚❚' : '▶';
       oynat.setAttribute('aria-label', oynuyor ? veri.metinler.duraklat : veri.metinler.oynat);
-      frBaslik.textContent = O.frekansBasligi + ': ' + f + ' Hz';
+      frDeger.textContent = f + ' Hz'; frBaslik.textContent = O.frekansBasligi + ': '; frBaslik.appendChild(frDeger);
       bilgi.textContent = O.dalgaBoyu + ': ' + uzunlukYaz(lam) + ' · ' + m.engelAdi + ': ≈' + Math.round(sahne.engel * 100) + ' cm';
       durum.textContent = m[s];
       azalma.hidden = sahne.id !== 'bas';
