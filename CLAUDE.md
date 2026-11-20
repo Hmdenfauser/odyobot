@@ -51,7 +51,17 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 - Alt çubuk sırası: Ana sayfa, Görsel depo, OdyoBOT, Vakalarım, Notlar.
 - Odyogram çıktısı (`cikti.js`), Vakalarım → OdyoBOT gönderme, düğmeli sohbet (`odybot.js`). sw v12. Ayrıntı: `PROGRESS.md`.
 
-### KALDIĞIMIZ YER (2026-11-20 akşam) — oturum başında bunu özetle
+### KALDIĞIMIZ YER (2026-11-20 gece) — oturum başında bunu özetle
+**Durum:** Yayında, son sürüm **sw v38** (main; dal `seslab-duzeltme` birleşti). Önceki yayının yedeği git etiketi `yedek-yayin-v37` (GitHub'da). Bekleyen kod değişikliği yok.
+**v38 (2026-11-20):**
+- **Denge: semisirküler kanallar silikleşmiyor.** Neden: uzak görünümde silik baş yarı saydam geçişte en son çiziliyor, kanalların üstüne biniyordu. Düzeltme `seslab.js` → `cizimSirasi()` (önce baş, sonra diğerleri, en son kanallar) + kanal opaklığı %45 → %85 (BPPV arka kanal %82). Kristaller/makulalar 3. geçişte en üstte, görünür kalıyor.
+- **Animasyonların sağ alt köşesi** (`.sl-sag-alt`, `.sl-yuv`): yalnızca simgeli yuvarlak düğmeler; yazı ipucunda (fareyle üzerine gelince ya da ≈0,5 sn uzun basınca; uzun basış tıklama sayılmaz). Ortak dosya `seslab/ipucu.js` (`window.SesLabIpucu`: simgeler oynat/duraklat/genel, `bagla`). **Genel görünüm** düğmesi (simge: kepçe → dış kulak yolu → zar → kemikçik → koklea sarmalı, ipucu "Genel görünüme geç"): Ses laboratuvarı İşitme'de her sahnede (basınca Ses yolculuğu + başlangıç açısı) ve **3D sayfasında eski "← Geri" yerine** her görünümde (basınca Tüm sistem + başlangıç açısı; artık adım adım değil). Oynat/Duraklat da sağ altta simgeli (İşitme ve Dağılma). Frekans çubuğuna dokununca Koklea'ya geçiş sürüyor.
+- Proje sahibinin isteği: düğmeler hep sağ altta, yazısız, simgeli; "eksik yapma" — düğme her görünümde bulunmalı.
+**Oturum başında hatırlat (sırayla):**
+1. **Telefonda denenecekler (v33–v38, hiç denenmedi):** v38 gelmeli; uzun basınca ipucu çıkıyor mu, telefonun kendi menüsü açılıyor mu; Denge'de kanallar artık net mi (BPPV'de kristaller arka kanalın içinde görünüyor mu); 3D ve İşitme'de genel görünüm düğmesi; Dağılma sayı doğrusu; İşitsel hafıza.
+2. Aşağıdaki "2026-11-20 akşam" listesinin 2–3. maddeleri ve "2026-11-20 öğle" listesinin 2–7. maddeleri hâlâ geçerli. Temizlik: `isitsel-hafiza`, `seslab-golge`, `seslab-duzeltme` dalları da artık silinebilir (proje sahibi onaylarsa).
+
+### Önceki: KALDIĞIMIZ YER (2026-11-20 akşam)
 **Durum:** Yayında, son sürüm **sw v37** (main; dallar `isitsel-hafiza` ve `seslab-golge` birleşti). Önceki yayının yedeği git etiketi `yedek-yayin-v36` (GitHub'da). Bekleyen kod değişikliği yok.
 **v37 (2026-11-20):**
 - **Görsel depo → Şemalar → İşitsel hafıza** (4. alt sekme): Atkinson ve Shiffrin (1968) bellek modeli, proje sahibinin slaytı (`ham-gorseller/isitsel-hafiza/`) gibi soldan sağa; bellek kutuları turuncu kenarlı (`--hf-bellek`), seçilince kutu kendi rengiyle dolar (bellek turuncu, süreç turkuaz, bozulma gri). `app.js` → `HNODES`, `icerik/hafiza.<id>`. Ekoik bellek 250 ms slayttaki değer (kaynaklara göre değişir, notta yazıyor).
