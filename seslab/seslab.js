@@ -571,6 +571,11 @@
     function sahneListesi() { return mod === 'denge' ? DSAH : SAH; }
     // Küçük tuş: kısa yazı; tam ad ekran okuyucu ve ipucu için
     function frYazi(f) { return f + ' Hz'; }
+    function kokleayaGec() {
+      if (!hazir || mod !== 'isitme') return;
+      var k = SAH.filter(function (x) { return x.id === 'koklea'; })[0];
+      if (k && sah !== k) setSah(k);
+    }
     function kucukTus(o) {
       var b = h('button', 'sl-k'); b.type = 'button'; b.setAttribute('aria-pressed', 'false');
       var y = h('span', 'sl-k-yazi', o.kisa || o.ad); y.setAttribute('aria-hidden', 'true'); b.appendChild(y);
@@ -750,7 +755,9 @@
         var e = h('span', null, f >= 1000 ? (f / 1000) + 'k' : String(f)); e.style.setProperty('--k', nF > 1 ? k / (nF - 1) : 0);
         e.addEventListener('click', function () { setFr(f); }); frOlcek.appendChild(e);
       });
-      frKaydir.addEventListener('input', function () { var f = veri.frekanslar[+frKaydir.value]; if (f && f !== frekans) setFr(f); });
+      frKaydir.addEventListener('input', function () { kokleayaGec(); var f = veri.frekanslar[+frKaydir.value]; if (f && f !== frekans) setFr(f); });
+      // Frekans çubuğuna dokununca Koklea sahnesine geçilir (yürüyen dalga orada görünür)
+      frBox.addEventListener('pointerdown', kokleayaGec);
       Object.keys(M.gorunumler).forEach(function (v) { var b = h('button', null, M.gorunumler[v]); b.type = 'button'; b.addEventListener('click', function () { if (VIEWS[v]) { R = VIEWS[v].slice(); zoom = 1; auto = false; dirty = true; } }); viewBox.appendChild(b); });
 
       var ptr = {}, moved = 0, pd = 0;
