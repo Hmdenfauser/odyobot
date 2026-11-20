@@ -51,7 +51,17 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 - Alt çubuk sırası: Ana sayfa, Görsel depo, OdyoBOT, Vakalarım, Notlar.
 - Odyogram çıktısı (`cikti.js`), Vakalarım → OdyoBOT gönderme, düğmeli sohbet (`odybot.js`). sw v12. Ayrıntı: `PROGRESS.md`.
 
-### KALDIĞIMIZ YER (2026-11-20) — oturum başında bunu özetle
+### KALDIĞIMIZ YER (2026-11-20 akşam) — oturum başında bunu özetle
+**Durum:** Yayında, son sürüm **sw v37** (main; dallar `isitsel-hafiza` ve `seslab-golge` birleşti). Önceki yayının yedeği git etiketi `yedek-yayin-v36` (GitHub'da). Bekleyen kod değişikliği yok.
+**v37 (2026-11-20):**
+- **Görsel depo → Şemalar → İşitsel hafıza** (4. alt sekme): Atkinson ve Shiffrin (1968) bellek modeli, proje sahibinin slaytı (`ham-gorseller/isitsel-hafiza/`) gibi soldan sağa; bellek kutuları turuncu kenarlı (`--hf-bellek`), seçilince kutu kendi rengiyle dolar (bellek turuncu, süreç turkuaz, bozulma gri). `app.js` → `HNODES`, `icerik/hafiza.<id>`. Ekoik bellek 250 ms slayttaki değer (kaynaklara göre değişir, notta yazıyor).
+- **Ses laboratuvarı → Dağılma (difraksiyon)** (`#seslab/dagilma`, `seslab/dagilma.js`, 2D canvas): iki sahne **Duvar** (yandan; kaynak, ≈70 cm duvar, bina; 125–4k) ve **Baş gölgesi** (üstten; 250–8k). Frekans İşitme'deki gibi sürüklenen sayı doğrusu. 500 Hz (duvar) = dalga boyu eşit → proje sahibinin cümlesi ("kırınım gerçekleşir … kısmi bir akustik gölge oluşur"), çizimde yalnızca gri "kısmi akustik gölge" yazısı (halka/tarama/"kırınım" etiketi proje sahibinin isteğiyle kaldırıldı). Terim "saçılma" değil **"kırınım"**. Kaynak: Psikoakustik 1. ders s. 37 (s. 38 telifli kitap fotoğrafı, kullanılmadı), 2. ders sl. 72, 3. ders sl. 5; İşitme ve Denge Sistemleri-2 s. 22–24.
+**Oturum başında hatırlat (sırayla):**
+1. **Telefonda denenecekler (v33–v37, hiç denenmedi):** v37 gelmeli; İşitsel hafıza kutuları (dokununca renk, okunurluk); Dağılma: sayı doğrusunu parmakla sürükleme (sayfa kaymadan), iki sahne, animasyon akıcılığı; önceki listedeki Ses laboratuvarı/Denge/sözlük maddeleri.
+2. **Doğrulama:** İşitsel hafıza kart metinleri (taslak); Dağılma: duvar ≈70 cm ve baş ≈18 cm şematik kabul, "eşit" aralığı (dalga boyu engelin 2/3'ü–1,5 katı, şematik), açıklama metinleri.
+3. Aşağıdaki 2026-11-20 listesinin 2–7. maddeleri hâlâ geçerli (sözlüğe ilk terimler, klinik doğrulamalar, bekleyen içerik işleri, sıradaki büyük iş, eski dalların temizliği — artık `isitsel-hafiza` ve `seslab-golge` de silinebilir).
+
+### Önceki: KALDIĞIMIZ YER (2026-11-20 öğle)
 **Durum:** Yayında, son sürüm **sw v36** (main; dal `seslab-secim` birleşti). Önceki yayının yedeği git etiketi `yedek-yayin-v35` (GitHub'da). Bekleyen kod değişikliği yok.
 **v36 (2026-11-20) — Ses laboratuvarı düzeni (proje sahibinin isteği):**
 - Girişte **İşitme / Denge seçim ekranı** (`#seslab`, `#sl-secim`, yazılar `sl.secim.*` düzenlenebilir). Seçilince ekran gizlenir, laboratuvar açılır: `#seslab/isitme`, `#seslab/denge`; başlığın sağında kip adı (`#sl-kip-ad`). Geri oku/telefon geri tuşu: önce seçim ekranı, sonra ana sayfa. Üstteki eski İşitme | Denge geçişi kaldırıldı. Model ilk seçimde iner.
