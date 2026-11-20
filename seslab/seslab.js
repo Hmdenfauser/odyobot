@@ -212,7 +212,9 @@
     // Denge kipi: "Yer" çizgisi ve uzak/yakın görünüm düğmesi
     var yerEt = h('div', 'sl-yer'), yakinBtn = h('button', 'g3d-geri sl-yakin'); yerEt.hidden = true; yakinBtn.hidden = true; yakinBtn.type = 'button';
     var donBox = h('div', 'sl-don'), donSol = h('button', 'sl-don-tus', '↺'), donSag = h('button', 'sl-don-tus', '↻'), basaBtn = h('button', 'sl-don-tus sl-basa');
-    [donSol, donSag, basaBtn].forEach(function (b) { b.type = 'button'; donBox.appendChild(b); }); donBox.hidden = true;
+    // Baş aç/kapa (2026-11-20): uzak görünümde başı gösterir/gizler; simgeli, yazı ipucunda (seslab/ipucu.js).
+    var basAcik = true, basBtn = h('button', 'sl-don-tus sl-bas-tus');
+    [basBtn, donSol, donSag, basaBtn].forEach(function (b) { b.type = 'button'; donBox.appendChild(b); }); donBox.hidden = true;
     // İşitme: genel görünüm (Ses yolculuğu) düğmesi; simgesi çevresel işitme sisteminin sadeleştirilmiş çizimi.
     // İşitme kipinde her sahnede görünür; basınca Ses yolculuğu sahnesine ve başlangıç açısına/yakınlığına dönülür.
     var donusBtn = h('button', 'sl-yuv sl-sahne-don'); donusBtn.type = 'button'; donusBtn.hidden = true;
@@ -220,6 +222,13 @@
     sagAlt.appendChild(donusBtn); sagAlt.appendChild(oynatBtn);
     sahne.appendChild(cv); sahne.appendChild(yerEt); sahne.appendChild(yakinBtn); sahne.appendChild(donBox); sahne.appendChild(neresi); sahne.appendChild(olcek); sahne.appendChild(sagAlt); sahne.appendChild(durum);
     var oynatIp = IP ? IP.bagla(oynatBtn, function () { return oynuyor ? M.duraklat : M.oynat; }) : null;
+    var basIp = IP ? IP.bagla(basBtn, function () { return basAcik ? (M.basiGizle || 'Başı gizle') : (M.basiGosterAc || 'Başı göster'); }) : null;
+    function basYaz() {
+      if (IP) IP.simge(basBtn, basAcik ? 'bas' : 'basYok'); else basBtn.textContent = basAcik ? '◐' : '○';
+      basBtn.setAttribute('aria-pressed', basAcik ? 'true' : 'false'); if (basIp) basIp.yenile();
+    }
+    basBtn.addEventListener('click', function () { basAcik = !basAcik; basYaz(); dirty = true; });
+    basYaz();
     var donusIp = IP ? IP.bagla(donusBtn, function () { return M.genelGorunum || 'Genel görünüme geç'; }) : null;
     var uyari = h('p', 'g3d-not g3d-ipucu sl-uyari');
     var kart = h('div', 'g3d-kart'), nmEl = h('h4'), dsEl = h('p'), frEl = h('p', 'sl-frekans-not'), yuva = h('div', 'g3d-kart-ek');
@@ -342,15 +351,16 @@
       if (GORUNEN.indexOf(id) < 0) return null;
       var c = RENK[pid], on = sah.yapilar.indexOf(id) >= 0, yari = sah.yari && sah.yari.indexOf(id) >= 0;
       if ((KENDI.indexOf(id) >= 0 || mod === 'denge') && !on && !yari) return null;   // kepçe/makulalar yalnızca kendi sahnesinde; denge kipinde yalnızca sahnedekiler
-      if (id === 'bas') return on && uzak ? { c: c, a: pid === 'bas_deri' || pid === 'bas_boyun' ? 0.1 : pid === 'bas_kulak' ? 0.16 : pid === 'bas_burun' ? 0.3 : 0.5, duz: 0.6 } : null;   // silik baş
+      // Baş (yalnızca uzak görünümde, aç/kapa düğmesiyle gizlenebilir). 2026-11-20: çok silikti, opaklık artırıldı.
+      // Her şeyden önce ayrı bir geçişte çizilir (bkz. ciz), bu yüzden kanalların üstüne binmez.
+      if (id === 'bas') return on && uzak && basAcik ? { c: c, a: pid === 'bas_deri' || pid === 'bas_boyun' ? 0.28 : pid === 'bas_kulak' ? 0.55 : pid === 'bas_burun' ? 0.5 : 0.6, duz: 0.5 } : null;
       if (sel && sel !== id) return { c: SILIK, a: on ? 0.22 : 0.08, duz: 1 };
       if (sel === id) return { c: c, a: 1, duz: 0 };
       if (yari && mod === 'denge') {
         if (dsah && dsah.tip === 'makula' && !uzak) return { c: c, a: 0.08, duz: 0.6 };   // makulaya yakınken çevre yapılar ekranı kaplamasın
-        // 2026-11-20: kanallar silikleşiyordu (proje sahibi). Opaklık artırıldı; ayrıca silik baş artık kanallardan önce çizilir (bkz. cizimSirasi).
-        // Kristaller ve makulalar 3. geçişte en üstte çizildiği için kanal opak olsa da görünür kalır.
-        if (id === 'post' && dsah && dsah.tip === 'bppv') return { c: c, a: 0.82, duz: 0.15 };
-        if (KANAL.indexOf(id) >= 0) return { c: c, a: 0.85, duz: 0.2 };
+        // 2026-11-20: kanallar opak çizilir. Yarı saydamken derinlik yazılmadığı için arkadaki kanal öndekinin önünde görünüyordu
+        // (proje sahibi: "modellerde sorun var"). Kristaller ve makulalar 3. geçişte en üstte çizildiği için görünür kalır.
+        if (KANAL.indexOf(id) >= 0) return { c: c, a: 1, duz: 0.15 };
         return { c: c, a: 0.18, duz: 0.4 };
       }
       if (yari) return { c: c, a: 0.28, duz: 0.4 };
@@ -404,7 +414,8 @@
       return o;
     }
     function uzakYakin(u) {
-      uzak = u; yakinBtn.textContent = u ? (M.yakinlastir || 'Yakınlaştır') : (M.basiGoster || 'Başı göster');
+      uzak = u; yakinBtn.textContent = u ? (M.yakinlastir || 'Yakınlaştır') : (M.basiGoster || 'Uzaklaştır');
+      basBtn.hidden = !u;   // baş yalnızca uzak görünümde çizilir
       if (dsah) frame(u ? ['bas_deri'] : (dsah.cerceve || dsah.yapilar));
     }
     yakinBtn.addEventListener('click', function () { akis = null; if (oto) otoDurdur(); uzakYakin(!uzak); });
@@ -458,15 +469,19 @@
       var H = hareket(), DM = mod === 'denge' && MAK ? makulaDurumu() : null;
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
       var pass, id, st, p, tur;
+      // Geçiş −1 (yalnızca denge, uzak görünüm): yarı saydam baş, derinlik yazmadan, her şeyden önce — iç kulağın üstüne binmesin.
       // Geçiş 0: opak, 1: yarı saydam, 2 (yalnızca denge): odak parçaları (kristaller, makulalar) en üstte, soluklaşmasın diye.
       var SIRA = cizimSirasi();
-      for (pass = 0; pass < 3; pass++) {
+      for (pass = -1; pass < 3; pass++) {
+        if (pass === -1) { gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false); }
+        if (pass === 0) { gl.disable(gl.BLEND); gl.depthMask(true); }
         if (pass === 1) { gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false); }
         if (pass === 2) { if (mod !== 'denge') break; gl.disable(gl.BLEND); gl.depthMask(true); gl.clear(gl.DEPTH_BUFFER_BIT); }
         for (k = 0; k < SIRA.length; k++) {
           id = SIRA[k]; st = style(id); if (!st) continue;
-          var odak = mod === 'denge' && ODAK.test(id);
-          if (pass === 2 ? !odak : (odak || (st.a < 1) !== (pass === 1))) continue;
+          var odak = mod === 'denge' && ODAK.test(id), basP = grup(id) === 'bas';
+          if (pass === -1 ? !basP : basP) continue;
+          if (pass !== -1 && (pass === 2 ? !odak : (odak || (st.a < 1) !== (pass === 1)))) continue;
           p = PART[id];
           var mdl = BIRIM, mdlN = BIRIM3, fz = 0;
           tur = id === 'mal' || id === 'inc' || id === 'sta' ? 1 : id === 'tm' ? 2 : id === 'sm' ? 3 : (id === 'eac' || grup(id) === 'pinna') ? 4 : id === 'vest' ? 5 : id === 'n8' ? 6 : 0;
