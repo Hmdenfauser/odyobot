@@ -78,7 +78,7 @@ window.SESLAB_VERI = {
       aciklama: 'Dağılma, sesin bir engelle karşılaştığında nasıl ilerlediğini anlatır: ses engelin yanından geçerken yön değiştirir, kırılır, döner ya da doğrudan gider. Sonucu dalga boyunun engelin boyuna oranı belirler. Bas seslerin aynı ortamda bulunmasak bile duyulabilmesinin nedeni budur.',
       engelAdi: 'Duvar yüksekliği',
       buyuk: 'Dalga boyu duvardan büyük: ses duvarın tepesinden dolaşıp azalmadan arkaya geçer; iki tarafta da yaklaşık eşit duyulur.',
-      esit: 'Dalga boyu duvarın boyuna yakın: saçılma olur. Duvarın tepesi ikinci bir kaynak gibi davranır ve sesi birçok yöne dağıtır; arkada kısmi bir gölge kalır.',
+      esit: 'Dalga boyu duvarın boyutuna yakın olduğunda kırınım gerçekleşir; duvarın tepesi yeni bir dalga kaynağı gibi davranarak sesi büküp dağıtır ve duvarın arkasında kısmi bir akustik gölge oluşur.',
       kucuk: 'Dalga boyu duvardan küçük: ses duvarı aşamaz; arkada ses gölgesi oluşur, ses diğer tarafa zayıflamış olarak geçer.',
       olcer1: 'Duvarın önünde',
       olcer2: 'Duvarın arkasında',
@@ -86,7 +86,7 @@ window.SESLAB_VERI = {
       duvar: 'Duvar',
       bina: 'Bina',
       golgeEtiket: 'ses gölgesi',
-      sacilmaEtiket: 'saçılma',
+      sacilmaEtiket: 'kırınım',
       canvasEtiketi: 'Dağılma animasyonu: soldaki kaynaktan çıkan ses dalgaları bir duvara geliyor, duvarın arkasında bir bina var'
     },
     bas: {
