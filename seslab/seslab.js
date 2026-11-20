@@ -238,8 +238,10 @@
     var dengeBar = h('div', 'sl-denge-bar'), adimSatir = h('div', 'sl-adim-satir'); dengeBar.hidden = true;
     adimSatir.appendChild(tumBtn); adimSatir.appendChild(adimBox); dengeBar.appendChild(adimSatir);
     var bSah = h('h3', 'g3d-baslik'), bFr = h('h3', 'g3d-baslik'), bGor = h('h3', 'g3d-baslik');
+    // İşitme kipinde frekans sayı doğrusu ve "Sesi çal" animasyonun hemen altında (2026-11-20)
+    var frUst = h('div', 'sl-frust'); frUst.appendChild(bFr); frUst.appendChild(frBox); frUst.appendChild(sesSatir);
     var notEl = h('p', 'g3d-not'), kaynakEl = h('p', 'g3d-not sl-kaynak'), metinYuva = h('div', 'g3d-kart-ek');
-    [modBox, sahne, dengeBar, uyari, kart, enerjiKutu, bSah, sahBox, bFr, frBox, sesSatir, bGor, viewBox, notEl, metinYuva, kaynakEl].forEach(function (e) { kok.appendChild(e); });
+    [modBox, sahne, dengeBar, frUst, uyari, kart, enerjiKutu, bSah, sahBox, bGor, viewBox, notEl, metinYuva, kaynakEl].forEach(function (e) { kok.appendChild(e); });
 
     function metinler() {
       uyari.textContent = mod === 'denge' ? (M.dengeUyari || M.uyari) : M.uyari; notEl.textContent = M.not;
@@ -615,7 +617,7 @@
       if (m === mod || (m === 'denge' && !DSAH.length)) return;
       mod = m; sesKapat(); sel = null;
       modIs.setAttribute('aria-pressed', m === 'isitme' ? 'true' : 'false'); modDe.setAttribute('aria-pressed', m === 'denge' ? 'true' : 'false');
-      [enerjiKutu, bSah, bFr, frBox, sesSatir, bGor, viewBox].forEach(function (e) { e.hidden = m === 'denge'; });
+      [enerjiKutu, bSah, frUst, bGor, viewBox].forEach(function (e) { e.hidden = m === 'denge'; });
       [adimBox, yerEt, yakinBtn, dengeBar, donBox].forEach(function (e) { e.hidden = m !== 'denge'; });
       // Sahne tuşları: denge kipinde animasyonun hemen altına (küçük), işitmede eski yerine
       sahBox.classList.toggle('sl-sahne-k', m === 'denge'); sahBox.classList.toggle('g3d-bolumler', m !== 'denge');

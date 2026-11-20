@@ -51,6 +51,9 @@
 .sl .g3d-bolumler { grid-template-columns: repeat(2, 1fr); }
 /* Frekans sayı doğrusu (2026-11-20): kaydırıcı (yükseklik 44 px) + altında çentikli ölçek. Başparmak genişliği --sl-bp;
    çentikler başparmağın merkezinin gidebildiği aralığa göre yerleşir. */
+.sl .sl-frust { margin: 4px 0 10px; }
+.sl .sl-frust[hidden] { display: none; }
+.sl .sl-frust .g3d-baslik { margin-top: 0; }
 .sl .sl-frdeger { font-family: var(--font-mono); color: var(--accent); }
 .sl .sl-frcizgi { --sl-bp: 26px; position: relative; padding: 0 2px; }
 .sl .sl-frkaydir { display: block; width: 100%; height: 44px; margin: 0; background: transparent; -webkit-appearance: none; appearance: none; cursor: pointer; touch-action: pan-y; }
