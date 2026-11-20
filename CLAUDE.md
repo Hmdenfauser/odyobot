@@ -51,7 +51,16 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 - Alt çubuk sırası: Ana sayfa, Görsel depo, OdyoBOT, Vakalarım, Notlar.
 - Odyogram çıktısı (`cikti.js`), Vakalarım → OdyoBOT gönderme, düğmeli sohbet (`odybot.js`). sw v12. Ayrıntı: `PROGRESS.md`.
 
-### KALDIĞIMIZ YER (2026-11-20 gece) — oturum başında bunu özetle
+### KALDIĞIMIZ YER (2026-11-20 gece, v39) — oturum başında bunu özetle
+**Durum:** Yayında, son sürüm **sw v39** (main; dal `denge-bas` birleşti). Önceki yayının yedeği git etiketi `yedek-yayin-v38` (GitHub'da). Bekleyen kod değişikliği yok.
+**v39 (2026-11-20), Denge:**
+- Kanallar (`KANAL`) denge kipinde **opak** (a=1): yarı saydamken derinlik yazılmadığı için arkadaki kanal öndekinin önünde görünüyordu (proje sahibi: "modellerde sorun var"). Kristaller/makulalar 3. geçişte en üstte.
+- **Baş** ayrı geçişte (−1) her şeyden önce, derinlik yazmadan çizilir; opaklık artırıldı (deri/boyun 0,28, kulak 0,55, burun 0,5, yüz 0,6). Sağ altta ↺ ↻'nin solunda **baş aç/kapa** simge düğmesi (`.sl-bas-tus`, simge `bas`/`basYok`, ipucu "Başı gizle"/"Başı göster"; yalnızca uzak görünümde; durum cihazda saklanmaz).
+- Yakın görünümdeki eski "Başı göster" düğmesinin adı **"Uzaklaştır"** (`sl.metin` basiGoster).
+- Proje sahibi "modellerde sorun" derken başka bir şey kastettiyse (sahne/adım, telefon ekran görüntüsü) bekleniyor.
+**Oturum başında hatırlat:** v38 notundaki telefon denemeleri + baş aç/kapa ve kanalların telefonda görünümü. Diğer maddeler aşağıdaki notlarda. Temizlik: `denge-bas` dalı da silinebilir.
+
+### Önceki: KALDIĞIMIZ YER (2026-11-20 gece, v38)
 **Durum:** Yayında, son sürüm **sw v38** (main; dal `seslab-duzeltme` birleşti). Önceki yayının yedeği git etiketi `yedek-yayin-v37` (GitHub'da). Bekleyen kod değişikliği yok.
 **v38 (2026-11-20):**
 - **Denge: semisirküler kanallar silikleşmiyor.** Neden: uzak görünümde silik baş yarı saydam geçişte en son çiziliyor, kanalların üstüne biniyordu. Düzeltme `seslab.js` → `cizimSirasi()` (önce baş, sonra diğerleri, en son kanallar) + kanal opaklığı %45 → %85 (BPPV arka kanal %82). Kristaller/makulalar 3. geçişte en üstte, görünür kalıyor.
