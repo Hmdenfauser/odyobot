@@ -831,12 +831,12 @@
     // 2026-11-20: #seslab = İşitme/Denge seçim ekranı; #seslab/isitme ve #seslab/denge = laboratuvar (seçim ekranı gizli).
     if (t.split('/')[0] === 'seslab') {
       if (oncekiHash.split('/')[0] !== 'seslab') slGeldigi = ilkRota ? null : oncekiHash;
-      var slK = t.split('/')[1]; slK = slK === 'isitme' || slK === 'denge' ? slK : null;
+      var slK = t.split('/')[1]; slK = slK === 'isitme' || slK === 'denge' || slK === 'golge' ? slK : null;
       if (slK && oncekiHash.split('/')[0] !== 'seslab') slSecimdenGeldi = false; else if (slK && oncekiHash === 'seslab') slSecimdenGeldi = true;
       if (!slK && t !== 'seslab') { ham = 'seslab'; adresDegistir('#seslab'); }
       t = 'seslab'; setTimeout(function () { slKipGoster(slK); }, 0);
     }
-    else if (gorunen === 'seslab' && !duyuru && sl) sl.durdur();
+    else if (gorunen === 'seslab' && !duyuru) { if (sl) sl.durdur(); if (slG) slG.durdur(); }
     // Derin bağlantılar: işini yapıp adresi sade hâline çevirir (geri tuşu bir önceki sayfaya döner).
     var p = t.split('/');
     if (p[0] === 'depo' && p.length > 1) { t = 'depo'; ham = 'depo'; adresDegistir('#depo'); sonra = function () { depoGit(p.slice(1)); }; }
@@ -924,6 +924,7 @@
       l.push({ tur: d.grup === 'implant' ? AM('araTurImplant') : AM('araTurCihaz'), ad: d.ad, metin: d.alt + ' ' + d.gorselAlt, git: '#depo/cihaz/' + d.id });
     });
     l.push({ tur: AM('araTurBolum'), ad: $('seslab').querySelector('h2').textContent, metin: 'animasyon kulak zarı kemikçik koklea yürüyen dalga frekans', git: '#seslab' });
+    if (SL && SL.golge) l.push({ tur: $('seslab').querySelector('h2').textContent, ad: $('sl-golge-ad').textContent, metin: SL.golge.baslik + ' dalga boyu kırınım difraksiyon shadow ' + SL.golge.aciklama, git: '#seslab/golge' });
     l.push({ tur: AM('araTurBolum'), ad: $('sozluk').querySelector('h2').textContent, metin: 'terim sözlük anlam türkçe kart', git: '#sozluk' });
     // Sözlük terimleri (sozluk.js; internetsizken son indirilenler)
     if (window.Sozluk) window.Sozluk.terimler().forEach(function (x) { l.push({ tur: AM('araTurTerim'), ad: x.tr + (x.en ? ' (' + x.en + ')' : ''), metin: x.kisaltma + ' ' + x.aciklama, git: '#sozluk/terim/' + encodeURIComponent(x.id) }); });
@@ -1280,7 +1281,7 @@
      seslab/seslab.js, gorsel3d.js'in kopyasından türetildi; 3D modelini (gorsel3d/periferik.*) yalnızca okur.
      Yönetici düzenlemesi: icerik/sl.sahne.<id> (ad, aciklama), sl.metin (uyari, frekansNot, sesNot, not).
      Yapıya dokununca çıkan ad/açıklama 3D sayfasıyla ortak (g3d.yapi.<id>). */
-  var SL = window.SESLAB_VERI, sl = null;
+  var SL = window.SESLAB_VERI, sl = null, slG = null;   // slG: baş gölgesi (seslab/golge.js)
   var SL_METIN_ALAN = [{ f: 'uyari', ad: 'Uyarı (modelin altında)', cok: true }, { f: 'frekansNot', ad: 'Frekans notu ({f} frekans, {y} yüzde, {bolge} bölge)', cok: true },
     { f: 'sesNot', ad: 'Ses düğmesinin altındaki not', cok: true }, { f: 'not', ad: 'Not (sayfanın altında)', cok: true },
     { f: 'enerjiBaslik', ad: 'Enerji dönüşümü başlığı' },
@@ -1290,6 +1291,13 @@
     { f: 'modIsitme', ad: 'İşitme düğmesi' }, { f: 'modDenge', ad: 'Denge düğmesi' }, { f: 'adimBasligi', ad: 'Adım başlığı (denge)' }, { f: 'yerEtiketi', ad: 'Yer etiketi (denge)' }, { f: 'yakinlastir', ad: 'Yakınlaştır düğmesi' }, { f: 'basiGoster', ad: 'Başı göster düğmesi' }, { f: 'tumunuOynat', ad: 'Tümünü oynat düğmesi' }, { f: 'tumunuDurdur', ad: 'Tümünü oynat → duraklat yazısı' }, { f: 'devamEt', ad: 'Tümünü oynat → devam et yazısı' }, { f: 'basaDon', ad: 'Başa dön düğmesi (denge)' },
     { f: 'dengeUyari', ad: 'Uyarı (denge kipinde, modelin altında)', cok: true }];
   var SL_KUCUK_ALAN = G3D_ALAN.concat([{ f: 'kisa', ad: 'Küçük tuştaki kısa yazı' }]);
+  // Baş gölgesi (#seslab/golge, seslab/golge.js): bütün yazılar tek kayıtta (icerik/sl.golge)
+  var SL_GOLGE_ALAN = [{ f: 'baslik', ad: 'Açıklama başlığı' }, { f: 'aciklama', ad: 'Açıklama', cok: true },
+    { f: 'buyuk', ad: 'Dalga boyu baştan büyükken yazı', cok: true }, { f: 'kucuk', ad: 'Dalga boyu baştan küçükken yazı', cok: true },
+    { f: 'azalmaAlcak', ad: 'Azalma (1500 Hz altı)', cok: true }, { f: 'azalmaYuksek', ad: 'Azalma (1500 Hz ve üstü)', cok: true },
+    { f: 'frekansBasligi', ad: 'Frekans başlığı' }, { f: 'dalgaBoyu', ad: '"Dalga boyu" yazısı' }, { f: 'basGenisligi', ad: '"Baş genişliği" yazısı' }, { f: 'tasiyor', ad: 'Dalga boyu çerçeveden uzunken ek' },
+    { f: 'yakinKulak', ad: 'Yakın kulak çubuğu' }, { f: 'uzakKulak', ad: 'Karşı kulak çubuğu' }, { f: 'kaynak', ad: 'Çizimde: ses kaynağı' }, { f: 'basEtiket', ad: 'Çizimde: baş' }, { f: 'golgeEtiket', ad: 'Çizimde: gölge' },
+    { f: 'canvasEtiketi', ad: 'Ekran okuyucu açıklaması', cok: true }, { f: 'uyari', ad: 'Uyarı', cok: true }, { f: 'kaynakNot', ad: 'Kaynak', cok: true }];
   if (SL) {
     SL.sahneler.forEach(function (b) { b.key = 'sl.sahne.' + b.id; editable(b, ['ad', 'aciklama']); });
     Object.keys(SL.yapilar).forEach(function (k) { SL.yapilar[k].key = 'sl.yapi.' + k; editable(SL.yapilar[k], ['ad', 'aciklama']); });
@@ -1299,6 +1307,7 @@
       s.adimlar.forEach(function (a) { a.key = 'sl.adim.' + s.id + '.' + a.id; editable(a, ['ad', 'aciklama', 'kisa']); });
     });
     SL.metinler.key = 'sl.metin'; editable(SL.metinler, SL_METIN_ALAN.map(function (a) { return a.f; }));
+    if (SL.golge) { SL.golge.key = 'sl.golge'; editable(SL.golge, SL_GOLGE_ALAN.map(function (a) { return a.f; })); }
   }
   function slKartEki(tur, kimlik, yuva) {
     var a = null;
@@ -1310,6 +1319,7 @@
       if (ad) a = adminPart(ad.key, ad, SL_KUCUK_ALAN, 'Adımı düzenle');
     }
     else if (tur === 'metin') a = adminPart(SL.metinler.key, SL.metinler, SL_METIN_ALAN, 'Uyarı ve notları düzenle');
+    else if (tur === 'golge' && SL.golge) a = adminPart(SL.golge.key, SL.golge, SL_GOLGE_ALAN, 'Baş gölgesi yazılarını düzenle');
     if (a) yuva.appendChild(a);
   }
   function kurSeslab() {
@@ -1320,11 +1330,20 @@
     sl = window.SesLab.kur($('sl-kok'), { veri: SL, yapilar: yapilar, veriYolu: 'gorsel3d/', kartEki: slKartEki });
   }
   // Seçim ekranı (kip yok) ya da laboratuvar (isitme/denge). Laboratuvar ilk seçimde kurulur; model o zaman iner.
+  // Baş gölgesi (golge) 3D modeli kullanmaz: ayrı kapta (#sl-golge) 2D animasyon; model indirilmez.
   function slKipGoster(kip) {
-    $('sl-secim').hidden = !!kip; $('sl-kok').hidden = !kip;
+    var golge = kip === 'golge';
+    $('sl-secim').hidden = !!kip; $('sl-kok').hidden = !kip || golge; $('sl-golge').hidden = !golge;
     var ad = $('sl-kip-ad'), M = SL ? SL.metinler : {};
-    ad.hidden = !kip; ad.textContent = kip === 'denge' ? (M.modDenge || 'Denge') : kip ? (M.modIsitme || 'İşitme') : '';
-    if (!kip) { if (sl) sl.durdur(); return; }
+    ad.hidden = !kip; ad.textContent = golge ? $('sl-golge-ad').textContent : kip === 'denge' ? (M.modDenge || 'Denge') : kip ? (M.modIsitme || 'İşitme') : '';
+    if (!golge && slG) slG.durdur();
+    if (!kip || golge) { if (sl) sl.durdur(); }
+    if (!kip) return;
+    if (golge) {
+      if (!slG && SL && SL.golge && window.SesLabGolge) slG = window.SesLabGolge.kur($('sl-golge'), { veri: SL, kartEki: slKartEki });
+      if (slG) slG.goster();
+      return;
+    }
     kurSeslab(); if (sl && sl.kip) sl.kip(kip);
   }
   function refreshSeslab() {
@@ -1333,11 +1352,13 @@
     Object.keys(SL.yapilar).forEach(function (k) { applyOv(SL.yapilar[k].key, SL.yapilar[k]); });
     if (SL.denge) SL.denge.sahneler.forEach(function (s) { applyOv(s.key, s); s.adimlar.forEach(function (a) { applyOv(a.key, a); }); });
     applyOv(SL.metinler.key, SL.metinler);
+    if (SL.golge) applyOv(SL.golge.key, SL.golge);
     if (sl) sl.yenile();
+    if (slG) slG.yenile();
   }
 
   // Açık/koyu görünüm değişince yapı renkleri (CSS değişkenleri) yeniden okunur.
-  function g3dRenk() { if (g3d) g3d.yenile(); if (sl) sl.yenile(); }
+  function g3dRenk() { if (g3d) g3d.yenile(); if (sl) sl.yenile(); if (slG) slG.yenile(); }
   new MutationObserver(g3dRenk).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
   if (window.matchMedia) { var g3dMq = window.matchMedia('(prefers-color-scheme: dark)'); if (g3dMq.addEventListener) g3dMq.addEventListener('change', g3dRenk); }
 
