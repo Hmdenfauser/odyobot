@@ -81,12 +81,12 @@
         if (sinifAd === 'kucuk') { x.textAlign = 'left'; x.fillStyle = c.soluk; yazi(x, M.golgeEtiket, wx + 10, yer - 12); }
         if (sinifAd === 'esit') {
           // Kısmi akustik gölge: duvarın arkasında, kaynaktan duvarın tepesine giden çizginin altında kalan bölge.
-          // Turuncu çizgili alan + kesik sınır çizgisi (slayttaki taralı "ses gölgesi" gibi), dalgalar altından görünür.
+          // Siyah, hafif saydam çizgili alan + turuncu kesik sınır çizgisi (slayttaki taralı "ses gölgesi" gibi), dalgalar altından görünür.
           var gx = wx + kal / 2, yL = E.y + (B.x0 - E.x) * SEy / SEx;
           x.save();
           x.beginPath(); x.moveTo(gx, E.y); x.lineTo(B.x0, yL); x.lineTo(B.x0, yer); x.lineTo(gx, yer); x.closePath();
-          x.globalAlpha = 0.16; x.fillStyle = c.vurgu; x.fill();
-          x.clip(); x.globalAlpha = 0.55; x.strokeStyle = c.vurgu; x.lineWidth = 1.5; x.beginPath();
+          x.globalAlpha = 0.10; x.fillStyle = c.tarama; x.fill();
+          x.clip(); x.globalAlpha = 0.45; x.strokeStyle = c.tarama; x.lineWidth = 1.5; x.beginPath();
           for (var k = -yer; k < W; k += 8) { x.moveTo(gx + k, yer); x.lineTo(gx + k + (yer - E.y + 60), E.y - 60); }
           x.stroke(); x.restore();
           x.save(); x.strokeStyle = c.vurgu; x.lineWidth = 2; x.setLineDash([6, 4]);
@@ -185,7 +185,7 @@
     function renkOku() {
       var st = getComputedStyle(kap), v = function (n) { return st.getPropertyValue(n).trim(); };
       renk = { zemin: rgb(v('--surface')), dalga: rgb(v('--sl-g-dalga')), golge: rgb(v('--sl-g-golge')), zeminCss: v('--surface'),
-        bas: v('--sl-g-bas'), basKenar: v('--sl-g-bas-kenar'), sol: v('--left'), sag: v('--right'), yazi: v('--ink'), soluk: v('--muted'), vurgu: v('--sl-g-vurgu') };
+        bas: v('--sl-g-bas'), basKenar: v('--sl-g-bas-kenar'), sol: v('--left'), sag: v('--right'), yazi: v('--ink'), soluk: v('--muted'), vurgu: v('--sl-g-vurgu'), tarama: v('--sl-g-tarama') };
     }
 
     // ---- dalga alanı: küçük ızgarada hesaplanır, büyütülerek çizilir
