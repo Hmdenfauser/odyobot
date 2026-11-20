@@ -214,7 +214,7 @@
     var donBox = h('div', 'sl-don'), donSol = h('button', 'sl-don-tus', '↺'), donSag = h('button', 'sl-don-tus', '↻'), basaBtn = h('button', 'sl-don-tus sl-basa');
     [donSol, donSag, basaBtn].forEach(function (b) { b.type = 'button'; donBox.appendChild(b); }); donBox.hidden = true;
     // İşitme: genel görünüm (Ses yolculuğu) düğmesi; simgesi çevresel işitme sisteminin sadeleştirilmiş çizimi.
-    // Ses yolculuğu dışındaki her sahnede görünür (frekans çubuğuyla Koklea'ya otomatik geçince de).
+    // İşitme kipinde her sahnede görünür; basınca Ses yolculuğu sahnesine ve başlangıç açısına/yakınlığına dönülür.
     var donusBtn = h('button', 'sl-yuv sl-sahne-don'); donusBtn.type = 'button'; donusBtn.hidden = true;
     if (IP) IP.simge(donusBtn, 'genel');
     sagAlt.appendChild(donusBtn); sagAlt.appendChild(oynatBtn);
@@ -596,7 +596,7 @@
       if (k && sah !== k) setSah(k);
     }
     function donusYaz() {
-      donusBtn.hidden = !(mod === 'isitme' && sah !== SAH[0]);
+      donusBtn.hidden = mod !== 'isitme';   // İşitme'de her sahnede (Ses yolculuğu'nda da: döndürülen model başlangıç açısına döner)
       if (donusIp) donusIp.yenile();
       if (donusBtn.hidden && IP) IP.gizle();
     }

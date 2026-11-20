@@ -56,7 +56,7 @@
     var durum = h('p', 'g3d-durum', M.indiriliyor);
     durum.setAttribute('role', 'status');
     // OdyoBOT uyarlaması (2026-11-20): eski "← Geri" yerine Ses laboratuvarındaki genel görünüm düğmesi (sağ altta, yalnızca simge;
-    // yazı ipucunda: fareyle üzerine gelince ya da uzun basınca; seslab/ipucu.js). Basınca seçim ve kepçe kapanır, Tüm sistem'e dönülür.
+    // yazı ipucunda: fareyle üzerine gelince ya da uzun basınca; seslab/ipucu.js). Her görünümde durur; basınca seçim ve kepçe kapanır, Tüm sistem'e ve başlangıç açısına dönülür.
     var IP = window.SesLabIpucu, geriBtn = h('button', 'sl-yuv g3d-genel'); geriBtn.type = 'button'; geriBtn.hidden = true;
     if (IP) { IP.simge(geriBtn, 'genel'); IP.bagla(geriBtn, function () { return M.genelGorunum || 'Genel görünüme geç'; }); } else geriBtn.textContent = '← ' + (M.genelGorunum || 'Genel görünüme geç');
     var sagAlt = h('div', 'sl-sag-alt'); sagAlt.appendChild(geriBtn);
@@ -187,7 +187,7 @@
       else if (pinOpen) { nmEl.textContent = veri.kepce.ad; dsEl.textContent = veri.kepce.aciklama; tur = 'kepce'; kimlik = 'kepce'; }
       else { nmEl.textContent = sec.ad; dsEl.textContent = sec.aciklama; tur = 'bolum'; kimlik = sec.id; }
       neresi.textContent = M.taraf + ' · ' + sec.ad;
-      geriBtn.hidden = !(sel || pinOpen || sec !== SECS[0]); if (geriBtn.hidden && IP) IP.gizle();
+      geriBtn.hidden = false;   // her görünümde (Tüm sistem'de de) durur
       yuva.textContent = '';
       if (typeof ayar.kartEki === 'function') ayar.kartEki(tur, kimlik, yuva);
     }
@@ -221,8 +221,10 @@
       var r = sahne.getBoundingClientRect();
       if (r.top < 0 || r.top > window.innerHeight * 0.5) sahne.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
     }
-    // Genel görünüm: seçimi kaldırır, kepçe bölümlerini kapatır ve doğrudan Tüm sistem'e döner (setSec seçim ve kepçeyi sıfırlar).
+    // Genel görünüm: seçimi kaldırır, kepçe bölümlerini kapatır, Tüm sistem'e döner ve modeli başlangıç açısına/yakınlığına getirir
+    // (Tüm sistem'deyken de: döndürülmüş ya da yakınlaştırılmış model başlangıç hâline döner).
     function geri() {
+      R = VIEWS.lat.slice(); auto = false;
       setSec(SECS[0]);
       dirty = true;
     }
