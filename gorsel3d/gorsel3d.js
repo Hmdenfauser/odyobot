@@ -55,9 +55,12 @@
     olcek.appendChild(cubuk); olcek.appendChild(olcekYazi); olcek.hidden = true;
     var durum = h('p', 'g3d-durum', M.indiriliyor);
     durum.setAttribute('role', 'status');
-    // OdyoBOT uyarlaması: modelin üstünde "Geri" düğmesi (seçimi kaldırır → kepçeyi kapatır → Tüm sistem'e döner).
-    var geriBtn = h('button', 'g3d-geri', '← ' + (M.geri || 'Geri')); geriBtn.type = 'button'; geriBtn.hidden = true;
-    sahne.appendChild(cv); sahne.appendChild(neresi); sahne.appendChild(olcek); sahne.appendChild(geriBtn); sahne.appendChild(durum);
+    // OdyoBOT uyarlaması (2026-11-20): eski "← Geri" yerine Ses laboratuvarındaki genel görünüm düğmesi (sağ altta, yalnızca simge;
+    // yazı ipucunda: fareyle üzerine gelince ya da uzun basınca; seslab/ipucu.js). Basınca seçim ve kepçe kapanır, Tüm sistem'e dönülür.
+    var IP = window.SesLabIpucu, geriBtn = h('button', 'sl-yuv g3d-genel'); geriBtn.type = 'button'; geriBtn.hidden = true;
+    if (IP) { IP.simge(geriBtn, 'genel'); IP.bagla(geriBtn, function () { return M.genelGorunum || 'Genel görünüme geç'; }); } else geriBtn.textContent = '← ' + (M.genelGorunum || 'Genel görünüme geç');
+    var sagAlt = h('div', 'sl-sag-alt'); sagAlt.appendChild(geriBtn);
+    sahne.appendChild(cv); sahne.appendChild(neresi); sahne.appendChild(olcek); sahne.appendChild(sagAlt); sahne.appendChild(durum);
     var ipucu = h('p', 'g3d-not g3d-ipucu', M.ipucu);
     var secBox = h('div', 'g3d-satir g3d-bolumler'), partBox = h('div', 'g3d-yapilar');
     var kart = h('div', 'g3d-kart'), nmEl = h('h4'), dsEl = h('p'), yuva = h('div', 'g3d-kart-ek');
@@ -184,7 +187,7 @@
       else if (pinOpen) { nmEl.textContent = veri.kepce.ad; dsEl.textContent = veri.kepce.aciklama; tur = 'kepce'; kimlik = 'kepce'; }
       else { nmEl.textContent = sec.ad; dsEl.textContent = sec.aciklama; tur = 'bolum'; kimlik = sec.id; }
       neresi.textContent = M.taraf + ' · ' + sec.ad;
-      geriBtn.hidden = !(sel || pinOpen || sec !== SECS[0]);
+      geriBtn.hidden = !(sel || pinOpen || sec !== SECS[0]); if (geriBtn.hidden && IP) IP.gizle();
       yuva.textContent = '';
       if (typeof ayar.kartEki === 'function') ayar.kartEki(tur, kimlik, yuva);
     }
@@ -218,11 +221,9 @@
       var r = sahne.getBoundingClientRect();
       if (r.top < 0 || r.top > window.innerHeight * 0.5) sahne.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
     }
-    // Geri: önce seçimi kaldırır, sonra kepçe bölümlerini kapatır, en sonda Tüm sistem'e döner.
+    // Genel görünüm: seçimi kaldırır, kepçe bölümlerini kapatır ve doğrudan Tüm sistem'e döner (setSec seçim ve kepçeyi sıfırlar).
     function geri() {
-      if (sel) pick(sel);
-      else if (pinOpen) setSec(sec);
-      else if (sec !== SECS[0]) setSec(SECS[0]);
+      setSec(SECS[0]);
       dirty = true;
     }
     function openPinna() { if (sec.id !== 'dis') setSec(SECS[1]); pinOpen = true; sel = null; chips(); frame(PIN); card(); dirty = true; }
