@@ -354,6 +354,7 @@
         <button type="button" id="alt-yolak" aria-pressed="true">İşitme yolağı</button>
         <button type="button" id="alt-refleks" aria-pressed="false">Refleks arkı</button>
         <button type="button" id="alt-tarama" aria-pressed="false">Yenidoğan taraması</button>
+        <button type="button" id="alt-hafiza" aria-pressed="false">İşitsel hafıza</button>
       </div>
 
       <div id="p-yolak" class="stack">
@@ -417,6 +418,22 @@
           <p class="note" data-k="tarama.b.not">Test zamanlarıyla ilgili ayrıntılar «Yenidoğan İşitme Tarama Programında Tarama ABR Protokolü» belgesindedir.</p>
         </div>
         <p class="note" data-k="tarama.kaynak">Kaynak: T.C. Sağlık Bakanlığı Yenidoğan İşitme Taraması Programı, tarama ABR protokolü akış şemaları. Şemalar bu kaynağa bakılarak sadeleştirilip yeniden çizildi; güncel uygulama için programın son belgesine bakılmalıdır.</p>
+      </div>
+
+      <!-- İşitsel hafıza: Atkinson ve Shiffrin (1968) bellek modeli (app.js, HNODES). Ders slaytına bakılarak yeniden çizildi. -->
+      <div id="p-hafiza" class="stack" hidden>
+        <p class="lead" data-k="hafiza.lead">İşitsel bilgi bellekte üç aşamada işlenir: ekoik bellek, kısa süreli bellek ve uzun süreli bellek. Bir kutuya dokun; ne olduğu aşağıda açılır.</p>
+        <div class="figure">
+          <svg id="hafiza" viewBox="0 0 360 470" role="group" aria-label="İşitsel hafıza akış şeması"></svg>
+          <div class="legend">
+            <span><i class="akis-renk bellek"></i>Bellek</span>
+            <span><i class="akis-renk surec"></i>Süreç</span>
+            <span><i class="akis-renk sevk"></i>Bozulma</span>
+          </div>
+        </div>
+        <article class="card" id="detail-hf" aria-live="polite"></article>
+        <p class="note" data-k="hafiza.not">Süreler kaynaklara göre farklı verilir; şemadaki değerler yaklaşıktır.</p>
+        <p class="note" data-k="hafiza.kaynak">Kaynak: Atkinson ve Shiffrin (1968) bellek modelinden uyarlanmış ders slaytı. Şema bu slayta bakılarak yeniden çizildi.</p>
       </div>
       </div>
 

@@ -569,7 +569,7 @@ a.btn.a-git:focus-visible { outline: 3px solid var(--accent); outline-offset: 2p
 /* ---------- Görsel depo: 3 ana düğme (dar ekranda yazı iki satıra iner, kısaltılmaz) ---------- */
 .depo-seg button, #p-tarama .seg button { line-height: 1.15; padding: 4px 4px; overflow-wrap: break-word; }
 /* Şemalar içindeki alt seçim: sekme görünümü (ana düğmelerden ayrışsın) */
-.alt-seg { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid var(--line); }
+.alt-seg { display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: 1px solid var(--line); }
 .alt-seg button { font: inherit; font-size: 14px; font-weight: 500; line-height: 1.15; min-height: 44px; padding: 6px 4px; background: none; border: none; border-bottom: 3px solid transparent; margin-bottom: -1px; color: var(--muted); cursor: pointer; }
 .alt-seg button[aria-pressed="true"] { color: var(--ink); font-weight: 600; border-bottom-color: var(--accent); }
 .alt-seg button:focus-visible { outline: 3px solid var(--accent); outline-offset: -3px; }
@@ -582,6 +582,12 @@ a.btn.a-git:focus-visible { outline: 3px solid var(--accent); outline-offset: 2p
 .pill.t-gecti, .pill.t-saglam { stroke: var(--akis-gecti); stroke-width: 2; fill: color-mix(in srgb, var(--akis-gecti) 14%, var(--surface)); }
 .pill.t-kaldi, .pill.t-ref { stroke: var(--akis-kaldi); stroke-width: 2; fill: color-mix(in srgb, var(--akis-kaldi) 14%, var(--surface)); }
 .pill.t-sevk { stroke: var(--akis-sevk); stroke-width: 2; fill: color-mix(in srgb, var(--akis-sevk) 16%, var(--surface)); }
+/* İşitsel hafıza: bellek depoları ana renk, süreçler yuvarlak ikinci renk, bozulma gri (t-bozulma = sevk rengi) */
+.pill.t-bellek { stroke: var(--accent); stroke-width: 2.2; fill: color-mix(in srgb, var(--accent) 10%, var(--surface)); }
+.pill.t-surec { stroke: var(--bot); stroke-width: 2; }
+.pill.t-bozulma { stroke: var(--akis-sevk); stroke-width: 2; fill: color-mix(in srgb, var(--akis-sevk) 16%, var(--surface)); }
+.akis-renk.bellek { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, var(--surface)); }
+.akis-renk.surec { border-color: var(--bot); border-radius: 6px; background: var(--surface); }
 .akis-renk { display: inline-block; width: 14px; height: 10px; border-radius: 3px; border: 2px solid; }
 .akis-renk.gecti { border-color: var(--akis-gecti); background: color-mix(in srgb, var(--akis-gecti) 14%, var(--surface)); }
 .akis-renk.kaldi { border-color: var(--akis-kaldi); background: color-mix(in srgb, var(--akis-kaldi) 14%, var(--surface)); }

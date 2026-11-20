@@ -423,8 +423,9 @@
 
   // Şema tanımı: kutular [id, cx, cy, genişlik, yükseklik, tür] ve oklar (nokta listeleri; son noktada ok başı olup olmadığı).
   function T(id, cx, cy, w, hh, tur) { return { id: id, cx: cx, cy: cy, w: w, h: hh, tur: tur }; }
-  function sema(svgId, ad, kutular, cizgiler, sira, ilk, detayId) {
-    var s = $(svgId), o = { svg: s, kutular: kutular, sira: sira, sec: ilk, detay: $(detayId) };
+  // dugum/alan/zamanAd verilmezse yenidoğan taraması (TNODES) varsayılır; işitsel hafıza kendi listesini verir.
+  function sema(svgId, ad, kutular, cizgiler, sira, ilk, detayId, dugum, alan, zamanAd) {
+    var s = $(svgId), o = { svg: s, kutular: kutular, sira: sira, sec: ilk, detay: $(detayId), dugum: dugum || TNODES, alan: alan || TARAMA_ALAN, zamanAd: zamanAd || 'Ne zaman: ' };
     var defs = se('defs', {}, s);
     var m = se('marker', { id: 'ah-' + ad, viewBox: '0 0 10 10', refX: '9', refY: '5', markerWidth: '6', markerHeight: '6', orient: 'auto' }, defs);
     se('path', { d: 'M0,0 L10,5 L0,10 z', 'class': 'ah akis' }, m);
@@ -434,9 +435,9 @@
       se('path', a, s);
     });
     kutular.forEach(function (k) {
-      var n = TNODES[k.id];
+      var n = o.dugum[k.id]; k.n = n;
       var g = se('g', { 'class': 'node', tabindex: '0', role: 'button' }, s);
-      se('rect', { x: k.cx - k.w / 2, y: k.cy - k.h / 2, width: k.w, height: k.h, rx: k.tur === 'gecti' || k.tur === 'kaldi' ? k.h / 2 : 8, 'class': 'pill t-' + k.tur }, g);
+      se('rect', { x: k.cx - k.w / 2, y: k.cy - k.h / 2, width: k.w, height: k.h, rx: k.tur === 'gecti' || k.tur === 'kaldi' || k.tur === 'surec' ? k.h / 2 : 8, 'class': 'pill t-' + k.tur }, g);
       k.t = se('text', { x: k.cx, y: k.cy }, g);
       k.g = g; n._kutular.push(k);
       g.addEventListener('click', function () { tsec(o, k.id); });
@@ -445,13 +446,13 @@
     return o;
   }
   function tyaz(k) {
-    var n = TNODES[k.id];
+    var n = k.n;
     rlabel(k.t, Array.isArray(n.ad) ? n.ad : [String(n.ad)], k.cx, k.cy);
     k.g.setAttribute('aria-label', (Array.isArray(n.ad) ? n.ad.join(' ') : n.ad) + ': ayrıntı');
   }
   function tsec(o, id) {
     o.sec = id;
-    var idx = o.sira.indexOf(id), n = TNODES[id];
+    var idx = o.sira.indexOf(id), n = o.dugum[id];
     o.kutular.forEach(function (k) { k.g.classList.toggle('sel', k.id === id); });
     var prev = h('button', { 'class': 'btn', type: 'button', text: '← Önceki' });
     var next = h('button', { 'class': 'btn', type: 'button', text: 'Sonraki →' });
@@ -461,10 +462,10 @@
     next.addEventListener('click', function () { tsec(o, o.sira[idx + 1]); });
     fill(o.detay, [
       h('div', { 'class': 'card-head' }, [h('h2', { text: n.baslik })]),
-      n.zaman ? h('span', { 'class': 'badge', text: 'Ne zaman: ' + n.zaman }) : null,
+      n.zaman ? h('span', { 'class': 'badge', text: o.zamanAd + n.zaman }) : null,
       h('dl', null, [n.aciklama ? dlRow('Açıklama', n.aciklama) : null, n.not ? dlRow('Not', n.not) : null].filter(Boolean)),
       h('div', { 'class': 'stepper' }, [prev, h('span', { 'class': 'pos', text: (idx + 1) + ' / ' + o.sira.length }), next]),
-      adminPart(n.key, n, TARAMA_ALAN, 'Bu kutuyu düzenle')
+      adminPart(n.key, n, o.alan, 'Bu kutuyu düzenle')
     ]);
   }
 
@@ -514,9 +515,57 @@
   seritTek(654, 'yb3');
   var TB = sema('tarama-b', 'tb', TB_K, TB_C, ['degb', 'yb1', 'yb2', 'yb3', 'b1', 'b2', 'bt', 'gecti', 'kaldi', 'risksevk', 'referans'], 'yb1', 'detail-tb');
 
+  /* ---------- işitsel hafıza: Atkinson ve Shiffrin (1968) bellek modeli ----------
+     Proje sahibinin ders slaytına (ham-gorseller/isitsel-hafiza/) bakılarak telefona göre dikey olarak yeniden çizildi; slayt uygulamaya konmadı.
+     Metinler taslaktır; proje sahibi doğrular ve uygulamadan düzeltir (icerik/hafiza.<id>).
+     Renk dili: bellek depoları ana renkle, süreçler (dikkat, tekrarlama, aktarım, geri çağırma) yuvarlak, bozulma gri. */
+  var HNODES = {
+    uyaran: { ad: ['Uyaran', 'frekans · şiddet · süre'], baslik: 'Uyaran', zaman: '',
+      aciklama: 'Kulağa ulaşan işitsel uyaran; frekansı, şiddeti ve süresiyle birlikte ekoik belleğe girer.', not: '' },
+    ekoik: { ad: ['Ekoik bellek', '(≈250 ms)'], baslik: 'Ekoik bellek (işitsel duyusal bellek)', zaman: 'yaklaşık 250 ms',
+      aciklama: 'Duyulan ses çok kısa bir süre ham hâliyle burada tutulur. Dikkat edilen bilgi kısa süreli belleğe geçer, edilmeyen bozulur.',
+      not: 'Ekoik belleğin süresi kaynaklara göre farklı verilir (birkaç yüz milisaniyeden birkaç saniyeye kadar). Burada slayttaki değer kullanıldı.' },
+    bozulma1: { ad: ['Bozulma'], baslik: 'Bozulma (ekoik bellek)', zaman: '',
+      aciklama: 'İşitsel dikkat olmadığında ileri işlemleme gerçekleşmez; bilgi ekoik bellekten silinir.', not: '' },
+    dikkat: { ad: ['Dikkat'], baslik: 'Dikkat', zaman: '',
+      aciklama: 'Ekoik bellekteki bilginin kısa süreli belleğe geçebilmesi için dikkat gerekir.', not: '' },
+    ksb: { ad: ['Kısa süreli bellek', '(≈30 sn)'], baslik: 'Kısa süreli bellek', zaman: 'yaklaşık 30 sn',
+      aciklama: 'Dikkat edilen bilginin geçici olarak tutulduğu bellek. Tekrarlanan bilgi burada kalır; kodlanan bilgi uzun süreli belleğe aktarılır.',
+      not: 'Süre ve kapasite değerleri kaynaklara göre farklı verilir.' },
+    tekrar: { ad: ['Tekrarlama'], baslik: 'Tekrarlama', zaman: '',
+      aciklama: 'Bilgiyi zihinde tekrar etmek, kısa süreli bellekte kalma süresini uzatır.', not: '' },
+    bozulma2: { ad: ['Bozulma'], baslik: 'Bozulma (kısa süreli bellek)', zaman: '',
+      aciklama: 'Tekrarlanmayan ve kodlanmayan bilgiler yaklaşık 30 saniye sonra unutulur.', not: '' },
+    aktarim: { ad: ['Aktarım'], baslik: 'Aktarım', zaman: '',
+      aciklama: 'Kodlanan bilgi kısa süreli bellekten uzun süreli belleğe aktarılır.', not: '' },
+    geri: { ad: ['Geri çağırma'], baslik: 'Geri çağırma', zaman: '',
+      aciklama: 'Uzun süreli bellekteki bilgi gerektiğinde kısa süreli belleğe geri getirilir.', not: '' },
+    uzb: { ad: ['Uzun süreli bellek', '(sınırsız)'], baslik: 'Uzun süreli bellek', zaman: '',
+      aciklama: 'Bilginin kalıcı olarak depolandığı bellek; kapasitesi sınırsız kabul edilir.', not: '' }
+  };
+  var HAFIZA_ALAN = [{ f: 'ad', ad: 'Şemadaki ad (en çok 2 satır)', cok: true }, { f: 'baslik', ad: 'Kart başlığı' }, { f: 'zaman', ad: 'Süre' },
+    { f: 'aciklama', ad: 'Açıklama', cok: true }, { f: 'not', ad: 'Not', cok: true }];
+  Object.keys(HNODES).forEach(function (id) { var n = HNODES[id]; n.id = id; n.key = 'hafiza.' + id; n._kutular = []; editable(n, HAFIZA_ALAN.map(function (x) { return x.f; })); });
+  // Dikey düzen: ana sütun (x 175) uyaran → ekoik → dikkat → kısa süreli → aktarım/geri çağırma → uzun süreli; sağda bozulma, solda tekrarlama döngüsü.
+  var HF = sema('hafiza', 'hf', [
+    T('uyaran', 175, 30, 200, 44, 'grup'),
+    T('ekoik', 175, 115, 140, 56, 'bellek'), T('bozulma1', 310, 115, 80, 40, 'bozulma'),
+    T('dikkat', 175, 180, 96, 32, 'surec'),
+    T('ksb', 175, 255, 140, 56, 'bellek'), T('bozulma2', 310, 255, 80, 40, 'bozulma'), T('tekrar', 50, 255, 88, 32, 'surec'),
+    T('aktarim', 145, 325, 90, 32, 'surec'), T('geri', 215, 365, 108, 32, 'surec'),
+    T('uzb', 175, 428, 160, 56, 'bellek')
+  ], [
+    { p: [[175, 52], [175, 87]], ok: 1 }, { p: [[245, 115], [270, 115]], ok: 1 },
+    { p: [[175, 143], [175, 164]], ok: 1 }, { p: [[175, 196], [175, 227]], ok: 1 }, { p: [[245, 255], [270, 255]], ok: 1 },
+    { p: [[115, 227], [115, 212], [50, 212], [50, 239]], ok: 1 }, { p: [[50, 271], [50, 297], [125, 297], [125, 283]], ok: 1 },   // tekrarlama döngüsü
+    { p: [[145, 283], [145, 309]] }, { p: [[145, 341], [145, 400]], ok: 1 },                                                    // aktarım
+    { p: [[215, 400], [215, 381]] }, { p: [[215, 349], [215, 283]], ok: 1 }                                                     // geri çağırma
+  ], ['uyaran', 'ekoik', 'bozulma1', 'dikkat', 'ksb', 'tekrar', 'bozulma2', 'aktarim', 'uzb', 'geri'], 'ekoik', 'detail-hf', HNODES, HAFIZA_ALAN, 'Süre: ');
+
   function refreshTarama() {
     Object.keys(TNODES).forEach(function (id) { var n = TNODES[id]; applyOv(n.key, n); n._kutular.forEach(tyaz); });
-    tsec(TA, TA.sec); tsec(TB, TB.sec);
+    Object.keys(HNODES).forEach(function (id) { var n = HNODES[id]; applyOv(n.key, n); n._kutular.forEach(tyaz); });
+    tsec(TA, TA.sec); tsec(TB, TB.sec); tsec(HF, HF.sec);
   }
   refreshTarama();
 
@@ -781,7 +830,7 @@
   var seg = secici(['sema', 'isitme', 'implant'], 'seg-', 'p-', function (which) {
     $('cihaz-alt').hidden = which === 'sema';   // ortak not iki cihaz panelinin altında
   });
-  var altSec = secici(['yolak', 'refleks', 'tarama'], 'alt-', 'p-');
+  var altSec = secici(['yolak', 'refleks', 'tarama', 'hafiza'], 'alt-', 'p-');
   var trSec = secici(['a', 'b'], 'tr-', 'tp-');
   // Görsel depo içinde bir yere git (ana sayfadaki arama ve hızlı erişim): #depo/isitme, #depo/implant, #depo/sema,
   // #depo/yolak/<id>, #depo/refleks/<id>, #depo/tarama/<id>, #depo/cihaz/<id>. Hedef ekrana kaydırılır ve kısa süre vurgulanır.
@@ -800,6 +849,7 @@
       var o = TA.sira.indexOf(id) !== -1 ? TA : TB;
       seg('sema'); altSec('tarama'); trSec(o === TA ? 'a' : 'b'); tsec(o, id); vurgula(o.detay); return;
     }
+    if (a === 'hafiza') { seg('sema'); altSec('hafiza'); if (HNODES[id]) { tsec(HF, id); vurgula(HF.detay); } return; }
     if (a === 'cihaz') {
       var d = DEVICES.filter(function (x) { return x.id === id; })[0];
       if (!d) return;
@@ -929,12 +979,13 @@
     if (window.Sozluk) window.Sozluk.terimler().forEach(function (x) { l.push({ tur: AM('araTurTerim'), ad: x.tr + (x.en ? ' (' + x.en + ')' : ''), metin: x.kisaltma + ' ' + x.aciklama, git: '#sozluk/terim/' + encodeURIComponent(x.id) }); });
     var sema = AM('araTurSema') + ' · ';
     // Bölümlerin kendisi (şemalar ve cihaz panelleri)
-    [['alt-yolak', '#depo/yolak/' + sel], ['alt-refleks', '#depo/refleks/' + rsel], ['alt-tarama', '#depo/tarama/' + TA.sec], ['seg-isitme', '#depo/isitme'], ['seg-implant', '#depo/implant']].forEach(function (x) {
+    [['alt-yolak', '#depo/yolak/' + sel], ['alt-refleks', '#depo/refleks/' + rsel], ['alt-tarama', '#depo/tarama/' + TA.sec], ['alt-hafiza', '#depo/hafiza/' + HF.sec], ['seg-isitme', '#depo/isitme'], ['seg-implant', '#depo/implant']].forEach(function (x) {
       l.push({ tur: $('depo').querySelector('h2').textContent, ad: $(x[0]).textContent, metin: '', git: x[1] });
     });
     NODES.forEach(function (n) { l.push({ tur: sema + $('alt-yolak').textContent, ad: n.label, metin: n.latin + ' ' + n.bolge + ' ' + n.yer, git: '#depo/yolak/' + n.id }); });
     RNODES.forEach(function (n) { l.push({ tur: sema + $('alt-refleks').textContent, ad: n.title, metin: n.latin + ' ' + n.label.join(' '), git: '#depo/refleks/' + n.id }); });
     Object.keys(TNODES).forEach(function (id) { var n = TNODES[id]; l.push({ tur: sema + $('alt-tarama').textContent, ad: n.baslik, metin: n.aciklama, git: '#depo/tarama/' + id }); });
+    Object.keys(HNODES).forEach(function (id) { var n = HNODES[id]; l.push({ tur: sema + $('alt-hafiza').textContent, ad: n.baslik, metin: n.aciklama, git: '#depo/hafiza/' + id }); });
     return l;
   }
   function araCiz() {
