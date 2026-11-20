@@ -322,8 +322,11 @@
       <div class="sl-secim" id="sl-secim">
         <a class="sl-secim-kart" href="#seslab/isitme"><span class="sl-secim-yazi"><strong data-k="sl.secim.isitme" data-etiket="Ses laboratuvarı: İşitme seçeneğinin adını düzenle">İşitme</strong><span data-k="sl.secim.isitmeAlt" data-etiket="Ses laboratuvarı: İşitme seçeneğinin açıklamasını düzenle">Ses yolculuğu, orta kulak, koklea ve yürüyen dalga</span></span></a>
         <a class="sl-secim-kart" href="#seslab/denge"><span class="sl-secim-yazi"><strong data-k="sl.secim.denge" data-etiket="Ses laboratuvarı: Denge seçeneğinin adını düzenle">Denge</strong><span data-k="sl.secim.dengeAlt" data-etiket="Ses laboratuvarı: Denge seçeneğinin açıklamasını düzenle">Otolit organları, BPPV ve Epley manevrası</span></span></a>
+        <a class="sl-secim-kart" href="#seslab/dagilma"><span class="sl-secim-yazi"><strong id="sl-dagilma-ad" data-k="sl.secim.dagilma" data-etiket="Ses laboratuvarı: Dağılma seçeneğinin adını düzenle">Dağılma (difraksiyon)</strong><span data-k="sl.secim.dagilmaAlt" data-etiket="Ses laboratuvarı: Dağılma seçeneğinin açıklamasını düzenle">Ses engeli aşar mı? Duvar ve baş gölgesi</span></span></a>
       </div>
       <div id="sl-kok" hidden></div>
+      <!-- Dağılma (#seslab/dagilma): iki sahneli 2D animasyon (duvar, baş gölgesi), seslab/dagilma.js. 3D modeli kullanmaz. -->
+      <div id="sl-dagilma" hidden></div>
     </div>
   </section>
 
@@ -1039,6 +1042,7 @@
 <script src="gorsel3d/gorsel3d.js"></script>
 <script src="seslab/seslab-veri.js"></script>
 <script src="seslab/denge.js"></script>
+<script src="seslab/dagilma.js"></script>
 <script src="seslab/seslab.js"></script>
 <script src="goruntuleyici.js"></script>
 <script src="app.js"></script>

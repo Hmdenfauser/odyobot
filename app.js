@@ -884,12 +884,12 @@
     // 2026-11-20: #seslab = İşitme/Denge seçim ekranı; #seslab/isitme ve #seslab/denge = laboratuvar (seçim ekranı gizli).
     if (t.split('/')[0] === 'seslab') {
       if (oncekiHash.split('/')[0] !== 'seslab') slGeldigi = ilkRota ? null : oncekiHash;
-      var slK = t.split('/')[1]; slK = slK === 'isitme' || slK === 'denge' ? slK : null;
+      var slK = t.split('/')[1]; slK = slK === 'isitme' || slK === 'denge' || slK === 'dagilma' ? slK : null;
       if (slK && oncekiHash.split('/')[0] !== 'seslab') slSecimdenGeldi = false; else if (slK && oncekiHash === 'seslab') slSecimdenGeldi = true;
       if (!slK && t !== 'seslab') { ham = 'seslab'; adresDegistir('#seslab'); }
       t = 'seslab'; setTimeout(function () { slKipGoster(slK); }, 0);
     }
-    else if (gorunen === 'seslab' && !duyuru && sl) sl.durdur();
+    else if (gorunen === 'seslab' && !duyuru) { if (sl) sl.durdur(); if (slG) slG.durdur(); }
     // Derin bağlantılar: işini yapıp adresi sade hâline çevirir (geri tuşu bir önceki sayfaya döner).
     var p = t.split('/');
     if (p[0] === 'depo' && p.length > 1) { t = 'depo'; ham = 'depo'; adresDegistir('#depo'); sonra = function () { depoGit(p.slice(1)); }; }
@@ -977,6 +977,7 @@
       l.push({ tur: d.grup === 'implant' ? AM('araTurImplant') : AM('araTurCihaz'), ad: d.ad, metin: d.alt + ' ' + d.gorselAlt, git: '#depo/cihaz/' + d.id });
     });
     l.push({ tur: AM('araTurBolum'), ad: $('seslab').querySelector('h2').textContent, metin: 'animasyon kulak zarı kemikçik koklea yürüyen dalga frekans', git: '#seslab' });
+    if (SL && SL.dagilma) l.push({ tur: $('seslab').querySelector('h2').textContent, ad: $('sl-dagilma-ad').textContent, metin: SL.dagilma.duvar.baslik + ' ' + SL.dagilma.bas.baslik + ' dalga boyu kırınım saçılma gölge duvar engel shadow ' + SL.dagilma.duvar.aciklama, git: '#seslab/dagilma' });
     l.push({ tur: AM('araTurBolum'), ad: $('sozluk').querySelector('h2').textContent, metin: 'terim sözlük anlam türkçe kart', git: '#sozluk' });
     // Sözlük terimleri (sozluk.js; internetsizken son indirilenler)
     if (window.Sozluk) window.Sozluk.terimler().forEach(function (x) { l.push({ tur: AM('araTurTerim'), ad: x.tr + (x.en ? ' (' + x.en + ')' : ''), metin: x.kisaltma + ' ' + x.aciklama, git: '#sozluk/terim/' + encodeURIComponent(x.id) }); });
@@ -1334,7 +1335,7 @@
      seslab/seslab.js, gorsel3d.js'in kopyasından türetildi; 3D modelini (gorsel3d/periferik.*) yalnızca okur.
      Yönetici düzenlemesi: icerik/sl.sahne.<id> (ad, aciklama), sl.metin (uyari, frekansNot, sesNot, not).
      Yapıya dokununca çıkan ad/açıklama 3D sayfasıyla ortak (g3d.yapi.<id>). */
-  var SL = window.SESLAB_VERI, sl = null;
+  var SL = window.SESLAB_VERI, sl = null, slG = null;   // slG: dağılma (seslab/dagilma.js)
   var SL_METIN_ALAN = [{ f: 'uyari', ad: 'Uyarı (modelin altında)', cok: true }, { f: 'frekansNot', ad: 'Frekans notu ({f} frekans, {y} yüzde, {bolge} bölge)', cok: true },
     { f: 'sesNot', ad: 'Ses düğmesinin altındaki not', cok: true }, { f: 'not', ad: 'Not (sayfanın altında)', cok: true },
     { f: 'enerjiBaslik', ad: 'Enerji dönüşümü başlığı' },
@@ -1344,6 +1345,18 @@
     { f: 'modIsitme', ad: 'İşitme düğmesi' }, { f: 'modDenge', ad: 'Denge düğmesi' }, { f: 'adimBasligi', ad: 'Adım başlığı (denge)' }, { f: 'yerEtiketi', ad: 'Yer etiketi (denge)' }, { f: 'yakinlastir', ad: 'Yakınlaştır düğmesi' }, { f: 'basiGoster', ad: 'Başı göster düğmesi' }, { f: 'tumunuOynat', ad: 'Tümünü oynat düğmesi' }, { f: 'tumunuDurdur', ad: 'Tümünü oynat → duraklat yazısı' }, { f: 'devamEt', ad: 'Tümünü oynat → devam et yazısı' }, { f: 'basaDon', ad: 'Başa dön düğmesi (denge)' },
     { f: 'dengeUyari', ad: 'Uyarı (denge kipinde, modelin altında)', cok: true }];
   var SL_KUCUK_ALAN = G3D_ALAN.concat([{ f: 'kisa', ad: 'Küçük tuştaki kısa yazı' }]);
+  // Dağılma (#seslab/dagilma, seslab/dagilma.js): ortak yazılar icerik/sl.dagilma, sahneler sl.dagilma.duvar ve sl.dagilma.bas
+  var SL_DAG_ORTAK = [{ f: 'sahneDuvar', ad: '1. sahne düğmesi' }, { f: 'sahneBas', ad: '2. sahne düğmesi' }, { f: 'frekansBasligi', ad: 'Frekans başlığı' },
+    { f: 'dalgaBoyu', ad: '"Dalga boyu" yazısı' }, { f: 'tasiyor', ad: 'Dalga boyu çerçeveden uzunken ek' },
+    { f: 'durumBuyuk', ad: 'Durum başlığı: büyük' }, { f: 'durumEsit', ad: 'Durum başlığı: eşit' }, { f: 'durumKucuk', ad: 'Durum başlığı: küçük' },
+    { f: 'esitAyrinti', ad: 'Eşit olunca ne olur (açıklama)', cok: true }, { f: 'uyari', ad: 'Uyarı', cok: true }, { f: 'kaynakNot', ad: 'Kaynak', cok: true }];
+  var SL_DAG_SAHNE = [{ f: 'baslik', ad: 'Açıklama başlığı' }, { f: 'aciklama', ad: 'Açıklama', cok: true }, { f: 'engelAdi', ad: 'Engelin adı (bilgi satırı)' },
+    { f: 'buyuk', ad: 'Dalga boyu engelden büyükken', cok: true }, { f: 'esit', ad: 'Dalga boyu engele eşitken', cok: true }, { f: 'kucuk', ad: 'Dalga boyu engelden küçükken', cok: true },
+    { f: 'azalmaAlcak', ad: 'Azalma (1500 Hz altı; yalnızca baş)', cok: true }, { f: 'azalmaYuksek', ad: 'Azalma (1500 Hz ve üstü; yalnızca baş)', cok: true },
+    { f: 'olcer1', ad: '1. çubuk' }, { f: 'olcer2', ad: '2. çubuk' }, { f: 'kaynak', ad: 'Çizimde: kaynak' }, { f: 'duvar', ad: 'Çizimde: duvar' }, { f: 'bina', ad: 'Çizimde: bina' },
+    { f: 'basEtiket', ad: 'Çizimde: baş' }, { f: 'golgeEtiket', ad: 'Çizimde: gölge' }, { f: 'sacilmaEtiket', ad: 'Çizimde: kırınım' }, { f: 'kismiGolgeEtiket', ad: 'Çizimde: kısmi akustik gölge (yalnızca duvar)' },
+    { f: 'canvasEtiketi', ad: 'Ekran okuyucu açıklaması', cok: true }];
+  function slDagAlan(o) { return SL_DAG_SAHNE.filter(function (a) { return a.f in o; }); }
   if (SL) {
     SL.sahneler.forEach(function (b) { b.key = 'sl.sahne.' + b.id; editable(b, ['ad', 'aciklama']); });
     Object.keys(SL.yapilar).forEach(function (k) { SL.yapilar[k].key = 'sl.yapi.' + k; editable(SL.yapilar[k], ['ad', 'aciklama']); });
@@ -1353,6 +1366,10 @@
       s.adimlar.forEach(function (a) { a.key = 'sl.adim.' + s.id + '.' + a.id; editable(a, ['ad', 'aciklama', 'kisa']); });
     });
     SL.metinler.key = 'sl.metin'; editable(SL.metinler, SL_METIN_ALAN.map(function (a) { return a.f; }));
+    if (SL.dagilma) {
+      SL.dagilma.key = 'sl.dagilma'; editable(SL.dagilma, SL_DAG_ORTAK.map(function (a) { return a.f; }));
+      ['duvar', 'bas'].forEach(function (id) { var o = SL.dagilma[id]; o.key = 'sl.dagilma.' + id; editable(o, slDagAlan(o).map(function (a) { return a.f; })); });
+    }
   }
   function slKartEki(tur, kimlik, yuva) {
     var a = null;
@@ -1364,6 +1381,11 @@
       if (ad) a = adminPart(ad.key, ad, SL_KUCUK_ALAN, 'Adımı düzenle');
     }
     else if (tur === 'metin') a = adminPart(SL.metinler.key, SL.metinler, SL_METIN_ALAN, 'Uyarı ve notları düzenle');
+    else if (tur === 'dagilma' && SL.dagilma && SL.dagilma[kimlik]) {
+      var ds2 = SL.dagilma[kimlik], a2 = adminPart(ds2.key, ds2, slDagAlan(ds2), 'Bu sahnenin yazılarını düzenle');
+      if (a2) yuva.appendChild(a2);
+      a = adminPart(SL.dagilma.key, SL.dagilma, SL_DAG_ORTAK, 'Ortak yazıları düzenle (iki sahne)');
+    }
     if (a) yuva.appendChild(a);
   }
   function kurSeslab() {
@@ -1374,11 +1396,20 @@
     sl = window.SesLab.kur($('sl-kok'), { veri: SL, yapilar: yapilar, veriYolu: 'gorsel3d/', kartEki: slKartEki });
   }
   // Seçim ekranı (kip yok) ya da laboratuvar (isitme/denge). Laboratuvar ilk seçimde kurulur; model o zaman iner.
+  // Dağılma (dagilma) 3D modeli kullanmaz: ayrı kapta (#sl-dagilma) 2D animasyon; model indirilmez.
   function slKipGoster(kip) {
-    $('sl-secim').hidden = !!kip; $('sl-kok').hidden = !kip;
+    var dag = kip === 'dagilma';
+    $('sl-secim').hidden = !!kip; $('sl-kok').hidden = !kip || dag; $('sl-dagilma').hidden = !dag;
     var ad = $('sl-kip-ad'), M = SL ? SL.metinler : {};
-    ad.hidden = !kip; ad.textContent = kip === 'denge' ? (M.modDenge || 'Denge') : kip ? (M.modIsitme || 'İşitme') : '';
-    if (!kip) { if (sl) sl.durdur(); return; }
+    ad.hidden = !kip; ad.textContent = dag ? $('sl-dagilma-ad').textContent : kip === 'denge' ? (M.modDenge || 'Denge') : kip ? (M.modIsitme || 'İşitme') : '';
+    if (!dag && slG) slG.durdur();
+    if (!kip || dag) { if (sl) sl.durdur(); }
+    if (!kip) return;
+    if (dag) {
+      if (!slG && SL && SL.dagilma && window.SesLabDagilma) slG = window.SesLabDagilma.kur($('sl-dagilma'), { veri: SL, kartEki: slKartEki });
+      if (slG) slG.goster();
+      return;
+    }
     kurSeslab(); if (sl && sl.kip) sl.kip(kip);
   }
   function refreshSeslab() {
@@ -1387,11 +1418,13 @@
     Object.keys(SL.yapilar).forEach(function (k) { applyOv(SL.yapilar[k].key, SL.yapilar[k]); });
     if (SL.denge) SL.denge.sahneler.forEach(function (s) { applyOv(s.key, s); s.adimlar.forEach(function (a) { applyOv(a.key, a); }); });
     applyOv(SL.metinler.key, SL.metinler);
+    if (SL.dagilma) { applyOv(SL.dagilma.key, SL.dagilma); applyOv(SL.dagilma.duvar.key, SL.dagilma.duvar); applyOv(SL.dagilma.bas.key, SL.dagilma.bas); }
     if (sl) sl.yenile();
+    if (slG) slG.yenile();
   }
 
   // Açık/koyu görünüm değişince yapı renkleri (CSS değişkenleri) yeniden okunur.
-  function g3dRenk() { if (g3d) g3d.yenile(); if (sl) sl.yenile(); }
+  function g3dRenk() { if (g3d) g3d.yenile(); if (sl) sl.yenile(); if (slG) slG.yenile(); }
   new MutationObserver(g3dRenk).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
   if (window.matchMedia) { var g3dMq = window.matchMedia('(prefers-color-scheme: dark)'); if (g3dMq.addEventListener) g3dMq.addEventListener('change', g3dRenk); }
 

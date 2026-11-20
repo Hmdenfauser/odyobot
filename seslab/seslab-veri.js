@@ -55,6 +55,59 @@ window.SESLAB_VERI = {
         ] }
     ]
   },
+  /* Dağılma (difraksiyon) kipi (#seslab/dagilma, 2026-11-20; seslab/dagilma.js). İki sahne: duvar, baş gölgesi.
+     Kaynak: proje sahibinin ders notları — İşitme Teorileri ve Psikoakustik 1. ders s. 37 (dağılma), 2. ders slayt 72 ve
+     3. ders slayt 5 (gölge etkisi); İşitme ve Denge Sistemleri-2 s. 22–24 (1500 Hz, 3–6 dB / ≥20 dB).
+     "Eşit" durumunun ayrıntısı genel akustik kaynaklarından (HyperPhysics, Britannica). Duvar (≈70 cm) ve baş (≈18 cm) şematik kabul.
+     Metinler taslaktır; yönetici düzenler: ortak yazılar icerik/sl.dagilma, sahneler sl.dagilma.duvar ve sl.dagilma.bas. */
+  dagilma: {
+    sahneDuvar: 'Duvar',
+    sahneBas: 'Baş gölgesi',
+    frekansBasligi: 'Frekans',
+    dalgaBoyu: 'Dalga boyu',
+    tasiyor: '(çerçeveden uzun)',
+    durumBuyuk: 'Dalga boyu engelden büyükse',
+    durumEsit: 'Dalga boyu engele eşitse',
+    durumKucuk: 'Dalga boyu engelden küçükse',
+    esitAyrinti: 'Dalga boyu engelin boyuna eşit olunca: kırınım gerçekleşir. Akustik kaynaklarına göre kırınım en belirgin hâlini dalga boyu engelle aynı büyüklükteyken alır: engelin kenarı ikinci bir kaynak gibi davranır ve sesi yalnızca arkaya değil yanlara ve geriye de dağıtır. Arkada tam olmayan, kısmi bir gölge kalır; dağılan dalgalar üst üste binerek bazı yerlerde güçlenip bazı yerlerde zayıflayabilir (girişim). Dalga boyu engelden çok uzunsa engel neredeyse fark edilmez; çok kısaysa ses ışık gibi düz gider ve keskin bir gölge bırakır.',
+    uyari: 'Şematik çizimdir: dalgalar yavaşlatıldı. Dalga boyu ile engel aynı ölçekte çizildi (duvar yüksekliği yaklaşık 70 cm, baş genişliği yaklaşık 18 cm, ses hızı 343 m/sn kabul edildi). Dalga boyu engelin 2/3’ü ile 1,5 katı arasındaysa "eşit" sayıldı; bu sınır şematiktir. Gölgenin koyuluğu ve çubuklar ölçülmüş değer değildir, yalnızca farkı göstermek içindir. Yerden ve binadan yansıma çizilmedi.',
+    kaynakNot: 'Kaynak: İşitme Teorileri ve Psikoakustik ders notları (1. ders: dağılma; 2. ve 3. ders: gölge etkisi) ve İşitme ve Denge Sistemleri-2 ders notları (başın etkisi). "Eşit" durumunun ayrıntısı genel akustik kaynaklarından (HyperPhysics, Britannica) eklendi. Çizimler bu notlara bakılarak özgün hazırlandı.',
+    duvar: {
+      frekanslar: [125, 250, 500, 1000, 2000, 4000],
+      baslik: 'Dağılma (difraksiyon)',
+      aciklama: 'Dağılma, sesin bir engelle karşılaştığında nasıl ilerlediğini anlatır: ses engelin yanından geçerken yön değiştirir, kırılır, döner ya da doğrudan gider. Sonucu dalga boyunun engelin boyuna oranı belirler. Bas seslerin aynı ortamda bulunmasak bile duyulabilmesinin nedeni budur.',
+      engelAdi: 'Duvar yüksekliği',
+      buyuk: 'Dalga boyu duvardan büyük: ses duvarın tepesinden dolaşıp azalmadan arkaya geçer; iki tarafta da yaklaşık eşit duyulur.',
+      esit: 'Dalga boyu duvarın boyutuna yakın olduğunda kırınım gerçekleşir; duvarın tepesi yeni bir dalga kaynağı gibi davranarak sesi büküp dağıtır ve duvarın arkasında kısmi bir akustik gölge oluşur.',
+      kucuk: 'Dalga boyu duvardan küçük: ses duvarı aşamaz; arkada ses gölgesi oluşur, ses diğer tarafa zayıflamış olarak geçer.',
+      olcer1: 'Duvarın önünde',
+      olcer2: 'Duvarın arkasında',
+      kaynak: 'Kaynak',
+      duvar: 'Duvar',
+      bina: 'Bina',
+      golgeEtiket: 'ses gölgesi',
+      kismiGolgeEtiket: 'kısmi akustik gölge',
+      canvasEtiketi: 'Dağılma animasyonu: soldaki kaynaktan çıkan ses dalgaları bir duvara geliyor, duvarın arkasında bir bina var'
+    },
+    bas: {
+      frekanslar: [250, 500, 1000, 2000, 4000, 8000],
+      baslik: 'Başın gölge etkisi',
+      aciklama: 'Ses alanında baş akustik bir engel (bariyer) gibi davranır. Dalga boyu başın genişliğinden büyük olan alçak frekanslı sesler başın çevresinden dolaşarak (dağılma, difraksiyon) karşı kulağa rahatça ulaşır. Dalga boyu baştan küçük olan yüksek frekanslı seslerin bir kısmını baş engeller; karşı kulağın çevresinde ses şiddetinin azaldığı bir "gölge" oluşur. Bu nedenle tiz seslerin yönü pes seslere göre daha kolay saptanır.',
+      engelAdi: 'Baş genişliği',
+      buyuk: 'Dalga boyu başın genişliğinden büyük: ses başın çevresinden dolaşıp karşı kulağa rahatça ulaşır.',
+      esit: 'Dalga boyu başın genişliğine yakın olduğunda kırınım gerçekleşir; ses başın çevresinde bükülüp dağılır ve karşı kulakta kısmi bir akustik gölge oluşur.',
+      kucuk: 'Dalga boyu başın genişliğinden küçük: baş sesin bir kısmını engeller, karşı kulak gölgede kalır.',
+      azalmaAlcak: 'Ders notuna göre alçak frekanslarda karşı kulakta azalma yaklaşık 3–6 dB.',
+      azalmaYuksek: 'Ders notuna göre yüksek frekanslarda (1500 Hz ve üstü) karşı kulakta azalma yaklaşık 20 dB veya daha fazla.',
+      olcer1: 'Sese yakın kulak (sol)',
+      olcer2: 'Karşı kulak (sağ)',
+      kaynak: 'Ses kaynağı',
+      basEtiket: 'Baş',
+      golgeEtiket: 'gölge',
+      sacilmaEtiket: 'kırınım',
+      canvasEtiketi: 'Baş gölgesi animasyonu: soldaki ses kaynağından çıkan dalgalar üstten görülen başa çarpıyor'
+    }
+  },
   frekanslar: [125, 250, 500, 1000, 2000, 4000, 8000],
   sesDuzeyi: 0.06,   // Web Audio kazancı (0–1); bilerek düşük
   metinler: {
