@@ -1289,14 +1289,14 @@
     { f: 'enerjiNot', ad: 'Enerji dönüşümü açıklaması', cok: true },
     { f: 'modIsitme', ad: 'İşitme düğmesi' }, { f: 'modDenge', ad: 'Denge düğmesi' }, { f: 'adimBasligi', ad: 'Adım başlığı (denge)' }, { f: 'yerEtiketi', ad: 'Yer etiketi (denge)' }, { f: 'yakinlastir', ad: 'Yakınlaştır düğmesi' }, { f: 'basiGoster', ad: 'Başı göster düğmesi' }, { f: 'tumunuOynat', ad: 'Tümünü oynat düğmesi' }, { f: 'tumunuDurdur', ad: 'Tümünü oynat → durdur yazısı' }, { f: 'basaDon', ad: 'Başa dön düğmesi (denge)' },
     { f: 'dengeUyari', ad: 'Uyarı (denge kipinde, modelin altında)', cok: true }];
-  var SL_KUCUK_ALAN = G3D_ALAN.concat([{ f: 'kisa', ad: 'Küçük tuştaki kısa yazı' }, { f: 'ikon', ad: 'Küçük tuştaki simge (emoji)' }]);
+  var SL_KUCUK_ALAN = G3D_ALAN.concat([{ f: 'kisa', ad: 'Küçük tuştaki kısa yazı' }]);
   if (SL) {
     SL.sahneler.forEach(function (b) { b.key = 'sl.sahne.' + b.id; editable(b, ['ad', 'aciklama']); });
     Object.keys(SL.yapilar).forEach(function (k) { SL.yapilar[k].key = 'sl.yapi.' + k; editable(SL.yapilar[k], ['ad', 'aciklama']); });
     // Denge kipi: sahneler sl.denge.<id>, adımlar sl.adim.<sahne>.<adım>
     if (SL.denge) SL.denge.sahneler.forEach(function (s) {
-      s.key = 'sl.denge.' + s.id; editable(s, ['ad', 'aciklama', 'kisa', 'ikon']);
-      s.adimlar.forEach(function (a) { a.key = 'sl.adim.' + s.id + '.' + a.id; editable(a, ['ad', 'aciklama', 'kisa', 'ikon']); });
+      s.key = 'sl.denge.' + s.id; editable(s, ['ad', 'aciklama', 'kisa']);
+      s.adimlar.forEach(function (a) { a.key = 'sl.adim.' + s.id + '.' + a.id; editable(a, ['ad', 'aciklama', 'kisa']); });
     });
     SL.metinler.key = 'sl.metin'; editable(SL.metinler, SL_METIN_ALAN.map(function (a) { return a.f; }));
   }

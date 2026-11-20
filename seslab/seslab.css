@@ -26,7 +26,7 @@
 .sl .sl-mod { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
 .sl .sl-mod[hidden], .sl .sl-adimlar[hidden], .sl .sl-yer[hidden] { display: none; }
 /* Denge kipi (2026-11-20): animasyonun hemen altında küçük tuşlar. Üstte sahne (Otolit | BPPV), altta ▶ + adımlar.
-   Her tuş: simge (emoji) + kısa yazı; tam ad ipucu ve ekran okuyucu için. Yükseklik dokunma kuralı gereği 44 px. */
+   Her tuş: kısa yazı; tam ad ipucu ve ekran okuyucu için. Yükseklik dokunma kuralı gereği 44 px. */
 .sl .sl-denge-bar { display: flex; flex-direction: column; gap: 4px; margin: 6px 0 8px; }
 .sl .sl-denge-bar[hidden] { display: none; }
 .sl .sl-sahne-k { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
@@ -34,9 +34,7 @@
 .sl .sl-adim-satir .sl-adimlar { flex: 1; min-width: 0; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 4px; margin: 0; }
 .sl .sl-k { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; min-width: 0; min-height: 44px;
   padding: 2px 2px; border-radius: 8px; text-align: center; }
-.sl .sl-sahne-k .sl-k { flex-direction: row; gap: 5px; }
-.sl .sl-k-ik { font-size: 17px; line-height: 1; }
-.sl .sl-k-yazi { font: 500 10.5px/1.15 var(--font-body); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sl .sl-k-yazi { font: 500 12px/1.15 var(--font-body); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sl .sl-sahne-k .sl-k-yazi { font-size: 13px; }
 .sl .sl-tum { flex: none; width: 44px; min-height: 44px; padding: 0; border-radius: 8px; border: 1px solid var(--accent); background: var(--accent);
   color: var(--accent-ink); font: 600 15px/1 var(--font-body); cursor: pointer; }
@@ -51,8 +49,22 @@
 .sl .sl-frekans-not { margin: 10px 0 0; font: 500 14px/1.45 var(--font-body); color: var(--ink); }
 .sl .sl-frekans-not[hidden] { display: none; }
 .sl .g3d-bolumler { grid-template-columns: repeat(2, 1fr); }
-.sl .sl-frekanslar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-.sl .sl-frekanslar button { font: 500 14px/1.2 var(--font-mono); padding: 6px 2px; text-align: center; min-height: 44px; }
+/* Frekans sayı doğrusu (2026-11-20): kaydırıcı (yükseklik 44 px) + altında çentikli ölçek. Başparmak genişliği --sl-bp;
+   çentikler başparmağın merkezinin gidebildiği aralığa göre yerleşir. */
+.sl .sl-frdeger { font-family: var(--font-mono); color: var(--accent); }
+.sl .sl-frcizgi { --sl-bp: 26px; position: relative; padding: 0 2px; }
+.sl .sl-frkaydir { display: block; width: 100%; height: 44px; margin: 0; background: transparent; -webkit-appearance: none; appearance: none; cursor: pointer; touch-action: pan-y; }
+.sl .sl-frkaydir:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 8px; }
+.sl .sl-frkaydir::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: var(--line); }
+.sl .sl-frkaydir::-moz-range-track { height: 4px; border-radius: 2px; background: var(--line); }
+.sl .sl-frkaydir::-webkit-slider-thumb { -webkit-appearance: none; width: var(--sl-bp); height: var(--sl-bp); margin-top: calc(2px - var(--sl-bp) / 2); border-radius: 50%;
+  background: var(--accent); border: 3px solid var(--surface); box-shadow: 0 0 0 1px var(--accent); }
+.sl .sl-frkaydir::-moz-range-thumb { width: var(--sl-bp); height: var(--sl-bp); border-radius: 50%; background: var(--accent); border: 3px solid var(--surface); box-shadow: 0 0 0 1px var(--accent); box-sizing: border-box; }
+.sl .sl-frolcek { position: relative; height: 30px; }
+.sl .sl-frolcek span { position: absolute; top: 0; left: calc(var(--sl-bp) / 2 + (100% - var(--sl-bp)) * var(--k)); transform: translateX(-50%);
+  padding: 8px 2px 0; font: 500 12px/1 var(--font-mono); color: var(--muted); cursor: pointer; white-space: nowrap; }
+.sl .sl-frolcek span::before { content: ""; position: absolute; top: 0; left: 50%; width: 1px; height: 6px; background: var(--muted); }
+.sl .sl-frolcek .sl-fr-secili { color: var(--ink); font-weight: 700; }
 
 /* Enerji dönüşümü şeridi: 4 aşama; seçili sahnenin aşamaları renkli, diğerleri soluk. */
 .sl .sl-enerji { margin-top: 4px; }

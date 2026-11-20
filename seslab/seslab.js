@@ -220,7 +220,10 @@
     var enerjiKutu = h('div', 'sl-enerji'), bEn = h('h3', 'g3d-baslik'), enerjiListe = h('ol', 'sl-enerji-liste'), enerjiNot = h('p', 'g3d-not'), enerjiEl = [];
     for (var ei = 0; ei < 4; ei++) { var li = h('li', 'sl-asama sl-asama-' + (ei + 1)), ad = h('strong'), alt = h('span'); li.appendChild(ad); li.appendChild(alt); enerjiListe.appendChild(li); enerjiEl.push(li); }
     enerjiKutu.appendChild(bEn); enerjiKutu.appendChild(enerjiListe); enerjiKutu.appendChild(enerjiNot);
-    var sahBox = h('div', 'g3d-satir g3d-bolumler'), frBox = h('div', 'g3d-satir sl-frekanslar');
+    var sahBox = h('div', 'g3d-satir g3d-bolumler'), frBox = h('div', 'sl-frcizgi');
+    // Frekans (2026-11-20): tuşlar yerine sağa sola çekilen sayı doğrusu; standart frekanslara oturur
+    var frKaydir = h('input', 'sl-frkaydir'), frOlcek = h('div', 'sl-frolcek'), frDeger = h('span', 'sl-frdeger');
+    frKaydir.type = 'range'; frKaydir.min = '0'; frKaydir.step = '1'; frBox.appendChild(frKaydir); frBox.appendChild(frOlcek);
     var sesSatir = h('div', 'sl-ses'), sesBtn = h('button', 'sl-ses-dugme'), sesNot = h('p', 'g3d-not');
     sesBtn.type = 'button'; sesBtn.setAttribute('aria-pressed', 'false');
     sesSatir.appendChild(sesBtn); sesSatir.appendChild(sesNot);
@@ -245,7 +248,7 @@
       donSol.setAttribute('aria-label', M.donSol || 'Başı sola döndür'); donSag.setAttribute('aria-label', M.donSag || 'Başı sağa döndür');
       donSol.title = donSol.getAttribute('aria-label'); donSag.title = donSag.getAttribute('aria-label');
       basaBtn.textContent = M.basaDon || 'Başa dön'; basaBtn.title = M.basaDonUzun || 'Görünümü başlangıç hâline döndür';
-      bSah.textContent = M.sahneBasligi; bFr.textContent = M.frekansBasligi; bGor.textContent = M.gorunumBasligi;
+      bSah.textContent = M.sahneBasligi; bFr.textContent = M.frekansBasligi + ': '; bFr.appendChild(frDeger); frKaydir.setAttribute('aria-label', M.frekansBasligi); bGor.textContent = M.gorunumBasligi;
       sesNot.textContent = M.sesNot;
       bEn.textContent = M.enerjiBaslik || ''; enerjiNot.textContent = M.enerjiNot || '';
       enerjiEl.forEach(function (li, k) { li.firstChild.textContent = M['enerji' + (k + 1) + 'Ad'] || ''; li.lastChild.textContent = M['enerji' + (k + 1) + 'Alt'] || ''; });
@@ -564,10 +567,10 @@
       return [sag[0], sag[1], sag[2], yuk[0], yuk[1], yuk[2], geri[0], geri[1], geri[2]];
     }
     function sahneListesi() { return mod === 'denge' ? DSAH : SAH; }
-    // Küçük tuş: üstte simge (emoji), altında kısa yazı; tam ad ekran okuyucu ve ipucu için
+    // Küçük tuş: kısa yazı; tam ad ekran okuyucu ve ipucu için
+    function frYazi(f) { return f + ' Hz'; }
     function kucukTus(o) {
       var b = h('button', 'sl-k'); b.type = 'button'; b.setAttribute('aria-pressed', 'false');
-      if (o.ikon) b.appendChild(h('span', 'sl-k-ik', o.ikon)).setAttribute('aria-hidden', 'true');
       var y = h('span', 'sl-k-yazi', o.kisa || o.ad); y.setAttribute('aria-hidden', 'true'); b.appendChild(y);
       b.setAttribute('aria-label', o.ad); b.title = o.ad; return b;
     }
@@ -642,7 +645,9 @@
     }
     function setFr(f) {
       frekans = f;
-      frBtns.forEach(function (b) { b.setAttribute('aria-pressed', +b.getAttribute('data-f') === f ? 'true' : 'false'); });
+      var fi = veri.frekanslar.indexOf(f), fy = frYazi(f); if (fi >= 0) frKaydir.value = String(fi);
+      frDeger.textContent = fy; frKaydir.setAttribute('aria-valuetext', fy);
+      frOlcek.querySelectorAll('span').forEach(function (e, k) { e.classList.toggle('sl-fr-secili', k === fi); });
       if (ses) { try { ses.o.frequency.setTargetAtTime(f, ses.ctx.currentTime, 0.02); } catch (e) {} }
       sesYaz(); frekansYaz(); dirty = true;
     }
@@ -732,7 +737,13 @@
       renkleriOku();
 
       sahneDugmeleri();
-      veri.frekanslar.forEach(function (f) { var b = h('button', null, f >= 1000 ? (f / 1000) + ' kHz' : f + ' Hz'); b.type = 'button'; b.setAttribute('data-f', f); b.setAttribute('aria-pressed', 'false'); b.addEventListener('click', function () { setFr(f); }); frBox.appendChild(b); frBtns.push(b); });
+      // Sayı doğrusu: her frekansın çentiği ve kısa yazısı (1k = 1000 Hz); çentiğe dokununca da o frekansa gider
+      var nF = veri.frekanslar.length; frKaydir.max = String(nF - 1);
+      veri.frekanslar.forEach(function (f, k) {
+        var e = h('span', null, f >= 1000 ? (f / 1000) + 'k' : String(f)); e.style.setProperty('--k', nF > 1 ? k / (nF - 1) : 0);
+        e.addEventListener('click', function () { setFr(f); }); frOlcek.appendChild(e);
+      });
+      frKaydir.addEventListener('input', function () { var f = veri.frekanslar[+frKaydir.value]; if (f && f !== frekans) setFr(f); });
       Object.keys(M.gorunumler).forEach(function (v) { var b = h('button', null, M.gorunumler[v]); b.type = 'button'; b.addEventListener('click', function () { if (VIEWS[v]) { R = VIEWS[v].slice(); zoom = 1; auto = false; dirty = true; } }); viewBox.appendChild(b); });
 
       var ptr = {}, moved = 0, pd = 0;
