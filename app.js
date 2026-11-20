@@ -319,12 +319,12 @@
   se('text', { x: 302, y: 16, 'class': 'side-label', 'text-anchor': 'middle' }, rsvg).textContent = 'SOL';
   var REFLEKS_ALAN = [{ f: 'title', ad: 'Başlık' }, { f: 'label', ad: 'Şemadaki ad (en çok 2 satır)', cok: true }, { f: 'latin', ad: 'Latince' },
     { f: 'kol', ad: 'Rozet' }, { f: 'yer', ad: 'Konum', cok: true }, { f: 'islev', ad: 'İşlev', cok: true }, { f: 'klinik', ad: 'Klinik not', cok: true }];
-  function rlabel(t, lines, x, y) {
+  function rlabel(t, lines, x, y, max) {   // max: en çok satır (varsayılan 2; işitsel hafıza kutularında 3)
     t.replaceChildren();
-    lines = lines.slice(0, 2);
+    lines = lines.slice(0, max || 2);
     if (lines.length === 1) { t.textContent = lines[0]; return; }
-    se('tspan', { x: x, y: y - 8 }, t).textContent = lines[0];
-    se('tspan', { x: x, y: y + 8 }, t).textContent = lines[1];
+    var ara = lines.length > 2 ? 14 : 16;
+    lines.forEach(function (l, i) { se('tspan', { x: x, y: y + (i - (lines.length - 1) / 2) * ara }, t).textContent = l; });
   }
   RNODES.forEach(function (n, idx) {
     editable(n, REFLEKS_ALAN.map(function (x) { return x.f; }));
@@ -447,7 +447,7 @@
   }
   function tyaz(k) {
     var n = k.n;
-    rlabel(k.t, Array.isArray(n.ad) ? n.ad : [String(n.ad)], k.cx, k.cy);
+    rlabel(k.t, Array.isArray(n.ad) ? n.ad : [String(n.ad)], k.cx, k.cy, k.max);
     k.g.setAttribute('aria-label', (Array.isArray(n.ad) ? n.ad.join(' ') : n.ad) + ': ayrıntı');
   }
   function tsec(o, id) {
@@ -516,20 +516,22 @@
   var TB = sema('tarama-b', 'tb', TB_K, TB_C, ['degb', 'yb1', 'yb2', 'yb3', 'b1', 'b2', 'bt', 'gecti', 'kaldi', 'risksevk', 'referans'], 'yb1', 'detail-tb');
 
   /* ---------- işitsel hafıza: Atkinson ve Shiffrin (1968) bellek modeli ----------
-     Proje sahibinin ders slaytına (ham-gorseller/isitsel-hafiza/) bakılarak telefona göre dikey olarak yeniden çizildi; slayt uygulamaya konmadı.
+     Proje sahibinin ders slaytına (ham-gorseller/isitsel-hafiza/) bakılarak slayttaki gibi soldan sağa yeniden çizildi; slayt uygulamaya konmadı.
      Metinler taslaktır; proje sahibi doğrular ve uygulamadan düzeltir (icerik/hafiza.<id>).
      Renk dili: bellek depoları ana renkle, süreçler (dikkat, tekrarlama, aktarım, geri çağırma) yuvarlak, bozulma gri. */
   var HNODES = {
-    uyaran: { ad: ['Uyaran', 'frekans · şiddet · süre'], baslik: 'Uyaran', zaman: '',
+    uyaran: { ad: ['Uyaran'], baslik: 'Uyaran', zaman: '',
       aciklama: 'Kulağa ulaşan işitsel uyaran; frekansı, şiddeti ve süresiyle birlikte ekoik belleğe girer.', not: '' },
-    ekoik: { ad: ['Ekoik bellek', '(≈250 ms)'], baslik: 'Ekoik bellek (işitsel duyusal bellek)', zaman: 'yaklaşık 250 ms',
+    ozellik: { ad: ['Frekans', 'Şiddet', 'Süre'], baslik: 'Uyaranın özellikleri', zaman: '',
+      aciklama: 'İşitsel uyaran frekansı, şiddeti ve süresiyle tanımlanır; ekoik bellek bu özellikleri kısa bir süre ham hâliyle tutar.', not: '' },
+    ekoik: { ad: ['Ekoik', 'bellek', '(≈250 ms)'], baslik: 'Ekoik bellek (işitsel duyusal bellek)', zaman: 'yaklaşık 250 ms',
       aciklama: 'Duyulan ses çok kısa bir süre ham hâliyle burada tutulur. Dikkat edilen bilgi kısa süreli belleğe geçer, edilmeyen bozulur.',
       not: 'Ekoik belleğin süresi kaynaklara göre farklı verilir (birkaç yüz milisaniyeden birkaç saniyeye kadar). Burada slayttaki değer kullanıldı.' },
     bozulma1: { ad: ['Bozulma'], baslik: 'Bozulma (ekoik bellek)', zaman: '',
       aciklama: 'İşitsel dikkat olmadığında ileri işlemleme gerçekleşmez; bilgi ekoik bellekten silinir.', not: '' },
     dikkat: { ad: ['Dikkat'], baslik: 'Dikkat', zaman: '',
       aciklama: 'Ekoik bellekteki bilginin kısa süreli belleğe geçebilmesi için dikkat gerekir.', not: '' },
-    ksb: { ad: ['Kısa süreli bellek', '(≈30 sn)'], baslik: 'Kısa süreli bellek', zaman: 'yaklaşık 30 sn',
+    ksb: { ad: ['Kısa süreli', 'bellek', '(≈30 sn)'], baslik: 'Kısa süreli bellek', zaman: 'yaklaşık 30 sn',
       aciklama: 'Dikkat edilen bilginin geçici olarak tutulduğu bellek. Tekrarlanan bilgi burada kalır; kodlanan bilgi uzun süreli belleğe aktarılır.',
       not: 'Süre ve kapasite değerleri kaynaklara göre farklı verilir.' },
     tekrar: { ad: ['Tekrarlama'], baslik: 'Tekrarlama', zaman: '',
@@ -540,27 +542,28 @@
       aciklama: 'Kodlanan bilgi kısa süreli bellekten uzun süreli belleğe aktarılır.', not: '' },
     geri: { ad: ['Geri çağırma'], baslik: 'Geri çağırma', zaman: '',
       aciklama: 'Uzun süreli bellekteki bilgi gerektiğinde kısa süreli belleğe geri getirilir.', not: '' },
-    uzb: { ad: ['Uzun süreli bellek', '(sınırsız)'], baslik: 'Uzun süreli bellek', zaman: '',
+    uzb: { ad: ['Uzun süreli', 'bellek', '(sınırsız)'], baslik: 'Uzun süreli bellek', zaman: '',
       aciklama: 'Bilginin kalıcı olarak depolandığı bellek; kapasitesi sınırsız kabul edilir.', not: '' }
   };
-  var HAFIZA_ALAN = [{ f: 'ad', ad: 'Şemadaki ad (en çok 2 satır)', cok: true }, { f: 'baslik', ad: 'Kart başlığı' }, { f: 'zaman', ad: 'Süre' },
+  var HAFIZA_ALAN = [{ f: 'ad', ad: 'Şemadaki ad (en çok 3 satır)', cok: true }, { f: 'baslik', ad: 'Kart başlığı' }, { f: 'zaman', ad: 'Süre' },
     { f: 'aciklama', ad: 'Açıklama', cok: true }, { f: 'not', ad: 'Not', cok: true }];
   Object.keys(HNODES).forEach(function (id) { var n = HNODES[id]; n.id = id; n.key = 'hafiza.' + id; n._kutular = []; editable(n, HAFIZA_ALAN.map(function (x) { return x.f; })); });
-  // Dikey düzen: ana sütun (x 175) uyaran → ekoik → dikkat → kısa süreli → aktarım/geri çağırma → uzun süreli; sağda bozulma, solda tekrarlama döngüsü.
+  // Soldan sağa düzen (slayttaki gibi): uyaran → ekoik → kısa süreli ⇄ uzun süreli, tek satırda (y 150). Süreç adları okların üstünde
+  // (dikkat, aktarım) ya da altında (geri çağırma); tekrarlama döngüsü kısa süreli belleğin üstünde, bozulma bellek kutularının altında.
+  function T3(id, cx, cy, w, hh, tur) { var k = T(id, cx, cy, w, hh, tur); k.max = 3; return k; }
   var HF = sema('hafiza', 'hf', [
-    T('uyaran', 175, 30, 200, 44, 'grup'),
-    T('ekoik', 175, 115, 140, 56, 'bellek'), T('bozulma1', 310, 115, 80, 40, 'bozulma'),
-    T('dikkat', 175, 180, 96, 32, 'surec'),
-    T('ksb', 175, 255, 140, 56, 'bellek'), T('bozulma2', 310, 255, 80, 40, 'bozulma'), T('tekrar', 50, 255, 88, 32, 'surec'),
-    T('aktarim', 145, 325, 90, 32, 'surec'), T('geri', 215, 365, 108, 32, 'surec'),
-    T('uzb', 175, 428, 160, 56, 'bellek')
+    T('uyaran', 30, 120, 54, 28, 'grup'), T3('ozellik', 30, 192, 56, 52, 'etiket'),
+    T3('ekoik', 100, 150, 82, 70, 'bellek'), T3('ksb', 210, 150, 82, 70, 'bellek'), T3('uzb', 314, 150, 82, 70, 'bellek'),
+    T('dikkat', 155, 98, 60, 28, 'surec'), T('aktarim', 262, 98, 64, 28, 'surec'), T('geri', 262, 205, 92, 28, 'surec'),
+    T('tekrar', 210, 38, 92, 28, 'surec'),
+    T('bozulma1', 100, 253, 82, 34, 'bozulma'), T('bozulma2', 190, 253, 82, 34, 'bozulma')
   ], [
-    { p: [[175, 52], [175, 87]], ok: 1 }, { p: [[245, 115], [270, 115]], ok: 1 },
-    { p: [[175, 143], [175, 164]], ok: 1 }, { p: [[175, 196], [175, 227]], ok: 1 }, { p: [[245, 255], [270, 255]], ok: 1 },
-    { p: [[115, 227], [115, 212], [50, 212], [50, 239]], ok: 1 }, { p: [[50, 271], [50, 297], [125, 297], [125, 283]], ok: 1 },   // tekrarlama döngüsü
-    { p: [[145, 283], [145, 309]] }, { p: [[145, 341], [145, 400]], ok: 1 },                                                    // aktarım
-    { p: [[215, 400], [215, 381]] }, { p: [[215, 349], [215, 283]], ok: 1 }                                                     // geri çağırma
-  ], ['uyaran', 'ekoik', 'bozulma1', 'dikkat', 'ksb', 'tekrar', 'bozulma2', 'aktarim', 'uzb', 'geri'], 'ekoik', 'detail-hf', HNODES, HAFIZA_ALAN, 'Süre: ');
+    { p: [[4, 150], [59, 150]], ok: 1 },                                              // uyaran → ekoik
+    { p: [[141, 150], [169, 150]], ok: 1 },                                           // dikkat: ekoik → kısa süreli
+    { p: [[251, 142], [273, 142]], ok: 1 }, { p: [[273, 160], [251, 160]], ok: 1 },   // aktarım / geri çağırma
+    { p: [[196, 115], [196, 52]], ok: 1 }, { p: [[224, 52], [224, 115]], ok: 1 },     // tekrarlama döngüsü
+    { p: [[100, 185], [100, 236]], ok: 1 }, { p: [[190, 185], [190, 236]], ok: 1 }    // bozulma
+  ], ['uyaran', 'ozellik', 'ekoik', 'bozulma1', 'dikkat', 'ksb', 'tekrar', 'bozulma2', 'aktarim', 'uzb', 'geri'], 'ekoik', 'detail-hf', HNODES, HAFIZA_ALAN, 'Süre: ');
 
   function refreshTarama() {
     Object.keys(TNODES).forEach(function (id) { var n = TNODES[id]; applyOv(n.key, n); n._kutular.forEach(tyaz); });
