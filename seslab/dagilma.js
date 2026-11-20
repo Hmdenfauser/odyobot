@@ -80,22 +80,10 @@
         yazi(x, M.kaynak, S.x, S.y - 20); x.textAlign = 'right'; yazi(x, M.duvar, wx - 8, E.y + 10); x.textAlign = 'center'; yazi(x, M.bina, (B.x0 + B.x1) / 2, B.y0 - 10);
         if (sinifAd === 'kucuk') { x.textAlign = 'left'; x.fillStyle = c.soluk; yazi(x, M.golgeEtiket, wx + 10, yer - 12); }
         if (sinifAd === 'esit') {
-          // Kısmi akustik gölge: duvarın arkasında, kaynaktan duvarın tepesine giden çizginin altında kalan bölge.
-          // Siyah, hafif saydam çizgili alan + turuncu kesik sınır çizgisi (slayttaki taralı "ses gölgesi" gibi), dalgalar altından görünür.
-          var gx = wx + kal / 2, yL = E.y + (B.x0 - E.x) * SEy / SEx;
-          x.save();
-          x.beginPath(); x.moveTo(gx, E.y); x.lineTo(B.x0, yL); x.lineTo(B.x0, yer); x.lineTo(gx, yer); x.closePath();
-          x.globalAlpha = 0.10; x.fillStyle = c.tarama; x.fill();
-          x.clip(); x.globalAlpha = 0.45; x.strokeStyle = c.tarama; x.lineWidth = 1.5; x.beginPath();
-          for (var k = -yer; k < W; k += 8) { x.moveTo(gx + k, yer); x.lineTo(gx + k + (yer - E.y + 60), E.y - 60); }
-          x.stroke(); x.restore();
-          x.save(); x.strokeStyle = c.vurgu; x.lineWidth = 2; x.setLineDash([6, 4]);
-          x.beginPath(); x.moveTo(E.x, E.y); x.lineTo(B.x0, yL); x.stroke(); x.restore();
+          // Kırınım: duvarın tepesinde turuncu halka; kısmi gölge yazısı diğer frekanslardaki "ses gölgesi" ile aynı yerde ve tonda.
           x.strokeStyle = c.vurgu; x.lineWidth = 2; x.beginPath(); x.arc(E.x, E.y, 7, 0, 2 * Math.PI); x.stroke();
-          x.fillStyle = c.yazi; x.textAlign = 'left'; yazi(x, M.sacilmaEtiket, E.x + 12, E.y - 12);
-          x.font = '600 12px "IBM Plex Sans", sans-serif'; x.textAlign = 'center';
-          yazi(x, M.kismiGolgeEtiket, (gx + B.x0) / 2, yer - 14);
-          x.font = '500 12px "IBM Plex Sans", sans-serif';
+          x.fillStyle = c.yazi; x.textAlign = 'left'; yazi(x, M.sacilmaEtiket, E.x + 12, E.y - 2);
+          x.fillStyle = c.soluk; yazi(x, M.kismiGolgeEtiket, wx + 10, yer - 12);
         }
       },
       olcum: function (f) { return 1 - duvarZayiflama(f); },
@@ -185,7 +173,7 @@
     function renkOku() {
       var st = getComputedStyle(kap), v = function (n) { return st.getPropertyValue(n).trim(); };
       renk = { zemin: rgb(v('--surface')), dalga: rgb(v('--sl-g-dalga')), golge: rgb(v('--sl-g-golge')), zeminCss: v('--surface'),
-        bas: v('--sl-g-bas'), basKenar: v('--sl-g-bas-kenar'), sol: v('--left'), sag: v('--right'), yazi: v('--ink'), soluk: v('--muted'), vurgu: v('--sl-g-vurgu'), tarama: v('--sl-g-tarama') };
+        bas: v('--sl-g-bas'), basKenar: v('--sl-g-bas-kenar'), sol: v('--left'), sag: v('--right'), yazi: v('--ink'), soluk: v('--muted'), vurgu: v('--sl-g-vurgu') };
     }
 
     // ---- dalga alanı: küçük ızgarada hesaplanır, büyütülerek çizilir
