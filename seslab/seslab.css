@@ -15,6 +15,9 @@
 :root[data-theme="dark"] .sl { --sl-tepe: #FF6FA3; --sl-cukur: #7FA6FF; --sl-elektrik: #C49BFF; --sl-otolit: #FFB040; --sl-kristal: #FF9A3C; }
 
 .sl .sl-oynat { left: 8px; top: 8px; }
+/* İşitme: Koklea'ya otomatik geçişten sonra önceki sahneye dönüş (sağ altta; sol altta ölçek çubuğu var) */
+.sl .sl-sahne-don { left: auto; top: auto; right: 8px; bottom: 8px; min-height: 44px; }
+.sl .sl-sahne-don[hidden] { display: none; }
 .sl .sl-oynat[hidden], .sl .sl-don[hidden] { display: none; }
 /* Denge: başı döndürme ve başa dön (modelin sağ altında, küçük) */
 .sl .sl-don { position: absolute; right: 8px; bottom: 30px; display: flex; gap: 6px; z-index: 1; }

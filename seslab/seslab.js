@@ -211,7 +211,10 @@
     var yerEt = h('div', 'sl-yer'), yakinBtn = h('button', 'g3d-geri sl-yakin'); yerEt.hidden = true; yakinBtn.hidden = true; yakinBtn.type = 'button';
     var donBox = h('div', 'sl-don'), donSol = h('button', 'sl-don-tus', '↺'), donSag = h('button', 'sl-don-tus', '↻'), basaBtn = h('button', 'sl-don-tus sl-basa');
     [donSol, donSag, basaBtn].forEach(function (b) { b.type = 'button'; donBox.appendChild(b); }); donBox.hidden = true;
-    sahne.appendChild(cv); sahne.appendChild(yerEt); sahne.appendChild(yakinBtn); sahne.appendChild(donBox); sahne.appendChild(neresi); sahne.appendChild(olcek); sahne.appendChild(oynatBtn); sahne.appendChild(durum);
+    // İşitme (2026-11-20): frekans çubuğuna dokununca Koklea'ya otomatik geçilir; geri dönmek için sağ altta önceki sahnenin adıyla düğme.
+    // Yalnızca otomatik geçişten sonra görünür; başka bir sahne seçilince ya da kip değişince kaybolur.
+    var donusSah = null, donusBtn = h('button', 'g3d-geri sl-sahne-don'); donusBtn.type = 'button'; donusBtn.hidden = true;
+    sahne.appendChild(cv); sahne.appendChild(yerEt); sahne.appendChild(yakinBtn); sahne.appendChild(donBox); sahne.appendChild(neresi); sahne.appendChild(olcek); sahne.appendChild(oynatBtn); sahne.appendChild(donusBtn); sahne.appendChild(durum);
     var uyari = h('p', 'g3d-not g3d-ipucu sl-uyari');
     var kart = h('div', 'g3d-kart'), nmEl = h('h4'), dsEl = h('p'), frEl = h('p', 'sl-frekans-not'), yuva = h('div', 'g3d-kart-ek');
     kart.setAttribute('aria-live', 'polite');
@@ -338,8 +341,10 @@
       if (sel === id) return { c: c, a: 1, duz: 0 };
       if (yari && mod === 'denge') {
         if (dsah && dsah.tip === 'makula' && !uzak) return { c: c, a: 0.08, duz: 0.6 };   // makulaya yakınken çevre yapılar ekranı kaplamasın
-        if (id === 'post' && dsah && dsah.tip === 'bppv') return { c: c, a: 0.62, duz: 0.15 };
-        if (KANAL.indexOf(id) >= 0) return { c: c, a: 0.45, duz: 0.2 };
+        // 2026-11-20: kanallar silikleşiyordu (proje sahibi). Opaklık artırıldı; ayrıca silik baş artık kanallardan önce çizilir (bkz. cizimSirasi).
+        // Kristaller ve makulalar 3. geçişte en üstte çizildiği için kanal opak olsa da görünür kalır.
+        if (id === 'post' && dsah && dsah.tip === 'bppv') return { c: c, a: 0.82, duz: 0.15 };
+        if (KANAL.indexOf(id) >= 0) return { c: c, a: 0.85, duz: 0.2 };
         return { c: c, a: 0.18, duz: 0.4 };
       }
       if (yari) return { c: c, a: 0.28, duz: 0.4 };
@@ -371,6 +376,13 @@
     }
     var KRISTAL_SAYI = 12, BIRIM_3 = [1, 0, 0, 0, 1, 0, 0, 0, 1];
     var ODAK = /^(kristal|utr_|sak_)/;   // denge kipinde en üstte çizilenler
+    // Yarı saydam geçişte çizim sırası: önce silik baş, sonra diğer yapılar, en son kanallar. Derinlik yazılmadığı için sonra çizilen
+    // üstte kalır; baş en sona kalınca ten rengi yüzeyi kanalların üstüne binip onları soluklaştırıyordu (2026-11-20 düzeltmesi).
+    function cizimSirasi() {
+      var bas = [], orta = [], kanal = [];
+      ORDER.forEach(function (id) { (grup(id) === 'bas' ? bas : KANAL.indexOf(id) >= 0 ? kanal : orta).push(id); });
+      return bas.concat(orta, kanal);
+    }
     var KANAL = ['ant', 'post', 'lat', 'crus', 'amp'];
     // Utrikulusa dönen kristaller orada küçük bir küme olarak durur
     function makulaKaymasi(q, iv) {
@@ -441,11 +453,12 @@
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
       var pass, id, st, p, tur;
       // Geçiş 0: opak, 1: yarı saydam, 2 (yalnızca denge): odak parçaları (kristaller, makulalar) en üstte, soluklaşmasın diye.
+      var SIRA = cizimSirasi();
       for (pass = 0; pass < 3; pass++) {
         if (pass === 1) { gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false); }
         if (pass === 2) { if (mod !== 'denge') break; gl.disable(gl.BLEND); gl.depthMask(true); gl.clear(gl.DEPTH_BUFFER_BIT); }
-        for (k = 0; k < ORDER.length; k++) {
-          id = ORDER[k]; st = style(id); if (!st) continue;
+        for (k = 0; k < SIRA.length; k++) {
+          id = SIRA[k]; st = style(id); if (!st) continue;
           var odak = mod === 'denge' && ODAK.test(id);
           if (pass === 2 ? !odak : (odak || (st.a < 1) !== (pass === 1))) continue;
           p = PART[id];
@@ -574,8 +587,16 @@
     function kokleayaGec() {
       if (!hazir || mod !== 'isitme') return;
       var k = SAH.filter(function (x) { return x.id === 'koklea'; })[0];
-      if (k && sah !== k) setSah(k);
+      if (k && sah !== k) { var once = sah; setSah(k); donusSah = once; donusYaz(); }
     }
+    function donusYaz() {
+      var on = !!donusSah && mod === 'isitme';
+      donusBtn.hidden = !on; if (!on) return;
+      var ad = donusSah.ad;
+      donusBtn.textContent = (M.oncekiSahne || '← {ad}').replace('{ad}', ad);
+      donusBtn.setAttribute('aria-label', (M.oncekiSahneUzun || 'Önceki sahneye dön: {ad}').replace('{ad}', ad));
+    }
+    donusBtn.addEventListener('click', function () { var s = donusSah; donusSah = null; if (s) setSah(s); donusYaz(); });
     function kucukTus(o) {
       var b = h('button', 'sl-k'); b.type = 'button'; b.setAttribute('aria-pressed', 'false');
       var y = h('span', 'sl-k-yazi', o.kisa || o.ad); y.setAttribute('aria-hidden', 'true'); b.appendChild(y);
@@ -648,6 +669,7 @@
     bAdim.hidden = true; adimBox.hidden = true;
     function setSah(s) {
       sah = s; sel = null;
+      if (donusSah) { donusSah = null; donusYaz(); }   // elle seçilen sahne dönüş düğmesini kaldırır (kokleayaGec sonra yeniden kurar)
       if (mod === 'denge') { dsah = s; adimDugmeleri(); if (oto) otoDurdur(); }
       else if (s.gorunum === 'eksen') R = eksenBakis(); else if (VIEWS[s.gorunum]) R = VIEWS[s.gorunum].slice();
       sahBtns.forEach(function (b, k) { b.setAttribute('aria-pressed', sahneListesi()[k] === s ? 'true' : 'false'); });
@@ -799,7 +821,7 @@
         metinler(); if (!hazir) return; renkleriOku();
         sahneDugmeleri(); sahBtns.forEach(function (b, k) { b.setAttribute('aria-pressed', sahneListesi()[k] === sah ? 'true' : 'false'); });
         if (dsah) { adimDugmeleri(); adimBtns.forEach(function (b, k) { b.setAttribute('aria-pressed', k === adimI ? 'true' : 'false'); }); }
-        sesYaz(); oynatYaz(); tumYaz(); card(); dirty = true;
+        sesYaz(); oynatYaz(); tumYaz(); donusYaz(); card(); dirty = true;
       },
       kip: function (m) { istenenKip = m; if (hazir) setMod(m); },   // sayfanın seçim ekranından: 'isitme' / 'denge'
       durdur: function () { sesKapat(); if (oto) otoDurdur(); },   // sayfadan çıkınca ses kesilir

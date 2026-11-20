@@ -126,6 +126,8 @@ window.SESLAB_VERI = {
     frekansBasligi: 'Frekans',
     gorunumBasligi: 'Görünüm',
     gorunumler: { lat: 'Lateralden', med: 'Medialden', ust: 'Üstten', on: 'Önden', arka: 'Arkadan' },
+    oncekiSahne: '← {ad}',
+    oncekiSahneUzun: 'Önceki sahneye dön: {ad}',
     sesCal: 'Sesi çal',
     sesDurdur: 'Sesi durdur',
     sesYok: 'Bu tarayıcı ses çalamıyor.',
