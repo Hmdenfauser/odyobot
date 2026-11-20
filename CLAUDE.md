@@ -51,7 +51,24 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 - Alt çubuk sırası: Ana sayfa, Görsel depo, OdyoBOT, Vakalarım, Notlar.
 - Odyogram çıktısı (`cikti.js`), Vakalarım → OdyoBOT gönderme, düğmeli sohbet (`odybot.js`). sw v12. Ayrıntı: `PROGRESS.md`.
 
-### KALDIĞIMIZ YER (2026-11-18 akşam) — oturum başında bunu özetle
+### KALDIĞIMIZ YER (2026-11-20) — oturum başında bunu özetle
+**Durum:** Yayında, son sürüm **sw v36** (main; dal `seslab-secim` birleşti). Önceki yayının yedeği git etiketi `yedek-yayin-v35` (GitHub'da). Bekleyen kod değişikliği yok.
+**v36 (2026-11-20) — Ses laboratuvarı düzeni (proje sahibinin isteği):**
+- Girişte **İşitme / Denge seçim ekranı** (`#seslab`, `#sl-secim`, yazılar `sl.secim.*` düzenlenebilir). Seçilince ekran gizlenir, laboratuvar açılır: `#seslab/isitme`, `#seslab/denge`; başlığın sağında kip adı (`#sl-kip-ad`). Geri oku/telefon geri tuşu: önce seçim ekranı, sonra ana sayfa. Üstteki eski İşitme | Denge geçişi kaldırıldı. Model ilk seçimde iner.
+- **Denge:** sahne tuşları (Otolit · BPPV–Epley) ve adım tuşları animasyonun hemen altında, küçük, yalnızca kısa yazı (`kisa` alanı, yönetici düzenler). **Emoji denendi, proje sahibi beğenmedi, kaldırıldı.** Yükseklik 44 px (dokunma kuralı).
+- **Tümünü oynat** artık ▶ / ❚❚ Duraklat / ▶ Devam et (kaldığı yerden; duraklatınca baş ve kristaller durur). Elle seçilen adımdan başlar; son adımdaysa baştan. Yazılar `sl.metin` tumunuOynat, tumunuDurdur, devamEt.
+- **İşitme:** frekans tuşları yerine **sürüklenebilen sayı doğrusu** (125–8k çentikleri, standart frekanslara oturur; çentiğe dokununca da gider), "Frekans: … Hz" başlıkta. Sayı doğrusu + Sesi çal animasyonun hemen altında. Çubuğa dokununca otomatik **Koklea** sahnesine geçer.
+**Oturum başında hatırlat (sırayla):**
+1. **Telefonda denenecekler (v33–v36, hiç telefonda denenmedi):** uygulamayı kapatıp açınca v36 gelmeli; Ses laboratuvarı seçim ekranı ve geri tuşu; frekans çubuğunu parmakla sürükleme (sayfa kaymadan çalışıyor mu) ve Koklea'ya geçiş; Sesi çal; Denge: küçük tuşlar, Duraklat/Devam et, ↺ ↻ Başa dön, Başı göster/Yakınlaştır, otolit tanelerinin görünürlüğü; sözlük kartlarını parmakla atma; hızlı erişim simgeleri.
+2. **İlk terimleri ekle** (Terimler sözlüğü, yönetici). Gerçek veritabanına yazma hiç denenmedi; ilk eklemede birlikte kontrol et.
+3. **Klinik doğrulama (taslak metinler):** Ses laboratuvarı sahne metinleri ve frekans notu; Denge: Dix-Hallpike/Epley açıları ve adımları, nistagmus tarifi, makula açıklamaları. Bilinen sadeleştirmeler: kristaller utrikulusa 3. adımda geçiyor, baş şematik, bekleme süreleri kısaltıldı.
+4. **2026-11-17'den kalan, telefonda denenmemiş:** eşik tablosu (iPhone klavyesi Maskeli/Yanıt yok/Sonraki düğmelerini kapatıyor mu), Timpanometri/Refleks/OAE/ABR panelleri, ABR fotoğrafı (kamera, galeriye düşüyor mu), Yedeği paylaş, OdyoBOT görev seçimi ve refleks yorumu. Doğrulama: refleks yorumu metinleri, OAE frekansları/6 dB ölçütü, timpanogram tip sınırları.
+5. **Bekleyen içerik işleri:** cihaz kartlarının açıklamaları; yenidoğan taraması taslak metinleri; "Araştırma aşamasında" rozeti; şüpheli eski cihaz fotoğrafları (ITE tam/yarım konka, ITC); 3D model klinik metinleri.
+6. **Sıradaki büyük iş proje sahibinin kararı** (YOL-HARITASI.md): ör. koklea kesiti şeması (Corti organı; parça listesi onayı + referans görsel bekleniyor), test soruları, mağaza paketi. Açık sorular §10: 7, 11, 12, 13.
+7. **Temizlik:** yayına giren eski dallar (`adim3-seslab`, `sozluk`, `kisayol-cihaz`, `denge-gorunurluk`, `denge-duzenleme`, `seslab-secim`) ve gereksiz `sozluk-yedek` proje sahibi onaylarsa silinir.
+**Önizleme yöntemi (2026-11-20):** yerel sunucu (`node sunucu.js`, port 8765, geçici klasörde) + varsayılan tarayıcı (`Start-Process http://127.0.0.1:8765/#seslab`). Ayrı profilli Edge `--app` penceresinde animasyon görünmedi; onu kullanma.
+
+### Önceki: KALDIĞIMIZ YER (2026-11-18 akşam)
 **Durum:** Yayında, son sürüm **sw v35** (main; v33 + Denge görünürlük düzeltmesi v34 + Denge düzenleme v35). Önceki yayınların yedeği git etiketleri `yedek-yayin-v32`, `-v33`, `-v34` (GitHub'da).
 **v34 düzeltmesi (2026-11-18, proje sahibi: "kristaller ve kanallar silik", telefon + bilgisayar):** kristaller ve otolitler belirgin turuncu (`--sl-kristal`, `--sl-otolit`, koyu temada açık turuncu); kristaller ve makulalar en son, derinlik temizlenip her şeyin üstünde çizilir (`ODAK`, 3. geçiş); denge kipinde kanallar %45, BPPV'de posterior kanal %62 opak; vestibül %18; silik baş %10; makulaya yakınken çevre yapılar %8. Bu yayında üç bağımsız iş birleşti (her biri kendi dalında yapıldı: `adim3-seslab`, `sozluk`, `kisayol-cihaz`; birleşik deneme dalı `onizleme-birlesik`). Eski `sozluk-yedek` dalı artık gereksiz, silinebilir.
 **Ana sayfa hızlı erişimi:** Yeni vaka · **Ses laboratuvarı** (OdyoBOT asistanı yerine; simge ABR dalga formu, V. dalganın üstünde "V") · **Terimler sözlüğü** (Ders notları yerine; simge bilgi kartı, soru işaretli) · **Cihazlar** (simge kulak arkası işitme cihazı). OdyoBOT'a alt çubuktaki logodan, ders notlarına Notlar sekmesinden girilir.
