@@ -131,8 +131,10 @@
     var kap = el('div', { 'class': 'sl sl-golge' });
     var sahneTus = el('div', { 'class': 'sl-g-sahneler', role: 'group' });
     var cv = el('canvas', { 'class': 'sl-g-tuval', role: 'img' });
-    var oynat = el('button', { type: 'button', 'class': 'sl-g-oynat' });
-    var cerceve = el('div', { 'class': 'sl-g-sahne' }, [cv, oynat]);
+    // Oynat/duraklat: İşitme'deki gibi sağ altta yalnızca simgeli yuvarlak düğme; yazı ipucunda (seslab/ipucu.js)
+    var IP = window.SesLabIpucu, oynat = el('button', { type: 'button', 'class': 'sl-yuv' });
+    var cerceve = el('div', { 'class': 'sl-g-sahne' }, [cv, el('div', { 'class': 'sl-sag-alt' }, [oynat])]);
+    var oynatIp = IP ? IP.bagla(oynat, function () { return oynuyor ? veri.metinler.duraklat : veri.metinler.oynat; }) : null;
     // Frekans: İşitme kipindeki gibi sağa sola çekilen sayı doğrusu (seslab.css → .sl-frcizgi); standart frekanslara oturur,
     // çentiğe dokununca da o frekansa gider. Çentikler sahne değişince o sahnenin frekanslarına göre yeniden dizilir.
     var frDeger = el('span', { 'class': 'sl-frdeger' }), frBaslik = el('h3', { 'class': 'g3d-baslik' });
@@ -240,8 +242,8 @@
       }
       frKaydir.value = String(fi); frKaydir.setAttribute('aria-label', O.frekansBasligi); frKaydir.setAttribute('aria-valuetext', f + ' Hz');
       frOlcek.querySelectorAll('span').forEach(function (e, k) { e.classList.toggle('sl-fr-secili', k === fi); });
-      oynat.textContent = oynuyor ? '❚❚' : '▶';
-      oynat.setAttribute('aria-label', oynuyor ? veri.metinler.duraklat : veri.metinler.oynat);
+      if (IP) IP.simge(oynat, oynuyor ? 'duraklat' : 'oynat'); else oynat.textContent = oynuyor ? '❚❚' : '▶';
+      if (oynatIp) oynatIp.yenile(); else oynat.setAttribute('aria-label', oynuyor ? veri.metinler.duraklat : veri.metinler.oynat);
       frDeger.textContent = f + ' Hz'; frBaslik.textContent = O.frekansBasligi + ': '; frBaslik.appendChild(frDeger);
       bilgi.textContent = O.dalgaBoyu + ': ' + uzunlukYaz(lam) + ' · ' + m.engelAdi + ': ≈' + Math.round(sahne.engel * 100) + ' cm';
       durum.textContent = m[s];

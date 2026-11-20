@@ -206,15 +206,21 @@
     var neresi = h('div', 'g3d-etiket g3d-sagust'), olcek = h('div', 'g3d-etiket g3d-solalt'), cubuk = h('span', 'g3d-cubuk'), olcekYazi = h('span', null, M.olcek);
     olcek.appendChild(cubuk); olcek.appendChild(olcekYazi); olcek.hidden = true;
     var durum = h('p', 'g3d-durum', M.indiriliyor); durum.setAttribute('role', 'status');
-    var oynatBtn = h('button', 'g3d-geri sl-oynat'); oynatBtn.type = 'button';
+    // Sağ alt köşe (2026-11-20, proje sahibinin isteği): yalnızca simgeli yuvarlak düğmeler; yazı ipucunda (fareyle üzerine gelince / uzun basınca).
+    var IP = window.SesLabIpucu, sagAlt = h('div', 'sl-sag-alt');
+    var oynatBtn = h('button', 'sl-yuv sl-oynat'); oynatBtn.type = 'button';
     // Denge kipi: "Yer" çizgisi ve uzak/yakın görünüm düğmesi
     var yerEt = h('div', 'sl-yer'), yakinBtn = h('button', 'g3d-geri sl-yakin'); yerEt.hidden = true; yakinBtn.hidden = true; yakinBtn.type = 'button';
     var donBox = h('div', 'sl-don'), donSol = h('button', 'sl-don-tus', '↺'), donSag = h('button', 'sl-don-tus', '↻'), basaBtn = h('button', 'sl-don-tus sl-basa');
     [donSol, donSag, basaBtn].forEach(function (b) { b.type = 'button'; donBox.appendChild(b); }); donBox.hidden = true;
-    // İşitme (2026-11-20): frekans çubuğuna dokununca Koklea'ya otomatik geçilir; geri dönmek için sağ altta önceki sahnenin adıyla düğme.
-    // Yalnızca otomatik geçişten sonra görünür; başka bir sahne seçilince ya da kip değişince kaybolur.
-    var donusSah = null, donusBtn = h('button', 'g3d-geri sl-sahne-don'); donusBtn.type = 'button'; donusBtn.hidden = true;
-    sahne.appendChild(cv); sahne.appendChild(yerEt); sahne.appendChild(yakinBtn); sahne.appendChild(donBox); sahne.appendChild(neresi); sahne.appendChild(olcek); sahne.appendChild(oynatBtn); sahne.appendChild(donusBtn); sahne.appendChild(durum);
+    // İşitme: genel görünüm (Ses yolculuğu) düğmesi; simgesi çevresel işitme sisteminin sadeleştirilmiş çizimi.
+    // Ses yolculuğu dışındaki her sahnede görünür (frekans çubuğuyla Koklea'ya otomatik geçince de).
+    var donusBtn = h('button', 'sl-yuv sl-sahne-don'); donusBtn.type = 'button'; donusBtn.hidden = true;
+    if (IP) IP.simge(donusBtn, 'genel');
+    sagAlt.appendChild(donusBtn); sagAlt.appendChild(oynatBtn);
+    sahne.appendChild(cv); sahne.appendChild(yerEt); sahne.appendChild(yakinBtn); sahne.appendChild(donBox); sahne.appendChild(neresi); sahne.appendChild(olcek); sahne.appendChild(sagAlt); sahne.appendChild(durum);
+    var oynatIp = IP ? IP.bagla(oynatBtn, function () { return oynuyor ? M.duraklat : M.oynat; }) : null;
+    var donusIp = IP ? IP.bagla(donusBtn, function () { return M.genelGorunum || 'Genel görünüme geç'; }) : null;
     var uyari = h('p', 'g3d-not g3d-ipucu sl-uyari');
     var kart = h('div', 'g3d-kart'), nmEl = h('h4'), dsEl = h('p'), frEl = h('p', 'sl-frekans-not'), yuva = h('div', 'g3d-kart-ek');
     kart.setAttribute('aria-live', 'polite');
@@ -555,7 +561,7 @@
     sesBtn.addEventListener('click', function () { if (ses) sesKapat(); else sesAc(); });
 
     /* ---- arayüz ---- */
-    function oynatYaz() { oynatBtn.textContent = oynuyor ? '❚❚ ' + M.duraklat : '▶ ' + M.oynat; oynatBtn.setAttribute('aria-pressed', oynuyor ? 'true' : 'false'); }
+    function oynatYaz() { if (IP) IP.simge(oynatBtn, oynuyor ? 'duraklat' : 'oynat'); else oynatBtn.textContent = oynuyor ? '❚❚' : '▶'; oynatBtn.setAttribute('aria-pressed', oynuyor ? 'true' : 'false'); if (oynatIp) oynatIp.yenile(); }
     oynatBtn.addEventListener('click', function () { oynuyor = !oynuyor; oynatYaz(); dirty = true; });
     function frekansYaz() {
       var y = Math.round(greenwoodBazalden(frekans) * 100), bolge = y < 34 ? M.bolgeBazal : y < 67 ? M.bolgeOrta : M.bolgeApikal;
@@ -587,16 +593,14 @@
     function kokleayaGec() {
       if (!hazir || mod !== 'isitme') return;
       var k = SAH.filter(function (x) { return x.id === 'koklea'; })[0];
-      if (k && sah !== k) { var once = sah; setSah(k); donusSah = once; donusYaz(); }
+      if (k && sah !== k) setSah(k);
     }
     function donusYaz() {
-      var on = !!donusSah && mod === 'isitme';
-      donusBtn.hidden = !on; if (!on) return;
-      var ad = donusSah.ad;
-      donusBtn.textContent = (M.oncekiSahne || '← {ad}').replace('{ad}', ad);
-      donusBtn.setAttribute('aria-label', (M.oncekiSahneUzun || 'Önceki sahneye dön: {ad}').replace('{ad}', ad));
+      donusBtn.hidden = !(mod === 'isitme' && sah !== SAH[0]);
+      if (donusIp) donusIp.yenile();
+      if (donusBtn.hidden && IP) IP.gizle();
     }
-    donusBtn.addEventListener('click', function () { var s = donusSah; donusSah = null; if (s) setSah(s); donusYaz(); });
+    donusBtn.addEventListener('click', function () { setSah(SAH[0]); });
     function kucukTus(o) {
       var b = h('button', 'sl-k'); b.type = 'button'; b.setAttribute('aria-pressed', 'false');
       var y = h('span', 'sl-k-yazi', o.kisa || o.ad); y.setAttribute('aria-hidden', 'true'); b.appendChild(y);
@@ -669,7 +673,7 @@
     bAdim.hidden = true; adimBox.hidden = true;
     function setSah(s) {
       sah = s; sel = null;
-      if (donusSah) { donusSah = null; donusYaz(); }   // elle seçilen sahne dönüş düğmesini kaldırır (kokleayaGec sonra yeniden kurar)
+      donusYaz();   // genel görünüm düğmesi: Ses yolculuğu dışındaki sahnelerde görünür
       if (mod === 'denge') { dsah = s; adimDugmeleri(); if (oto) otoDurdur(); }
       else if (s.gorunum === 'eksen') R = eksenBakis(); else if (VIEWS[s.gorunum]) R = VIEWS[s.gorunum].slice();
       sahBtns.forEach(function (b, k) { b.setAttribute('aria-pressed', sahneListesi()[k] === s ? 'true' : 'false'); });

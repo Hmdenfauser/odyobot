@@ -1338,7 +1338,7 @@
   var SL = window.SESLAB_VERI, sl = null, slG = null;   // slG: dağılma (seslab/dagilma.js)
   var SL_METIN_ALAN = [{ f: 'uyari', ad: 'Uyarı (modelin altında)', cok: true }, { f: 'frekansNot', ad: 'Frekans notu ({f} frekans, {y} yüzde, {bolge} bölge)', cok: true },
     { f: 'sesNot', ad: 'Ses düğmesinin altındaki not', cok: true },
-    { f: 'oncekiSahne', ad: 'Koklea’dan dönüş düğmesi ({ad} = önceki sahne)' }, { f: 'oncekiSahneUzun', ad: 'Dönüş düğmesi, ekran okuyucu ({ad} = önceki sahne)' }, { f: 'not', ad: 'Not (sayfanın altında)', cok: true },
+    { f: 'genelGorunum', ad: 'Genel görünüm düğmesinin ipucu' }, { f: 'oynat', ad: 'Oynat düğmesinin ipucu' }, { f: 'duraklat', ad: 'Duraklat düğmesinin ipucu' }, { f: 'not', ad: 'Not (sayfanın altında)', cok: true },
     { f: 'enerjiBaslik', ad: 'Enerji dönüşümü başlığı' },
     { f: 'enerji1Ad', ad: '1. aşama adı' }, { f: 'enerji1Alt', ad: '1. aşama alt yazısı' }, { f: 'enerji2Ad', ad: '2. aşama adı' }, { f: 'enerji2Alt', ad: '2. aşama alt yazısı' },
     { f: 'enerji3Ad', ad: '3. aşama adı' }, { f: 'enerji3Alt', ad: '3. aşama alt yazısı' }, { f: 'enerji4Ad', ad: '4. aşama adı' }, { f: 'enerji4Alt', ad: '4. aşama alt yazısı' },

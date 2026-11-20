@@ -28,6 +28,7 @@ var ASSETS = [
   './gorsel3d/gorsel3d.css',
   './gorsel3d/periferik.json',
   './seslab/seslab-veri.js',
+  './seslab/ipucu.js',
   './seslab/denge.js',
   './seslab/dagilma.js',
   './seslab/seslab.js',

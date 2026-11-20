@@ -14,10 +14,16 @@
 }
 :root[data-theme="dark"] .sl { --sl-tepe: #FF6FA3; --sl-cukur: #7FA6FF; --sl-elektrik: #C49BFF; --sl-otolit: #FFB040; --sl-kristal: #FF9A3C; }
 
-.sl .sl-oynat { left: 8px; top: 8px; }
-/* İşitme: Koklea'ya otomatik geçişten sonra önceki sahneye dönüş (sağ altta; sol altta ölçek çubuğu var) */
-.sl .sl-sahne-don { left: auto; top: auto; right: 8px; bottom: 8px; min-height: 44px; }
-.sl .sl-sahne-don[hidden] { display: none; }
+/* Animasyonun sağ alt köşesi (2026-11-20): yalnızca simgeli yuvarlak düğmeler (genel görünüm, oynat/duraklat). Yazı ipucunda
+   (seslab/ipucu.js: fareyle üzerine gelince ya da uzun basınca). Sol altta ölçek çubuğu var. Dağılma bölümü de aynısını kullanır. */
+.sl-sag-alt { position: absolute; right: 8px; bottom: 8px; display: flex; gap: 6px; z-index: 1; }
+.sl-yuv { width: 44px; height: 44px; padding: 0; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+  display: inline-flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 1px 4px color-mix(in srgb, var(--ink) 18%, transparent);
+  -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+.sl-yuv[hidden] { display: none; }
+.sl-yuv:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.sl-ipucu { position: absolute; z-index: 3; max-width: 80%; padding: 6px 10px; border-radius: 8px; background: var(--ink); color: var(--surface);
+  font: 500 13px/1.3 var(--font-body); white-space: nowrap; pointer-events: none; box-shadow: 0 2px 8px rgba(0, 0, 0, .25); }
 .sl .sl-oynat[hidden], .sl .sl-don[hidden] { display: none; }
 /* Denge: başı döndürme ve başa dön (modelin sağ altında, küçük) */
 .sl .sl-don { position: absolute; right: 8px; bottom: 30px; display: flex; gap: 6px; z-index: 1; }
@@ -116,9 +122,6 @@
 #sl-dagilma[hidden] { display: none; }
 .sl-g-sahne { position: relative; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--surface); }
 .sl-g-tuval { display: block; width: 100%; aspect-ratio: 3 / 2; touch-action: pan-y; }
-.sl-g-oynat { position: absolute; right: 8px; top: 8px; width: 44px; height: 44px; border-radius: 22px; border: 1px solid var(--line);
-  background: var(--surface); color: var(--ink); font: 600 15px/1 var(--font-body); cursor: pointer; }
-.sl-g-oynat:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .sl-golge .g3d-baslik { margin: 4px 0 0; }
 .sl-g-bilgi { margin: 0; font: 500 13px/1.4 var(--font-mono); color: var(--ink); }
 .sl-g-durum { margin: 0; font: 600 15px/1.45 var(--font-body); color: var(--ink); }
