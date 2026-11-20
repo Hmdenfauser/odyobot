@@ -80,10 +80,8 @@
         yazi(x, M.kaynak, S.x, S.y - 20); x.textAlign = 'right'; yazi(x, M.duvar, wx - 8, E.y + 10); x.textAlign = 'center'; yazi(x, M.bina, (B.x0 + B.x1) / 2, B.y0 - 10);
         if (sinifAd === 'kucuk') { x.textAlign = 'left'; x.fillStyle = c.soluk; yazi(x, M.golgeEtiket, wx + 10, yer - 12); }
         if (sinifAd === 'esit') {
-          // Kırınım: duvarın tepesinde turuncu halka; kısmi gölge yazısı diğer frekanslardaki "ses gölgesi" ile aynı yerde ve tonda.
-          x.strokeStyle = c.vurgu; x.lineWidth = 2; x.beginPath(); x.arc(E.x, E.y, 7, 0, 2 * Math.PI); x.stroke();
-          x.fillStyle = c.yazi; x.textAlign = 'left'; yazi(x, M.sacilmaEtiket, E.x + 12, E.y - 2);
-          x.fillStyle = c.soluk; yazi(x, M.kismiGolgeEtiket, wx + 10, yer - 12);
+          // Kısmi gölge yazısı diğer frekanslardaki "ses gölgesi" ile aynı yerde ve tonda (halka ve kırınım yazısı proje sahibinin isteğiyle kaldırıldı).
+          x.textAlign = 'left'; x.fillStyle = c.soluk; yazi(x, M.kismiGolgeEtiket, wx + 10, yer - 12);
         }
       },
       olcum: function (f) { return 1 - duvarZayiflama(f); },

@@ -86,7 +86,6 @@ window.SESLAB_VERI = {
       duvar: 'Duvar',
       bina: 'Bina',
       golgeEtiket: 'ses gölgesi',
-      sacilmaEtiket: 'kırınım',
       kismiGolgeEtiket: 'kısmi akustik gölge',
       canvasEtiketi: 'Dağılma animasyonu: soldaki kaynaktan çıkan ses dalgaları bir duvara geliyor, duvarın arkasında bir bina var'
     },
