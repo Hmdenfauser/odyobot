@@ -1300,7 +1300,7 @@
     { f: 'buyuk', ad: 'Dalga boyu engelden büyükken', cok: true }, { f: 'esit', ad: 'Dalga boyu engele eşitken', cok: true }, { f: 'kucuk', ad: 'Dalga boyu engelden küçükken', cok: true },
     { f: 'azalmaAlcak', ad: 'Azalma (1500 Hz altı; yalnızca baş)', cok: true }, { f: 'azalmaYuksek', ad: 'Azalma (1500 Hz ve üstü; yalnızca baş)', cok: true },
     { f: 'olcer1', ad: '1. çubuk' }, { f: 'olcer2', ad: '2. çubuk' }, { f: 'kaynak', ad: 'Çizimde: kaynak' }, { f: 'duvar', ad: 'Çizimde: duvar' }, { f: 'bina', ad: 'Çizimde: bina' },
-    { f: 'basEtiket', ad: 'Çizimde: baş' }, { f: 'golgeEtiket', ad: 'Çizimde: gölge' }, { f: 'sacilmaEtiket', ad: 'Çizimde: saçılma' },
+    { f: 'basEtiket', ad: 'Çizimde: baş' }, { f: 'golgeEtiket', ad: 'Çizimde: gölge' }, { f: 'sacilmaEtiket', ad: 'Çizimde: kırınım' }, { f: 'kismiGolgeEtiket', ad: 'Çizimde: kısmi akustik gölge (yalnızca duvar)' },
     { f: 'canvasEtiketi', ad: 'Ekran okuyucu açıklaması', cok: true }];
   function slDagAlan(o) { return SL_DAG_SAHNE.filter(function (a) { return a.f in o; }); }
   if (SL) {
