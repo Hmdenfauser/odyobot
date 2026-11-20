@@ -813,7 +813,7 @@
   var TABS = ['anasayfa', 'depo', 'odybot', 'notlar', 'vakalarim', 'ayarlar', 'giris', 'uc-boyut', 'duyurular', 'not-sayfa', 'seslab', 'sozluk'];
   var UST_SEKME = { 'uc-boyut': 'anasayfa', duyurular: 'anasayfa', 'not-sayfa': 'notlar', seslab: 'anasayfa', sozluk: 'anasayfa' };
   var UC_ESKI = ['uc-boyut', '3d-model', 'gorsel3d', 'depo/3d', 'model'];   // olası eski/başka adresler -> #3d
-  var oncekiHash = '', ucGeldigi = null, slGeldigi = null, ilkRota = true, gorunen = 'anasayfa';
+  var oncekiHash = '', ucGeldigi = null, slGeldigi = null, slSecimdenGeldi = false, ilkRota = true, gorunen = 'anasayfa';
   function adresDegistir(yeni) { try { history.replaceState(null, '', yeni); } catch (e) {} }
   function route() {
     var t = (location.hash || '').replace('#', '');
@@ -828,7 +828,14 @@
       setTimeout(kur3d, 0);   // model yalnızca 3D sayfası ilk kez açılınca indirilir
     }
     // Ses laboratuvarı (#seslab, 2026-11-18): ilk açılışta kurulur; sayfadan çıkınca çalan ses kesilir.
-    if (t === 'seslab') { if (oncekiHash !== 'seslab') slGeldigi = ilkRota ? null : oncekiHash; setTimeout(kurSeslab, 0); }
+    // 2026-11-20: #seslab = İşitme/Denge seçim ekranı; #seslab/isitme ve #seslab/denge = laboratuvar (seçim ekranı gizli).
+    if (t.split('/')[0] === 'seslab') {
+      if (oncekiHash.split('/')[0] !== 'seslab') slGeldigi = ilkRota ? null : oncekiHash;
+      var slK = t.split('/')[1]; slK = slK === 'isitme' || slK === 'denge' ? slK : null;
+      if (slK && oncekiHash.split('/')[0] !== 'seslab') slSecimdenGeldi = false; else if (slK && oncekiHash === 'seslab') slSecimdenGeldi = true;
+      if (!slK && t !== 'seslab') { ham = 'seslab'; adresDegistir('#seslab'); }
+      t = 'seslab'; setTimeout(function () { slKipGoster(slK); }, 0);
+    }
     else if (gorunen === 'seslab' && !duyuru && sl) sl.durdur();
     // Derin bağlantılar: işini yapıp adresi sade hâline çevirir (geri tuşu bir önceki sayfaya döner).
     var p = t.split('/');
@@ -860,6 +867,8 @@
   window.addEventListener('hashchange', route);
   route();
   $('sl-geri').addEventListener('click', function () {
+    // Laboratuvardayken geri oku seçim ekranına döner (seçim ekranından gelindiyse tarayıcı geçmişinde bir adım geri).
+    if (oncekiHash !== 'seslab') { if (slSecimdenGeldi && history.length > 1) history.back(); else location.hash = '#seslab'; return; }
     if ((slGeldigi === 'anasayfa' || slGeldigi === '') && history.length > 1) history.back();
     else location.hash = '#anasayfa';
   });
@@ -1280,13 +1289,14 @@
     { f: 'enerjiNot', ad: 'Enerji dönüşümü açıklaması', cok: true },
     { f: 'modIsitme', ad: 'İşitme düğmesi' }, { f: 'modDenge', ad: 'Denge düğmesi' }, { f: 'adimBasligi', ad: 'Adım başlığı (denge)' }, { f: 'yerEtiketi', ad: 'Yer etiketi (denge)' }, { f: 'yakinlastir', ad: 'Yakınlaştır düğmesi' }, { f: 'basiGoster', ad: 'Başı göster düğmesi' }, { f: 'tumunuOynat', ad: 'Tümünü oynat düğmesi' }, { f: 'tumunuDurdur', ad: 'Tümünü oynat → durdur yazısı' }, { f: 'basaDon', ad: 'Başa dön düğmesi (denge)' },
     { f: 'dengeUyari', ad: 'Uyarı (denge kipinde, modelin altında)', cok: true }];
+  var SL_KUCUK_ALAN = G3D_ALAN.concat([{ f: 'kisa', ad: 'Küçük tuştaki kısa yazı' }, { f: 'ikon', ad: 'Küçük tuştaki simge (emoji)' }]);
   if (SL) {
     SL.sahneler.forEach(function (b) { b.key = 'sl.sahne.' + b.id; editable(b, ['ad', 'aciklama']); });
     Object.keys(SL.yapilar).forEach(function (k) { SL.yapilar[k].key = 'sl.yapi.' + k; editable(SL.yapilar[k], ['ad', 'aciklama']); });
     // Denge kipi: sahneler sl.denge.<id>, adımlar sl.adim.<sahne>.<adım>
     if (SL.denge) SL.denge.sahneler.forEach(function (s) {
-      s.key = 'sl.denge.' + s.id; editable(s, ['ad', 'aciklama']);
-      s.adimlar.forEach(function (a) { a.key = 'sl.adim.' + s.id + '.' + a.id; editable(a, ['ad', 'aciklama']); });
+      s.key = 'sl.denge.' + s.id; editable(s, ['ad', 'aciklama', 'kisa', 'ikon']);
+      s.adimlar.forEach(function (a) { a.key = 'sl.adim.' + s.id + '.' + a.id; editable(a, ['ad', 'aciklama', 'kisa', 'ikon']); });
     });
     SL.metinler.key = 'sl.metin'; editable(SL.metinler, SL_METIN_ALAN.map(function (a) { return a.f; }));
   }
@@ -1294,10 +1304,10 @@
     var a = null;
     if (tur === 'yapi' && SL.yapilar[kimlik]) a = adminPart(SL.yapilar[kimlik].key, SL.yapilar[kimlik], G3D_ALAN, 'Düzenle');
     else if (tur === 'yapi' && G3D && G3D.yapilar[kimlik]) a = adminPart(G3D.yapilar[kimlik].key, G3D.yapilar[kimlik], G3D_ALAN, 'Düzenle');
-    else if (tur === 'sahne') { var o = SL.sahneler.concat(SL.denge ? SL.denge.sahneler : []).filter(function (b) { return b.id === kimlik; })[0]; if (o) a = adminPart(o.key, o, G3D_ALAN, 'Düzenle'); }
+    else if (tur === 'sahne') { var o = SL.sahneler.concat(SL.denge ? SL.denge.sahneler : []).filter(function (b) { return b.id === kimlik; })[0]; if (o) a = adminPart(o.key, o, SL.sahneler.indexOf(o) >= 0 ? G3D_ALAN : SL_KUCUK_ALAN, 'Düzenle'); }
     else if (tur === 'adim' && SL.denge) {
       var p = kimlik.split('.'), ds = SL.denge.sahneler.filter(function (b) { return b.id === p[0]; })[0], ad = ds && ds.adimlar.filter(function (b) { return b.id === p[1]; })[0];
-      if (ad) a = adminPart(ad.key, ad, G3D_ALAN, 'Adımı düzenle');
+      if (ad) a = adminPart(ad.key, ad, SL_KUCUK_ALAN, 'Adımı düzenle');
     }
     else if (tur === 'metin') a = adminPart(SL.metinler.key, SL.metinler, SL_METIN_ALAN, 'Uyarı ve notları düzenle');
     if (a) yuva.appendChild(a);
@@ -1308,6 +1318,14 @@
     var yapilar = {}; if (G3D) Object.keys(G3D.yapilar).forEach(function (k) { yapilar[k] = G3D.yapilar[k]; });
     Object.keys(SL.yapilar).forEach(function (k) { yapilar[k] = SL.yapilar[k]; });
     sl = window.SesLab.kur($('sl-kok'), { veri: SL, yapilar: yapilar, veriYolu: 'gorsel3d/', kartEki: slKartEki });
+  }
+  // Seçim ekranı (kip yok) ya da laboratuvar (isitme/denge). Laboratuvar ilk seçimde kurulur; model o zaman iner.
+  function slKipGoster(kip) {
+    $('sl-secim').hidden = !!kip; $('sl-kok').hidden = !kip;
+    var ad = $('sl-kip-ad'), M = SL ? SL.metinler : {};
+    ad.hidden = !kip; ad.textContent = kip === 'denge' ? (M.modDenge || 'Denge') : kip ? (M.modIsitme || 'İşitme') : '';
+    if (!kip) { if (sl) sl.durdur(); return; }
+    kurSeslab(); if (sl && sl.kip) sl.kip(kip);
   }
   function refreshSeslab() {
     if (!SL) return;

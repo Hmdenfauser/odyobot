@@ -316,8 +316,14 @@
       <div class="alt-bas">
         <button type="button" class="geri-ok" id="sl-geri"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="gizli-yazi">Geri: <span data-k="sl.sayfa.geri" data-etiket="Ses laboratuvarı: geri okunun ekran okuyucu yazısını düzenle">Ana sayfa</span></span></button>
         <h2 data-k="sl.sayfa.baslik" data-etiket="Ses laboratuvarı: sayfa başlığını düzenle">Ses laboratuvarı</h2>
+        <span class="sl-kip-ad" id="sl-kip-ad" hidden></span>
       </div>
-      <div id="sl-kok"></div>
+      <!-- Giriş: İşitme / Denge seçimi (#seslab). Seçilince bu ekran gizlenir, laboratuvar açılır (#seslab/isitme, #seslab/denge). -->
+      <div class="sl-secim" id="sl-secim">
+        <a class="sl-secim-kart" href="#seslab/isitme"><span class="sl-secim-ik" aria-hidden="true">👂</span><span class="sl-secim-yazi"><strong data-k="sl.secim.isitme" data-etiket="Ses laboratuvarı: İşitme seçeneğinin adını düzenle">İşitme</strong><span data-k="sl.secim.isitmeAlt" data-etiket="Ses laboratuvarı: İşitme seçeneğinin açıklamasını düzenle">Ses yolculuğu, orta kulak, koklea ve yürüyen dalga</span></span></a>
+        <a class="sl-secim-kart" href="#seslab/denge"><span class="sl-secim-ik" aria-hidden="true">⚖️</span><span class="sl-secim-yazi"><strong data-k="sl.secim.denge" data-etiket="Ses laboratuvarı: Denge seçeneğinin adını düzenle">Denge</strong><span data-k="sl.secim.dengeAlt" data-etiket="Ses laboratuvarı: Denge seçeneğinin açıklamasını düzenle">Otolit organları, BPPV ve Epley manevrası</span></span></a>
+      </div>
+      <div id="sl-kok" hidden></div>
     </div>
   </section>
 

@@ -227,13 +227,16 @@
     var viewBox = h('div', 'g3d-satir g3d-gorunumler');
     // İşitme | Denge geçişi ve denge adımları
     var modBox = h('div', 'g3d-satir sl-mod'), modIs = h('button', null), modDe = h('button', null);
-    modIs.type = 'button'; modDe.type = 'button'; modBox.appendChild(modIs); modBox.appendChild(modDe); modBox.hidden = !DSAH.length;
+    modIs.type = 'button'; modDe.type = 'button'; modBox.appendChild(modIs); modBox.appendChild(modDe); modBox.hidden = true;   // kip artık sayfanın seçim ekranından seçilir
     var bAdim = h('h3', 'g3d-baslik'), adimBox = h('div', 'g3d-satir sl-adimlar'), adimBtns = [];
     // Tek tıkla izleme: adımları sırayla, her birinin sonunda kısa bekleyerek oynatır
-    var tumBtn = h('button', 'sl-ses-dugme sl-tum'); tumBtn.type = 'button'; tumBtn.hidden = true; tumBtn.setAttribute('aria-pressed', 'false');
+    var tumBtn = h('button', 'sl-tum'); tumBtn.type = 'button'; tumBtn.setAttribute('aria-pressed', 'false');
+    // Denge kipi (2026-11-20): sahne tuşları ve adım tuşları animasyonun hemen altında, küçük (simge + kısa yazı)
+    var dengeBar = h('div', 'sl-denge-bar'), adimSatir = h('div', 'sl-adim-satir'); dengeBar.hidden = true;
+    adimSatir.appendChild(tumBtn); adimSatir.appendChild(adimBox); dengeBar.appendChild(adimSatir);
     var bSah = h('h3', 'g3d-baslik'), bFr = h('h3', 'g3d-baslik'), bGor = h('h3', 'g3d-baslik');
     var notEl = h('p', 'g3d-not'), kaynakEl = h('p', 'g3d-not sl-kaynak'), metinYuva = h('div', 'g3d-kart-ek');
-    [modBox, sahne, tumBtn, adimBox, uyari, kart, enerjiKutu, bSah, sahBox, bFr, frBox, sesSatir, bGor, viewBox, notEl, metinYuva, kaynakEl].forEach(function (e) { kok.appendChild(e); });
+    [modBox, sahne, dengeBar, uyari, kart, enerjiKutu, bSah, sahBox, bFr, frBox, sesSatir, bGor, viewBox, notEl, metinYuva, kaynakEl].forEach(function (e) { kok.appendChild(e); });
 
     function metinler() {
       uyari.textContent = mod === 'denge' ? (M.dengeUyari || M.uyari) : M.uyari; notEl.textContent = M.not;
@@ -561,17 +564,27 @@
       return [sag[0], sag[1], sag[2], yuk[0], yuk[1], yuk[2], geri[0], geri[1], geri[2]];
     }
     function sahneListesi() { return mod === 'denge' ? DSAH : SAH; }
+    // Küçük tuş: üstte simge (emoji), altında kısa yazı; tam ad ekran okuyucu ve ipucu için
+    function kucukTus(o) {
+      var b = h('button', 'sl-k'); b.type = 'button'; b.setAttribute('aria-pressed', 'false');
+      if (o.ikon) b.appendChild(h('span', 'sl-k-ik', o.ikon)).setAttribute('aria-hidden', 'true');
+      var y = h('span', 'sl-k-yazi', o.kisa || o.ad); y.setAttribute('aria-hidden', 'true'); b.appendChild(y);
+      b.setAttribute('aria-label', o.ad); b.title = o.ad; return b;
+    }
     function sahneDugmeleri() {
       sahBox.textContent = ''; sahBtns = [];
-      sahneListesi().forEach(function (s) { var b = h('button', null, s.ad); b.type = 'button'; b.setAttribute('aria-pressed', 'false'); b.addEventListener('click', function () { setSah(s); modeleKaydir(); }); sahBox.appendChild(b); sahBtns.push(b); });
+      sahneListesi().forEach(function (s) { var b; if (mod === 'denge') b = kucukTus(s); else { b = h('button', null, s.ad); b.type = 'button'; b.setAttribute('aria-pressed', 'false'); } b.addEventListener('click', function () { setSah(s); modeleKaydir(); }); sahBox.appendChild(b); sahBtns.push(b); });
     }
     function adimDugmeleri() {
       adimBox.textContent = ''; adimBtns = [];
       if (!dsah) return;
-      dsah.adimlar.forEach(function (a, i) { var b = h('button', null, a.ad); b.type = 'button'; b.setAttribute('aria-pressed', 'false'); b.addEventListener('click', function () { setAdim(i); }); adimBox.appendChild(b); adimBtns.push(b); });
+      dsah.adimlar.forEach(function (a, i) { var b = kucukTus(a); b.addEventListener('click', function () { setAdim(i); }); adimBox.appendChild(b); adimBtns.push(b); });
     }
     // Adım seçimi: baş yeni pozisyona yumuşakça döner (duraklatılmışsa ya da hareket azaltma açıksa hemen).
-    function tumYaz() { tumBtn.textContent = oto ? '❚❚ ' + (M.tumunuDurdur || 'Durdur') : '▶ ' + (M.tumunuOynat || 'Tümünü oynat'); tumBtn.setAttribute('aria-pressed', oto ? 'true' : 'false'); }
+    function tumYaz() {
+      var ad = oto ? (M.tumunuDurdur || 'Durdur') : (M.tumunuOynat || 'Tümünü oynat');
+      tumBtn.textContent = oto ? '❚❚' : '▶'; tumBtn.setAttribute('aria-label', ad); tumBtn.title = ad; tumBtn.setAttribute('aria-pressed', oto ? 'true' : 'false');
+    }
     function otoDurdur() { oto = null; tumYaz(); }
     tumBtn.addEventListener('click', function () {
       if (oto) { otoDurdur(); return; }
@@ -599,8 +612,11 @@
       if (m === mod || (m === 'denge' && !DSAH.length)) return;
       mod = m; sesKapat(); sel = null;
       modIs.setAttribute('aria-pressed', m === 'isitme' ? 'true' : 'false'); modDe.setAttribute('aria-pressed', m === 'denge' ? 'true' : 'false');
-      [enerjiKutu, bFr, frBox, sesSatir, bGor, viewBox].forEach(function (e) { e.hidden = m === 'denge'; });
-      [adimBox, yerEt, yakinBtn, tumBtn, donBox].forEach(function (e) { e.hidden = m !== 'denge'; });
+      [enerjiKutu, bSah, bFr, frBox, sesSatir, bGor, viewBox].forEach(function (e) { e.hidden = m === 'denge'; });
+      [adimBox, yerEt, yakinBtn, dengeBar, donBox].forEach(function (e) { e.hidden = m !== 'denge'; });
+      // Sahne tuşları: denge kipinde animasyonun hemen altına (küçük), işitmede eski yerine
+      sahBox.classList.toggle('sl-sahne-k', m === 'denge'); sahBox.classList.toggle('g3d-bolumler', m !== 'denge');
+      if (m === 'denge') dengeBar.insertBefore(sahBox, adimSatir); else bSah.parentNode.insertBefore(sahBox, bSah.nextSibling);
       // Denge kipinde tek oynatma denetimi "Tümünü oynat"; sol üstteki Oynat/Duraklat gizlenir, hareket hep açık
       oynatBtn.hidden = m === 'denge'; if (m === 'denge' && !oynuyor) { oynuyor = true; oynatYaz(); }
       donKalan = 0;
@@ -737,6 +753,7 @@
 
       durum.hidden = true; hazir = true;
       size(); setSah(SAH[0]); setFr(frekans); oynatYaz(); cen = tcen.slice(); rad = trad;
+      if (istenenKip === 'denge') setMod('denge');
     }
 
     function indir() {
@@ -747,6 +764,7 @@
         .then(function (buf) { if (durdu) return; if (meta.bayt && buf.byteLength !== meta.bayt) throw new Error('boyut'); basla(meta, buf); })
         .catch(function () { if (!durdu) hata(M.indirilemedi, true); });
     }
+    var istenenKip = 'isitme';
     oynatYaz(); sesYaz();
     indir();
     window.requestAnimationFrame(loop);
@@ -754,11 +772,12 @@
     return {
       yenile: function () {
         metinler(); if (!hazir) return; renkleriOku();
-        sahBtns.forEach(function (b, k) { b.textContent = sahneListesi()[k].ad; });
-        if (dsah) adimBtns.forEach(function (b, k) { b.textContent = dsah.adimlar[k].ad; });
+        sahneDugmeleri(); sahBtns.forEach(function (b, k) { b.setAttribute('aria-pressed', sahneListesi()[k] === sah ? 'true' : 'false'); });
+        if (dsah) { adimDugmeleri(); adimBtns.forEach(function (b, k) { b.setAttribute('aria-pressed', k === adimI ? 'true' : 'false'); }); }
         sesYaz(); oynatYaz(); tumYaz(); card(); dirty = true;
       },
-      durdur: function () { sesKapat(); },   // sayfadan çıkınca ses kesilir
+      kip: function (m) { istenenKip = m; if (hazir) setMod(m); },   // sayfanın seçim ekranından: 'isitme' / 'denge'
+      durdur: function () { sesKapat(); if (oto) otoDurdur(); },   // sayfadan çıkınca ses kesilir
       kaldir: function () { durdu = true; sesKapat(); dinleyiciler.forEach(function (d) { d[0].removeEventListener(d[1], d[2], d[3]); }); kok.textContent = ''; }
     };
   }
