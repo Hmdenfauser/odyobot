@@ -888,12 +888,12 @@
     // 2026-11-20: #seslab = İşitme/Denge seçim ekranı; #seslab/isitme ve #seslab/denge = laboratuvar (seçim ekranı gizli).
     if (t.split('/')[0] === 'seslab') {
       if (oncekiHash.split('/')[0] !== 'seslab') slGeldigi = ilkRota ? null : oncekiHash;
-      var slK = t.split('/')[1]; slK = slK === 'isitme' || slK === 'denge' || slK === 'dagilma' ? slK : null;
+      var slK = t.split('/')[1]; slK = slK === 'isitme' || slK === 'denge' || slK === 'dagilma' || slK === 'corti' ? slK : null;
       if (slK && oncekiHash.split('/')[0] !== 'seslab') slSecimdenGeldi = false; else if (slK && oncekiHash === 'seslab') slSecimdenGeldi = true;
       if (!slK && t !== 'seslab') { ham = 'seslab'; adresDegistir('#seslab'); }
       t = 'seslab'; setTimeout(function () { slKipGoster(slK); }, 0);
     }
-    else if (gorunen === 'seslab' && !duyuru) { if (sl) sl.durdur(); if (slG) slG.durdur(); }
+    else if (gorunen === 'seslab' && !duyuru) { if (sl) sl.durdur(); if (slG) slG.durdur(); if (slC) slC.durdur(); }
     // Derin bağlantılar: işini yapıp adresi sade hâline çevirir (geri tuşu bir önceki sayfaya döner).
     var p = t.split('/');
     if (p[0] === 'depo' && p.length > 1) { t = 'depo'; ham = 'depo'; adresDegistir('#depo'); sonra = function () { depoGit(p.slice(1)); }; }
@@ -1335,15 +1335,24 @@
   /* ---------- Koklea kesiti ve tüylü hücreler (korti/, 2026-11-21) ----------
      Görüntüleyici korti/korti.js, yazılar korti/korti-veri.js (window.KORTI_VERI). Model kodla üretilir (dosya inmez).
      Yönetici düzenlemesi: icerik/korti.yapi.<id> (ad, aciklama), korti.genel (ad, aciklama), korti.metin (ipucu, not, etiket, genelGorunum). */
+  var KT_ANIM_ALAN = [{ f: 'asamaYukari', ad: 'Aşama yazısı: baziler membran yukarı', cok: true }, { f: 'asamaAsagi', ad: 'Aşama yazısı: baziler membran aşağı', cok: true }, { f: 'ipucu', ad: 'İpucu (modelin altında)', cok: true }, { f: 'not', ad: 'Not (renkler ve kaynak)', cok: true }, { f: 'etiket', ad: 'Modelin sağ üstündeki yazı' }, { f: 'oynat', ad: 'Oynat düğmesinin ipucu' }, { f: 'duraklat', ad: 'Duraklat düğmesinin ipucu' }, { f: 'genelGorunum', ad: 'Genel görünüm düğmesinin ipucu' }];
+  var KT_YAPI_ALAN = [{ f: 'ad', ad: 'Ad' }, { f: 'aciklama', ad: 'Açıklama', cok: true }, { f: 'etiket', ad: 'Model üzerindeki kısa yazı' }];
   var KT = window.KORTI_VERI, kt = null, KT_METIN_ALAN = [{ f: 'ipucu', ad: 'İpucu (modelin altında)', cok: true }, { f: 'not', ad: 'Not (sayfanın altında)', cok: true }, { f: 'etiket', ad: 'Modelin sağ üstündeki yazı' }, { f: 'genelGorunum', ad: 'Genel görünüm düğmesinin ipucu' }];
   if (KT) {
-    Object.keys(KT.yapilar).forEach(function (id) { var y = KT.yapilar[id]; y.key = 'korti.yapi.' + id; editable(y, ['ad', 'aciklama']); });
+    Object.keys(KT.yapilar).forEach(function (id) { var y = KT.yapilar[id]; y.key = 'korti.yapi.' + id; editable(y, y.etiket != null ? ['ad', 'aciklama', 'etiket'] : ['ad', 'aciklama']); });
     KT.genel.key = 'korti.genel'; editable(KT.genel, ['ad', 'aciklama']);
     KT.metinler.key = 'korti.metin'; editable(KT.metinler, ['ipucu', 'not', 'etiket', 'genelGorunum']);
+    if (KT.anim) { KT.anim.genel.key = 'korti.anim.genel'; editable(KT.anim.genel, ['ad', 'aciklama']); KT.anim.metinler.key = 'korti.anim.metin'; editable(KT.anim.metinler, KT_ANIM_ALAN.map(function (a) { return a.f; })); }
   }
   function ktKartEki(tur, kimlik, yuva) {
     var o = tur === 'yapi' ? KT.yapilar[kimlik] : tur === 'metin' ? KT.metinler : KT.genel; if (!o) return;
-    var a = tur === 'metin' ? adminPart(o.key, o, KT_METIN_ALAN, 'İpucu ve notu düzenle') : adminPart(o.key, o, G3D_ALAN, 'Düzenle');
+    var a = tur === 'metin' ? adminPart(o.key, o, KT_METIN_ALAN, 'İpucu ve notu düzenle') : adminPart(o.key, o, o.etiket != null ? KT_YAPI_ALAN : G3D_ALAN, 'Düzenle');
+    if (a) yuva.appendChild(a);
+  }
+  function ktAnimKartEki(tur, kimlik, yuva) {
+    if (tur === 'yapi') return ktKartEki(tur, kimlik, yuva);
+    var o = tur === 'metin' ? KT.anim.metinler : KT.anim.genel;
+    var a = tur === 'metin' ? adminPart(o.key, o, KT_ANIM_ALAN, 'Animasyon yazılarını düzenle') : adminPart(o.key, o, G3D_ALAN, 'Düzenle');
     if (a) yuva.appendChild(a);
   }
   function kurKorti() { if (kt || !KT || !window.Korti) return; kt = window.Korti.kur($('kt-kok'), { veri: KT, kartEki: ktKartEki }); }
@@ -1364,7 +1373,9 @@
     if (!KT) return;
     Object.keys(KT.yapilar).forEach(function (id) { applyOv(KT.yapilar[id].key, KT.yapilar[id]); });
     applyOv(KT.genel.key, KT.genel); applyOv(KT.metinler.key, KT.metinler);
+    if (KT.anim) { applyOv(KT.anim.genel.key, KT.anim.genel); applyOv(KT.anim.metinler.key, KT.anim.metinler); }
     if (kt) kt.yenile();
+    if (slC) slC.yenile();
     if (DN) {
       Object.keys(DN.yapilar).forEach(function (id) { applyOv(DN.yapilar[id].key, DN.yapilar[id]); });
       applyOv(DN.genel.key, DN.genel); applyOv(DN.metinler.key, DN.metinler);
@@ -1390,7 +1401,7 @@
      seslab/seslab.js, gorsel3d.js'in kopyasından türetildi; 3D modelini (gorsel3d/periferik.*) yalnızca okur.
      Yönetici düzenlemesi: icerik/sl.sahne.<id> (ad, aciklama), sl.metin (uyari, frekansNot, sesNot, not).
      Yapıya dokununca çıkan ad/açıklama 3D sayfasıyla ortak (g3d.yapi.<id>). */
-  var SL = window.SESLAB_VERI, sl = null, slG = null;   // slG: dağılma (seslab/dagilma.js)
+  var SL = window.SESLAB_VERI, sl = null, slG = null, slC = null;   // slC: Corti organı animasyonu (korti/korti.js)   // slG: dağılma (seslab/dagilma.js)
   var SL_METIN_ALAN = [{ f: 'uyari', ad: 'Uyarı (modelin altında)', cok: true }, { f: 'frekansNot', ad: 'Frekans notu ({f} frekans, {y} yüzde, {bolge} bölge)', cok: true },
     { f: 'sesNot', ad: 'Ses düğmesinin altındaki not', cok: true },
     { f: 'genelGorunum', ad: 'Genel görünüm düğmesinin ipucu' }, { f: 'oynat', ad: 'Oynat düğmesinin ipucu' }, { f: 'duraklat', ad: 'Duraklat düğmesinin ipucu' }, { f: 'not', ad: 'Not (sayfanın altında)', cok: true },
@@ -1454,13 +1465,18 @@
   // Seçim ekranı (kip yok) ya da laboratuvar (isitme/denge). Laboratuvar ilk seçimde kurulur; model o zaman iner.
   // Dağılma (dagilma) 3D modeli kullanmaz: ayrı kapta (#sl-dagilma) 2D animasyon; model indirilmez.
   function slKipGoster(kip) {
-    var dag = kip === 'dagilma';
-    $('sl-secim').hidden = !!kip; $('sl-kok').hidden = !kip || dag; $('sl-dagilma').hidden = !dag;
+    var dag = kip === 'dagilma', cor = kip === 'corti';
+    $('sl-secim').hidden = !!kip; $('sl-kok').hidden = !kip || dag || cor; $('sl-dagilma').hidden = !dag; $('sl-corti').hidden = !cor;
     var ad = $('sl-kip-ad'), M = SL ? SL.metinler : {};
-    ad.hidden = !kip; ad.textContent = dag ? $('sl-dagilma-ad').textContent : kip === 'denge' ? (M.modDenge || 'Denge') : kip ? (M.modIsitme || 'İşitme') : '';
+    ad.hidden = !kip; ad.textContent = dag ? $('sl-dagilma-ad').textContent : cor ? $('sl-corti-ad').textContent : kip === 'denge' ? (M.modDenge || 'Denge') : kip ? (M.modIsitme || 'İşitme') : '';
     if (!dag && slG) slG.durdur();
-    if (!kip || dag) { if (sl) sl.durdur(); }
+    if (!cor && slC) slC.durdur();
+    if (!kip || dag || cor) { if (sl) sl.durdur(); }
     if (!kip) return;
+    if (cor) {   // Corti organı (korti/korti.js → Korti.kurAnim); yapılar 3D modelle ortak (icerik/korti.yapi.<id>)
+      if (!slC && KT && KT.anim && window.Korti) slC = window.Korti.kurAnim($('sl-corti'), { veri: { genel: KT.anim.genel, gruplar: KT.gruplar, yapilar: KT.yapilar, metinler: KT.anim.metinler }, kartEki: ktAnimKartEki });
+      return;
+    }
     if (dag) {
       if (!slG && SL && SL.dagilma && window.SesLabDagilma) slG = window.SesLabDagilma.kur($('sl-dagilma'), { veri: SL, kartEki: slKartEki });
       if (slG) slG.goster();
@@ -1477,10 +1493,11 @@
     if (SL.dagilma) { applyOv(SL.dagilma.key, SL.dagilma); applyOv(SL.dagilma.duvar.key, SL.dagilma.duvar); applyOv(SL.dagilma.bas.key, SL.dagilma.bas); }
     if (sl) sl.yenile();
     if (slG) slG.yenile();
+    if (slC) slC.yenile();
   }
 
   // Açık/koyu görünüm değişince yapı renkleri (CSS değişkenleri) yeniden okunur.
-  function g3dRenk() { if (g3d) g3d.yenile(); if (sl) sl.yenile(); if (slG) slG.yenile(); if (kt) kt.yenile(); if (dn) dn.yenile(); }
+  function g3dRenk() { if (g3d) g3d.yenile(); if (sl) sl.yenile(); if (slG) slG.yenile(); if (kt) kt.yenile(); if (dn) dn.yenile(); if (slC) slC.yenile(); }
   new MutationObserver(g3dRenk).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
   if (window.matchMedia) { var g3dMq = window.matchMedia('(prefers-color-scheme: dark)'); if (g3dMq.addEventListener) g3dMq.addEventListener('change', g3dRenk); }
 

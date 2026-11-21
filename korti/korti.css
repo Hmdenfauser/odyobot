@@ -39,6 +39,15 @@
 :root[data-theme="dark"] .kt { --kt-mak-ep: #E8A3B3; --kt-mak-tuy: #B59CF0; --kt-mak-zar: #FFB040; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .kt { --kt-mak-ep: #E8A3B3; --kt-mak-tuy: #B59CF0; --kt-mak-zar: #FFB040; } }
 .kt-liste { display: flex; flex-direction: column; gap: 6px; }
+/* Geniş yapıların içindeki küçük ad yazıları (korti.js → etiketYaz) */
+.kt-yazi { position: absolute; transform: translate(-50%, -50%); font: 600 10.5px/1.15 var(--font-body); color: var(--ink); white-space: nowrap;
+  pointer-events: none; text-shadow: 0 0 3px var(--surface), 0 0 3px var(--surface), 0 0 2px var(--surface); }
+.kt-yazi[hidden] { display: none; }
+/* Corti animasyonu: o anki aşama (modelin altında) ve renkler: hücre depolarizasyonu, aksiyon potansiyeli, K⁺, glutamat */
+.kt-asama { margin: 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); font-size: 14px; line-height: 1.45; color: var(--ink); min-height: 4.4em; }
+.kt { --kt-vurgu: #FF4F8B; --kt-elek: #7B2FF0; --kt-iyon: #E8C21A; --kt-glu: #1FA855; }
+:root[data-theme="dark"] .kt { --kt-vurgu: #FF7FAA; --kt-elek: #C49BFF; --kt-iyon: #FFE14D; --kt-glu: #55E08C; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .kt { --kt-vurgu: #FF7FAA; --kt-elek: #C49BFF; --kt-iyon: #FFE14D; --kt-glu: #55E08C; } }
 
 /* 3D modeller listesi (#3d) */
 .uc-liste { display: grid; gap: 10px; }
