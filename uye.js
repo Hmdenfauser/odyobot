@@ -131,6 +131,10 @@
   }
   function ciz() {
     var acik = kayitAcik || yonetici;   // yönetici kapalıyken de deneyebilsin
+    // Ana sayfa selamı: giriş yapan üyenin görünen adı (yoksa Google adı), giriş yoksa "odyolog"; kayıt açıkken giriş/kaydol düğmesi
+    var selamAd = uye ? ((profil && profil.ad) || uye.displayName || '').trim() : '';
+    $('ana-selam').textContent = selamAd ? M('selamUye').replace('{ad}', selamAd) : M('selamMisafir');
+    $('ana-giris').hidden = !!uye || !kayitAcik; $('ana-giris').textContent = M('anaGiris');
     // Ayarlar
     $('ayar-giris').hidden = !!uye;
     $('ayar-yonetici-giris').hidden = kayitAcik;
