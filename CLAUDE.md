@@ -51,7 +51,13 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 - Alt çubuk sırası: Ana sayfa, Görsel depo, OdyoBOT, Vakalarım, Notlar.
 - Odyogram çıktısı (`cikti.js`), Vakalarım → OdyoBOT gönderme, düğmeli sohbet (`odybot.js`). sw v12. Ayrıntı: `PROGRESS.md`.
 
-### KALDIĞIMIZ YER (2026-11-21 gece, v44) — oturum başında bunu özetle
+### KALDIĞIMIZ YER (2026-11-21 gece, v45) — oturum başında bunu özetle
+**Durum:** Yayında, son sürüm **sw v45** (main; dal `corti-sinyal` birleşti). Önceki yayının yedeği git etiketi `yedek-yayin-v44`. Bekleyen kod değişikliği yok. **Eski dalların hepsi silindi** (2026-11-21, proje sahibinin onayıyla; yalnızca main var).
+**v45:** Ses laboratuvarı → Corti organı: işitme siniri lifindeki sinyal daha geniş (gauss 0,085), tam renk/opak (`--kt-elek`), daha yavaş (lif boyunca ≈1,7 sn, `sp += dt * 0.9`); en öndeki İTH lifi boyunca ilerleyen mor küre (`kortiAnim` → `LIF`, `AKSON`).
+**Bekleyen (proje sahibi başka gün):** Ses laboratuvarında ampulla kesiti (krista + kupula) 3D animasyonu.
+**Oturum başında hatırlat:** telefonda v42–v45 denemeleri; aşağıdaki v44/v43 maddeleri.
+
+### Önceki: KALDIĞIMIZ YER (2026-11-21 gece, v44)
 **Durum:** Yayında, son sürüm **sw v44** (main; dallar `denge-yazilar` ve `periferik-simgeler` birleşti). Önceki yayının yedeği git etiketi `yedek-yayin-v43`. Bekleyen kod değişikliği yok.
 **v44 (2026-11-21):**
 - **Denge sistemi (3D):** modelde "Utrikulus" / "Sakkulus" yazıları (makula ortasında; `denge3d.js` → `ETIKET`, yer model yüklenince hesaplanır; yazı `etiket` alanı, yönetici düzenler) + sağ altta yazıları gizle/göster. `korti.js` etiketleri artık yeri sonradan verilebilir (`k.p`).
