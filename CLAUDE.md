@@ -51,7 +51,16 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 - Alt çubuk sırası: Ana sayfa, Görsel depo, OdyoBOT, Vakalarım, Notlar.
 - Odyogram çıktısı (`cikti.js`), Vakalarım → OdyoBOT gönderme, düğmeli sohbet (`odybot.js`). sw v12. Ayrıntı: `PROGRESS.md`.
 
-### KALDIĞIMIZ YER (2026-11-21 gece, v42) — oturum başında bunu özetle
+### KALDIĞIMIZ YER (2026-11-21 gece, v43) — oturum başında bunu özetle
+**Durum:** Yayında, son sürüm **sw v43** (main; dal `opak-tuval` birleşti). Önceki yayının yedeği git etiketi `yedek-yayin-v42`. Bekleyen kod değişikliği yok.
+**v43 (2026-11-21):**
+- **Opak tuval** (seslab.js, korti.js): arka plan WebGL içinde boyanır (`ARKA`, `gl.clearColor`) + `blendFuncSeparate`; telefonda modellerin bilgisayardakinden saydam görünmesi düzeltildi. Saydamlık yine yalnızca `LABIRENT_A`.
+- **Denge düğmeleri:** sol altta büyüteç (uzak/yakın) + oynat/duraklat (eski "Tümünü oynat"; alttaki ▶ kaldırıldı); sağ altta baş, ↺ ↻, Başa dön (vestibüler simge). Hepsi yazısız, ipuculu.
+- **Büyüteç her model ve animasyonda** (`SesLabIpucu.buyutec`): 3D Periferik/Denge/İç kulak, Ses laboratuvarı İşitme/Denge/Dağılma (engel çevresine 1,7×, `sahne.odak`)/Corti. Yazılar `metinler.yakinlastir/uzaklastir` (yönetici). İpucu artık düğmenin üstünde ortalı, çerçeve içinde.
+- **Corti animasyonu uzaktan açılır:** `genelZoom` 1,8 (açılış ve genel görünüm düğmesi); büyüteç bunun yarısına yaklaşır.
+**Oturum başında hatırlat:** telefonda v43: Denge saydamlığı telefonda da bilgisayardaki gibi mi, sol alttaki düğmeler, büyüteçler, Corti açılış uzaklığı. Aşağıdaki v42 hatırlatmaları hâlâ geçerli. Temizlik: `opak-tuval` dalı da silinebilir.
+
+### Önceki: KALDIĞIMIZ YER (2026-11-21 gece, v42)
 **Durum:** Yayında, son sürüm **sw v42** (main; dal `adim3-modeller` birleşti). Önceki yayının yedeği git etiketi `yedek-yayin-v41`. Bekleyen kod değişikliği yok.
 **Oturum başında hatırlat:** (1) Telefonda dene: 3D modeller listesi, Denge sistemi ve İç kulak yapıları (dokunma, yazıları gizle/göster), Ses laboratuvarı → Corti organı (oynat/duraklat, İTH/DTH, K⁺ noktaları, membranın bükülmesi); önceki sürümlerin telefon denemeleri de bekliyor. (2) Doğrulanacak taslak metinler: iç kulak (17 yapı), denge sistemi (9 yapı), Corti animasyonu aşama yazıları ve açıklaması, sözlük terimleri. (3) 3. adımda kalan: proje sahibi isterse ampulla içinde krista/kupula; sonra "sıradaki adıma geç" (4. adım: üye girişi, forum, bildirim). (4) Temizlik: `adim3-modeller`, `sozluk-yon`, `sozluk-temel`, `denge-saydamlik` ve eski dallar silinebilir.
 **v42 ayrıntısı:**
