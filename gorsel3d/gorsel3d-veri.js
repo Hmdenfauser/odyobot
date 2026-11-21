@@ -52,10 +52,10 @@ window.GORSEL3D_VERI = {
     bone: { ad: 'Temporal kemik', aciklama: 'Bütün bu yapıları barındıran kemik. Burada kulağa yakın bölümü yarı saydam gösteriliyor.' }
   },
   // Model üzerindeki yazılar (2026-11-21). id: yapı; yazı yapının 'etiket' alanı (yönetici düzenler), yoksa adı.
-  // tum: Tüm sistem bölümünde de görünür (iç yapılar kepçenin arkasında kaldığı için yalnızca kepçe). metin: metinler'den yazı.
+  // Tüm sistem görünümünde hiç yazı yok (proje sahibinin isteği, 2026-11-21); tum: true verilirse orada da görünür. metin: metinler'den yazı.
   // ilgili: bu yapılardan biri seçiliyken de yazı kalır. kepce: kepçe bölümleri açıkken gizlenir.
   etiketler: [
-    { id: 'p_cavum', metin: 'etiketKepce', tum: true, kepce: true, ilgili: ['p_helix', 'p_antihelix', 'p_scapha', 'p_fossa', 'p_crush', 'p_cymba', 'p_cavum', 'p_tragus', 'p_antitragus', 'p_notch', 'p_lobule'] },
+    { id: 'p_cavum', metin: 'etiketKepce', kepce: true, ilgili: ['p_helix', 'p_antihelix', 'p_scapha', 'p_fossa', 'p_crush', 'p_cymba', 'p_cavum', 'p_tragus', 'p_antitragus', 'p_notch', 'p_lobule'] },
     { id: 'eac' }, { id: 'tm' }, { id: 'mal' }, { id: 'inc' }, { id: 'sta' }, { id: 'ct' },
     { id: 'sv', metin: 'etiketKoklea', ilgili: ['sv', 'sm', 'st'] },
     { id: 'vest' }, { id: 'ant' }, { id: 'post' }, { id: 'lat' },
