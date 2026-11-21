@@ -1335,18 +1335,19 @@
   /* ---------- Koklea kesiti ve tüylü hücreler (korti/, 2026-11-21) ----------
      Görüntüleyici korti/korti.js, yazılar korti/korti-veri.js (window.KORTI_VERI). Model kodla üretilir (dosya inmez).
      Yönetici düzenlemesi: icerik/korti.yapi.<id> (ad, aciklama), korti.genel (ad, aciklama), korti.metin (ipucu, not, etiket, genelGorunum). */
-  var KT_ANIM_ALAN = [{ f: 'asamaYukari', ad: 'Aşama yazısı: baziler membran yukarı', cok: true }, { f: 'asamaAsagi', ad: 'Aşama yazısı: baziler membran aşağı', cok: true }, { f: 'ipucu', ad: 'İpucu (modelin altında)', cok: true }, { f: 'not', ad: 'Not (renkler ve kaynak)', cok: true }, { f: 'etiket', ad: 'Modelin sağ üstündeki yazı' }, { f: 'etiketIth', ad: 'Model üzerinde iç tüylü hücre kısaltması' }, { f: 'etiketDth', ad: 'Model üzerinde dış tüylü hücre kısaltması' }, { f: 'oynat', ad: 'Oynat düğmesinin ipucu' }, { f: 'duraklat', ad: 'Duraklat düğmesinin ipucu' }, { f: 'genelGorunum', ad: 'Genel görünüm düğmesinin ipucu' }];
+  var KT_ANIM_ALAN = [{ f: 'asamaYukari', ad: 'Aşama yazısı: baziler membran yukarı', cok: true }, { f: 'asamaAsagi', ad: 'Aşama yazısı: baziler membran aşağı', cok: true }, { f: 'ipucu', ad: 'İpucu (modelin altında)', cok: true }, { f: 'not', ad: 'Not (renkler ve kaynak)', cok: true }, { f: 'etiket', ad: 'Modelin sağ üstündeki yazı' }, { f: 'etiketIth', ad: 'Model üzerinde iç tüylü hücre kısaltması' }, { f: 'etiketDth', ad: 'Model üzerinde dış tüylü hücre kısaltması' }, { f: 'yazilariGizle', ad: 'Yazıları gizle düğmesinin ipucu' }, { f: 'yazilariGoster', ad: 'Yazıları göster düğmesinin ipucu' }, { f: 'oynat', ad: 'Oynat düğmesinin ipucu' }, { f: 'duraklat', ad: 'Duraklat düğmesinin ipucu' }, { f: 'genelGorunum', ad: 'Genel görünüm düğmesinin ipucu' }];
   var KT_YAPI_ALAN = [{ f: 'ad', ad: 'Ad' }, { f: 'aciklama', ad: 'Açıklama', cok: true }, { f: 'etiket', ad: 'Model üzerindeki kısa yazı' }];
   var KT = window.KORTI_VERI, kt = null, KT_METIN_ALAN = [{ f: 'ipucu', ad: 'İpucu (modelin altında)', cok: true }, { f: 'not', ad: 'Not (sayfanın altında)', cok: true }, { f: 'etiket', ad: 'Modelin sağ üstündeki yazı' }, { f: 'genelGorunum', ad: 'Genel görünüm düğmesinin ipucu' }];
+  var KT_3D_ALAN = KT_METIN_ALAN.concat([{ f: 'etiketIth', ad: 'Model üzerinde iç tüylü hücre kısaltması' }, { f: 'etiketDth', ad: 'Model üzerinde dış tüylü hücre kısaltması' }, { f: 'yazilariGizle', ad: 'Yazıları gizle düğmesinin ipucu' }, { f: 'yazilariGoster', ad: 'Yazıları göster düğmesinin ipucu' }]);
   if (KT) {
     Object.keys(KT.yapilar).forEach(function (id) { var y = KT.yapilar[id]; y.key = 'korti.yapi.' + id; editable(y, y.etiket != null ? ['ad', 'aciklama', 'etiket'] : ['ad', 'aciklama']); });
     KT.genel.key = 'korti.genel'; editable(KT.genel, ['ad', 'aciklama']);
-    KT.metinler.key = 'korti.metin'; editable(KT.metinler, ['ipucu', 'not', 'etiket', 'genelGorunum']);
+    KT.metinler.key = 'korti.metin'; editable(KT.metinler, KT_3D_ALAN.map(function (a) { return a.f; }));
     if (KT.anim) { KT.anim.genel.key = 'korti.anim.genel'; editable(KT.anim.genel, ['ad', 'aciklama']); KT.anim.metinler.key = 'korti.anim.metin'; editable(KT.anim.metinler, KT_ANIM_ALAN.map(function (a) { return a.f; })); }
   }
   function ktKartEki(tur, kimlik, yuva) {
     var o = tur === 'yapi' ? KT.yapilar[kimlik] : tur === 'metin' ? KT.metinler : KT.genel; if (!o) return;
-    var a = tur === 'metin' ? adminPart(o.key, o, KT_METIN_ALAN, 'İpucu ve notu düzenle') : adminPart(o.key, o, o.etiket != null ? KT_YAPI_ALAN : G3D_ALAN, 'Düzenle');
+    var a = tur === 'metin' ? adminPart(o.key, o, KT_3D_ALAN, 'İpucu, not ve model yazılarını düzenle') : adminPart(o.key, o, o.etiket != null ? KT_YAPI_ALAN : G3D_ALAN, 'Düzenle');
     if (a) yuva.appendChild(a);
   }
   function ktAnimKartEki(tur, kimlik, yuva) {

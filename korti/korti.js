@@ -428,6 +428,19 @@
     var PRENK = {};
     // Geniş yapıların içindeki küçük ad yazıları: 3B noktası ekrana izdüşürülür; yüzü kameraya dönük değilse ya da başka yapı seçiliyse gizlenir
     // yon: ikinci bir 3B nokta verilirse yazı o yöne döndürülür (ince ve eğik yapılar, ör. Reissner membranı, boyunca yazılır)
+    // Yazıları gizle/göster düğmesi (yalnızca yazısı olan modellerde; durum cihazda saklanmaz)
+    var yaziAcik = true, yaziBtn = null, yaziIp = null;
+    if ((ayar.etiketler || []).length) {
+      yaziBtn = h('button', 'sl-yuv'); yaziBtn.type = 'button'; sagAlt.insertBefore(yaziBtn, sagAlt.firstChild);
+      if (IP) yaziIp = IP.bagla(yaziBtn, function () { return yaziAcik ? M.yazilariGizle : M.yazilariGoster; });
+      yaziBtn.addEventListener('click', function () { yaziAcik = !yaziAcik; yaziYaz(); dirty = true; });
+    }
+    function yaziYaz() {
+      if (!yaziBtn) return;
+      if (IP) IP.simge(yaziBtn, yaziAcik ? 'yazi' : 'yaziYok'); else yaziBtn.textContent = 'T';
+      yaziBtn.setAttribute('aria-pressed', yaziAcik ? 'false' : 'true'); if (yaziIp) yaziIp.yenile();
+    }
+    yaziYaz();
     var ETIKETLER = (ayar.etiketler || []).map(function (e) { var el = h('span', 'kt-yazi'); el.setAttribute('aria-hidden', 'true'); sahne.appendChild(el); return { id: e.id, p: e.p, yuz: e.yuz, yon: e.yon, hareket: e.hareket, metin: e.metin, el: el }; });
     // Animasyonda yazı bağlı olduğu yapıyla birlikte kayar (gölgelendiricideki hareketin aynısı)
     function kaydir(tur, p) {
@@ -442,7 +455,7 @@
       ETIKETLER.forEach(function (e) {
         var y = V.yapilar[e.id], p = kaydir(e.hareket, e.p), X = mvp[0] * p[0] + mvp[4] * p[1] + mvp[8] * p[2] + mvp[12], Y = mvp[1] * p[0] + mvp[5] * p[1] + mvp[9] * p[2] + mvp[13], W = mvp[3] * p[0] + mvp[7] * p[1] + mvp[11] * p[2] + mvp[15];
         var yz = e.yuz ? R[6] * e.yuz[0] + R[7] * e.yuz[1] + R[8] * e.yuz[2] : 1;
-        var gizle = !y || W <= 0 || yz < 0.3 || (sel && sel !== e.id);
+        var gizle = !yaziAcik || !y || W <= 0 || yz < 0.3 || (sel && sel !== e.id);
         var sx = (X / W * 0.5 + 0.5) * w, sy = (0.5 - Y / W * 0.5) * hh;
         if (sx < 8 || sx > w - 8 || sy < 8 || sy > hh - 8) gizle = true;
         e.el.hidden = gizle; if (gizle) return;
@@ -550,7 +563,7 @@
     window.requestAnimationFrame(dongu);
 
     if (ANIM) { DURUM = ANIM.adim(0); if (asamaEl) { asamaSon = DURUM.yazi; asamaEl.textContent = DURUM.yazi; } }
-    api.yenile = function () { metinler(); listeCiz(); kartYaz(); oynatYaz(); if (ANIM) { asamaSon = ''; DURUM = ANIM.adim(0); } if (hazir) { renkleriOku(); dirty = true; } };
+    api.yenile = function () { metinler(); listeCiz(); kartYaz(); oynatYaz(); yaziYaz(); if (ANIM) { asamaSon = ''; DURUM = ANIM.adim(0); } if (hazir) { renkleriOku(); dirty = true; } };
     api.durdur = function () { if (ANIM && oynuyor) { oynuyor = false; oynatYaz(); } };
     return api;
   }
@@ -561,7 +574,8 @@
     { id: 'sv', p: [0.05, 0.7, Z0], yuz: ON }, { id: 'sm', p: [0.3, 0.36, Z0], yuz: ON }, { id: 'st', p: [0.05, -0.56, Z0], yuz: ON },
     { id: 'ligament', p: [0.86, -0.32, Z1], yuz: ON }, { id: 'kemik', p: [0.05, 1.11, Z1], yuz: ON }, { id: 'osl', p: [-0.62, 0.115, Z1], yuz: ON },
     { id: 'tektoryal', p: [0.02, 0.231, Z1], yuz: ON, yon: [0.25, 0.243, Z1] }, { id: 'baziler', p: [0.55, -0.022, Z1], yuz: ON },
-    { id: 'reissner', p: [0.08, 0.376, Z1], yuz: ON, yon: [0.35, 0.447, Z1] }
+    { id: 'reissner', p: [0.08, 0.376, Z1], yuz: ON, yon: [0.35, 0.447, Z1] },
+    { id: 'ith', p: [ITH_X, 0.078, Z1 + 0.012], yuz: ON, metin: 'etiketIth' }, { id: 'dth', p: [0.155, 0.125, Z1 + 0.012], yuz: ON, metin: 'etiketDth' }
   ];
   function kurKorti(kok, ayar) {
     return kur(kok, { veri: ayar.veri, kartEki: ayar.kartEki, model: modelKur, sivi: ['sv', 'sm', 'st'], etiketler: ETIKET_3D,

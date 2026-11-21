@@ -13,6 +13,9 @@
     // baş (yandan, burun sağda) ve üstü çizili hâli: Denge'de başı göster/gizle
     bas: '<path d="M8.5 20.5v-3.3C5.9 15.9 4.3 13.4 4.3 10.4 4.3 6.3 7.6 3.3 12 3.3s7.6 3 7.6 6.8c0 .8-.2 1.4 0 2l1.6 2.7c.2.4 0 .8-.4.9l-1.3.3v2.1c0 1-.8 1.8-1.8 1.8h-2.2v.6"/>',
     basYok: '<path d="M8.5 20.5v-3.3C5.9 15.9 4.3 13.4 4.3 10.4 4.3 6.3 7.6 3.3 12 3.3s7.6 3 7.6 6.8c0 .8-.2 1.4 0 2l1.6 2.7c.2.4 0 .8-.4.9l-1.3.3v2.1c0 1-.8 1.8-1.8 1.8h-2.2v.6" opacity=".45"/><path d="M3.5 3.5l17 17"/>',
+    // yazı (T harfi) ve üstü çizili hâli: modeldeki ad yazılarını göster/gizle (İç kulak yapıları, Corti organı)
+    yazi: '<path d="M5 6V4.5h14V6"/><path d="M12 4.5v15"/><path d="M9 19.5h6"/>',
+    yaziYok: '<path d="M5 6V4.5h14V6" opacity=".45"/><path d="M12 4.5v15" opacity=".45"/><path d="M9 19.5h6" opacity=".45"/><path d="M3.5 3.5l17 17"/>',
     // kepçe (C biçimi) → dış kulak yolu → zar (dikey çizgi) → kemikçik (nokta) → koklea (sarmal)
     genel: '<path d="M8 3.5C5 3.5 3 6 3 9c0 2 .9 3.2 1.8 4.2.8.9 1.2 2 1.2 3.3 0 2 1.3 3.5 3.2 3.5"/>' +
       '<path d="M6 9.5c0-1.4.9-2.4 2.1-2.4"/><path d="M6.4 12H11"/><path d="M11.4 9.6v4.8"/><path d="M11.9 12.6l1.3-1.3 1.8.7"/>' +
