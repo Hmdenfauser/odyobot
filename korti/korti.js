@@ -189,7 +189,7 @@
       var z2 = hucreZ(k), ortak = [[-0.3, -0.002, z2], [-0.62, -0.012, z2], [-1.0, -0.025, z2], [gx + 0.12, gy, z2]];
       tup(ag('sinir'), [[ITH_X, 0.04, z2], [-0.25, 0.012, z2]].concat(ortak), 0.0075, 6, 0, 1);
       var zo = hucreZ(k, 0);
-      tup(ag('sinir'), [[DTH_X[1], 0.07, zo], [0.14, 0.03, zo], [0.06, 0.016, zo], [-0.03, 0.016, zo], [-0.13, 0.008, zo], [-0.24, 0.004, zo]].concat(ortak.map(function (q) { return [q[0], q[1] - 0.012, q[2]]; })), 0.006, 6, 2, 3);
+      tup(ag('sinir'), [[DTH_X[1], 0.07, zo], [0.14, 0.03, zo], [0.06, 0.016, zo], [-0.03, 0.016, zo], [-0.13, 0.01, zo], [-0.24, 0.008, zo]].concat(ortak.map(function (q, i) { return [q[0], q[1] - (i === 0 ? 0.004 : 0.012), q[2]]; })), 0.006, 6, 2, 3);
       if (k % 4 === 0) tup(ag('sinir'), [[gx - 0.12, gy, z2], [-1.42, -0.06, z2], [-1.62, -0.12, z2]], 0.016, 8, 1, 1.4);
     }
 
@@ -226,7 +226,7 @@
     'else if(tur>2.5&&tur<3.5){q.y=0.076+(q.y-0.076)*(1.0-kis);q.xy+=org(q.xy);}' +
     'else if(tur>3.5&&tur<4.5){q.xy+=tmD(q.xy);}' +
     'else if(tur>4.5&&tur<5.5){if(s<1.5){vec2 b=org(q.xy)+vec2(0.0,-kis*0.096);q.xy+=mix(b,tmD(q.xy),s);}else{q.xy+=org(q.xy)+vec2(ihc*0.04*(s-2.0),0.0);}}' +
-    'else if(tur>5.5&&tur<6.5){q.xy+=org(q.xy)*clamp((q.x+0.3)/0.1,0.0,1.0);}' +
+    'else if(tur>5.5&&tur<6.5){q.xy+=org(q.xy)*clamp((q.x+0.3)/0.012,0.0,1.0);}' +
     'vn=rot*n;gl_Position=mvp*vec4(q,1.0);}';
   var FS = 'precision mediump float;varying vec3 vn;varying float vs;uniform vec4 col;uniform float duz;uniform float parla;uniform vec3 vurgu;uniform vec3 elek;uniform float sp;uniform float spOn;uniform float sinirF;' +
     'void main(){vec3 nn=normalize(vn);float d=abs(nn.z);float s=pow(d,24.0)*0.16;vec3 c=col.rgb*(0.62+0.38*d)+vec3(s);c=mix(c,col.rgb*(0.86+0.14*d),duz);' +
