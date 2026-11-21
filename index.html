@@ -37,8 +37,10 @@
       <div class="ana-ust">
         <img class="ana-logo" src="icons/odyobot-logo-seffaf.png" width="44" height="44" alt="">
         <div class="ana-ust-yazi">
-          <h1 data-k="ana.baslik">Merhaba, odyolog</h1>
+          <!-- Selam (uye.js): giriş yapan üyenin görünen adı, yoksa "odyolog". Yazı kalıpları #uye-metinler (selamUye, selamMisafir). -->
+          <h1 id="ana-selam">Merhaba, odyolog</h1>
           <span class="ana-tarih" id="date">—</span>
+          <a class="ana-giris" href="#giris" id="ana-giris" hidden>Giriş yap / Kaydol</a>
         </div>
         <!-- Uygulama içi bildirim (zil.js): yeni duyurular ve forumda gönderine gelen cevaplar -->
         <button class="iconbtn zil" type="button" id="zil" aria-label="Bildirimler" aria-haspopup="true" aria-expanded="false" aria-controls="zil-panel">
@@ -992,6 +994,9 @@
           <p data-k="uye.m.eslemeHata" data-m="eslemeHata">Hesap bilgilerin sunucuya kaydedilemedi. İnternet bağlantını kontrol et; sorun sürerse yöneticiye bildir.</p>
           <p data-k="uye.m.kayitKapali" data-m="kayitKapali">Yeni üye kaydı şu an kapalı.</p>
           <p data-k="uye.m.engelKaldir" data-m="engelKaldir">Engeli kaldır</p>
+          <p data-k="uye.m.selamUye" data-m="selamUye">Merhaba, {ad}</p>
+          <p data-k="uye.m.selamMisafir" data-m="selamMisafir">Merhaba, odyolog</p>
+          <p data-k="uye.m.anaGiris" data-m="anaGiris">Giriş yap / Kaydol</p>
           <p data-k="uye.m.onayGerekli" data-m="onayGerekli">Devam etmek için kullanım koşullarını kabul etmelisin.</p>
           <p data-k="uye.m.googleGirisNot" data-m="googleGirisNot">Google ile ilk kez giriyorsan hesabın oluşturulur; devam ederek kullanım koşullarını kabul etmiş, KVKK aydınlatma metnini ve gizlilik politikasını okumuş olursun.</p>
           <p data-k="uye.m.googleIpucu" data-m="googleIpucu">Açılan pencerede Google hesabını seç. Pencere açılmadıysa tarayıcının açılır pencere iznini kontrol et.</p>
