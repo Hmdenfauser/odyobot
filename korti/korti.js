@@ -206,6 +206,8 @@
 
   /* ---------- görüntüleyici ---------- */
   function h(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  // Sahnenin arka plan rengi (CSS'ten, ör. "rgb(255, 255, 255)"): tuval opak boyanır (2026-11-21)
+  function arkaRenk(el) { var m = /rgba?\(([\d.]+),\s*([\d.]+),\s*([\d.]+)/.exec(window.getComputedStyle(el).backgroundColor || ''); return m ? [m[1] / 255, m[2] / 255, m[3] / 255] : [1, 1, 1]; }
   function renkCoz(s) {
     s = (s || '').trim(); var m = /^#([0-9a-f]{6})$/i.exec(s);
     if (m) { var n = parseInt(m[1], 16); return [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255]; }
@@ -325,10 +327,11 @@
     }
     var U = konum(PR), US = konum(PS);
 
-    var PARCA = {}, SIRA = [], SIVI = ayar.sivi || [], RENK = {}, SILIK = [0.62, 0.68, 0.7], VURGU = [1, 0.42, 0.62], ELEK = [0.6, 0.35, 1];
+    var PARCA = {}, SIRA = [], SIVI = ayar.sivi || [], RENK = {}, SILIK = [0.62, 0.68, 0.7], ARKA = [1, 1, 1], VURGU = [1, 0.42, 0.62], ELEK = [0.6, 0.35, 1];
     function renkleriOku() {
       var cs = window.getComputedStyle(kok);
       SIRA.forEach(function (id) { RENK[id] = renkCoz(cs.getPropertyValue(renkAd(id))) || SILIK; });
+      ARKA = arkaRenk(sahne);
       VURGU = renkCoz(cs.getPropertyValue('--kt-vurgu')) || VURGU; ELEK = renkCoz(cs.getPropertyValue('--kt-elek')) || ELEK; PRENK = {};
     }
     // Kamera: kullanıcı döndürmesi R, merkez cen, yarıçap rad (seçilen yapıya yumuşakça yaklaşır)
@@ -388,7 +391,9 @@
     function ciz() {
       var mvp = matris(); mvpSon = mvp;
       gl.useProgram(PR); gl.enable(gl.DEPTH_TEST); gl.disable(gl.CULL_FACE); gl.depthFunc(gl.LESS);
-      gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+      // Tuval opak: arka plan burada boyanır, saydam yapılar onun üstüne karışır. Böylece tarayıcının tuvali sayfayla
+      // ikinci kez karıştırması (cihaza göre farklı) sonucu değiştirmez; saydamlık telefonda da bilgisayardaki gibi görünür.
+      gl.clearColor(ARKA[0], ARKA[1], ARKA[2], 1); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
       gl.uniformMatrix4fv(U.mvp, false, mvp);
       gl.uniformMatrix3fv(U.rot, false, new Float32Array([R[0], R[3], R[6], R[1], R[4], R[7], R[2], R[5], R[8]]));
       hareketYaz(U, true); gl.uniform1f(U.sp, DURUM.sp); gl.uniform1f(U.spOn, DURUM.spOn);
@@ -399,13 +404,13 @@
         var sd = SIRA.filter(function (id) { return PARCA[id].saydam; });
         if (sd.length) {
           gl.colorMask(false, false, false, false); sd.forEach(function (id) { parcaCiz(id, 1); });
-          gl.colorMask(true, true, true, true); gl.depthFunc(gl.LEQUAL); gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false);
+          gl.colorMask(true, true, true, true); gl.depthFunc(gl.LEQUAL); gl.enable(gl.BLEND); gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false);
           sd.forEach(function (id) { parcaCiz(id, PARCA[id].saydam); });
         }
       } else {
         // Seçim var: seçilen yapı opak, diğerleri silik ve yarı saydam
         SIRA.forEach(function (id) { if (PARCA[id].grup === sel) parcaCiz(id, 1); });
-        gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false);
+        gl.enable(gl.BLEND); gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false);
         SIRA.forEach(function (id) { if (PARCA[id].grup !== sel) parcaCiz(id, SIVI.indexOf(id) >= 0 ? 0.35 : 0.16); });
       }
       gl.disable(gl.BLEND); gl.depthMask(true); gl.depthFunc(gl.LESS);

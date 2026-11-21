@@ -29,6 +29,8 @@
   function dot(a, b) { return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]; }
   function cross(a, b) { return [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]]; }
   function nrm(a) { var l = Math.hypot(a[0], a[1], a[2]) || 1; return [a[0] / l, a[1] / l, a[2] / l]; }
+  // Sahnenin arka plan rengi (CSS'ten, ör. "rgb(255, 255, 255)"): tuval opak boyanır (2026-11-21)
+  function arkaRenk(el) { var m = /rgba?\(([\d.]+),\s*([\d.]+),\s*([\d.]+)/.exec(window.getComputedStyle(el).backgroundColor || ''); return m ? [m[1] / 255, m[2] / 255, m[3] / 255] : [1, 1, 1]; }
   function vtx(P, i) { return [P[i * 3], P[i * 3 + 1], P[i * 3 + 2]]; }
   function merkez(P) { var c = [0, 0, 0], n = P.length / 3; for (var i = 0; i < P.length; i += 3) { c[0] += P[i]; c[1] += P[i + 1]; c[2] += P[i + 2]; } return sc(c, 1 / n); }
   // Ana eksenler (PCA): en büyükten en küçüğe 3 yön.
@@ -321,8 +323,10 @@
     var aP, aN, aS, U = {}, sahBtns = [], frBtns = [];
     var BIRIM = new Float32Array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]), BIRIM3 = new Float32Array([1, 0, 0, 0, 1, 0, 0, 0, 1]);
 
+    var ARKA = [1, 1, 1];
     function renkleriOku() {
       var cs = window.getComputedStyle(kok);
+      ARKA = arkaRenk(sahne);
       MAKRENK.ep = renkCoz(cs.getPropertyValue('--sl-makula')) || MAKRENK.ep;
       MAKRENK.tuy = renkCoz(cs.getPropertyValue('--sl-tuy')) || MAKRENK.tuy;
       MAKRENK.zar = renkCoz(cs.getPropertyValue('--sl-otolit')) || MAKRENK.zar;
@@ -435,7 +439,7 @@
         gl.drawElements(gl.TRIANGLES, p.n, gl.UNSIGNED_SHORT, 0);
       }
       // Önce izler (yarı saydam, sönerek), sonra taneler (opak)
-      gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false);
+      gl.enable(gl.BLEND); gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false);
       KR.forEach(function (k) {
         (k.iz || []).forEach(function (z, j, L) {
           var yas = (dsaat - z.t) / IZ_OMUR; if (yas >= 1) return;
@@ -492,7 +496,8 @@
       gl.uniform1f(U.sik, 1.2 + 1.3 * Math.log(frekans / 125) / Math.LN2 * 0.5);
       gl.uniform3f(U.tepeRenk, TEPE[0], TEPE[1], TEPE[2]); gl.uniform3f(U.cukurRenk, CUKUR[0], CUKUR[1], CUKUR[2]); gl.uniform3f(U.elekRenk, ELEK[0], ELEK[1], ELEK[2]);
       var H = hareket(), DM = mod === 'denge' && MAK ? makulaDurumu() : null;
-      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+      // Tuval opak (2026-11-21): arka plan burada boyanır; saydamlık her cihazda aynı görünür
+      gl.clearColor(ARKA[0], ARKA[1], ARKA[2], 1); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
       var pass, id, st, p, tur;
       // Geçiş −1 (yalnızca denge, uzak görünüm): yarı saydam baş, derinlik yazmadan, her şeyden önce — iç kulağın üstüne binmesin.
       // Geçiş 0: opak, 1: yarı saydam, 2 (yalnızca denge): odak parçaları (kristaller, makulalar) en üstte, soluklaşmasın diye.
@@ -502,10 +507,10 @@
       var SIRA = cizimSirasi(), GECISLER = [-1, 0, 0.5, 1, 2], gi;
       for (gi = 0; gi < GECISLER.length; gi++) {
         pass = GECISLER[gi];
-        if (pass === -1) { gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false); }
+        if (pass === -1) { gl.enable(gl.BLEND); gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false); }
         if (pass === 0) { gl.disable(gl.BLEND); gl.depthMask(true); }
         if (pass === 0.5) { if (mod !== 'denge') continue; gl.disable(gl.BLEND); gl.depthMask(true); gl.colorMask(false, false, false, false); }
-        if (pass === 1) { gl.colorMask(true, true, true, true); gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false); if (mod === 'denge') gl.depthFunc(gl.LEQUAL); }
+        if (pass === 1) { gl.colorMask(true, true, true, true); gl.enable(gl.BLEND); gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false); if (mod === 'denge') gl.depthFunc(gl.LEQUAL); }
         if (pass === 2) { gl.depthFunc(gl.LESS); if (mod !== 'denge') break; gl.disable(gl.BLEND); gl.depthMask(true); gl.clear(gl.DEPTH_BUFFER_BIT); }
         for (k = 0; k < SIRA.length; k++) {
           id = SIRA[k]; st = style(id); if (!st) continue;
