@@ -58,6 +58,7 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 - **Denge düğmeleri:** sol altta büyüteç (uzak/yakın) + oynat/duraklat (eski "Tümünü oynat"; alttaki ▶ kaldırıldı); sağ altta baş, ↺ ↻, Başa dön (vestibüler simge). Hepsi yazısız, ipuculu.
 - **Büyüteç her model ve animasyonda** (`SesLabIpucu.buyutec`): 3D Periferik/Denge/İç kulak, Ses laboratuvarı İşitme/Denge/Dağılma (engel çevresine 1,7×, `sahne.odak`)/Corti. Yazılar `metinler.yakinlastir/uzaklastir` (yönetici). İpucu artık düğmenin üstünde ortalı, çerçeve içinde.
 - **Corti animasyonu uzaktan açılır:** `genelZoom` 1,8 (açılış ve genel görünüm düğmesi); büyüteç bunun yarısına yaklaşır.
+**Krista/kupula kararı (2026-11-21):** Denge sistemi 3D modeline krista ve kupula eklenip denendi, proje sahibi istemedi, silindi (dal yayına girmedi). **İleride:** iç kulaktaki Corti kesiti gibi bir **ampulla kesitinin (krista + kupula) 3D animasyonlu hâli**, Ses laboratuvarında yapılacak (proje sahibi isteyince).
 **Oturum başında hatırlat:** telefonda v43: Denge saydamlığı telefonda da bilgisayardaki gibi mi, sol alttaki düğmeler, büyüteçler, Corti açılış uzaklığı. Aşağıdaki v42 hatırlatmaları hâlâ geçerli. Temizlik: `opak-tuval` dalı da silinebilir.
 
 ### Önceki: KALDIĞIMIZ YER (2026-11-21 gece, v42)
