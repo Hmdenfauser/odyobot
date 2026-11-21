@@ -276,7 +276,7 @@
     gb.disabled = true;
     var ref = db.collection('forum').doc(g.id), cref = ref.collection('cevaplar').doc(), simdi = Date.now(), b = db.batch();
     b.set(cref, Object.assign({ metin: metin, olusturma: simdi, guncelleme: simdi, gizli: false }, yazar()));
-    b.update(ref, { cevapSayisi: (g.cevapSayisi || 0) + 1, sonCevap: simdi });
+    b.update(ref, { cevapSayisi: (g.cevapSayisi || 0) + 1, sonCevap: simdi, sonCevapYazar: uye().uid });   // zil: gönderi sahibine yeni cevap
     b.commit().then(function () { var ta = $('fr-cevap-metin'); if (ta) ta.value = ''; bildirim(M('gonderildi')); }, function () { bildirim(M('hata'), true); })
       .then(function () { gb.disabled = false; });
   }

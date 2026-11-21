@@ -40,10 +40,28 @@
           <h1 data-k="ana.baslik">Merhaba, odyolog</h1>
           <span class="ana-tarih" id="date">—</span>
         </div>
+        <!-- Uygulama içi bildirim (zil.js): yeni duyurular ve forumda gönderine gelen cevaplar -->
+        <button class="iconbtn zil" type="button" id="zil" aria-label="Bildirimler" aria-haspopup="true" aria-expanded="false" aria-controls="zil-panel">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2H4.5z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg>
+          <span class="zil-sayi" id="zil-sayi" hidden>0</span>
+        </button>
+        <div class="zil-panel" id="zil-panel" role="region" aria-label="Bildirimler" hidden></div>
         <a class="iconbtn" id="gear" href="#ayarlar" aria-label="Ayarlar">
           <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M18.89 9.91L21.28 9.960L21.28 14.040L18.89 14.090L18.35 15.39L20 17.12L17.12 20L15.39 18.35L14.090 18.89L14.040 21.28L9.960 21.28L9.91 18.89L8.61 18.35L6.88 20L4 17.12L5.65 15.39L5.11 14.090L2.72 14.040L2.72 9.960L5.11 9.91L5.65 8.61L4 6.88L6.88 4L8.61 5.65L9.91 5.11L9.960 2.72L14.040 2.72L14.090 5.11L15.39 5.65L17.12 4L20 6.88L18.35 8.61Z"/><circle cx="12" cy="12" r="3"/></svg>
         </a>
       </div>
+
+      <details class="compose b-metinler" id="zil-metinler">
+        <summary>Bildirim yazıları (yönetici)</summary>
+        <div class="yedek-ic">
+          <p data-k="zil.m.etiket" data-m="etiket">Bildirimler</p>
+          <p data-k="zil.m.etiketVar" data-m="etiketVar">Bildirimler: {n} yeni</p>
+          <p data-k="zil.m.baslik" data-m="baslik">Yeni bildirimler</p>
+          <p data-k="zil.m.bos" data-m="bos">Yeni bildirim yok. Yeni duyurular ve forumdaki gönderilerine gelen cevaplar burada görünür.</p>
+          <p data-k="zil.m.turDuyuru" data-m="turDuyuru">Yeni duyuru</p>
+          <p data-k="zil.m.turCevap" data-m="turCevap">Gönderine yeni cevap</p>
+        </div>
+      </details>
 
       <!-- 2. Arama: ders notları, cihazlar ve şemalar (app.js, internetsiz; veriler kodda ve önbellekte) -->
       <div class="ara-kutu" role="search">
@@ -1308,6 +1326,7 @@
 <script src="sozluk.js"></script>
 <script src="uye.js"></script>
 <script src="forum.js"></script>
+<script src="zil.js"></script>
 <script src="odyo-hesap.js"></script>
 <script src="vaka-testler.js"></script>
 <script src="vakalarim.js"></script>
