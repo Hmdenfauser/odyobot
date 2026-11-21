@@ -212,8 +212,11 @@
     var IP = window.SesLabIpucu, sagAlt = h('div', 'sl-sag-alt');
     var oynatBtn = h('button', 'sl-yuv sl-oynat'); oynatBtn.type = 'button';
     // Denge kipi: "Yer" çizgisi ve uzak/yakın görünüm düğmesi
-    var yerEt = h('div', 'sl-yer'), yakinBtn = h('button', 'g3d-geri sl-yakin'); yerEt.hidden = true; yakinBtn.hidden = true; yakinBtn.type = 'button';
-    var donBox = h('div', 'sl-don'), donSol = h('button', 'sl-don-tus', '↺'), donSag = h('button', 'sl-don-tus', '↻'), basaBtn = h('button', 'sl-don-tus sl-basa');
+    // 2026-11-21: sol altta büyüteç (uzak/yakın) + oynat/duraklat (eski "Tümünü oynat"); sağ altta baş, ↺ ↻, başa dön (vestibüler simge)
+    var yerEt = h('div', 'sl-yer'), yakinBtn = h('button', 'sl-don-tus sl-ik-tus'); yerEt.hidden = true; yakinBtn.type = 'button';
+    var tumBtn = h('button', 'sl-don-tus sl-ik-tus'); tumBtn.type = 'button'; tumBtn.setAttribute('aria-pressed', 'false');
+    var solBox = h('div', 'sl-don sl-don-sol'); solBox.appendChild(yakinBtn); solBox.appendChild(tumBtn); solBox.hidden = true;
+    var donBox = h('div', 'sl-don'), donSol = h('button', 'sl-don-tus', '↺'), donSag = h('button', 'sl-don-tus', '↻'), basaBtn = h('button', 'sl-don-tus sl-ik-tus');
     // Baş aç/kapa (2026-11-20): uzak görünümde başı gösterir/gizler; simgeli, yazı ipucunda (seslab/ipucu.js).
     var basAcik = true, basBtn = h('button', 'sl-don-tus sl-bas-tus');
     [basBtn, donSol, donSag, basaBtn].forEach(function (b) { b.type = 'button'; donBox.appendChild(b); }); donBox.hidden = true;
@@ -222,7 +225,7 @@
     var donusBtn = h('button', 'sl-yuv sl-sahne-don'); donusBtn.type = 'button'; donusBtn.hidden = true;
     if (IP) IP.simge(donusBtn, 'genel');
     sagAlt.appendChild(donusBtn); sagAlt.appendChild(oynatBtn);
-    sahne.appendChild(cv); sahne.appendChild(yerEt); sahne.appendChild(yakinBtn); sahne.appendChild(donBox); sahne.appendChild(neresi); sahne.appendChild(olcek); sahne.appendChild(sagAlt); sahne.appendChild(durum);
+    sahne.appendChild(cv); sahne.appendChild(yerEt); sahne.appendChild(solBox); sahne.appendChild(donBox); sahne.appendChild(neresi); sahne.appendChild(olcek); sahne.appendChild(sagAlt); sahne.appendChild(durum);
     var oynatIp = IP ? IP.bagla(oynatBtn, function () { return oynuyor ? M.duraklat : M.oynat; }) : null;
     var basIp = IP ? IP.bagla(basBtn, function () { return basAcik ? (M.basiGizle || 'Başı gizle') : (M.basiGosterAc || 'Başı göster'); }) : null;
     function basYaz() {
@@ -232,6 +235,10 @@
     basBtn.addEventListener('click', function () { basAcik = !basAcik; basYaz(); dirty = true; });
     basYaz();
     var donusIp = IP ? IP.bagla(donusBtn, function () { return M.genelGorunum || 'Genel görünüme geç'; }) : null;
+    var yakinIp = IP ? IP.bagla(yakinBtn, function () { return uzak ? (M.yakinlastir || 'Yakınlaştır') : (M.basiGoster || 'Uzaklaştır'); }) : null;
+    var tumIp = IP ? IP.bagla(tumBtn, function () { return tumAd(); }) : null;
+    var basaIp = IP ? IP.bagla(basaBtn, function () { return M.basaDon || 'Başa dön'; }) : null;
+    if (IP) IP.simge(basaBtn, 'vestibuler'); else basaBtn.textContent = '⟲';
     var uyari = h('p', 'g3d-not g3d-ipucu sl-uyari');
     var kart = h('div', 'g3d-kart'), nmEl = h('h4'), dsEl = h('p'), frEl = h('p', 'sl-frekans-not'), yuva = h('div', 'g3d-kart-ek');
     kart.setAttribute('aria-live', 'polite');
@@ -252,11 +259,10 @@
     var modBox = h('div', 'g3d-satir sl-mod'), modIs = h('button', null), modDe = h('button', null);
     modIs.type = 'button'; modDe.type = 'button'; modBox.appendChild(modIs); modBox.appendChild(modDe); modBox.hidden = true;   // kip artık sayfanın seçim ekranından seçilir
     var bAdim = h('h3', 'g3d-baslik'), adimBox = h('div', 'g3d-satir sl-adimlar'), adimBtns = [];
-    // Tek tıkla izleme: adımları sırayla, her birinin sonunda kısa bekleyerek oynatır
-    var tumBtn = h('button', 'sl-tum'); tumBtn.type = 'button'; tumBtn.setAttribute('aria-pressed', 'false');
+    // Tek tıkla izleme (tumBtn, sol altta): adımları sırayla, her birinin sonunda kısa bekleyerek oynatır
     // Denge kipi (2026-11-20): sahne tuşları ve adım tuşları animasyonun hemen altında, küçük (simge + kısa yazı)
     var dengeBar = h('div', 'sl-denge-bar'), adimSatir = h('div', 'sl-adim-satir'); dengeBar.hidden = true;
-    adimSatir.appendChild(tumBtn); adimSatir.appendChild(adimBox); dengeBar.appendChild(adimSatir);
+    adimSatir.appendChild(adimBox); dengeBar.appendChild(adimSatir);
     var bSah = h('h3', 'g3d-baslik'), bFr = h('h3', 'g3d-baslik'), bGor = h('h3', 'g3d-baslik');
     // İşitme kipinde frekans sayı doğrusu ve "Sesi çal" animasyonun hemen altında (2026-11-20)
     var frUst = h('div', 'sl-frust'); frUst.appendChild(bFr); frUst.appendChild(frBox); frUst.appendChild(sesSatir);
@@ -269,7 +275,7 @@
       yerEt.textContent = M.yerEtiketi || '';
       donSol.setAttribute('aria-label', M.donSol || 'Başı sola döndür'); donSag.setAttribute('aria-label', M.donSag || 'Başı sağa döndür');
       donSol.title = donSol.getAttribute('aria-label'); donSag.title = donSag.getAttribute('aria-label');
-      basaBtn.textContent = M.basaDon || 'Başa dön'; basaBtn.title = M.basaDonUzun || 'Görünümü başlangıç hâline döndür';
+      basaBtn.setAttribute('aria-label', M.basaDon || 'Başa dön'); if (basaIp) basaIp.yenile(); if (yakinIp) yakinIp.yenile(); if (tumIp) tumIp.yenile();
       bSah.textContent = M.sahneBasligi; bFr.textContent = M.frekansBasligi + ': '; bFr.appendChild(frDeger); frKaydir.setAttribute('aria-label', M.frekansBasligi); bGor.textContent = M.gorunumBasligi;
       sesNot.textContent = M.sesNot;
       bEn.textContent = M.enerjiBaslik || ''; enerjiNot.textContent = M.enerjiNot || '';
@@ -420,7 +426,9 @@
       return o;
     }
     function uzakYakin(u) {
-      uzak = u; yakinBtn.textContent = u ? (M.yakinlastir || 'Yakınlaştır') : (M.basiGoster || 'Uzaklaştır');
+      uzak = u;
+      if (IP) IP.simge(yakinBtn, u ? 'buyutecArti' : 'buyutecEksi'); else yakinBtn.textContent = u ? '+' : '−';
+      yakinBtn.setAttribute('aria-label', u ? (M.yakinlastir || 'Yakınlaştır') : (M.basiGoster || 'Uzaklaştır')); if (yakinIp) yakinIp.yenile();
       basBtn.hidden = !u;   // baş yalnızca uzak görünümde çizilir
       if (dsah) frame(u ? ['bas_deri'] : (dsah.cerceve || dsah.yapilar));
     }
@@ -666,11 +674,15 @@
       dsah.adimlar.forEach(function (a, i) { var b = kucukTus(a); b.addEventListener('click', function () { setAdim(i); }); adimBox.appendChild(b); adimBtns.push(b); });
     }
     // Adım seçimi: baş yeni pozisyona yumuşakça döner (duraklatılmışsa ya da hareket azaltma açıksa hemen).
-    function tumYaz() {
-      // Üç durum: oynatılmıyor (▶ Tümünü oynat) · oynuyor (❚❚ Duraklat) · duraklatıldı (▶ Devam et)
+    function tumAd() {
       var calisiyor = !!oto && oynuyor;
-      var ad = calisiyor ? (M.tumunuDurdur || 'Duraklat') : oto ? (M.devamEt || 'Devam et') : (M.tumunuOynat || 'Tümünü oynat');
-      tumBtn.textContent = calisiyor ? '❚❚' : '▶'; tumBtn.setAttribute('aria-label', ad); tumBtn.title = ad; tumBtn.setAttribute('aria-pressed', calisiyor ? 'true' : 'false');
+      return calisiyor ? (M.tumunuDurdur || 'Duraklat') : oto ? (M.devamEt || 'Devam et') : (M.tumunuOynat || 'Tümünü oynat');
+    }
+    function tumYaz() {
+      // Üç durum: oynatılmıyor (▶ Tümünü oynat) · oynuyor (❚❚ Duraklat) · duraklatıldı (▶ Devam et); simge, yazı ipucunda
+      var calisiyor = !!oto && oynuyor;
+      if (IP) IP.simge(tumBtn, calisiyor ? 'duraklat' : 'oynat'); else tumBtn.textContent = calisiyor ? '❚❚' : '▶';
+      tumBtn.setAttribute('aria-label', tumAd()); tumBtn.setAttribute('aria-pressed', calisiyor ? 'true' : 'false'); if (tumIp) tumIp.yenile();
     }
     function otoDurdur() { oto = null; tumYaz(); }
     tumBtn.addEventListener('click', function () {
@@ -703,7 +715,7 @@
       mod = m; sesKapat(); sel = null;
       modIs.setAttribute('aria-pressed', m === 'isitme' ? 'true' : 'false'); modDe.setAttribute('aria-pressed', m === 'denge' ? 'true' : 'false');
       [enerjiKutu, bSah, frUst, bGor, viewBox].forEach(function (e) { e.hidden = m === 'denge'; });
-      [adimBox, yerEt, yakinBtn, dengeBar, donBox].forEach(function (e) { e.hidden = m !== 'denge'; });
+      [adimBox, yerEt, solBox, dengeBar, donBox].forEach(function (e) { e.hidden = m !== 'denge'; });
       // Sahne tuşları: denge kipinde animasyonun hemen altına (küçük), işitmede eski yerine
       sahBox.classList.toggle('sl-sahne-k', m === 'denge'); sahBox.classList.toggle('g3d-bolumler', m !== 'denge');
       if (m === 'denge') dengeBar.insertBefore(sahBox, adimSatir); else bSah.parentNode.insertBefore(sahBox, bSah.nextSibling);

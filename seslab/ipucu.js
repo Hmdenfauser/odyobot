@@ -13,6 +13,12 @@
     // baş (yandan, burun sağda) ve üstü çizili hâli: Denge'de başı göster/gizle
     bas: '<path d="M8.5 20.5v-3.3C5.9 15.9 4.3 13.4 4.3 10.4 4.3 6.3 7.6 3.3 12 3.3s7.6 3 7.6 6.8c0 .8-.2 1.4 0 2l1.6 2.7c.2.4 0 .8-.4.9l-1.3.3v2.1c0 1-.8 1.8-1.8 1.8h-2.2v.6"/>',
     basYok: '<path d="M8.5 20.5v-3.3C5.9 15.9 4.3 13.4 4.3 10.4 4.3 6.3 7.6 3.3 12 3.3s7.6 3 7.6 6.8c0 .8-.2 1.4 0 2l1.6 2.7c.2.4 0 .8-.4.9l-1.3.3v2.1c0 1-.8 1.8-1.8 1.8h-2.2v.6" opacity=".45"/><path d="M3.5 3.5l17 17"/>',
+    // büyüteç (yakınlaştır: +, uzaklaştır: −) — Denge'de uzak/yakın görünüm
+    buyutecArti: '<circle cx="10.5" cy="10.5" r="6.2"/><path d="M15.2 15.2l5 5"/><path d="M7.8 10.5h5.4M10.5 7.8v5.4"/>',
+    buyutecEksi: '<circle cx="10.5" cy="10.5" r="6.2"/><path d="M15.2 15.2l5 5"/><path d="M7.8 10.5h5.4"/>',
+    // vestibüler sistem: vestibül (oval) ve üç semisirküler kanal — Denge'de "Başa dön"
+    vestibuler: '<ellipse cx="10" cy="15.5" rx="3.4" ry="2.6"/><path d="M9 13.1C7.2 9.2 8.4 3.8 11.8 3.8c3.3 0 4.3 4 2.3 7.6l-2 2.6"/>' +
+      '<path d="M13.3 15.6c2.9-1.3 6.9-1.5 7.4.9.5 2.6-3.4 3.9-7.6 2.4"/><path d="M6.8 14.6C3.9 13 2.6 9.6 4.2 8.3c1.5-1.2 3.6.6 4.4 3.2"/>',
     // yazı (T harfi) ve üstü çizili hâli: modeldeki ad yazılarını göster/gizle (İç kulak yapıları, Corti organı)
     yazi: '<path d="M5 6V4.5h14V6"/><path d="M12 4.5v15"/><path d="M9 19.5h6"/>',
     yaziYok: '<path d="M5 6V4.5h14V6" opacity=".45"/><path d="M12 4.5v15" opacity=".45"/><path d="M9 19.5h6" opacity=".45"/><path d="M3.5 3.5l17 17"/>',

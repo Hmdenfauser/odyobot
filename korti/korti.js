@@ -650,7 +650,7 @@
   function kurKortiAnim(kok, ayar) {
     var V = ayar.veri;   // { genel, gruplar, yapilar, metinler } — yapılar 3D modelle ortak
     return kur(kok, { veri: V, kartEki: ayar.kartEki, model: modelKur, sivi: ['sv', 'sm', 'st'], etiketler: ETIKET_ANIM, anim: kortiAnim(V), sinif: 'kt-anim',
-      basR: mul(rx(D(10)), ry(D(-24))), genel: { cen: [-0.03, 0.1, 0.12], rad: 0.42 } });
+      basR: mul(rx(D(10)), ry(D(-24))), genel: { cen: [-0.02, 0.1, 0.1], rad: 0.6 } });   // 2026-11-21: biraz daha geniş açıyla başlar
   }
 
   window.Korti = { kur: kurKorti, kurAnim: kurKortiAnim, goruntuleyici: kur, _model: modelKur, rx: rx, ry: ry, mul: mul, D: D };
