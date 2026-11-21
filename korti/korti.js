@@ -264,10 +264,10 @@
     if (IP) { IP.simge(genelBtn, 'genel'); genelIp = IP.bagla(genelBtn, function () { return M.genelGorunum; }); }
     else genelBtn.textContent = '⟲';
     // Büyüteç: sağ alttaki düğmelerin en solunda; yakın = model 2 kat yakın (iki parmakla yakınlaştırmayla aynı değişken)
-    var YAKIN = 0.5, buyBtn = h('button', 'sl-yuv'), buyIp = null; sagAlt.insertBefore(buyBtn, sagAlt.firstChild);
-    if (IP) buyIp = IP.buyutec(buyBtn, { yakinMi: function () { return zoom < 0.8; }, degistir: function () { zoom = zoom < 0.8 ? 1 : YAKIN; dirty = true; },
+    var YAKIN = 0.5 * (ayar.genelZoom || 1), buyBtn = h('button', 'sl-yuv'), buyIp = null; sagAlt.insertBefore(buyBtn, sagAlt.firstChild);
+    if (IP) buyIp = IP.buyutec(buyBtn, { yakinMi: function () { return zoom < 0.8 * (ayar.genelZoom || 1); }, degistir: function () { zoom = zoom < 0.8 * (ayar.genelZoom || 1) ? (ayar.genelZoom || 1) : YAKIN; dirty = true; },
       yakinlastir: function () { return M.yakinlastir || 'Yakınlaştır'; }, uzaklastir: function () { return M.uzaklastir || 'Uzaklaştır'; } });
-    else { buyBtn.type = 'button'; buyBtn.textContent = '⌕'; buyBtn.addEventListener('click', function () { zoom = zoom < 0.8 ? 1 : YAKIN; dirty = true; }); }
+    else { buyBtn.type = 'button'; buyBtn.textContent = '⌕'; buyBtn.addEventListener('click', function () { zoom = zoom < 0.8 * (ayar.genelZoom || 1) ? (ayar.genelZoom || 1) : YAKIN; dirty = true; }); }
     var renkAd = ayar.renk || function (id) { return '--kt-' + id; }, noktaAd = ayar.nokta || renkAd;
     // Hareket (yalnızca Ses laboratuvarı): oynat/duraklat düğmesi sağ altta (genel görünümün solunda), aşama yazısı modelin altında
     var ANIM = ayar.anim || null, oynuyor = false, oynatBtn = null, oynatIp = null, asamaEl = null;
@@ -340,7 +340,7 @@
       VURGU = renkCoz(cs.getPropertyValue('--kt-vurgu')) || VURGU; ELEK = renkCoz(cs.getPropertyValue('--kt-elek')) || ELEK; PRENK = {};
     }
     // Kamera: kullanıcı döndürmesi R, merkez cen, yarıçap rad (seçilen yapıya yumuşakça yaklaşır)
-    var BAS_R = ayar.basR || mul(rx(D(16)), ry(D(-32))), R = BAS_R.slice(), zoom = 1, FOV = D(26), TAN = Math.tan(FOV / 2);
+    var BAS_R = ayar.basR || mul(rx(D(16)), ry(D(-32))), R = BAS_R.slice(), zoom = ayar.genelZoom || 1, FOV = D(26), TAN = Math.tan(FOV / 2);
     var GENEL = null, cen = [0, 0, 0], rad = 1, hedef = { cen: [0, 0, 0], rad: 1 };
     var reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     var dirty = true, durdu = false, mvpSon = null;
