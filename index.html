@@ -117,7 +117,7 @@
         <button type="button" class="geri-ok" id="sz-geri"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="gizli-yazi">Geri: Ana sayfa</span></button>
         <h2 data-k="sozluk.baslik" data-etiket="Terimler sözlüğü: sayfa başlığını düzenle">Terimler sözlüğü</h2>
       </div>
-      <p class="note" data-k="sozluk.aciklama" data-etiket="Terimler sözlüğü: açıklamayı düzenle">Odyolojik terimler ve Türkçe karşılıkları. Kartı çevirmek için dokun; bildiysen sağa, tekrar etmek istersen sola at.</p>
+      <p class="note" data-k="sozluk.aciklama" data-etiket="Terimler sözlüğü: açıklamayı düzenle">Odyolojik terimler ve Türkçe karşılıkları. Kartı çevirmek için dokun; bildiysen sola (mavi X), tekrar etmek istersen sağa (kırmızı yuvarlak) at.</p>
       <div class="seg" role="group" aria-label="Görünüm">
         <button type="button" id="sz-seg-kartlar" aria-pressed="true">Kartlar</button>
         <button type="button" id="sz-seg-liste" aria-pressed="false">Liste</button>
@@ -131,11 +131,11 @@
         <div id="sz-kart-alan">
           <p class="meta sz-sayac" id="sz-sayac"></p>
           <div class="sz-yigin" id="sz-yigin"></div>
-          <p class="meta sz-ipucu" id="sz-ipucu" data-k="sozluk.ipucu">Dokun: çevir · Sola at: tekrar et · Sağa at: biliyorum</p>
+          <p class="meta sz-ipucu" id="sz-ipucu" data-k="sozluk.ipucu">Dokun: çevir · Sola at: biliyorum · Sağa at: tekrar et</p>
           <div class="sz-dugmeler" id="sz-dugmeler">
-            <button type="button" class="btn sz-btn-tekrar" id="sz-btn-tekrar">← Tekrar et</button>
+            <button type="button" class="btn sz-btn-biliyorum" id="sz-btn-biliyorum">← Biliyorum</button>
             <button type="button" class="btn" id="sz-btn-cevir">Çevir</button>
-            <button type="button" class="btn sz-btn-biliyorum" id="sz-btn-biliyorum">Biliyorum →</button>
+            <button type="button" class="btn sz-btn-tekrar" id="sz-btn-tekrar">Tekrar et →</button>
           </div>
           <div class="card sz-bitti" id="sz-bitti" hidden>
             <p id="sz-bitti-yazi"></p>
@@ -157,7 +157,7 @@
 
       <!-- Tekrar listesi: sola atılan kartlar -->
       <div id="sz-p-tekrar" hidden>
-        <p class="note" data-k="sozluk.tekrarAciklama">Sola attığın kartlar burada. Sağa atınca listeden çıkar.</p>
+        <p class="note" data-k="sozluk.tekrarAciklama">Sağa attığın kartlar burada. Sola atınca listeden çıkar.</p>
         <button type="button" class="btn primary" id="sz-tekrar-baslat">Bu kartları çalış</button>
         <ul class="sz-liste" id="sz-tekrar-liste"></ul>
         <p class="note" id="sz-tekrar-bos" hidden data-k="sozluk.tekrarBos">Tekrar listen boş.</p>
@@ -200,7 +200,7 @@
           <p data-k="sozluk.m.sayacTekrar" data-m="sayacTekrar">Tekrar {n}</p>
           <p data-k="sozluk.m.sayacOgrenilen" data-m="sayacOgrenilen">Öğrenilen {n}</p>
           <p data-k="sozluk.m.cevirIpucu" data-m="cevirIpucu">Çevirmek için dokun</p>
-          <p data-k="sozluk.m.kartEtiket" data-m="kartEtiket">Çevirmek için dokun; sağ ok biliyorum, sol ok tekrar et.</p>
+          <p data-k="sozluk.m.kartEtiket" data-m="kartEtiket">Çevirmek için dokun; sol ok biliyorum, sağ ok tekrar et.</p>
           <p data-k="sozluk.m.damgaTekrar" data-m="damgaTekrar">TEKRAR</p>
           <p data-k="sozluk.m.damgaBiliyorum" data-m="damgaBiliyorum">BİLİYORUM</p>
           <p data-k="sozluk.m.aciklamaYok" data-m="aciklamaYok">Açıklama henüz eklenmedi.</p>

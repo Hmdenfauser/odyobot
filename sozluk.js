@@ -2,8 +2,9 @@
    - Temel terimler kodda (sozluk-veri.js, window.SOZLUK_TEMEL); yöneticinin ekledikleri ve düzenlemeleri Firestore 'sozluk' koleksiyonunda: tr (Türkçe karşılık), en (İngilizce terim), kisaltma, aciklama.
      Herkes okur, yalnızca yönetici yazar (firestore.rules). Liste Türkçe karşılığa göre alfabetik.
    - Kartlar: ön yüzde Türkçe (kalın) ve İngilizce (küçük), dokununca döner, arkada açıklama.
-     Sola at = "Tekrar et": tekrar listesine girer, aynı oturumda birkaç kart sonra yeniden gelir.
-     Sağa at = "Biliyorum": bir üst kutuya çıkar, giderek seyrek gösterilir (aralıklı tekrar, Leitner kutuları).
+     Sağa at = "Tekrar et" (kırmızı yuvarlak): tekrar listesine girer, aynı oturumda birkaç kart sonra yeniden gelir.
+     Sola at = "Biliyorum" (mavi X): bir üst kutuya çıkar, giderek seyrek gösterilir (aralıklı tekrar, Leitner kutuları).
+     Semboller odyogramdaki sağ (kırmızı O) ve sol (mavi X) kulak sembolleridir; yön ve anlam proje sahibinin kararı (2026-11-21).
    - Öğrenme durumu yalnızca bu cihazda saklanır (localStorage 'odybot:sozlukTekrar'); sunucuya gitmez.
    - Yazılar index.html #sz-metinler (yönetici düzenler). app.js 'odyo:db', 'odyo:db-yok', 'odyo:yetki', 'odyo:metinler'
      olaylarıyla haber verir; ana sayfa araması window.Sozluk.terimler() ile terimleri okur. */
@@ -96,7 +97,7 @@
   // Düğme yazıları (#sz-metinler; düğmenin içine düzenleme bağlantısı konamadığı için oradan okunur)
   function metinYaz() {
     $('sz-seg-kartlar').textContent = M('panelKartlar'); $('sz-seg-liste').textContent = M('panelListe');
-    $('sz-btn-tekrar').textContent = '← ' + M('btnTekrar'); $('sz-btn-cevir').textContent = M('btnCevir'); $('sz-btn-biliyorum').textContent = M('btnBiliyorum') + ' →';
+    $('sz-btn-biliyorum').textContent = '← ' + M('btnBiliyorum'); $('sz-btn-cevir').textContent = M('btnCevir'); $('sz-btn-tekrar').textContent = M('btnTekrar') + ' →';
     $('sz-tekrar-calis').textContent = M('tekrarCalis'); $('sz-hepsi').textContent = M('hepsi'); $('sz-tekrar-baslat').textContent = M('tekrarBaslat');
   }
   function ciz() {
@@ -141,7 +142,7 @@
     var alt = terim(kuyruk[1]);
     var ic = h('div', { 'class': 'sz-kart-ic' + (cevrik ? ' cevrik' : '') }, [yuz(t, false), yuz(t, true)]);
     var kart = h('div', { 'class': 'sz-kart', tabindex: '0', role: 'button', 'aria-label': t.tr + (t.en ? ', ' + t.en : '') + '. ' + M('kartEtiket') }, [
-      ic, h('span', { 'class': 'sz-damga sz-damga-sol', 'aria-hidden': 'true', text: M('damgaTekrar') }), h('span', { 'class': 'sz-damga sz-damga-sag', 'aria-hidden': 'true', text: M('damgaBiliyorum') })
+      ic, damga('sol', M('damgaBiliyorum')), damga('sag', M('damgaTekrar'))
     ]);
     fill(yigin, [alt ? h('div', { 'class': 'sz-kart sz-kart-alt', 'aria-hidden': 'true' }, [h('div', { 'class': 'sz-kart-ic' }, [yuz(alt, false)])]) : null, kart]);
     $('sz-canli').textContent = cevrik ? (t.aciklama || '') : t.tr + (t.en ? ' — ' + t.en : '');
@@ -152,12 +153,12 @@
   function at(kart, yon) {
     if (!kart || kart.dataset.gidiyor) return;
     kart.dataset.gidiyor = '1';
-    if (reduce) { cevapla(yon > 0); return; }
+    if (reduce) { cevapla(yon < 0); return; }
     kart.style.transition = 'transform .32s ease-in, opacity .32s ease-in';
     kart.style.transform = 'translateX(' + (yon * 130) + '%) rotate(' + (yon * 22) + 'deg)';
     kart.style.opacity = '0';
     kart.querySelector(yon > 0 ? '.sz-damga-sag' : '.sz-damga-sol').style.opacity = 1;
-    setTimeout(function () { cevapla(yon > 0); }, 330);
+    setTimeout(function () { cevapla(yon < 0); }, 330);
   }
   function kaydirma(kart, ic) {
     var bas = null, dx = 0, dy = 0, yatay = false;
@@ -188,6 +189,15 @@
       else if (e.key === 'ArrowLeft') { e.preventDefault(); at(kart, -1); }
       else if (e.key === 'ArrowRight') { e.preventDefault(); at(kart, 1); }
     });
+  }
+  // Kaydırırken çıkan damga: sola (biliyorum) mavi X, sağa (tekrar et) kırmızı yuvarlak — odyogram sembolleri
+  function damga(yan, yazi) {
+    var NS = 'http://www.w3.org/2000/svg', svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 40 40'); svg.setAttribute('class', 'sz-damga-ik');
+    var sekil = yan === 'sag' ? document.createElementNS(NS, 'circle') : document.createElementNS(NS, 'path');
+    if (yan === 'sag') { sekil.setAttribute('cx', '20'); sekil.setAttribute('cy', '20'); sekil.setAttribute('r', '14'); } else sekil.setAttribute('d', 'M8 8 32 32M32 8 8 32');
+    svg.appendChild(sekil);
+    return h('span', { 'class': 'sz-damga sz-damga-' + yan, 'aria-hidden': 'true' }, [svg, h('span', { 'class': 'sz-damga-yazi', text: yazi })]);
   }
   function ustKart() { return document.querySelector('#sz-yigin .sz-kart:not(.sz-kart-alt)'); }
 
@@ -321,8 +331,8 @@
   ['kartlar', 'liste', 'tekrar'].forEach(function (p) {
     $('sz-seg-' + p).addEventListener('click', function () { panel = p; if (p === 'kartlar' && !kuyruk.length) kuyrukKur(false); ciz(); });
   });
-  $('sz-btn-tekrar').addEventListener('click', function () { at(ustKart(), -1); });
-  $('sz-btn-biliyorum').addEventListener('click', function () { at(ustKart(), 1); });
+  $('sz-btn-tekrar').addEventListener('click', function () { at(ustKart(), 1); });
+  $('sz-btn-biliyorum').addEventListener('click', function () { at(ustKart(), -1); });
   $('sz-btn-cevir').addEventListener('click', cevir);
   $('sz-hepsi').addEventListener('click', function () { hepsiniKur(); ciz(); });
   $('sz-tekrar-calis').addEventListener('click', function () { kuyrukKur(true); ciz(); });
