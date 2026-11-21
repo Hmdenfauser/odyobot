@@ -36,9 +36,11 @@
     var kap = dugme.closest('.g3d-sahne, .sl-g-sahne') || dugme.offsetParent || dugme.parentNode; if (!kap || !yazi) return;   // animasyon çerçevesine (düğme kutusu dar)
     var e = document.createElement('div'); e.className = 'sl-ipucu'; e.setAttribute('role', 'tooltip'); e.textContent = yazi;
     kap.appendChild(e);
-    // Düğmenin üstünde; sağ kenardan taşmasın diye sağa hizalı
-    var kr = kap.getBoundingClientRect(), dr = dugme.getBoundingClientRect();
-    e.style.right = Math.max(4, kr.right - dr.right) + 'px';
+    // Düğmenin tam üstünde ortalı; çerçevenin sağından ya da solundan taşmaz (2026-11-21: sol alttaki düğmelerde kayıyordu)
+    var kr = kap.getBoundingClientRect(), dr = dugme.getBoundingClientRect(), gen = e.offsetWidth;
+    var sol = dr.left - kr.left + dr.width / 2 - gen / 2;
+    e.style.right = 'auto';
+    e.style.left = Math.round(Math.max(4, Math.min(kr.width - gen - 4, sol))) + 'px';
     e.style.bottom = Math.max(4, kr.bottom - dr.top + 6) + 'px';
     acik = e;
   }
@@ -63,5 +65,16 @@
     dugme.addEventListener('blur', gizle);
     return { yenile: function () { var y = yaz(); if (acik && acik.parentNode && acik.parentNode.contains(dugme)) acik.textContent = y; } };
   }
-  window.SesLabIpucu = { bagla: bagla, simge: simge, gizle: gizle };
+  // Büyüteç düğmesi (2026-11-21, bütün model ve animasyonlarda): basınca yakınlaşır, tekrar basınca uzaklaşır.
+  // ayar: { yakinMi: function () → yakın mı, degistir: function () → yakın/uzak geçişi, yakinlastir/uzaklastir: function () → ipucu yazısı }
+  function buyutec(dugme, ayar) {
+    dugme.type = 'button';
+    var ip = bagla(dugme, function () { return ayar.yakinMi() ? ayar.uzaklastir() : ayar.yakinlastir(); });
+    var son = null;
+    function yaz(zorla) { var y = !!ayar.yakinMi(); if (y === son && !zorla) return; son = y; simge(dugme, y ? 'buyutecEksi' : 'buyutecArti'); dugme.setAttribute('aria-pressed', y ? 'true' : 'false'); ip.yenile(); }
+    dugme.addEventListener('click', function () { ayar.degistir(); yaz(); });
+    yaz(true);
+    return { yenile: function () { yaz(true); }, guncelle: function () { yaz(false); } };
+  }
+  window.SesLabIpucu = { bagla: bagla, simge: simge, gizle: gizle, buyutec: buyutec };
 })();

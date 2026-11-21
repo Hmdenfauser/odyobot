@@ -263,6 +263,11 @@
     var genelIp = null;
     if (IP) { IP.simge(genelBtn, 'genel'); genelIp = IP.bagla(genelBtn, function () { return M.genelGorunum; }); }
     else genelBtn.textContent = '⟲';
+    // Büyüteç: sağ alttaki düğmelerin en solunda; yakın = model 2 kat yakın (iki parmakla yakınlaştırmayla aynı değişken)
+    var YAKIN = 0.5, buyBtn = h('button', 'sl-yuv'), buyIp = null; sagAlt.insertBefore(buyBtn, sagAlt.firstChild);
+    if (IP) buyIp = IP.buyutec(buyBtn, { yakinMi: function () { return zoom < 0.8; }, degistir: function () { zoom = zoom < 0.8 ? 1 : YAKIN; dirty = true; },
+      yakinlastir: function () { return M.yakinlastir || 'Yakınlaştır'; }, uzaklastir: function () { return M.uzaklastir || 'Uzaklaştır'; } });
+    else { buyBtn.type = 'button'; buyBtn.textContent = '⌕'; buyBtn.addEventListener('click', function () { zoom = zoom < 0.8 ? 1 : YAKIN; dirty = true; }); }
     var renkAd = ayar.renk || function (id) { return '--kt-' + id; }, noktaAd = ayar.nokta || renkAd;
     // Hareket (yalnızca Ses laboratuvarı): oynat/duraklat düğmesi sağ altta (genel görünümün solunda), aşama yazısı modelin altında
     var ANIM = ayar.anim || null, oynuyor = false, oynatBtn = null, oynatIp = null, asamaEl = null;
@@ -439,7 +444,7 @@
     // Yazıları gizle/göster düğmesi (yalnızca yazısı olan modellerde; durum cihazda saklanmaz)
     var yaziAcik = true, yaziBtn = null, yaziIp = null;
     if ((ayar.etiketler || []).length) {
-      yaziBtn = h('button', 'sl-yuv'); yaziBtn.type = 'button'; sagAlt.insertBefore(yaziBtn, sagAlt.firstChild);
+      yaziBtn = h('button', 'sl-yuv'); yaziBtn.type = 'button'; sagAlt.insertBefore(yaziBtn, buyBtn.nextSibling);
       if (IP) yaziIp = IP.bagla(yaziBtn, function () { return yaziAcik ? M.yazilariGizle : M.yazilariGoster; });
       yaziBtn.addEventListener('click', function () { yaziAcik = !yaziAcik; yaziYaz(); dirty = true; });
     }
@@ -520,7 +525,7 @@
       if (reduce) { cen = hedef.cen.slice(); rad = hedef.rad; }
       dirty = true;
     }
-    genelBtn.addEventListener('click', function () { if (!hazir) return; R = BAS_R.slice(); zoom = 1; sec(null); });
+    genelBtn.addEventListener('click', function () { if (!hazir) return; R = BAS_R.slice(); zoom = 1; sec(null); if (buyIp) buyIp.guncelle(); });
 
     function boyut() {
       if (!cv.clientWidth) return;
@@ -558,7 +563,7 @@
       if (hazir && cv.clientWidth) {
         var fark = Math.abs(hedef.cen[0] - cen[0]) + Math.abs(hedef.cen[1] - cen[1]) + Math.abs(hedef.cen[2] - cen[2]) + Math.abs(hedef.rad - rad);
         if (fark > GENEL.rad * 0.002) { for (var a = 0; a < 3; a++) cen[a] += (hedef.cen[a] - cen[a]) * 0.15; rad += (hedef.rad - rad) * 0.15; dirty = true; }
-        if (dirty) { dirty = false; ciz(); }
+        if (dirty) { dirty = false; ciz(); if (buyIp) buyIp.guncelle(); }
       }
       window.requestAnimationFrame(dongu);
     }
@@ -571,7 +576,7 @@
     window.requestAnimationFrame(dongu);
 
     if (ANIM) { DURUM = ANIM.adim(0); if (asamaEl) { asamaSon = DURUM.yazi; asamaEl.textContent = DURUM.yazi; } }
-    api.yenile = function () { metinler(); listeCiz(); kartYaz(); oynatYaz(); yaziYaz(); if (ANIM) { asamaSon = ''; DURUM = ANIM.adim(0); } if (hazir) { renkleriOku(); dirty = true; } };
+    api.yenile = function () { metinler(); listeCiz(); kartYaz(); oynatYaz(); yaziYaz(); if (buyIp) buyIp.yenile(); if (ANIM) { asamaSon = ''; DURUM = ANIM.adim(0); } if (hazir) { renkleriOku(); dirty = true; } };
     api.durdur = function () { if (ANIM && oynuyor) { oynuyor = false; oynatYaz(); } };
     return api;
   }

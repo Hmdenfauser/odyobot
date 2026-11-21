@@ -224,7 +224,11 @@
     // İşitme kipinde her sahnede görünür; basınca Ses yolculuğu sahnesine ve başlangıç açısına/yakınlığına dönülür.
     var donusBtn = h('button', 'sl-yuv sl-sahne-don'); donusBtn.type = 'button'; donusBtn.hidden = true;
     if (IP) IP.simge(donusBtn, 'genel');
-    sagAlt.appendChild(donusBtn); sagAlt.appendChild(oynatBtn);
+    // Büyüteç (2026-11-21, İşitme kipinde): yakın = 2 kat; Denge'de sol alttaki uzak/yakın büyüteci kullanılır
+    var buyBtn = h('button', 'sl-yuv'), buyIp = null; buyBtn.type = 'button';
+    sagAlt.appendChild(buyBtn); sagAlt.appendChild(donusBtn); sagAlt.appendChild(oynatBtn);
+    if (IP) buyIp = IP.buyutec(buyBtn, { yakinMi: function () { return zoom < 0.8; }, degistir: function () { zoom = zoom < 0.8 ? 1 : 0.5; dirty = true; },
+      yakinlastir: function () { return M.yakinlastir || 'Yakınlaştır'; }, uzaklastir: function () { return M.basiGoster || 'Uzaklaştır'; } });
     sahne.appendChild(cv); sahne.appendChild(yerEt); sahne.appendChild(solBox); sahne.appendChild(donBox); sahne.appendChild(neresi); sahne.appendChild(olcek); sahne.appendChild(sagAlt); sahne.appendChild(durum);
     var oynatIp = IP ? IP.bagla(oynatBtn, function () { return oynuyor ? M.duraklat : M.oynat; }) : null;
     var basIp = IP ? IP.bagla(basBtn, function () { return basAcik ? (M.basiGizle || 'Başı gizle') : (M.basiGosterAc || 'Başı göster'); }) : null;
@@ -720,7 +724,7 @@
       sahBox.classList.toggle('sl-sahne-k', m === 'denge'); sahBox.classList.toggle('g3d-bolumler', m !== 'denge');
       if (m === 'denge') dengeBar.insertBefore(sahBox, adimSatir); else bSah.parentNode.insertBefore(sahBox, bSah.nextSibling);
       // Denge kipinde tek oynatma denetimi "Tümünü oynat"; sol üstteki Oynat/Duraklat gizlenir, hareket hep açık
-      oynatBtn.hidden = m === 'denge'; if (m === 'denge' && !oynuyor) { oynuyor = true; oynatYaz(); }
+      oynatBtn.hidden = m === 'denge'; buyBtn.hidden = m === 'denge'; if (buyIp) buyIp.yenile(); if (m === 'denge' && !oynuyor) { oynuyor = true; oynatYaz(); }
       donKalan = 0;
       if (oto) otoDurdur();
       metinler(); sahneDugmeleri(); uzakYakin(false); tumYaz();
