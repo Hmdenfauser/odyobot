@@ -23,6 +23,7 @@
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="gorsel3d/gorsel3d.css">
 <link rel="stylesheet" href="seslab/seslab.css">
+<link rel="stylesheet" href="korti/korti.css">
 
 
 </head>
@@ -63,8 +64,8 @@
       <a class="kart3d" href="#3d" id="kart3d">
         <span class="kart3d-sol">
           <span class="kart3d-etiket" data-k="ana.3d.etiket" data-etiket="3D kartı: etiketi düzenle">Yeni</span>
-          <span class="kart3d-baslik" data-k="ana.3d.kartBaslik" data-etiket="3D kartı: başlığı düzenle">3D kulak modeli</span>
-          <span class="kart3d-alt" data-k="ana.3d.kartAlt" data-etiket="3D kartı: açıklamayı düzenle">Dış kulaktan iç kulağa döndür, yapılara dokun</span>
+          <span class="kart3d-baslik" data-k="ana.3d.kartBaslik" data-etiket="3D kartı: başlığı düzenle">3D modeller</span>
+          <span class="kart3d-alt" data-k="ana.3d.kartAlt" data-etiket="3D kartı: açıklamayı düzenle">Kulak modeli, denge sistemi ve iç kulak yapıları</span>
           <span class="kart3d-dugme"><span data-k="ana.3d.incele" data-etiket="3D kartı: düğme yazısını düzenle">İncele</span> <span aria-hidden="true">→</span></span>
         </span>
         <span class="kart3d-resim"><img src="images/3d-onizleme.jpg" width="330" height="365" alt=""></span>
@@ -328,9 +329,12 @@
       <div class="sl-secim" id="sl-secim">
         <a class="sl-secim-kart" href="#seslab/isitme"><span class="sl-secim-yazi"><strong data-k="sl.secim.isitme" data-etiket="Ses laboratuvarı: İşitme seçeneğinin adını düzenle">İşitme</strong><span data-k="sl.secim.isitmeAlt" data-etiket="Ses laboratuvarı: İşitme seçeneğinin açıklamasını düzenle">Ses yolculuğu, orta kulak, koklea ve yürüyen dalga</span></span></a>
         <a class="sl-secim-kart" href="#seslab/denge"><span class="sl-secim-yazi"><strong data-k="sl.secim.denge" data-etiket="Ses laboratuvarı: Denge seçeneğinin adını düzenle">Denge</strong><span data-k="sl.secim.dengeAlt" data-etiket="Ses laboratuvarı: Denge seçeneğinin açıklamasını düzenle">Otolit organları, BPPV ve Epley manevrası</span></span></a>
+        <a class="sl-secim-kart" href="#seslab/corti"><span class="sl-secim-yazi"><strong id="sl-corti-ad" data-k="sl.secim.corti" data-etiket="Ses laboratuvarı: Corti organı seçeneğinin adını düzenle">Corti organı</strong><span data-k="sl.secim.cortiAlt" data-etiket="Ses laboratuvarı: Corti organı seçeneğinin açıklamasını düzenle">Ses burada elektriksel sinyale dönüşür: tüylü hücreler</span></span></a>
         <a class="sl-secim-kart" href="#seslab/dagilma"><span class="sl-secim-yazi"><strong id="sl-dagilma-ad" data-k="sl.secim.dagilma" data-etiket="Ses laboratuvarı: Dağılma seçeneğinin adını düzenle">Dağılma (difraksiyon)</strong><span data-k="sl.secim.dagilmaAlt" data-etiket="Ses laboratuvarı: Dağılma seçeneğinin açıklamasını düzenle">Ses engeli aşar mı? Duvar ve baş gölgesi</span></span></a>
       </div>
       <div id="sl-kok" hidden></div>
+      <!-- Corti organı (#seslab/corti, 2026-11-21): korti/korti.js → Korti.kurAnim; sesin elektriksel enerjiye dönüşümü (hareketli). -->
+      <div id="sl-corti" hidden></div>
       <!-- Dağılma (#seslab/dagilma): iki sahneli 2D animasyon (duvar, baş gölgesi), seslab/dagilma.js. 3D modeli kullanmaz. -->
       <div id="sl-dagilma" hidden></div>
     </div>
@@ -341,9 +345,28 @@
     <div class="stack">
       <div class="alt-bas">
         <button type="button" class="geri-ok" id="uc-geri"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="gizli-yazi">Geri: <span data-k="g3d.sayfa.geri" data-etiket="3D sayfası: geri okunun ekran okuyucu yazısını düzenle">Ana sayfa</span></span></button>
-        <h2 data-k="g3d.sayfa.baslik2">3D kulak modeli</h2>
+        <h2 id="uc-baslik">3D modeller</h2>
       </div>
-      <div id="g3d-kok"></div>
+      <!-- 3D modeller listesi (#3d, 2026-11-21). Yalnızca hareketsiz modeller: #3d/periferik (gorsel3d/), #3d/denge (korti/denge3d.js), #3d/korti (korti/). Animasyonlar Ses laboratuvarında. -->
+      <div id="uc-liste-kutu" class="stack">
+        <p class="note" data-k="uc.liste.aciklama">Döndürüp yakınlaştırabileceğin, yapılarına dokunabileceğin modeller.</p>
+        <div class="uc-liste">
+          <a class="uc-model" href="#3d/periferik"><span class="uc-model-ik"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21c2 0 3-1.5 3-3.2 0-1.4.8-2.2 1.8-3.1C15.5 13.4 17 11.8 17 9a5 5 0 0 0-10 0"/><path d="M10 9.5a2 2 0 0 1 4 0c0 1.2-1 1.8-1.6 2.5"/></svg></span><span class="uc-model-yazi"><span class="uc-model-ad" data-k="uc.m.periferik.ad" data-etiket="3D modeller: kulak modelinin adını düzenle">Periferik işitme sistemi</span><span class="uc-model-alt" data-k="uc.m.periferik.alt" data-etiket="3D modeller: kulak modelinin açıklamasını düzenle">Dış kulaktan iç kulağa; kepçe, kemikçikler, koklea, kanallar</span></span><span class="uc-model-ok" aria-hidden="true">›</span></a>
+          <a class="uc-model" href="#3d/denge"><span class="uc-model-ik"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 13.5a3 3 0 1 0 0-.01"/><path d="M10 11.2C8.5 8 9 4.5 12 4s4 3 2.6 6.5"/><path d="M14.6 13.2c3 .6 5.6 2.8 4.2 5-1.3 2-4.8.6-6.3-1.6"/><path d="M9.6 13.4c-3 .9-5.3 3.3-3.8 5.3 1.4 1.8 4.5.4 5.8-1.8"/></svg></span><span class="uc-model-yazi"><span class="uc-model-ad" data-k="uc.m.denge.ad" data-etiket="3D modeller: denge modelinin adını düzenle">Denge sistemi</span><span class="uc-model-alt" data-k="uc.m.denge.alt" data-etiket="3D modeller: denge modelinin açıklamasını düzenle">Vestibül, semisirküler kanallar, utrikulus ve sakkulus</span></span><span class="uc-model-ok" aria-hidden="true">›</span></a>
+          <a class="uc-model" href="#3d/korti"><span class="uc-model-ik"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 15h18"/><path d="M6 15v-4M9 15V9.5M12 15V9M15 15V9.5"/><path d="M5.5 8.5c3-2 9-2.2 13.5-.5"/><path d="M3 19h18"/></svg></span><span class="uc-model-yazi"><span class="uc-model-ad" data-k="uc.m.korti.ad" data-etiket="3D modeller: iç kulak modelinin adını düzenle">İç kulak yapıları</span><span class="uc-model-alt" data-k="uc.m.korti.alt" data-etiket="3D modeller: iç kulak modelinin açıklamasını düzenle">Koklea kesiti: skalalar, zarlar, Corti organı, tüylü hücreler</span></span><span class="uc-model-ok" aria-hidden="true">›</span></a>
+        </div>
+      </div>
+      <div id="g3d-kok" hidden></div>
+      <div id="dn-kok" hidden></div>
+      <div id="kt-kok" hidden></div>
+      <!-- 3D sayfasının başlıkları (yönetici düzenler; app.js → ucGoster) -->
+      <details class="compose b-metinler" id="uc-metinler">
+        <summary>3D sayfası başlıkları (yönetici)</summary>
+        <p data-k="uc.baslik.liste" data-m="liste">3D modeller</p>
+        <p data-k="g3d.sayfa.baslik2" data-m="periferik">3D kulak modeli</p>
+        <p data-k="uc.baslik.denge" data-m="denge">Denge sistemi</p>
+        <p data-k="uc.baslik.korti" data-m="korti">İç kulak yapıları</p>
+      </details>
     </div>
   </section>
 
@@ -1048,6 +1071,10 @@
 <script src="gorsel3d/gorsel3d.js"></script>
 <script src="seslab/seslab-veri.js"></script>
 <script src="seslab/ipucu.js"></script>
+<script src="korti/korti-veri.js"></script>
+<script src="korti/korti.js"></script>
+<script src="korti/denge3d-veri.js"></script>
+<script src="korti/denge3d.js"></script>
 <script src="seslab/denge.js"></script>
 <script src="seslab/dagilma.js"></script>
 <script src="seslab/seslab.js"></script>
