@@ -762,7 +762,10 @@
     var l = favoriler(), i = l.indexOf(key);
     if (i === -1) l.push(key); else l.splice(i, 1);
     yerelYaz('odybot:favoriNotlar', JSON.stringify(l));
+    bildir('odyo:favori', l);   // giriş yapmış üyede uye.js hesaba da yazar
   }
+  // Hesaptan gelen favoriler (uye.js yerel kopyayı yazdıktan sonra haber verir)
+  window.addEventListener('odyo:favori-yuklendi', function () { if (gorunen === 'anasayfa') anaCiz(); if (gorunen === 'not-sayfa') notSayfaCiz(); });
   function notSayfaCiz() {
     var n = acikNot && notBul(acikNot), govde = $('not-govde');
     $('not-yildiz').hidden = !n;
@@ -832,7 +835,15 @@
   }
   var seg = secici(['sema', 'isitme', 'implant'], 'seg-', 'p-', function (which) {
     $('cihaz-alt').hidden = which === 'sema';   // ortak not iki cihaz panelinin altında
+    depoBaslik(which);
   });
+  // 4. adım (2026-11-21): Kütüphane'den her bölüm tek başına açılır; üstteki üçlü geçiş gizli, başlık bölümün adı
+  // (Kütüphane kartındaki ad, yönetici düzenler: kutuphane.sema.ad, kutuphane.isitme.ad, kutuphane.implant.ad).
+  function depoBaslik(which) {
+    var k = document.querySelector('#kutuphane a[href="#depo/' + which + '"] b');
+    $('depo-bas').textContent = k ? k.textContent : $('seg-' + which).textContent;
+  }
+  window.addEventListener('odyo:metinler', function () { var a = document.querySelector('#depo .depo-seg [aria-pressed="true"]'); if (a) depoBaslik(a.id.replace('seg-', '')); });
   var altSec = secici(['yolak', 'refleks', 'tarama', 'hafiza'], 'alt-', 'p-');
   var trSec = secici(['a', 'b'], 'tr-', 'tp-');
   // Görsel depo içinde bir yere git (ana sayfadaki arama ve hızlı erişim): #depo/isitme, #depo/implant, #depo/sema,
@@ -863,8 +874,9 @@
   /* ---------- tabs ---------- */
   // 'uc-boyut' = 3D sayfası; adresi #3d. Alt çubukta sekmesi yok, o sırada Ana sayfa seçili görünür.
   // Alt sayfalar (2026-11-17): 'duyurular' (tam liste), 'not-sayfa' (#not/<anahtar>). Alt çubukta sekmeleri yok; bağlı oldukları sekme seçili görünür.
-  var TABS = ['anasayfa', 'depo', 'odybot', 'notlar', 'vakalarim', 'ayarlar', 'giris', 'uc-boyut', 'duyurular', 'not-sayfa', 'seslab', 'sozluk'];
-  var UST_SEKME = { 'uc-boyut': 'anasayfa', duyurular: 'anasayfa', 'not-sayfa': 'notlar', seslab: 'anasayfa', sozluk: 'anasayfa' };
+  var TABS = ['anasayfa', 'depo', 'odybot', 'notlar', 'vakalarim', 'ayarlar', 'giris', 'hesap', 'uc-boyut', 'duyurular', 'not-sayfa', 'seslab', 'sozluk', 'kutuphane', 'topluluk', 'yasal'];
+  // 4. adım (2026-11-21): Görsel depo, Ders notları ve Terimler sözlüğü alt çubukta Kütüphane'nin altında
+  var UST_SEKME = { 'uc-boyut': 'anasayfa', duyurular: 'anasayfa', depo: 'kutuphane', notlar: 'kutuphane', 'not-sayfa': 'kutuphane', seslab: 'anasayfa', sozluk: 'kutuphane' };
   var UC_ESKI = ['uc-boyut', '3d-model', 'gorsel3d', 'depo/3d', 'model'];   // olası eski/başka adresler -> #3d/periferik (eskiden #3d doğrudan kulak modeliydi)
   var oncekiHash = '', ucGeldigi = null, ucListedenGeldi = false, slGeldigi = null, slSecimdenGeldi = false, ilkRota = true, gorunen = 'anasayfa';
   function adresDegistir(yeni) { try { history.replaceState(null, '', yeni); } catch (e) {} }
@@ -901,6 +913,8 @@
       t = 'vakalarim'; ham = 'vakalarim'; adresDegistir('#vakalarim');
       sonra = function () { bildir('odyo:vaka-ac', p[1] === 'yeni' ? { yeni: true } : { id: p[2] || '' }); };
     } else if (p[0] === 'duyurular' && p[1] === 'yeni') { t = 'duyurular'; ham = 'duyurular'; adresDegistir('#duyurular'); sonra = function () { bildir('odyo:paylasim-yeni'); }; }
+    else if (p[0] === 'topluluk' && p.length > 1) { t = 'topluluk'; }
+    else if (p[0] === 'yasal') { t = 'yasal'; }   // yasal metinler: yasal.js hangi sayfanın görüneceğini seçer   // forum alt sayfaları forum.js'te (#topluluk/g/<id>, /yeni, /duzenle/<id>)
     else if (p[0] === 'sozluk' && p[1] === 'terim') { t = 'sozluk'; ham = 'sozluk'; adresDegistir('#sozluk'); sonra = function () { bildir('odyo:sozluk-terim', decodeURIComponent(p[2] || '')); }; }
     else if (p[0] === 'not' && p[1]) {
       if (oncekiHash !== ham) notGeldigi = ilkRota ? null : oncekiHash;
@@ -993,7 +1007,7 @@
     var sema = AM('araTurSema') + ' · ';
     // Bölümlerin kendisi (şemalar ve cihaz panelleri)
     [['alt-yolak', '#depo/yolak/' + sel], ['alt-refleks', '#depo/refleks/' + rsel], ['alt-tarama', '#depo/tarama/' + TA.sec], ['alt-hafiza', '#depo/hafiza/' + HF.sec], ['seg-isitme', '#depo/isitme'], ['seg-implant', '#depo/implant']].forEach(function (x) {
-      l.push({ tur: $('depo').querySelector('h2').textContent, ad: $(x[0]).textContent, metin: '', git: x[1] });
+      l.push({ tur: $('kutuphane').querySelector('h2').textContent, ad: $(x[0]).textContent, metin: '', git: x[1] });
     });
     NODES.forEach(function (n) { l.push({ tur: sema + $('alt-yolak').textContent, ad: n.label, metin: n.latin + ' ' + n.bolge + ' ' + n.yer, git: '#depo/yolak/' + n.id }); });
     RNODES.forEach(function (n) { l.push({ tur: sema + $('alt-refleks').textContent, ad: n.title, metin: n.latin + ' ' + n.label.join(' '), git: '#depo/refleks/' + n.id }); });
@@ -1550,9 +1564,8 @@
   function setEditMode(on, email) {
     canEdit = !!on;
     $('ayar-body').hidden = !canEdit;
-    $('ayar-giris').hidden = canEdit;   // girişliyken "Yönetici girişi" düğmesi gizlenir
+    // Hesap grupları (giriş düğmesi, Hesabım) uye.js'te
     $('compose').hidden = !canEdit;
-    $('who').textContent = canEdit ? 'Giriş yapan: ' + (email || '') : '';
     // Yalnızca yöneticiye görünen bölümler (ör. OdyoBOT mesaj metinleri) CSS'te .yonetici ile açılır.
     document.documentElement.classList.toggle('yonetici', canEdit);
     if (!canEdit) editingKey = null;
@@ -1569,21 +1582,8 @@
     if (/operation-not-supported|unsupported/.test(c)) return 'Giriş, dosya olarak açılan sayfada çalışmaz. Uygulamayı web adresinden aç.';
     return 'Giriş yapılamadı.' + (c ? ' (' + c + ')' : '');
   }
-  $('login-form').addEventListener('submit', function (e) {
-    e.preventDefault();
-    var msg = $('l-msg'); msg.className = 'msg'; msg.textContent = '';
-    if (!authRef) { msg.textContent = 'Giriş sistemine ulaşılamıyor. Bağlantını kontrol edip sayfayı yeniden aç.'; msg.className = 'msg err'; return; }
-    $('l-send').disabled = true;
-    authRef.signInWithEmailAndPassword($('l-email').value.trim(), $('l-pass').value).then(function () {
-      $('l-pass').value = '';
-    }).catch(function (err) {
-      msg.textContent = authErrorText(err); msg.className = 'msg err';
-    }).then(function () { $('l-send').disabled = false; });
-  });
-  $('logout').addEventListener('click', function () {
-    if (!authRef) return;
-    authRef.signOut().then(function () { location.hash = '#anasayfa'; });
-  });
+  // Giriş, hesap oluşturma ve çıkış formları uye.js'te (2026-11-21, 4. adım). authErrorText oradan da kullanılır.
+  window.OdyoUI.authHata = authErrorText;
 
   connectShared().then(function (r) {
     var db = r.db;
@@ -1591,13 +1591,11 @@
     window.OdyoUI.db = db; bildir('odyo:db', db);
     setupAyarlar(db);
     if (authRef) authRef.onAuthStateChanged(function (u) {
+      // 4. adım: üyeler de giriş yapabilir; düzenleme yetkisi yine yalnızca yönetici hesabında (asıl koruma firestore.rules)
       var isAdmin = !!u && u.uid === window.ODYOBOT_ADMIN_UID;
-      if (u && !isAdmin) {
-        authRef.signOut();
-        $('l-msg').textContent = 'Bu hesabın düzenleme yetkisi yok.'; $('l-msg').className = 'msg err';
-      }
       setEditMode(isAdmin, u && u.email);
-      if (isAdmin && location.hash === '#giris') location.hash = '#ayarlar';
+      window.OdyoUI.uye = u || null; bildir('odyo:uye', u || null);
+      if (u && location.hash === '#giris') location.hash = '#ayarlar';
     });
   }, function () { window.OdyoUI.dbYok = true; bildir('odyo:db-yok'); });
 })();

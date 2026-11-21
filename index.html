@@ -5,7 +5,7 @@
 <!-- Güvenlik kuralı (CSP): yalnızca kendi dosyalarımız ve Firebase adresleri çalışabilir/bağlanabilir.
      GitHub Pages sunucu başlığı göndermeye izin vermediği için meta satırı olarak yazıldı.
      Firebase'e yeni bir servis eklenirse (ör. Storage) adresi connect-src'ye eklenmeli. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com; frame-src https://odyobot-c7a30.firebaseapp.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com; frame-src https://odyobot-c7a30.firebaseapp.com https://accounts.google.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <style>:root{color-scheme:light;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>OdyoBOT</title>
@@ -40,10 +40,28 @@
           <h1 data-k="ana.baslik">Merhaba, odyolog</h1>
           <span class="ana-tarih" id="date">—</span>
         </div>
+        <!-- Uygulama içi bildirim (zil.js): yeni duyurular ve forumda gönderine gelen cevaplar -->
+        <button class="iconbtn zil" type="button" id="zil" aria-label="Bildirimler" aria-haspopup="true" aria-expanded="false" aria-controls="zil-panel">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2H4.5z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg>
+          <span class="zil-sayi" id="zil-sayi" hidden>0</span>
+        </button>
+        <div class="zil-panel" id="zil-panel" role="region" aria-label="Bildirimler" hidden></div>
         <a class="iconbtn" id="gear" href="#ayarlar" aria-label="Ayarlar">
           <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M18.89 9.91L21.28 9.960L21.28 14.040L18.89 14.090L18.35 15.39L20 17.12L17.12 20L15.39 18.35L14.090 18.89L14.040 21.28L9.960 21.28L9.91 18.89L8.61 18.35L6.88 20L4 17.12L5.65 15.39L5.11 14.090L2.72 14.040L2.72 9.960L5.11 9.91L5.65 8.61L4 6.88L6.88 4L8.61 5.65L9.91 5.11L9.960 2.72L14.040 2.72L14.090 5.11L15.39 5.65L17.12 4L20 6.88L18.35 8.61Z"/><circle cx="12" cy="12" r="3"/></svg>
         </a>
       </div>
+
+      <details class="compose b-metinler" id="zil-metinler">
+        <summary>Bildirim yazıları (yönetici)</summary>
+        <div class="yedek-ic">
+          <p data-k="zil.m.etiket" data-m="etiket">Bildirimler</p>
+          <p data-k="zil.m.etiketVar" data-m="etiketVar">Bildirimler: {n} yeni</p>
+          <p data-k="zil.m.baslik" data-m="baslik">Yeni bildirimler</p>
+          <p data-k="zil.m.bos" data-m="bos">Yeni bildirim yok. Yeni duyurular ve forumdaki gönderilerine gelen cevaplar burada görünür.</p>
+          <p data-k="zil.m.turDuyuru" data-m="turDuyuru">Yeni duyuru</p>
+          <p data-k="zil.m.turCevap" data-m="turCevap">Gönderine yeni cevap</p>
+        </div>
+      </details>
 
       <!-- 2. Arama: ders notları, cihazlar ve şemalar (app.js, internetsiz; veriler kodda ve önbellekte) -->
       <div class="ara-kutu" role="search">
@@ -371,10 +389,127 @@
   </section>
 
   <!-- GÖRSEL DEPO -->
+  <!-- KÜTÜPHANE (4. adım, 2026-11-21): Görsel depo + Notlar + Terimler sözlüğü tek sekmede; kartlar ilgili sayfaya gider.
+       Proje sahibinin seçimi: kartlı giriş (seçenek B). Alt çubuk: Ana sayfa · Topluluk · OdyoBOT · Vakalarım · Kütüphane. -->
+  <section id="kutuphane" data-tab hidden>
+    <div class="stack">
+      <h2 data-k="kutuphane.baslik">Kütüphane</h2>
+      <div class="kp-kartlar">
+        <a class="kp-kart" href="#notlar">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h10a2 2 0 0 1 2 2v14H8a2 2 0 0 1-2-2V4z"/><path d="M6 18a2 2 0 0 1 2-2h10"/><path d="M10 8h5"/></svg>
+          <span class="kp-yazi"><b data-k="kutuphane.notlar.ad">Ders notları</b><small data-k="kutuphane.notlar.alt">Konu gruplarında, favoriler</small></span>
+        </a>
+        <a class="kp-kart" href="#depo/sema">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="6" height="5" rx="1"/><rect x="15" y="4" width="6" height="5" rx="1"/><rect x="9" y="15" width="6" height="5" rx="1"/><path d="M6 9v3h12V9M12 12v3"/></svg>
+          <span class="kp-yazi"><b data-k="kutuphane.sema.ad">Şemalar</b><small data-k="kutuphane.sema.alt">İşitme yolağı, refleks arkı, yenidoğan taraması, işitsel hafıza</small></span>
+        </a>
+        <a class="kp-kart" href="#depo/isitme">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><!-- ana sayfadaki Cihazlar kısayoluyla aynı: kulak arkası işitme cihazı --><path d="M12.500 5C12.500 3.300 13.900 2 15.700 2 18.700 2 20.500 5 20.500 9v6.500c0 2.500-1.400 4.300-3.400 4.300s-3-1.500-3-3.300V9.200c0-2-1.600-2.600-1.600-4.200z"/><path d="M12.700 4C8.500 3 5 5 5 9.300c0 2.700 1.400 4.300 1.400 7.200"/><path d="M3.700 17.300h5.400a2.700 2.700 0 0 1-5.400 0z"/><path d="M17.700 6.800v2.600"/></svg>
+          <span class="kp-yazi"><b data-k="kutuphane.isitme.ad">İşitme cihazları</b><small data-k="kutuphane.isitme.alt">BTE, RIC, kulak içi, CROS ve kemik iletimli</small></span>
+        </a>
+        <a class="kp-kart" href="#depo/implant">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="8" r="4"/><circle cx="8" cy="8" r="1.3"/><path d="M12 8h3c2.5 0 4 1.5 4 4v3a3 3 0 0 1-6 0"/></svg>
+          <span class="kp-yazi"><b data-k="kutuphane.implant.ad">İşitsel implantlar</b><small data-k="kutuphane.implant.alt">Koklear, kemik iletim, orta kulak, beyin sapı</small></span>
+        </a>
+        <a class="kp-kart kp-genis" href="#sozluk">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="11" height="14" rx="2"/><path d="M15 8h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-1"/><path d="M8 10h3M8 13h4"/></svg>
+          <span class="kp-yazi"><b data-k="kutuphane.sozluk.ad">Terimler sözlüğü</b><small data-k="kutuphane.sozluk.alt">Öğrenme kartları ve alfabetik liste</small></span>
+        </a>
+      </div>
+      <p class="note" data-k="kutuphane.not">Aradığını bulamazsan ana sayfadaki arama kutusu notlarda, cihazlarda, şemalarda ve sözlükte birlikte arar.</p>
+    </div>
+  </section>
+
+  <!-- TOPLULUK (4. adım): forum buraya gelecek; şimdilik yalnızca tanıtım -->
+  <section id="topluluk" data-tab hidden>
+    <div class="stack">
+      <h2 data-k="topluluk.baslik" id="fr-ust-bas">Topluluk</h2>
+      <div class="alt-bas" id="fr-alt-bas" hidden>
+        <a class="geri-ok" href="#topluluk" id="fr-geri"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="gizli-yazi">Geri: Topluluk</span></a>
+        <h2 id="fr-alt-baslik"></h2>
+      </div>
+      <!-- Forum (forum.js): üyelik anahtarı açılınca herkese, öncesinde yalnızca yöneticiye -->
+      <div id="forum" class="stack" hidden></div>
+      <div class="kp-yakinda" id="topluluk-yakinda">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h11v8H9l-4 3v-3H4z"/><path d="M15 9h5v8h-1v3l-4-3h-4v-2"/></svg>
+        <p data-k="topluluk.yakinda.baslik" class="kp-yakinda-bas">Yakında</p>
+        <p class="note" data-k="topluluk.yakinda.metin">Odyoloji öğrencileri ve odyologların soru sorup deneyim paylaşacağı bölüm hazırlanıyor.</p>
+      </div>
+      <details class="compose b-metinler" id="forum-metinler">
+        <summary>Topluluk yazıları (yönetici)</summary>
+        <div class="yedek-ic">
+          <p data-k="forum.m.tanitim" data-m="tanitim">Odyoloji öğrencileri ve odyologlar için soru-cevap. Saygılı ol; hasta bilgisi paylaşma.</p>
+          <p data-k="forum.m.yeniGonderi" data-m="yeniGonderi">Yeni gönderi</p>
+          <p data-k="forum.m.tumu" data-m="tumu">Tümü</p>
+          <p data-k="forum.m.kategori" data-m="kategori">Kategori</p>
+          <p data-k="forum.m.kategoriSec" data-m="kategoriSec">Kategori seç</p>
+          <p data-k="forum.m.kat_vaka" data-m="kat_vaka">Vaka tartışması</p>
+          <p data-k="forum.m.kat_cihaz" data-m="kat_cihaz">Cihaz ve implant</p>
+          <p data-k="forum.m.kat_ders" data-m="kat_ders">Ders ve sınavlar</p>
+          <p data-k="forum.m.kat_kariyer" data-m="kat_kariyer">Kariyer ve iş</p>
+          <p data-k="forum.m.katDiger" data-m="katDiger">Diğer</p>
+          <p data-k="forum.m.rozetOgrenci" data-m="rozetOgrenci">Öğrenci</p>
+          <p data-k="forum.m.rozetOdyolog" data-m="rozetOdyolog">Odyolog</p>
+          <p data-k="forum.m.adsiz" data-m="adsiz">Adsız üye</p>
+          <p data-k="forum.m.silinmisUye" data-m="silinmisUye">Silinmiş üye</p>
+          <p data-k="forum.m.baslik" data-m="baslik">Başlık</p>
+          <p data-k="forum.m.metin" data-m="metin">Metin</p>
+          <p data-k="forum.m.gonder" data-m="gonder">Gönder</p>
+          <p data-k="forum.m.kaydet" data-m="kaydet">Kaydet</p>
+          <p data-k="forum.m.vazgec" data-m="vazgec">Vazgeç</p>
+          <p data-k="forum.m.hastaUyari" data-m="hastaUyari">Hasta adı, kimlik numarası, doğum tarihi gibi tanımlayıcı bilgi yazma. Vakadan söz ediyorsan yalnızca yaş grubu ve bulgular gibi anonim bilgiler kullan.</p>
+          <p data-k="forum.m.eksik" data-m="eksik">Kategori, başlık (en az 3 harf) ve metin gerekli.</p>
+          <p data-k="forum.m.gonderildi" data-m="gonderildi">Gönderildi.</p>
+          <p data-k="forum.m.kaydedildi" data-m="kaydedildi">Kaydedildi.</p>
+          <p data-k="forum.m.silindi" data-m="silindi">Silindi.</p>
+          <p data-k="forum.m.hata" data-m="hata">İşlem yapılamadı. İnternet bağlantını kontrol et.</p>
+          <p data-k="forum.m.yukleniyor" data-m="yukleniyor">Yükleniyor…</p>
+          <p data-k="forum.m.bos" data-m="bos">Henüz gönderi yok. İlk soruyu sen sor.</p>
+          <p data-k="forum.m.bulunamadi" data-m="bulunamadi">Bu gönderi bulunamadı. Silinmiş ya da gizlenmiş olabilir.</p>
+          <p data-k="forum.m.cevap" data-m="cevap">cevap</p>
+          <p data-k="forum.m.cevapYaz" data-m="cevapYaz">Cevap yaz</p>
+          <p data-k="forum.m.cevapDuzenle" data-m="cevapDuzenle">Cevabını düzenle:</p>
+          <p data-k="forum.m.duzenle" data-m="duzenle">Düzenle</p>
+          <p data-k="forum.m.sil" data-m="sil">Sil</p>
+          <p data-k="forum.m.sikayetEt" data-m="sikayetEt">Şikâyet et</p>
+          <p data-k="forum.m.engelle" data-m="engelle">Engelle</p>
+          <p data-k="forum.m.gizle" data-m="gizle">Gizle</p>
+          <p data-k="forum.m.goster" data-m="goster">Göster</p>
+          <p data-k="forum.m.duzenlendi" data-m="duzenlendi">düzenlendi</p>
+          <p data-k="forum.m.gizliEtiket" data-m="gizliEtiket">Gizli</p>
+          <p data-k="forum.m.silOnayGonderi" data-m="silOnayGonderi">Gönderi ve altındaki bütün cevaplar silinecek. Emin misin?</p>
+          <p data-k="forum.m.silOnayCevap" data-m="silOnayCevap">Cevap silinecek. Emin misin?</p>
+          <p data-k="forum.m.engelOnay" data-m="engelOnay">{ad} adlı üyenin gönderi ve cevaplarını artık görmeyeceksin. Engeli Hesabım sayfasından kaldırabilirsin. Devam edilsin mi?</p>
+          <p data-k="forum.m.engellendi" data-m="engellendi">Üye engellendi.</p>
+          <p data-k="forum.m.engelliGizlendi" data-m="engelliGizlendi">yazı engellediğin üyelerden olduğu için gizlendi.</p>
+          <p data-k="forum.m.sikayetNeden" data-m="sikayetNeden">Şikâyet nedenin (isteğe bağlı; ör. hasta bilgisi, hakaret, reklam):</p>
+          <p data-k="forum.m.sikayetAlindi" data-m="sikayetAlindi">Şikâyetin yöneticiye iletildi.</p>
+          <p data-k="forum.m.gizlendi" data-m="gizlendi">Gizlendi.</p>
+          <p data-k="forum.m.gosterildi" data-m="gosterildi">Yeniden görünür.</p>
+          <p data-k="forum.m.sikayetlerBaslik" data-m="sikayetlerBaslik">Şikâyetler (yönetici)</p>
+          <p data-k="forum.m.sikayetGit" data-m="sikayetGit">Gönderiye git</p>
+          <p data-k="forum.m.sikayetKapat" data-m="sikayetKapat">Şikâyeti kapat</p>
+          <p data-k="forum.m.gonderiOge" data-m="gonderiOge">Gönderi</p>
+          <p data-k="forum.m.cevapOge" data-m="cevapOge">Cevap</p>
+          <p data-k="forum.m.girisGerekli" data-m="girisGerekli">Yazmak için giriş yapman gerekiyor.</p>
+          <p data-k="forum.m.girisYap" data-m="girisYap">Giriş yap</p>
+          <p data-k="forum.m.dogrulaGerekli" data-m="dogrulaGerekli">Yazmak için e-posta adresini doğrulaman gerekiyor. Gelen kutundaki bağlantıya dokun, sonra sayfayı yenile.</p>
+          <p data-k="forum.m.gonderiBaslik" data-m="gonderiBaslik">Gönderi</p>
+          <p data-k="forum.m.yeniBaslik" data-m="yeniBaslik">Yeni gönderi</p>
+          <p data-k="forum.m.duzenleBaslik" data-m="duzenleBaslik">Gönderiyi düzenle</p>
+          <p data-k="forum.m.kurallar" data-m="kurallar">Topluluk kuralları: saygılı ol, hasta bilgisi paylaşma, reklam yapma. Kurallara uymayan yazılar yönetici tarafından gizlenebilir ya da silinebilir. Burada yazılanlar tıbbi tavsiye değildir.</p>
+        </div>
+      </details>
+    </div>
+  </section>
+
   <section id="depo" data-tab hidden>
     <div class="stack">
-      <h2 data-k="depo.baslik">Görsel depo</h2>
-      <div class="seg seg3 depo-seg" role="group" aria-label="Depo bölümü">
+      <div class="alt-bas">
+        <a class="geri-ok" href="#kutuphane"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="gizli-yazi">Geri: Kütüphane</span></a>
+        <h2 id="depo-bas">Şemalar</h2>
+      </div>
+      <div class="seg seg3 depo-seg" hidden role="group" aria-label="Depo bölümü">
         <button type="button" id="seg-sema" aria-pressed="true">Şemalar</button>
         <button type="button" id="seg-isitme" aria-pressed="false">İşitme cihazları</button>
         <button type="button" id="seg-implant" aria-pressed="false">İşitsel implantlar</button>
@@ -607,10 +742,31 @@
         </div>
         <p class="note" data-k="ayar.dil.not">Şimdilik yalnızca Türkçe. Başka diller ileride eklenecek.</p>
       </div>
+      <div class="stack ayar-grup">
+        <h3 data-k="ayar.yasal.baslik">Yasal bilgiler</h3>
+        <div class="yasal-baglantilar">
+          <a class="linkbtn" href="#yasal/uyari" data-k="ayar.yasal.uyari">Tıbbi uyarı</a>
+          <a class="linkbtn" href="#yasal/kosullar" data-k="ayar.yasal.kosullar">Kullanım koşulları</a>
+          <a class="linkbtn" href="#yasal/kvkk" data-k="ayar.yasal.kvkk">KVKK aydınlatma metni</a>
+          <a class="linkbtn" href="#yasal/gizlilik" data-k="ayar.yasal.gizlilik">Gizlilik politikası</a>
+        </div>
+      </div>
+      <!-- Hesap (4. adım, uye.js). Üyelik kapalıyken eskisi gibi yalnızca "Yönetici girişi"; açıkken herkese "Giriş yap"; giriş yapınca "Hesabım". -->
       <div class="stack ayar-grup" id="ayar-giris">
-        <h3 data-k="ayar.yonetici.baslik">Yönetici</h3>
-        <p class="note" data-k="ayar.yonetici.not">İlan, haber, ders notu ve metinleri yöneten kişi içindir.</p>
+        <div class="stack" id="ayar-yonetici-giris" style="gap:8px">
+          <h3 data-k="ayar.yonetici.baslik">Yönetici</h3>
+          <p class="note" data-k="ayar.yonetici.not">İlan, haber, ders notu ve metinleri yöneten kişi içindir.</p>
+        </div>
+        <div class="stack" id="ayar-uye-giris" style="gap:8px" hidden>
+          <h3 data-k="uye.ayar.baslik">Hesap</h3>
+          <p class="note" data-k="uye.ayar.not">Üyelik isteğe bağlıdır. Giriş yapınca favori notların ve sözlükteki ilerlemen telefonun ile bilgisayarın arasında eşitlenir. Vaka kayıtların hiçbir zaman sunucuya gönderilmez.</p>
+        </div>
         <a class="btn ayar-giris-btn" href="#giris" id="login-link">Yönetici girişi</a>
+      </div>
+      <div class="stack ayar-grup" id="ayar-hesap" hidden>
+        <h3 data-k="uye.hesap.baslik">Hesabım</h3>
+        <p class="note" id="hs-kim"></p>
+        <div class="admin-bar"><a class="btn" href="#hesap" id="hs-git">Hesap ayarları</a><button class="btn" type="button" id="hs-cikis">Çıkış yap</button></div>
       </div>
       <div class="stack" id="ayar-body" hidden>
         <div class="stack" style="gap:10px">
@@ -621,9 +777,10 @@
         </div>
         <p class="note">Ders notu ekleme, düzenleme ve konu başlıkları Ders notları sayfasındaki "Notları ve başlıkları yönet" panelinde.</p>
         <div class="stack" style="gap:10px">
-          <h3>Oturum</h3>
-          <p class="note" id="who"></p>
-          <div class="admin-bar"><button class="btn" type="button" id="logout">Çıkış yap</button></div>
+          <h3>Üyelik</h3>
+          <p class="note">Açınca herkes Ayarlar'dan hesap oluşturabilir (e-posta ya da Google). Gizlilik politikası ve KVKK aydınlatma metni hazır olmadan açma.</p>
+          <label class="uye-anahtar"><input type="checkbox" id="uye-kayit-acik"> Yeni üye kaydı açık</label>
+          <div class="msg" id="uye-kayit-msg" role="status"></div>
         </div>
       </div>
     </div>
@@ -634,22 +791,221 @@
     <div class="stack">
       <div class="alt-bas">
         <a class="geri-ok" href="#ayarlar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="gizli-yazi">Geri: Ayarlar</span></a>
-        <h2>Yönetici girişi</h2>
+        <h2 id="g-baslik">Yönetici girişi</h2>
       </div>
-      <p class="lead">Bu sayfa yalnızca ilan, haber, ders notları ve cihaz açıklamalarını yöneten kişi içindir.</p>
+      <p class="lead" id="g-lead">Bu sayfa yalnızca ilan, haber, ders notları ve cihaz açıklamalarını yöneten kişi içindir.</p>
+      <div class="seg seg2" id="g-kip" role="group" aria-label="Giriş ya da hesap oluşturma" hidden>
+        <button type="button" data-kip="giris" aria-pressed="true">Giriş yap</button>
+        <button type="button" data-kip="kayit" aria-pressed="false">Hesap oluştur</button>
+      </div>
+      <div class="stack" id="g-google-kutu" style="gap:8px" hidden>
+        <button class="btn g-google" type="button" id="g-google">Google ile devam et</button>
+        <p class="note g-google-not" id="g-google-not" hidden></p>
+        <p class="note g-ayrac" id="g-ya-da">ya da e-posta ile</p>
+      </div>
       <form class="f" id="login-form" style="padding:0">
         <div class="fld"><label for="l-email">E-posta</label><input id="l-email" type="email" inputmode="email" autocomplete="username" required></div>
-        <div class="fld"><label for="l-pass">Şifre</label><input id="l-pass" type="password" autocomplete="current-password" required></div>
-        <div class="admin-bar"><button class="btn primary" type="submit" id="l-send">Giriş yap</button></div>
+        <div class="fld"><label for="l-pass">Şifre</label><input id="l-pass" type="password" autocomplete="current-password" required minlength="6"></div>
+        <div class="stack" id="g-kayit-alan" style="gap:12px" hidden>
+          <div class="fld"><label for="g-ad" id="g-ad-et" data-k="uye.etiket.adKayit">Görünen ad (isteğe bağlı)</label><input id="g-ad" type="text" maxlength="40" autocomplete="nickname"></div>
+          <div class="fld"><label for="g-meslek" id="g-meslek-et" data-k="uye.etiket.meslekKayit">Meslek durumu (isteğe bağlı)</label><select id="g-meslek"></select></div>
+          <p class="note" id="g-kayit-not" data-k="uye.kayit.not">Gerçek adını yazmak zorunda değilsin. Hasta bilgisi hiçbir yere yazılmaz.</p>
+        </div>
+        <label class="g-onay" id="g-onay-kutu" hidden><input type="checkbox" id="g-onay"> <span><a href="#yasal/kosullar" id="g-onay-kosul">Kullanım koşullarını</a> okudum ve kabul ediyorum. <a href="#yasal/kvkk" id="g-onay-kvkk">KVKK aydınlatma metnini</a> ve <a href="#yasal/gizlilik" id="g-onay-gizlilik">gizlilik politikasını</a> okudum.</span></label>
+        <div class="admin-bar"><button class="btn primary" type="submit" id="l-send">Giriş yap</button><button class="linkbtn" type="button" id="g-unuttum" hidden>Şifremi unuttum</button></div>
         <div class="msg" id="l-msg" role="status"></div>
       </form>
+    </div>
+  </section>
+
+  <!-- YASAL METİNLER (4. adım, 2026-11-21; yasal.js). #yasal/uyari, #yasal/kosullar, #yasal/kvkk, #yasal/gizlilik.
+       Claude'un TASLAĞI: proje sahibi ve tercihen bir hukukçu doğrulayacak; köşeli parantezli yerler doldurulacak. Her paragraf yönetici düzenler. -->
+  <section id="yasal" data-tab hidden>
+    <div class="stack">
+      <div class="alt-bas">
+        <a class="geri-ok" href="#ayarlar" id="yasal-geri"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="gizli-yazi">Geri</span></a>
+        <h2 id="yasal-ust" data-k="yasal.ust">Yasal bilgiler</h2>
+      </div>
+      <article class="yasal-sayfa" data-yasal="uyari" hidden>
+        <h2 data-k="yasal.uyari.baslik" class="yasal-baslik">Tıbbi uyarı</h2>
+        <p data-k="yasal.uyari.1">OdyoBOT, odyoloji öğrencileri ve klinisyenler için hazırlanmış bir eğitim ve başvuru uygulamasıdır. Tıbbi cihaz değildir; tanı koymaz, tedavi önermez ve klinik değerlendirmenin yerine geçmez.</p>
+        <ul class="yasal-liste">
+          <li data-k="yasal.uyari.2">OdyoBOT asistanının önerileri (maskeleme kararları, akustik refleks yorumu) girilen değerlere göre sabit kurallarla hesaplanır. Sonuçlar bir yardımcıdır; klinik karar ve sorumluluk uygulayan uzmana aittir.</li>
+          <li data-k="yasal.uyari.3">Ders notları, terimler sözlüğü, şemalar, 3D modeller ve animasyonlar şematik ve eğitim amaçlıdır. Klinik sınır değerler kaynağa, yaşa ve kliniğe göre değişebilir; her zaman kendi kaynağınla doğrula.</li>
+          <li data-k="yasal.uyari.4">Vakalarım bölümüne girilen kayıtlar yalnızca senin cihazında saklanır. Hasta adı, kimlik numarası, doğum tarihi gibi tanımlayıcı bilgiler girme.</li>
+          <li data-k="yasal.uyari.5">Topluluk bölümünde yazılanlar üyelerin kişisel görüşleridir; tıbbi tavsiye değildir.</li>
+        </ul>
+        <p class="note yasal-tarih" data-k="yasal.uyari.tarih">Son güncelleme: 21 Kasım 2026 (taslak)</p>
+      </article>
+      <article class="yasal-sayfa" data-yasal="kosullar" hidden>
+        <h2 data-k="yasal.kosullar.baslik" class="yasal-baslik">Kullanım koşulları</h2>
+        <p data-k="yasal.kosullar.1">Bu koşullar OdyoBOT uygulamasının (bundan sonra "uygulama") kullanımını düzenler. Uygulamayı kullanarak ve hesap oluşturarak bu koşulları kabul etmiş olursun.</p>
+        <h3 data-k="yasal.kosullar.2">1. Hizmet</h3>
+        <p data-k="yasal.kosullar.3">Uygulama ücretsizdir ve eğitim amaçlıdır (bkz. Tıbbi uyarı). Uygulamanın her bölümü üyeliksiz kullanılabilir; üyelik yalnızca cihazlar arası eşitleme ve Topluluk bölümünde yazmak için gereklidir. Hizmet "olduğu gibi" sunulur; kesintisiz ya da hatasız çalışacağı garanti edilmez.</p>
+        <h3 data-k="yasal.kosullar.4">2. Hesap</h3>
+        <ul class="yasal-liste">
+          <li data-k="yasal.kosullar.5">Hesap oluşturmak için 18 yaşını doldurmuş olmalısın.</li>
+          <li data-k="yasal.kosullar.6">Hesabının ve şifrenin güvenliğinden sen sorumlusun. Görünen ad olarak takma ad kullanabilirsin; başkasının adını ya da kimliğini kullanamazsın.</li>
+          <li data-k="yasal.kosullar.7">Hesabını istediğin zaman Ayarlar → Hesabım → Hesabı sil ile kalıcı olarak silebilirsin.</li>
+        </ul>
+        <h3 data-k="yasal.kosullar.8">3. Topluluk kuralları</h3>
+        <ul class="yasal-liste">
+          <li data-k="yasal.kosullar.9">Hasta adı, kimlik numarası, doğum tarihi, fotoğraf gibi bir kişiyi tanımlayabilecek hiçbir bilgi paylaşma. Vakalardan yalnızca anonim bilgilerle (yaş grubu, bulgular) söz et.</li>
+          <li data-k="yasal.kosullar.10">Saygılı ol: hakaret, taciz, ayrımcılık, tehdit içeren yazılar yasaktır.</li>
+          <li data-k="yasal.kosullar.11">Reklam, spam, yanıltıcı ya da yasa dışı içerik ve başkasının telif hakkını ihlal eden içerik paylaşma.</li>
+          <li data-k="yasal.kosullar.12">Kurallara uymayan yazılar yönetici tarafından gizlenebilir ya da silinebilir; kuralları tekrar tekrar ihlal eden hesapların kullanımı kısıtlanabilir. Uygunsuz bir yazıyı "Şikâyet et" ile bildirebilirsin.</li>
+        </ul>
+        <h3 data-k="yasal.kosullar.13">4. İçerik ve haklar</h3>
+        <p data-k="yasal.kosullar.14">Topluluk bölümüne yazdıklarının sorumluluğu sana aittir. Yazdıklarının uygulamada diğer kullanıcılara gösterilmesine izin vermiş olursun; yazılarını istediğin zaman düzenleyebilir ya da silebilirsin.</p>
+        <p data-k="yasal.kosullar.15">Uygulamadaki özgün metin, şema ve tasarımlar uygulamanın sahibine aittir. Üçüncü taraf içerikler kendi lisanslarıyla kullanılır (ör. 3D kulak modeli: OpenEar, CC BY 4.0; Artec 3D kulak taraması, CC BY 3.0); kaynaklar ilgili sayfalarda belirtilir.</p>
+        <h3 data-k="yasal.kosullar.16">5. Sorumluluğun sınırı</h3>
+        <p data-k="yasal.kosullar.17">Uygulamadaki bilgilere dayanılarak verilen kararlardan, uygulamanın kullanılamamasından ya da kullanıcıların paylaştığı içeriklerden doğan zararlardan, yasaların izin verdiği ölçüde uygulamanın sahibi sorumlu tutulamaz.</p>
+        <h3 data-k="yasal.kosullar.18">6. Değişiklikler ve iletişim</h3>
+        <p data-k="yasal.kosullar.19">Bu koşullar güncellenebilir; önemli değişiklikler uygulama içinde duyurulur. Bu koşullara Türkiye Cumhuriyeti hukuku uygulanır. Sorular için: [iletişim e-posta adresi].</p>
+        <p class="note yasal-tarih" data-k="yasal.kosullar.tarih">Son güncelleme: 21 Kasım 2026 (taslak)</p>
+      </article>
+      <article class="yasal-sayfa" data-yasal="kvkk" hidden>
+        <h2 data-k="yasal.kvkk.baslik" class="yasal-baslik">KVKK aydınlatma metni</h2>
+        <p data-k="yasal.kvkk.1">6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") madde 10 uyarınca, OdyoBOT uygulamasında hangi kişisel verilerinin, hangi amaçla ve nasıl işlendiği aşağıda açıklanmıştır.</p>
+        <h3 data-k="yasal.kvkk.2">1. Veri sorumlusu</h3>
+        <p data-k="yasal.kvkk.3">Veri sorumlusu: [Veri sorumlusunun adı soyadı]. İletişim: [iletişim e-posta adresi].</p>
+        <h3 data-k="yasal.kvkk.4">2. İşlenen kişisel veriler</h3>
+        <ul class="yasal-liste">
+          <li data-k="yasal.kvkk.5">Kimlik ve iletişim: e-posta adresi (giriş için; Google ile girersen Google hesabındaki e-posta ve ad), görünen ad (takma ad olabilir).</li>
+          <li data-k="yasal.kvkk.6">Mesleki bilgi (isteğe bağlı): meslek durumu (öğrenci, odyolog, diğer).</li>
+          <li data-k="yasal.kvkk.7">Kullanım bilgileri: favori notlar, sözlük öğrenme durumu, engellediğin üyeler, Topluluk gönderi ve cevapların, şikâyetlerin ve bunların tarihleri.</li>
+          <li data-k="yasal.kvkk.8">İşlem güvenliği: hesap kimliği, giriş kayıtları ve hizmet sağlayıcıların tuttuğu teknik kayıtlar (ör. IP adresi).</li>
+        </ul>
+        <p data-k="yasal.kvkk.9">Vakalarım bölümüne girilen vaka kayıtları ve fotoğraflar yalnızca cihazında saklanır, sunucuya hiçbir zaman gönderilmez. Uygulama sağlık verisi toplamaz; Topluluk bölümünde hasta bilgisi paylaşılması yasaktır. Uygulamada reklam ya da kullanım ölçümü (analitik) çerezi yoktur.</p>
+        <h3 data-k="yasal.kvkk.10">3. İşleme amaçları ve hukuki sebepler</h3>
+        <ul class="yasal-liste">
+          <li data-k="yasal.kvkk.11">Üyelik hesabının oluşturulması ve yönetilmesi, cihazlar arası eşitleme, Topluluk özelliklerinin sunulması: üyelik sözleşmesinin kurulması ve ifası (KVKK m. 5/2-c).</li>
+          <li data-k="yasal.kvkk.12">Güvenliğin sağlanması, kötüye kullanımın önlenmesi, şikâyetlerin incelenmesi ve moderasyon: veri sorumlusunun meşru menfaati (KVKK m. 5/2-f).</li>
+          <li data-k="yasal.kvkk.13">Yasal yükümlülüklerin yerine getirilmesi ve yetkili kurumların taleplerinin karşılanması: hukuki yükümlülük (KVKK m. 5/2-ç).</li>
+        </ul>
+        <h3 data-k="yasal.kvkk.14">4. Toplama yöntemi</h3>
+        <p data-k="yasal.kvkk.15">Kişisel verilerin, uygulamayı kullanırken senin girdiğin bilgilerden ve hizmet sağlayıcıların sistemlerince otomatik yollarla, elektronik ortamda toplanır.</p>
+        <h3 data-k="yasal.kvkk.16">5. Aktarım</h3>
+        <p data-k="yasal.kvkk.17">Uygulama şu hizmet sağlayıcılar aracılığıyla çalışır ve verilerin bu amaçla onların sunucularında işlenir: Google (Firebase Authentication ve Cloud Firestore; veritabanı Avrupa'da, giriş hizmeti ABD dahil farklı ülkelerde), GitHub (uygulamanın yayınlanması; teknik erişim kayıtları). Bu nedenle kişisel verilerin yurt dışına aktarılmaktadır. Aktarım KVKK m. 9 kapsamında yapılır. [Hukuki dayanak — ör. standart sözleşme — bir hukukçuyla netleştirilecek.] Kişisel verilerin bunun dışında üçüncü kişilere satılmaz, kiralanmaz; yalnızca yasal zorunluluk hâlinde yetkili kamu kurumlarıyla paylaşılır.</p>
+        <h3 data-k="yasal.kvkk.18">6. Saklama süresi</h3>
+        <p data-k="yasal.kvkk.19">Hesap bilgilerin hesabın açık olduğu sürece saklanır. Hesabını sildiğinde hesap, profil ve eşitleme bilgilerin hemen silinir. Topluluk yazıların "Silinmiş üye" adıyla görünmeye devam eder; tamamen silinmesini istersen hesabını silmeden önce kendin silebilir ya da [iletişim e-posta adresi] adresinden talep edebilirsin. Şikâyet kayıtları incelendikten sonra silinir.</p>
+        <h3 data-k="yasal.kvkk.20">7. Hakların (KVKK m. 11)</h3>
+        <p data-k="yasal.kvkk.21">Veri sorumlusuna başvurarak kişisel verilerinin işlenip işlenmediğini öğrenme, işlenmişse bilgi isteme, işlenme amacını ve amacına uygun kullanılıp kullanılmadığını öğrenme, yurt içinde ya da yurt dışında aktarıldığı üçüncü kişileri bilme, eksik ya da yanlış işlenmişse düzeltilmesini, KVKK m. 7 şartlarıyla silinmesini ya da yok edilmesini ve bu işlemlerin aktarıldığı kişilere bildirilmesini isteme, münhasıran otomatik sistemlerle analiz edilmesi sonucu aleyhine bir sonuç çıkmasına itiraz etme ve kanuna aykırı işleme nedeniyle zarara uğrarsan zararın giderilmesini talep etme haklarına sahipsin.</p>
+        <p data-k="yasal.kvkk.22">Başvurularını [iletişim e-posta adresi] adresine iletebilirsin. Başvurular en geç 30 gün içinde ücretsiz yanıtlanır. Yanıtı yeterli bulmazsan Kişisel Verileri Koruma Kurulu'na şikâyette bulunabilirsin.</p>
+        <p class="note yasal-tarih" data-k="yasal.kvkk.tarih">Son güncelleme: 21 Kasım 2026 (taslak)</p>
+      </article>
+      <article class="yasal-sayfa" data-yasal="gizlilik" hidden>
+        <h2 data-k="yasal.gizlilik.baslik" class="yasal-baslik">Gizlilik politikası</h2>
+        <p data-k="yasal.gizlilik.1">Bu sayfa, OdyoBOT'un bilgilerini nasıl kullandığını kısaca anlatır. Ayrıntılar ve hakların için KVKK aydınlatma metnine bak.</p>
+        <h3 data-k="yasal.gizlilik.2">Üyelik olmadan</h3>
+        <p data-k="yasal.gizlilik.3">Uygulamanın tüm bölümleri üyeliksiz kullanılabilir. Bu durumda sunucuya senin hakkında bilgi gönderilmez; ayarların, favorilerin, sözlük ilerlemen ve vaka kayıtların yalnızca cihazında (tarayıcı depolamasında) kalır.</p>
+        <h3 data-k="yasal.gizlilik.4">Üye olursan</h3>
+        <ul class="yasal-liste">
+          <li data-k="yasal.gizlilik.5">Giriş için e-posta adresin Google Firebase'de saklanır. Görünen adın, meslek durumun (isteğe bağlı), favori notların, sözlük ilerlemen ve engellediğin üyeler hesabında tutulur.</li>
+          <li data-k="yasal.gizlilik.6">Görünen adın ve meslek durumun, Topluluk'ta yazdığın yazılarla birlikte herkese görünür. E-posta adresin hiçbir kullanıcıya gösterilmez.</li>
+          <li data-k="yasal.gizlilik.7">Hesap bilgilerine yalnızca sen erişebilirsin; uygulama yöneticisi de dahil kimse başka bir üyenin hesap bilgilerini (favoriler, sözlük ilerlemesi, engellenenler) göremez.</li>
+        </ul>
+        <h3 data-k="yasal.gizlilik.8">Hiçbir zaman yapılmayanlar</h3>
+        <ul class="yasal-liste">
+          <li data-k="yasal.gizlilik.9">Vaka kayıtların sunucuya gönderilmez.</li>
+          <li data-k="yasal.gizlilik.10">Bilgilerin satılmaz, reklam amacıyla kullanılmaz; uygulamada reklam ve kullanım ölçümü (analitik) çerezi yoktur.</li>
+        </ul>
+        <h3 data-k="yasal.gizlilik.11">Güvenlik</h3>
+        <p data-k="yasal.gizlilik.12">Bağlantılar şifrelidir (HTTPS). Veritabanı erişimi, her üyenin yalnızca kendi bilgisine erişebileceği kurallarla korunur. Hiçbir sistem tam güvenli değildir; şifreni kimseyle paylaşma.</p>
+        <h3 data-k="yasal.gizlilik.13">Hesabı silme ve değişiklikler</h3>
+        <p data-k="yasal.gizlilik.14">Hesabını Ayarlar → Hesabım → Hesabı sil ile istediğin zaman silebilirsin. Bu politika güncellenirse uygulama içinde duyurulur. Sorular için: [iletişim e-posta adresi].</p>
+        <p class="note yasal-tarih" data-k="yasal.gizlilik.tarih">Son güncelleme: 21 Kasım 2026 (taslak)</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- HESABIM (4. adım, uye.js): görünen ad, meslek durumu, eşitleme bilgisi, şifre sıfırlama, çıkış, hesabı silme -->
+  <section id="hesap" data-tab hidden>
+    <div class="stack">
+      <div class="alt-bas">
+        <a class="geri-ok" href="#ayarlar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="gizli-yazi">Geri: Ayarlar</span></a>
+        <h2 data-k="uye.hesap.baslik2">Hesabım</h2>
+      </div>
+      <p class="note" id="hs-eposta"></p>
+      <div class="msg" id="hs-dogrula-kutu" hidden><span id="hs-dogrula-yazi"></span> <button class="linkbtn" type="button" id="hs-dogrula">Doğrulama e-postasını yeniden gönder</button></div>
+      <form class="f" id="hs-form" style="padding:0">
+        <div class="fld"><label for="hs-ad" id="hs-ad-et" data-k="uye.etiket.ad">Görünen ad</label><input id="hs-ad" type="text" maxlength="40" autocomplete="nickname"></div>
+        <div class="fld"><label for="hs-meslek" id="hs-meslek-et" data-k="uye.etiket.meslek">Meslek durumu</label><select id="hs-meslek"></select></div>
+        <div class="admin-bar"><button class="btn primary" type="submit" id="hs-kaydet">Kaydet</button></div>
+        <div class="msg" id="hs-msg" role="status"></div>
+      </form>
+      <p class="note" data-k="uye.hesap.esitleme">Eşitlenenler: favori notların ve sözlükteki öğrenme durumun. Vaka kayıtların yalnızca bu cihazda kalır, hiçbir zaman sunucuya gönderilmez.</p>
+      <div class="admin-bar"><button class="btn" type="button" id="hs-sifre">Şifre sıfırlama e-postası gönder</button><button class="btn" type="button" id="hs-cikis2">Çıkış yap</button></div>
+      <div class="stack" id="hs-engelli" style="gap:6px" hidden>
+        <h3 data-k="uye.hesap.engelliBaslik">Engellediğin üyeler</h3>
+        <p class="note" data-k="uye.hesap.engelliNot">Bu üyelerin Topluluk'taki gönderi ve cevaplarını görmezsin.</p>
+        <div id="hs-engelli-liste" class="stack" style="gap:4px"></div>
+      </div>
+      <details class="hs-sil">
+        <summary id="hs-sil-baslik" data-k="uye.hesap.silBaslik">Hesabı sil</summary>
+        <div class="stack" style="gap:10px;padding-top:8px">
+          <p class="note" data-k="uye.hesap.silNot">Hesabın ve sunucudaki bilgilerin (görünen ad, meslek durumu, favoriler, sözlük ilerlemesi) kalıcı olarak silinir. Bu cihazdaki vaka kayıtların ve ayarların silinmez.</p>
+          <div class="admin-bar"><button class="btn uye-sil" type="button" id="hs-sil">Hesabımı kalıcı olarak sil</button></div>
+          <div class="msg" id="hs-sil-msg" role="status"></div>
+        </div>
+      </details>
+
+      <!-- Hesap yazıları (yönetici). Düğme ve mesaj yazıları buradan okunur (uye.js → M). -->
+      <details class="compose b-metinler" id="uye-metinler">
+        <summary>Hesap yazıları (yönetici)</summary>
+        <div class="yedek-ic">
+          <p data-k="uye.m.girisBaslik" data-m="girisBaslik">Giriş yap</p>
+          <p data-k="uye.m.kayitBaslik" data-m="kayitBaslik">Hesap oluştur</p>
+          <p data-k="uye.m.yoneticiBaslik" data-m="yoneticiBaslik">Yönetici girişi</p>
+          <p data-k="uye.m.girisLead" data-m="girisLead">Hesabınla giriş yap. Favori notların ve sözlük ilerlemen cihazların arasında eşitlenir.</p>
+          <p data-k="uye.m.kayitLead" data-m="kayitLead">Ücretsiz hesap oluştur. Üyelik isteğe bağlıdır; uygulamanın her bölümü üyeliksiz de kullanılır.</p>
+          <p data-k="uye.m.yoneticiLead" data-m="yoneticiLead">Bu sayfa yalnızca ilan, haber, ders notları ve cihaz açıklamalarını yöneten kişi içindir.</p>
+          <p data-k="uye.m.ayarGiris" data-m="ayarGiris">Giriş yap ya da hesap oluştur</p>
+          <p data-k="uye.m.ayarYonetici" data-m="ayarYonetici">Yönetici girişi</p>
+          <p data-k="uye.m.girisDugme" data-m="girisDugme">Giriş yap</p>
+          <p data-k="uye.m.kayitDugme" data-m="kayitDugme">Hesap oluştur</p>
+          <p data-k="uye.m.google" data-m="google">Google ile devam et</p>
+          <p data-k="uye.m.yaDa" data-m="yaDa">ya da e-posta ile</p>
+          <p data-k="uye.m.unuttum" data-m="unuttum">Şifremi unuttum</p>
+          <p data-k="uye.m.meslekSecilmedi" data-m="meslekSecilmedi">Belirtmek istemiyorum</p>
+          <p data-k="uye.m.meslekOgrenci" data-m="meslekOgrenci">Odyoloji öğrencisi</p>
+          <p data-k="uye.m.meslekOdyolog" data-m="meslekOdyolog">Odyolog</p>
+          <p data-k="uye.m.meslekDiger" data-m="meslekDiger">Diğer</p>
+          <p data-k="uye.m.adsiz" data-m="adsiz">Adsız üye</p>
+          <p data-k="uye.m.hesapAyarlari" data-m="hesapAyarlari">Hesap ayarları</p>
+          <p data-k="uye.m.cikis" data-m="cikis">Çıkış yap</p>
+          <p data-k="uye.m.kaydet" data-m="kaydet">Kaydet</p>
+          <p data-k="uye.m.kaydedildi" data-m="kaydedildi">Kaydedildi.</p>
+          <p data-k="uye.m.dogrulanmadi" data-m="dogrulanmadi">E-posta adresin henüz doğrulanmadı. Gelen kutundaki bağlantıya dokun.</p>
+          <p data-k="uye.m.dogrulaGonder" data-m="dogrulaGonder">Doğrulama e-postasını yeniden gönder</p>
+          <p data-k="uye.m.dogrulaGitti" data-m="dogrulaGitti">Doğrulama e-postası gönderildi. Gelen kutunu (ve gereksiz klasörünü) kontrol et.</p>
+          <p data-k="uye.m.sifreDugme" data-m="sifreDugme">Şifre sıfırlama e-postası gönder</p>
+          <p data-k="uye.m.sifreGitti" data-m="sifreGitti">Bu adres kayıtlıysa şifre sıfırlama bağlantısı gönderildi. Gelen kutunu kontrol et.</p>
+          <p data-k="uye.m.epostaYaz" data-m="epostaYaz">Önce e-posta adresini yaz.</p>
+          <p data-k="uye.m.kisaSifre" data-m="kisaSifre">Şifre en az 8 karakter olmalı.</p>
+          <p data-k="uye.m.hosgeldin" data-m="hosgeldin">Hesabın oluşturuldu. Doğrulama e-postası gönderildi.</p>
+          <p data-k="uye.m.silOnay" data-m="silOnay">Hesabın kalıcı olarak silinecek. Emin misin?</p>
+          <p data-k="uye.m.silDugme" data-m="silDugme">Hesabımı kalıcı olarak sil</p>
+          <p data-k="uye.m.silindi" data-m="silindi">Hesabın silindi.</p>
+          <p data-k="uye.m.yenidenGiris" data-m="yenidenGiris">Güvenlik için çıkış yapıp yeniden giriş yap, sonra tekrar dene.</p>
+          <p data-k="uye.m.eslemeHata" data-m="eslemeHata">Hesap bilgilerin sunucuya kaydedilemedi. İnternet bağlantını kontrol et; sorun sürerse yöneticiye bildir.</p>
+          <p data-k="uye.m.kayitKapali" data-m="kayitKapali">Yeni üye kaydı şu an kapalı.</p>
+          <p data-k="uye.m.engelKaldir" data-m="engelKaldir">Engeli kaldır</p>
+          <p data-k="uye.m.onayGerekli" data-m="onayGerekli">Devam etmek için kullanım koşullarını kabul etmelisin.</p>
+          <p data-k="uye.m.googleGirisNot" data-m="googleGirisNot">Google ile ilk kez giriyorsan hesabın oluşturulur; devam ederek kullanım koşullarını kabul etmiş, KVKK aydınlatma metnini ve gizlilik politikasını okumuş olursun.</p>
+          <p data-k="uye.m.googleIpucu" data-m="googleIpucu">Açılan pencerede Google hesabını seç. Pencere açılmadıysa tarayıcının açılır pencere iznini kontrol et.</p>
+        </div>
+      </details>
     </div>
   </section>
 
   <!-- NOTLAR -->
   <section id="notlar" data-tab hidden>
     <div class="stack">
-      <h2 data-k="notlar.baslik">Ders notları</h2>
+      <div class="alt-bas">
+        <a class="geri-ok" href="#kutuphane"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="gizli-yazi">Geri: Kütüphane</span></a>
+        <h2 data-k="notlar.baslik">Ders notları</h2>
+      </div>
       <div class="fld"><label for="n-ara">Notlarda ara</label><input id="n-ara" type="search" placeholder="Örn. timpanometri" autocomplete="off"></div>
       <!-- Konu grupları ve not satırları (app.js: NOT_GRUPLARI). Satıra dokununca notun kendi sayfası açılır (#not/<anahtar>). -->
       <div class="stack not-gruplar" id="notes-list"></div>
@@ -1045,9 +1401,9 @@
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/><path d="M10 20v-5h4v5"/></svg>
     Ana sayfa
   </a>
-  <a href="#depo" data-go="depo">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.500" y="4" width="17" height="16" rx="2"/><circle cx="9" cy="10" r="1.700"/><path d="M4 18l5-4 4 3 3-2.500 4 3.500"/></svg>
-    Görsel depo
+  <a href="#topluluk" data-go="topluluk">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 5h11.500v8.500H9l-4 3v-3H3.500z"/><path d="M15 9h5.500v8.500H19v3l-4-3h-4.500v-2"/></svg>
+    Topluluk
   </a>
   <a href="#odybot" data-go="odybot" class="bot" aria-label="OdyoBOT">
     <span class="bot-logo"><img src="icons/odyobot-logo-seffaf.png" width="56" height="56" alt=""></span>
@@ -1057,9 +1413,9 @@
     <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3.500" width="18" height="17" rx="2"/><path d="M3 9h2M3 14.500h2"/><circle cx="7.800" cy="8" r="1.900"/><path d="M10.300 10l3.900 3.300" stroke-linecap="butt" stroke-dasharray="1.500 1.200"/><path d="M15.200 14.200l3.200 3.200M18.400 14.200l-3.200 3.200"/></svg>
     Vakalarım
   </a>
-  <a href="#notlar" data-go="notlar">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h10a2 2 0 0 1 2 2v14H8a2 2 0 0 1-2-2V4z"/><path d="M6 18a2 2 0 0 1 2-2h10"/><path d="M10 8h5"/></svg>
-    Notlar
+  <a href="#kutuphane" data-go="kutuphane">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4v16M9 4v16"/><path d="M13.200 5.200l3.800-1 3.500 14.600-3.800 1z"/><path d="M3.500 20h17"/></svg>
+    Kütüphane
   </a>
 </nav>
 
@@ -1083,6 +1439,10 @@
 <script src="akis.js"></script>
 <script src="sozluk-veri.js"></script>
 <script src="sozluk.js"></script>
+<script src="uye.js"></script>
+<script src="forum.js"></script>
+<script src="zil.js"></script>
+<script src="yasal.js"></script>
 <script src="odyo-hesap.js"></script>
 <script src="vaka-testler.js"></script>
 <script src="vakalarim.js"></script>

@@ -44,7 +44,10 @@
   // { <terim kimliği>: { k: kutu 0–5, s: sonraki gösterim (ms), g: kaç kez görüldü } }
   function durumOku() { try { var o = JSON.parse(localStorage.getItem(DEPO) || '{}'); return o && typeof o === 'object' ? o : {}; } catch (e) { return {}; } }
   var DURUM = durumOku();
-  function durumYaz() { try { localStorage.setItem(DEPO, JSON.stringify(DURUM)); } catch (e) {} }
+  function durumYaz() {
+    try { localStorage.setItem(DEPO, JSON.stringify(DURUM)); } catch (e) {}
+    try { window.dispatchEvent(new CustomEvent('odyo:sozluk-durum', { detail: DURUM })); } catch (e) {}   // giriş yapmış üyede uye.js hesaba da yazar
+  }
   function durum(id) { return DURUM[id] || { k: 0, s: 0, g: 0 }; }
   function tekrarda(id) { var d = DURUM[id]; return !!d && d.g > 0 && d.k === 0; }
   function ogrenildi(id) { var d = DURUM[id]; return !!d && d.k > 0; }
@@ -372,5 +375,16 @@
   if (U.db) dbGeldi(U.db); else if (U.dbYok) { ulasilamadi = true; }
   ciz();
 
-  window.Sozluk = { terimler: function () { return terimler.slice(); } };
+  // Hesaptan gelen öğrenme durumunu birleştir (4. adım, uye.js): her terimde daha çok görülmüş olan kayıt kalır, eşitse sonraki gösterimi geç olan.
+  function durumBirlestir(gelen) {
+    if (!gelen || typeof gelen !== 'object') return;
+    var degisti = false;
+    Object.keys(gelen).forEach(function (id) {
+      var g = gelen[id], y = DURUM[id];
+      if (!g || typeof g !== 'object') return;
+      if (!y || (g.g || 0) > (y.g || 0) || ((g.g || 0) === (y.g || 0) && (g.s || 0) > (y.s || 0))) { DURUM[id] = { k: g.k || 0, s: g.s || 0, g: g.g || 0 }; degisti = true; }
+    });
+    if (degisti) { durumYaz(); try { ciz(); } catch (e) {} }
+  }
+  window.Sozluk = { terimler: function () { return terimler.slice(); }, durum: function () { return JSON.parse(JSON.stringify(DURUM)); }, durumBirlestir: durumBirlestir };
 })();
