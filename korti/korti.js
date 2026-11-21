@@ -140,7 +140,10 @@
     uzat(ag('stria'), yay(0.8, 7, 43, 12).concat(yay(0.735, 43, 7, 12)), Z0, Z1);
 
     // Zarlar
-    uzat(ag('baziler'), [[-0.3, -0.006], [0.8, -0.006], [0.8, -0.038], [-0.3, -0.038]], Z0, Z1);
+    // Baziler membran enine sık noktalı (animasyonda her nokta kendi yerinde bükülür; yalnızca iki ucu olsaydı membran hareket etmezdi)
+    var bmUst = [], bmAlt = [];
+    for (var bx = -0.3; bx <= 0.8001; bx += 0.025) { var xx = Math.round(bx * 1000) / 1000; bmUst.push([xx, -0.006]); bmAlt.unshift([xx, -0.038]); }
+    uzat(ag('baziler'), bmUst.concat(bmAlt), Z0, Z1);
     var rA = [-0.5, 0.186], rB = [0.555, 0.5];
     uzat(ag('reissner'), serit([rA, [0.02, 0.36], rB], 0.016), Z0, Z1);
     uzat(ag('tektoryal'), [[-0.46, 0.186], [-0.2, 0.218], [0.05, 0.25], [0.25, 0.262], [0.345, 0.25], [0.35, 0.232], [0.25, tmAlt(0.25)], [0.05, tmAlt(0.05)], [-0.15, 0.19], [-0.4, 0.165]], Z0, Z1);
