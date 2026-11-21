@@ -865,8 +865,8 @@
   // Alt sayfalar (2026-11-17): 'duyurular' (tam liste), 'not-sayfa' (#not/<anahtar>). Alt çubukta sekmeleri yok; bağlı oldukları sekme seçili görünür.
   var TABS = ['anasayfa', 'depo', 'odybot', 'notlar', 'vakalarim', 'ayarlar', 'giris', 'uc-boyut', 'duyurular', 'not-sayfa', 'seslab', 'sozluk'];
   var UST_SEKME = { 'uc-boyut': 'anasayfa', duyurular: 'anasayfa', 'not-sayfa': 'notlar', seslab: 'anasayfa', sozluk: 'anasayfa' };
-  var UC_ESKI = ['uc-boyut', '3d-model', 'gorsel3d', 'depo/3d', 'model'];   // olası eski/başka adresler -> #3d
-  var oncekiHash = '', ucGeldigi = null, slGeldigi = null, slSecimdenGeldi = false, ilkRota = true, gorunen = 'anasayfa';
+  var UC_ESKI = ['uc-boyut', '3d-model', 'gorsel3d', 'depo/3d', 'model'];   // olası eski/başka adresler -> #3d/periferik (eskiden #3d doğrudan kulak modeliydi)
+  var oncekiHash = '', ucGeldigi = null, ucListedenGeldi = false, slGeldigi = null, slSecimdenGeldi = false, ilkRota = true, gorunen = 'anasayfa';
   function adresDegistir(yeni) { try { history.replaceState(null, '', yeni); } catch (e) {} }
   function route() {
     var t = (location.hash || '').replace('#', '');
@@ -874,11 +874,14 @@
     if (duyuru) t = gorunen;   // ayrıntı sayfası açıldığı sayfanın üstünde açılır (ana sayfa ya da duyurular)
     // Eski adres: Geçmiş sekmesinin adı Vakalarım oldu; eski bağlantılar da çalışsın.
     if (t === 'gecmis') { t = 'vakalarim'; adresDegistir('#vakalarim'); }
-    if (UC_ESKI.indexOf(t) !== -1) { t = '3d'; ham = '3d'; adresDegistir('#3d'); }
-    if (t === '3d') {
-      t = 'uc-boyut';
-      if (oncekiHash !== '3d') ucGeldigi = ilkRota ? null : oncekiHash;   // geri düğmesi için: nereden gelindi (doğrudan açıldıysa null)
-      setTimeout(kur3d, 0);   // model yalnızca 3D sayfası ilk kez açılınca indirilir
+    if (UC_ESKI.indexOf(t) !== -1) { t = '3d/periferik'; ham = t; adresDegistir('#3d/periferik'); }
+    // 3D modeller (2026-11-21): #3d = liste, #3d/periferik = kulak modeli (gorsel3d/), #3d/korti = koklea kesiti (korti/).
+    if (t.split('/')[0] === '3d') {
+      var ucAlt = t.split('/')[1] || '';
+      if (ucAlt && ['periferik', 'korti'].indexOf(ucAlt) === -1) { ucAlt = ''; ham = '3d'; adresDegistir('#3d'); }
+      if (oncekiHash.split('/')[0] !== '3d') { ucGeldigi = ilkRota ? null : oncekiHash; ucListedenGeldi = false; }   // geri düğmesi için: nereden gelindi
+      else if (ucAlt && oncekiHash === '3d') ucListedenGeldi = true;
+      t = 'uc-boyut'; setTimeout(function () { ucGoster(ucAlt); }, 0);   // modeller yalnızca ilk açılışta kurulur (kulak modeli ~4 MB iner)
     }
     // Ses laboratuvarı (#seslab, 2026-11-18): ilk açılışta kurulur; sayfadan çıkınca çalan ses kesilir.
     // 2026-11-20: #seslab = İşitme/Denge seçim ekranı; #seslab/isitme ve #seslab/denge = laboratuvar (seçim ekranı gizli).
@@ -921,13 +924,19 @@
   route();
   $('sl-geri').addEventListener('click', function () {
     // Laboratuvardayken geri oku seçim ekranına döner (seçim ekranından gelindiyse tarayıcı geçmişinde bir adım geri).
-    if (oncekiHash !== 'seslab') { if (slSecimdenGeldi && history.length > 1) history.back(); else location.hash = '#seslab'; return; }
+    if (oncekiHash !== 'seslab') {
+      if ((slSecimdenGeldi || (slGeldigi && slGeldigi.split('/')[0] === '3d')) && history.length > 1) history.back();   // 3D modeller listesinden gelindiyse oraya döner
+      else location.hash = '#seslab';
+      return;
+    }
     if ((slGeldigi === 'anasayfa' || slGeldigi === '') && history.length > 1) history.back();
     else location.hash = '#anasayfa';
   });
   // 3D sayfasındaki "← Ana sayfa": ana sayfadan gelindiyse tarayıcı geçmişinde bir adım geri (telefonun geri tuşuyla aynı).
   $('sz-geri').addEventListener('click', function () { if (history.length > 1) history.back(); else location.hash = '#anasayfa'; });
   $('uc-geri').addEventListener('click', function () {
+    // Bir modeldeyken: listeye döner (listeden gelindiyse tarayıcı geçmişinde bir adım geri). Listedeyken: geldiği yere.
+    if (oncekiHash !== '3d') { if (ucListedenGeldi && history.length > 1) history.back(); else location.hash = '#3d'; return; }
     if ((ucGeldigi === 'anasayfa' || ucGeldigi === '') && history.length > 1) history.back();
     else location.hash = '#anasayfa';
   });
@@ -1323,6 +1332,34 @@
     if (g3d || !G3D || !window.Gorsel3D) return;
     g3d = window.Gorsel3D.kur($('g3d-kok'), { veri: G3D, veriYolu: 'gorsel3d/', kartEki: g3dKartEki });
   }
+  /* ---------- Koklea kesiti ve tüylü hücreler (korti/, 2026-11-21) ----------
+     Görüntüleyici korti/korti.js, yazılar korti/korti-veri.js (window.KORTI_VERI). Model kodla üretilir (dosya inmez).
+     Yönetici düzenlemesi: icerik/korti.yapi.<id> (ad, aciklama), korti.genel (ad, aciklama), korti.metin (ipucu, not, etiket, genelGorunum). */
+  var KT = window.KORTI_VERI, kt = null, KT_METIN_ALAN = [{ f: 'ipucu', ad: 'İpucu (modelin altında)', cok: true }, { f: 'not', ad: 'Not (sayfanın altında)', cok: true }, { f: 'etiket', ad: 'Modelin sağ üstündeki yazı' }, { f: 'genelGorunum', ad: 'Genel görünüm düğmesinin ipucu' }];
+  if (KT) {
+    Object.keys(KT.yapilar).forEach(function (id) { var y = KT.yapilar[id]; y.key = 'korti.yapi.' + id; editable(y, ['ad', 'aciklama']); });
+    KT.genel.key = 'korti.genel'; editable(KT.genel, ['ad', 'aciklama']);
+    KT.metinler.key = 'korti.metin'; editable(KT.metinler, ['ipucu', 'not', 'etiket', 'genelGorunum']);
+  }
+  function ktKartEki(tur, kimlik, yuva) {
+    var o = tur === 'yapi' ? KT.yapilar[kimlik] : tur === 'metin' ? KT.metinler : KT.genel; if (!o) return;
+    var a = tur === 'metin' ? adminPart(o.key, o, KT_METIN_ALAN, 'İpucu ve notu düzenle') : adminPart(o.key, o, G3D_ALAN, 'Düzenle');
+    if (a) yuva.appendChild(a);
+  }
+  function kurKorti() { if (kt || !KT || !window.Korti) return; kt = window.Korti.kur($('kt-kok'), { veri: KT, kartEki: ktKartEki }); }
+  function refreshKorti() {
+    if (!KT) return;
+    Object.keys(KT.yapilar).forEach(function (id) { applyOv(KT.yapilar[id].key, KT.yapilar[id]); });
+    applyOv(KT.genel.key, KT.genel); applyOv(KT.metinler.key, KT.metinler);
+    if (kt) kt.yenile();
+  }
+  // 3D sayfası: liste ya da seçilen model; başlık #uc-metinler'den (yönetici düzenler)
+
+  function ucGoster(alt) {
+    $('uc-liste-kutu').hidden = !!alt; $('g3d-kok').hidden = alt !== 'periferik'; $('kt-kok').hidden = alt !== 'korti';
+    var b = document.querySelector('#uc-metinler [data-m="' + (alt || 'liste') + '"]'); $('uc-baslik').textContent = b ? b.textContent.trim() : '';
+    if (alt === 'periferik') kur3d(); else if (alt === 'korti') kurKorti();
+  }
   function refresh3d() {
     if (!G3D) return;
     G3D.bolumler.forEach(function (b) { applyOv(b.key, b); });
@@ -1425,7 +1462,7 @@
   }
 
   // Açık/koyu görünüm değişince yapı renkleri (CSS değişkenleri) yeniden okunur.
-  function g3dRenk() { if (g3d) g3d.yenile(); if (sl) sl.yenile(); if (slG) slG.yenile(); }
+  function g3dRenk() { if (g3d) g3d.yenile(); if (sl) sl.yenile(); if (slG) slG.yenile(); if (kt) kt.yenile(); }
   new MutationObserver(g3dRenk).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
   if (window.matchMedia) { var g3dMq = window.matchMedia('(prefers-color-scheme: dark)'); if (g3dMq.addEventListener) g3dMq.addEventListener('change', g3dRenk); }
 
@@ -1447,7 +1484,7 @@
     });
   }
   // Tüm düzenlenebilir içeriği yeniden çizer (yönetici değişikliği geldiğinde, giriş/çıkışta).
-  function refreshContent() { refreshPathway(); refreshReflex(); refreshTarama(); refreshNotes(); refreshDevices(); refresh3d(); refreshSeslab(); refreshStatic(); bildir('odyo:metinler'); }
+  function refreshContent() { refreshPathway(); refreshReflex(); refreshTarama(); refreshNotes(); refreshDevices(); refresh3d(); refreshKorti(); refreshSeslab(); refreshStatic(); if (gorunen === 'uc-boyut') ucGoster((oncekiHash.split('/')[1]) || ''); bildir('odyo:metinler'); }
 
   /* ---------- servis çalışanı: internetsiz açılma (yalnızca https veya localhost'ta çalışır) ---------- */
   if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {

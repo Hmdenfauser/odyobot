@@ -1,0 +1,49 @@
+/* Koklea kesiti ve tüylü hücreler (korti/korti.js). Temel düzen gorsel3d.css'teki .g3d sınıflarından gelir.
+   Yapı renkleri: --kt-<kimlik> (korti.js okur, yapı listesindeki renkli noktalar da bunları kullanır).
+   Sıvılar: perilenf (skala vestibuli, skala timpani) açık mavi, endolenf (skala media) açık sarı. */
+.kt {
+  --kt-kemik: #E6DCC6;
+  --kt-osl: #D2C29F;
+  --kt-sv: #CFE4F3;
+  --kt-st: #CFE4F3;
+  --kt-sm: #F2E7B0;
+  --kt-reissner: #5E8FC0;
+  --kt-baziler: #C2703F;
+  --kt-tektoryal: #6FB8A0;
+  --kt-ith: #D9486E;
+  --kt-dth: #7A5BD0;
+  --kt-silya: #E89A1E;
+  --kt-pilar: #3FA06A;
+  --kt-destek: #E7B3A2;
+  --kt-stria: #B8322A;
+  --kt-ligament: #D9A3A0;
+  --kt-ganglion: #D99A1F;
+  --kt-sinir: #E8C440;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .kt {
+    --kt-kemik: #6E6656; --kt-osl: #8A7E63; --kt-sv: #24445B; --kt-st: #24445B; --kt-sm: #4D4727;
+    --kt-reissner: #86B3E0; --kt-baziler: #E08D5A; --kt-tektoryal: #7FD0B5; --kt-ith: #FF6F93; --kt-dth: #A88CFF;
+    --kt-silya: #FFB547; --kt-pilar: #5CC98A; --kt-destek: #C9978A; --kt-stria: #E0574D; --kt-ligament: #B98581;
+    --kt-ganglion: #F0B441; --kt-sinir: #F5D860;
+  }
+}
+:root[data-theme="dark"] .kt {
+  --kt-kemik: #6E6656; --kt-osl: #8A7E63; --kt-sv: #24445B; --kt-st: #24445B; --kt-sm: #4D4727;
+  --kt-reissner: #86B3E0; --kt-baziler: #E08D5A; --kt-tektoryal: #7FD0B5; --kt-ith: #FF6F93; --kt-dth: #A88CFF;
+  --kt-silya: #FFB547; --kt-pilar: #5CC98A; --kt-destek: #C9978A; --kt-stria: #E0574D; --kt-ligament: #B98581;
+  --kt-ganglion: #F0B441; --kt-sinir: #F5D860;
+}
+.kt-liste { display: flex; flex-direction: column; gap: 6px; }
+
+/* 3D modeller listesi (#3d) */
+.uc-liste { display: grid; gap: 10px; }
+.uc-model { display: flex; align-items: center; gap: 14px; min-height: 76px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 14px;
+  background: var(--surface); color: var(--ink); text-decoration: none; }
+.uc-model:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.uc-model-ik { flex: none; width: 48px; height: 48px; border-radius: 12px; display: grid; place-items: center; background: var(--accent); color: var(--accent-ink); }
+.uc-model-ik svg { width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.uc-model-yazi { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.uc-model-ad { font: 600 17px/1.25 var(--font-display); }
+.uc-model-alt { font-size: 14px; line-height: 1.4; color: var(--muted); }
+.uc-model-ok { margin-left: auto; flex: none; color: var(--muted); font-size: 20px; }
