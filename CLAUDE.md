@@ -51,8 +51,13 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 - Alt çubuk sırası: Ana sayfa, Görsel depo, OdyoBOT, Vakalarım, Notlar.
 - Odyogram çıktısı (`cikti.js`), Vakalarım → OdyoBOT gönderme, düğmeli sohbet (`odybot.js`). sw v12. Ayrıntı: `PROGRESS.md`.
 
-### KALDIĞIMIZ YER (2026-11-21, v40) — oturum başında bunu özetle
-**Durum:** Yayında, son sürüm **sw v40** (main; dallar `denge-saydamlik` ve `sozluk-temel` birleşti). Önceki yayının yedeği git etiketi `yedek-yayin-v39`. Bekleyen kod değişikliği yok.
+### KALDIĞIMIZ YER (2026-11-21, v41) — oturum başında bunu özetle
+**Durum:** Yayında, son sürüm **sw v41** (main; dal `sozluk-yon` birleşti). Önceki yayının yedeği git etiketi `yedek-yayin-v40`. Bekleyen kod değişikliği yok.
+**v41 (2026-11-21), sözlük kaydırma yönü (proje sahibinin kararı, kırmızı olumsuzu çağrıştırdığı için):** sola at = **Biliyorum**, mavi X damgası; sağa at = **Tekrar et**, kırmızı yuvarlak damgası (odyogram sembolleri, renkler `--left`/`--right`). Düğmeler: solda "← Biliyorum", sağda "Tekrar et →"; klavyede sol ok biliyorum, sağ ok tekrar. Öğrenme durumu korunur.
+**v40 (aşağıda) de yayında.**
+
+### Önceki: KALDIĞIMIZ YER (2026-11-21, v40)
+**Durum:** Yayında, sürüm **sw v40** (main; dallar `denge-saydamlik` ve `sozluk-temel` birleşti). Önceki yayının yedeği git etiketi `yedek-yayin-v39`.
 **v40 (2026-11-21):**
 - **Denge saydamlığı tek kural:** vestibül + bütün kanallar `seslab.js` → `LABIRENT_A` (0,55) ile çizilir; sahne, adım, yakın/uzak görünüm ve dokunarak seçme saydamlığı değiştirmez (önceden her parçanın ayrı sayısı vardı, seçim ve makula yakın görünümü de değiştiriyordu: proje sahibinin "her güncellemede saydamlık değişiyor" şikâyetinin nedeni). Derinlik ön geçişi (geçiş 0,5, `colorMask` kapalı) + 1. geçişte `LEQUAL`: yalnızca en öndeki yüzey boyanır, önde/arkada sırası doğru, üst üste binen yerler koyulaşmaz. Saydamlık değişecekse yalnızca `LABIRENT_A` değişir.
 - **Kristaller:** beyaz (`--sl-kristal` #FFFFFF, iki temada), 30 küçük tane (`KRISTAL_SAYI`, `kristalAg(0.2)`, `denge.js` `ARALIK` 0,05), arkalarında sönen iz (`IZ_ARALIK` 0,2 mm, `IZ_SAYI` 11, `IZ_OMUR` 1,8 sn). Tuşlara dokunulmadı.
