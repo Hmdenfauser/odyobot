@@ -51,7 +51,15 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 - Alt çubuk sırası: Ana sayfa, Görsel depo, OdyoBOT, Vakalarım, Notlar.
 - Odyogram çıktısı (`cikti.js`), Vakalarım → OdyoBOT gönderme, düğmeli sohbet (`odybot.js`). sw v12. Ayrıntı: `PROGRESS.md`.
 
-### KALDIĞIMIZ YER (2026-11-20 gece, v39) — oturum başında bunu özetle
+### KALDIĞIMIZ YER (2026-11-21, v40) — oturum başında bunu özetle
+**Durum:** Yayında, son sürüm **sw v40** (main; dallar `denge-saydamlik` ve `sozluk-temel` birleşti). Önceki yayının yedeği git etiketi `yedek-yayin-v39`. Bekleyen kod değişikliği yok.
+**v40 (2026-11-21):**
+- **Denge saydamlığı tek kural:** vestibül + bütün kanallar `seslab.js` → `LABIRENT_A` (0,55) ile çizilir; sahne, adım, yakın/uzak görünüm ve dokunarak seçme saydamlığı değiştirmez (önceden her parçanın ayrı sayısı vardı, seçim ve makula yakın görünümü de değiştiriyordu: proje sahibinin "her güncellemede saydamlık değişiyor" şikâyetinin nedeni). Derinlik ön geçişi (geçiş 0,5, `colorMask` kapalı) + 1. geçişte `LEQUAL`: yalnızca en öndeki yüzey boyanır, önde/arkada sırası doğru, üst üste binen yerler koyulaşmaz. Saydamlık değişecekse yalnızca `LABIRENT_A` değişir.
+- **Kristaller:** beyaz (`--sl-kristal` #FFFFFF, iki temada), 30 küçük tane (`KRISTAL_SAYI`, `kristalAg(0.2)`, `denge.js` `ARALIK` 0,05), arkalarında sönen iz (`IZ_ARALIK` 0,2 mm, `IZ_SAYI` 11, `IZ_OMUR` 1,8 sn). Tuşlara dokunulmadı.
+- **Terimler sözlüğü: 112 temel terim** (`sozluk-veri.js`, `window.SOZLUK_TEMEL`, kimlikler t001…t151 arası, boşluklu; değiştirilmez). Proje sahibinin Drive'daki ders notlarından seçildi (Enstrümantasyon, Elektrofizyoloji, İşitme ve Denge Sistemleri-1, Ayırıcı Tanı, Davranışsal Testler, Vestibüler Değerlendirme, Psikoakustik, İşitme Cihazları-1, İmplantlar-1, Tinnitus). **Açıklamalar Claude'un taslağı, proje sahibi doğrulayacak.** Yönetici düzenlerse `sozluk/<kimlik>` (set+merge) koddakinin yerine geçer, "Varsayılana dön" siler; silme `icerik/sozluk-gizli.<kimlik>` ile gizler, panelde "Hepsini geri getir". firestore.rules değişmedi.
+**Oturum başında hatırlat:** (1) Telefonda: Denge'de saydamlık, beyaz kristaller ve iz; Otolit yakın görünümünde vestibül ekranı fazla kaplıyor mu (önceden %8'di, artık tek kurala bağlı). (2) Sözlük: yönetici olarak bir temel terimi düzenle/sil/geri getir — **gerçek veritabanına yazma ilk kez denenecek**. (3) Terim açıklamalarının doğrulanması. (4) Proje sahibi "8 adımlık yol haritası" yolladığını söyledi; kayıtlarda yalnızca 5 adımlı `YOL-HARITASI.md` var, yeniden göndermesi istendi. (5) Önceki notlardaki telefon denemeleri ve doğrulamalar hâlâ geçerli. Temizlik: `denge-saydamlik`, `sozluk-temel`, `denge-bas` ve eski dallar silinebilir.
+
+### Önceki: KALDIĞIMIZ YER (2026-11-20 gece, v39)
 **Durum:** Yayında, son sürüm **sw v39** (main; dal `denge-bas` birleşti). Önceki yayının yedeği git etiketi `yedek-yayin-v38` (GitHub'da). Bekleyen kod değişikliği yok.
 **v39 (2026-11-20), Denge:**
 - Kanallar (`KANAL`) denge kipinde **opak** (a=1): yarı saydamken derinlik yazılmadığı için arkadaki kanal öndekinin önünde görünüyordu (proje sahibi: "modellerde sorun var"). Kristaller/makulalar 3. geçişte en üstte.
