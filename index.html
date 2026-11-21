@@ -371,10 +371,56 @@
   </section>
 
   <!-- GÖRSEL DEPO -->
+  <!-- KÜTÜPHANE (4. adım, 2026-11-21): Görsel depo + Notlar + Terimler sözlüğü tek sekmede; kartlar ilgili sayfaya gider.
+       Proje sahibinin seçimi: kartlı giriş (seçenek B). Alt çubuk: Ana sayfa · Topluluk · OdyoBOT · Vakalarım · Kütüphane. -->
+  <section id="kutuphane" data-tab hidden>
+    <div class="stack">
+      <h2 data-k="kutuphane.baslik">Kütüphane</h2>
+      <div class="kp-kartlar">
+        <a class="kp-kart" href="#notlar">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h10a2 2 0 0 1 2 2v14H8a2 2 0 0 1-2-2V4z"/><path d="M6 18a2 2 0 0 1 2-2h10"/><path d="M10 8h5"/></svg>
+          <span class="kp-yazi"><b data-k="kutuphane.notlar.ad">Ders notları</b><small data-k="kutuphane.notlar.alt">Konu gruplarında, favoriler</small></span>
+        </a>
+        <a class="kp-kart" href="#depo/sema">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="6" height="5" rx="1"/><rect x="15" y="4" width="6" height="5" rx="1"/><rect x="9" y="15" width="6" height="5" rx="1"/><path d="M6 9v3h12V9M12 12v3"/></svg>
+          <span class="kp-yazi"><b data-k="kutuphane.sema.ad">Şemalar</b><small data-k="kutuphane.sema.alt">İşitme yolağı, refleks arkı, yenidoğan taraması, işitsel hafıza</small></span>
+        </a>
+        <a class="kp-kart" href="#depo/isitme">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 3.5c3 0 5 2.2 5 5 0 2-1 3.2-2 4.2l-1 3c-.5 1.5-1.6 2.3-3.2 2.3"/><circle cx="9" cy="16.5" r="3.2"/><path d="M12.2 16.5h1.3"/></svg>
+          <span class="kp-yazi"><b data-k="kutuphane.isitme.ad">İşitme cihazları</b><small data-k="kutuphane.isitme.alt">BTE, RIC, kulak içi, CROS ve kemik iletimli</small></span>
+        </a>
+        <a class="kp-kart" href="#depo/implant">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="8" r="4"/><circle cx="8" cy="8" r="1.3"/><path d="M12 8h3c2.5 0 4 1.5 4 4v3a3 3 0 0 1-6 0"/></svg>
+          <span class="kp-yazi"><b data-k="kutuphane.implant.ad">İşitsel implantlar</b><small data-k="kutuphane.implant.alt">Koklear, kemik iletim, orta kulak, beyin sapı</small></span>
+        </a>
+        <a class="kp-kart kp-genis" href="#sozluk">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="11" height="14" rx="2"/><path d="M15 8h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-1"/><path d="M8 10h3M8 13h4"/></svg>
+          <span class="kp-yazi"><b data-k="kutuphane.sozluk.ad">Terimler sözlüğü</b><small data-k="kutuphane.sozluk.alt">Öğrenme kartları ve alfabetik liste</small></span>
+        </a>
+      </div>
+      <p class="note" data-k="kutuphane.not">Aradığını bulamazsan ana sayfadaki arama kutusu notlarda, cihazlarda, şemalarda ve sözlükte birlikte arar.</p>
+    </div>
+  </section>
+
+  <!-- TOPLULUK (4. adım): forum buraya gelecek; şimdilik yalnızca tanıtım -->
+  <section id="topluluk" data-tab hidden>
+    <div class="stack">
+      <h2 data-k="topluluk.baslik">Topluluk</h2>
+      <div class="kp-yakinda">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h11v8H9l-4 3v-3H4z"/><path d="M15 9h5v8h-1v3l-4-3h-4v-2"/></svg>
+        <p data-k="topluluk.yakinda.baslik" class="kp-yakinda-bas">Yakında</p>
+        <p class="note" data-k="topluluk.yakinda.metin">Odyoloji öğrencileri ve odyologların soru sorup deneyim paylaşacağı bölüm hazırlanıyor.</p>
+      </div>
+    </div>
+  </section>
+
   <section id="depo" data-tab hidden>
     <div class="stack">
-      <h2 data-k="depo.baslik">Görsel depo</h2>
-      <div class="seg seg3 depo-seg" role="group" aria-label="Depo bölümü">
+      <div class="alt-bas">
+        <a class="geri-ok" href="#kutuphane"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="gizli-yazi">Geri: Kütüphane</span></a>
+        <h2 id="depo-bas">Şemalar</h2>
+      </div>
+      <div class="seg seg3 depo-seg" hidden role="group" aria-label="Depo bölümü">
         <button type="button" id="seg-sema" aria-pressed="true">Şemalar</button>
         <button type="button" id="seg-isitme" aria-pressed="false">İşitme cihazları</button>
         <button type="button" id="seg-implant" aria-pressed="false">İşitsel implantlar</button>
@@ -747,7 +793,10 @@
   <!-- NOTLAR -->
   <section id="notlar" data-tab hidden>
     <div class="stack">
-      <h2 data-k="notlar.baslik">Ders notları</h2>
+      <div class="alt-bas">
+        <a class="geri-ok" href="#kutuphane"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="gizli-yazi">Geri: Kütüphane</span></a>
+        <h2 data-k="notlar.baslik">Ders notları</h2>
+      </div>
       <div class="fld"><label for="n-ara">Notlarda ara</label><input id="n-ara" type="search" placeholder="Örn. timpanometri" autocomplete="off"></div>
       <!-- Konu grupları ve not satırları (app.js: NOT_GRUPLARI). Satıra dokununca notun kendi sayfası açılır (#not/<anahtar>). -->
       <div class="stack not-gruplar" id="notes-list"></div>
@@ -1143,9 +1192,9 @@
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/><path d="M10 20v-5h4v5"/></svg>
     Ana sayfa
   </a>
-  <a href="#depo" data-go="depo">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.500" y="4" width="17" height="16" rx="2"/><circle cx="9" cy="10" r="1.700"/><path d="M4 18l5-4 4 3 3-2.500 4 3.500"/></svg>
-    Görsel depo
+  <a href="#topluluk" data-go="topluluk">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 5h11.500v8.500H9l-4 3v-3H3.500z"/><path d="M15 9h5.500v8.500H19v3l-4-3h-4.500v-2"/></svg>
+    Topluluk
   </a>
   <a href="#odybot" data-go="odybot" class="bot" aria-label="OdyoBOT">
     <span class="bot-logo"><img src="icons/odyobot-logo-seffaf.png" width="56" height="56" alt=""></span>
@@ -1155,9 +1204,9 @@
     <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3.500" width="18" height="17" rx="2"/><path d="M3 9h2M3 14.500h2"/><circle cx="7.800" cy="8" r="1.900"/><path d="M10.300 10l3.900 3.300" stroke-linecap="butt" stroke-dasharray="1.500 1.200"/><path d="M15.200 14.200l3.200 3.200M18.400 14.200l-3.200 3.200"/></svg>
     Vakalarım
   </a>
-  <a href="#notlar" data-go="notlar">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h10a2 2 0 0 1 2 2v14H8a2 2 0 0 1-2-2V4z"/><path d="M6 18a2 2 0 0 1 2-2h10"/><path d="M10 8h5"/></svg>
-    Notlar
+  <a href="#kutuphane" data-go="kutuphane">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4v16M9 4v16"/><path d="M13.200 5.200l3.800-1 3.500 14.600-3.800 1z"/><path d="M3.500 20h17"/></svg>
+    Kütüphane
   </a>
 </nav>
 

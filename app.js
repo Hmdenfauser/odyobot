@@ -835,7 +835,15 @@
   }
   var seg = secici(['sema', 'isitme', 'implant'], 'seg-', 'p-', function (which) {
     $('cihaz-alt').hidden = which === 'sema';   // ortak not iki cihaz panelinin altında
+    depoBaslik(which);
   });
+  // 4. adım (2026-11-21): Kütüphane'den her bölüm tek başına açılır; üstteki üçlü geçiş gizli, başlık bölümün adı
+  // (Kütüphane kartındaki ad, yönetici düzenler: kutuphane.sema.ad, kutuphane.isitme.ad, kutuphane.implant.ad).
+  function depoBaslik(which) {
+    var k = document.querySelector('#kutuphane a[href="#depo/' + which + '"] b');
+    $('depo-bas').textContent = k ? k.textContent : $('seg-' + which).textContent;
+  }
+  window.addEventListener('odyo:metinler', function () { var a = document.querySelector('#depo .depo-seg [aria-pressed="true"]'); if (a) depoBaslik(a.id.replace('seg-', '')); });
   var altSec = secici(['yolak', 'refleks', 'tarama', 'hafiza'], 'alt-', 'p-');
   var trSec = secici(['a', 'b'], 'tr-', 'tp-');
   // Görsel depo içinde bir yere git (ana sayfadaki arama ve hızlı erişim): #depo/isitme, #depo/implant, #depo/sema,
@@ -866,8 +874,9 @@
   /* ---------- tabs ---------- */
   // 'uc-boyut' = 3D sayfası; adresi #3d. Alt çubukta sekmesi yok, o sırada Ana sayfa seçili görünür.
   // Alt sayfalar (2026-11-17): 'duyurular' (tam liste), 'not-sayfa' (#not/<anahtar>). Alt çubukta sekmeleri yok; bağlı oldukları sekme seçili görünür.
-  var TABS = ['anasayfa', 'depo', 'odybot', 'notlar', 'vakalarim', 'ayarlar', 'giris', 'hesap', 'uc-boyut', 'duyurular', 'not-sayfa', 'seslab', 'sozluk'];
-  var UST_SEKME = { 'uc-boyut': 'anasayfa', duyurular: 'anasayfa', 'not-sayfa': 'notlar', seslab: 'anasayfa', sozluk: 'anasayfa' };
+  var TABS = ['anasayfa', 'depo', 'odybot', 'notlar', 'vakalarim', 'ayarlar', 'giris', 'hesap', 'uc-boyut', 'duyurular', 'not-sayfa', 'seslab', 'sozluk', 'kutuphane', 'topluluk'];
+  // 4. adım (2026-11-21): Görsel depo, Ders notları ve Terimler sözlüğü alt çubukta Kütüphane'nin altında
+  var UST_SEKME = { 'uc-boyut': 'anasayfa', duyurular: 'anasayfa', depo: 'kutuphane', notlar: 'kutuphane', 'not-sayfa': 'kutuphane', seslab: 'anasayfa', sozluk: 'kutuphane' };
   var UC_ESKI = ['uc-boyut', '3d-model', 'gorsel3d', 'depo/3d', 'model'];   // olası eski/başka adresler -> #3d/periferik (eskiden #3d doğrudan kulak modeliydi)
   var oncekiHash = '', ucGeldigi = null, ucListedenGeldi = false, slGeldigi = null, slSecimdenGeldi = false, ilkRota = true, gorunen = 'anasayfa';
   function adresDegistir(yeni) { try { history.replaceState(null, '', yeni); } catch (e) {} }
@@ -996,7 +1005,7 @@
     var sema = AM('araTurSema') + ' · ';
     // Bölümlerin kendisi (şemalar ve cihaz panelleri)
     [['alt-yolak', '#depo/yolak/' + sel], ['alt-refleks', '#depo/refleks/' + rsel], ['alt-tarama', '#depo/tarama/' + TA.sec], ['alt-hafiza', '#depo/hafiza/' + HF.sec], ['seg-isitme', '#depo/isitme'], ['seg-implant', '#depo/implant']].forEach(function (x) {
-      l.push({ tur: $('depo').querySelector('h2').textContent, ad: $(x[0]).textContent, metin: '', git: x[1] });
+      l.push({ tur: $('kutuphane').querySelector('h2').textContent, ad: $(x[0]).textContent, metin: '', git: x[1] });
     });
     NODES.forEach(function (n) { l.push({ tur: sema + $('alt-yolak').textContent, ad: n.label, metin: n.latin + ' ' + n.bolge + ' ' + n.yer, git: '#depo/yolak/' + n.id }); });
     RNODES.forEach(function (n) { l.push({ tur: sema + $('alt-refleks').textContent, ad: n.title, metin: n.latin + ' ' + n.label.join(' '), git: '#depo/refleks/' + n.id }); });

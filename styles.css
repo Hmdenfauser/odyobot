@@ -450,6 +450,19 @@ button.btn.b-vaka[aria-pressed="true"] .b-vaka-kutu { background: var(--accent);
 .g-ayrac { text-align: center; margin: 0; }
 .hs-sil summary { cursor: pointer; color: var(--danger); min-height: 44px; display: flex; align-items: center; }
 .btn.uye-sil { color: var(--danger); border-color: var(--danger); }
+/* 4. adım: Kütüphane kartları ve Topluluk tanıtımı */
+.kp-kartlar { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.kp-kart { display: flex; flex-direction: column; gap: 10px; min-height: 120px; padding: 16px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; color: var(--ink); text-decoration: none; }
+.kp-kartlar .k-admin { grid-column: span 2; }
+.kp-kart:active { transform: scale(.98); }
+.kp-kart svg { width: 32px; height: 32px; fill: none; stroke: var(--accent); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.kp-yazi { display: flex; flex-direction: column; gap: 4px; }
+.kp-yazi b { font-size: 15px; line-height: 1.25; }
+.kp-yazi small { font-size: 12.5px; line-height: 1.35; color: var(--muted); }
+.kp-kart.kp-genis { grid-column: span 2; flex-direction: row; align-items: center; min-height: 76px; gap: 14px; }
+.kp-yakinda { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; padding: 36px 16px; background: var(--surface); border: 1px dashed var(--line); border-radius: 16px; }
+.kp-yakinda svg { width: 44px; height: 44px; fill: none; stroke: var(--accent); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.kp-yakinda-bas { font-weight: 700; font-size: 17px; margin: 0; }
 .b-metinler { display: none; }
 .yonetici .b-metinler { display: block; }
 .b-metinler p { margin: 0; font-size: 14px; }
