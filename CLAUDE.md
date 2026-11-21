@@ -51,7 +51,10 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 - Alt çubuk sırası: Ana sayfa, Görsel depo, OdyoBOT, Vakalarım, Notlar.
 - Odyogram çıktısı (`cikti.js`), Vakalarım → OdyoBOT gönderme, düğmeli sohbet (`odybot.js`). sw v12. Ayrıntı: `PROGRESS.md`.
 
-### ÖNİZLEMEDE (2026-11-21, dal `adim3-modeller`, yayında değil)
+### KALDIĞIMIZ YER (2026-11-21 gece, v42) — oturum başında bunu özetle
+**Durum:** Yayında, son sürüm **sw v42** (main; dal `adim3-modeller` birleşti). Önceki yayının yedeği git etiketi `yedek-yayin-v41`. Bekleyen kod değişikliği yok.
+**Oturum başında hatırlat:** (1) Telefonda dene: 3D modeller listesi, Denge sistemi ve İç kulak yapıları (dokunma, yazıları gizle/göster), Ses laboratuvarı → Corti organı (oynat/duraklat, İTH/DTH, K⁺ noktaları, membranın bükülmesi); önceki sürümlerin telefon denemeleri de bekliyor. (2) Doğrulanacak taslak metinler: iç kulak (17 yapı), denge sistemi (9 yapı), Corti animasyonu aşama yazıları ve açıklaması, sözlük terimleri. (3) 3. adımda kalan: proje sahibi isterse ampulla içinde krista/kupula; sonra "sıradaki adıma geç" (4. adım: üye girişi, forum, bildirim). (4) Temizlik: `adim3-modeller`, `sozluk-yon`, `sozluk-temel`, `denge-saydamlik` ve eski dallar silinebilir.
+**v42 ayrıntısı:**
 - **Kural (proje sahibi, 2026-11-21):** 3D sekmesinde **yalnızca hareketsiz modeller** var: Periferik işitme sistemi, Denge sistemi, İç kulak yapıları. **Bütün animasyonlar (yapılan ve yapılacak) Ses laboratuvarında.** 3D listesine Ses laboratuvarına giden bağlantı konmaz; BPPV, kristal kayması, manevra 3D'de olmaz.
 - **3D modeller listesi** (`#3d`): `#3d/periferik` (gorsel3d/, eski 3D sayfası; eski adresler buraya), `#3d/denge` (korti/denge3d.js), `#3d/korti` (korti/korti.js, listede adı "İç kulak yapıları"). Başlıklar `#uc-metinler` (yönetici). Ana sayfa 3D kartı: "3D modeller".
 - **Ortak görüntüleyici** `korti/korti.js` → `Korti.goruntuleyici(kok, ayar)`: kodla ya da dosyadan gelen parçalar, grup (alt parçalar tek yapı), saydam parça (derinlik ön geçişi), dokunarak/listeden seçme, seçilene yaklaşma, genel görünüm düğmesi.
