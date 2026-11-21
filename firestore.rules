@@ -122,5 +122,21 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isAdmin();
     }
+
+    // Üye hesapları (4. adım, 2026-11-21). Belge adı üyenin kimliği (uid).
+    // Her üye YALNIZCA kendi belgesini okur, yazar, siler; başka hiç kimse (yönetici dahil) okuyamaz.
+    // Alanlar: ad (görünen ad ≤40), meslek, favoriler (not anahtarları ≤200), sozluk (terim → öğrenme durumu ≤2000),
+    // olusturma, guncelleme. E-posta burada tutulmaz (yalnızca Firebase Authentication'da). Vaka kayıtları hiç gönderilmez.
+    match /uyeler/{uid} {
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['ad', 'meslek', 'favoriler', 'sozluk', 'olusturma', 'guncelleme'])
+        && shortString('ad', 40)
+        && (!('meslek' in request.resource.data) || request.resource.data.meslek in ['', 'ogrenci', 'odyolog', 'diger'])
+        && (!('favoriler' in request.resource.data) || (request.resource.data.favoriler is list && request.resource.data.favoriler.size() <= 200))
+        && (!('sozluk' in request.resource.data) || (request.resource.data.sozluk is map && request.resource.data.sozluk.size() <= 2000))
+        && (!('olusturma' in request.resource.data) || request.resource.data.olusturma is number)
+        && (!('guncelleme' in request.resource.data) || request.resource.data.guncelleme is number);
+    }
   }
 }

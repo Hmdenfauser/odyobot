@@ -5,7 +5,7 @@
 <!-- Güvenlik kuralı (CSP): yalnızca kendi dosyalarımız ve Firebase adresleri çalışabilir/bağlanabilir.
      GitHub Pages sunucu başlığı göndermeye izin vermediği için meta satırı olarak yazıldı.
      Firebase'e yeni bir servis eklenirse (ör. Storage) adresi connect-src'ye eklenmeli. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com; frame-src https://odyobot-c7a30.firebaseapp.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com; frame-src https://odyobot-c7a30.firebaseapp.com https://accounts.google.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <style>:root{color-scheme:light;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>OdyoBOT</title>
@@ -607,10 +607,22 @@
         </div>
         <p class="note" data-k="ayar.dil.not">Şimdilik yalnızca Türkçe. Başka diller ileride eklenecek.</p>
       </div>
+      <!-- Hesap (4. adım, uye.js). Üyelik kapalıyken eskisi gibi yalnızca "Yönetici girişi"; açıkken herkese "Giriş yap"; giriş yapınca "Hesabım". -->
       <div class="stack ayar-grup" id="ayar-giris">
-        <h3 data-k="ayar.yonetici.baslik">Yönetici</h3>
-        <p class="note" data-k="ayar.yonetici.not">İlan, haber, ders notu ve metinleri yöneten kişi içindir.</p>
+        <div class="stack" id="ayar-yonetici-giris" style="gap:8px">
+          <h3 data-k="ayar.yonetici.baslik">Yönetici</h3>
+          <p class="note" data-k="ayar.yonetici.not">İlan, haber, ders notu ve metinleri yöneten kişi içindir.</p>
+        </div>
+        <div class="stack" id="ayar-uye-giris" style="gap:8px" hidden>
+          <h3 data-k="uye.ayar.baslik">Hesap</h3>
+          <p class="note" data-k="uye.ayar.not">Üyelik isteğe bağlıdır. Giriş yapınca favori notların ve sözlükteki ilerlemen telefonun ile bilgisayarın arasında eşitlenir. Vaka kayıtların hiçbir zaman sunucuya gönderilmez.</p>
+        </div>
         <a class="btn ayar-giris-btn" href="#giris" id="login-link">Yönetici girişi</a>
+      </div>
+      <div class="stack ayar-grup" id="ayar-hesap" hidden>
+        <h3 data-k="uye.hesap.baslik">Hesabım</h3>
+        <p class="note" id="hs-kim"></p>
+        <div class="admin-bar"><a class="btn" href="#hesap" id="hs-git">Hesap ayarları</a><button class="btn" type="button" id="hs-cikis">Çıkış yap</button></div>
       </div>
       <div class="stack" id="ayar-body" hidden>
         <div class="stack" style="gap:10px">
@@ -621,9 +633,10 @@
         </div>
         <p class="note">Ders notu ekleme, düzenleme ve konu başlıkları Ders notları sayfasındaki "Notları ve başlıkları yönet" panelinde.</p>
         <div class="stack" style="gap:10px">
-          <h3>Oturum</h3>
-          <p class="note" id="who"></p>
-          <div class="admin-bar"><button class="btn" type="button" id="logout">Çıkış yap</button></div>
+          <h3>Üyelik</h3>
+          <p class="note">Açınca herkes Ayarlar'dan hesap oluşturabilir (e-posta ya da Google). Gizlilik politikası ve KVKK aydınlatma metni hazır olmadan açma.</p>
+          <label class="uye-anahtar"><input type="checkbox" id="uye-kayit-acik"> Yeni üye kaydı açık</label>
+          <div class="msg" id="uye-kayit-msg" role="status"></div>
         </div>
       </div>
     </div>
@@ -634,15 +647,100 @@
     <div class="stack">
       <div class="alt-bas">
         <a class="geri-ok" href="#ayarlar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="gizli-yazi">Geri: Ayarlar</span></a>
-        <h2>Yönetici girişi</h2>
+        <h2 id="g-baslik">Yönetici girişi</h2>
       </div>
-      <p class="lead">Bu sayfa yalnızca ilan, haber, ders notları ve cihaz açıklamalarını yöneten kişi içindir.</p>
+      <p class="lead" id="g-lead">Bu sayfa yalnızca ilan, haber, ders notları ve cihaz açıklamalarını yöneten kişi içindir.</p>
+      <div class="seg seg2" id="g-kip" role="group" aria-label="Giriş ya da hesap oluşturma" hidden>
+        <button type="button" data-kip="giris" aria-pressed="true">Giriş yap</button>
+        <button type="button" data-kip="kayit" aria-pressed="false">Hesap oluştur</button>
+      </div>
+      <div class="stack" id="g-google-kutu" style="gap:8px" hidden>
+        <button class="btn g-google" type="button" id="g-google">Google ile devam et</button>
+        <p class="note g-ayrac" id="g-ya-da">ya da e-posta ile</p>
+      </div>
       <form class="f" id="login-form" style="padding:0">
         <div class="fld"><label for="l-email">E-posta</label><input id="l-email" type="email" inputmode="email" autocomplete="username" required></div>
-        <div class="fld"><label for="l-pass">Şifre</label><input id="l-pass" type="password" autocomplete="current-password" required></div>
-        <div class="admin-bar"><button class="btn primary" type="submit" id="l-send">Giriş yap</button></div>
+        <div class="fld"><label for="l-pass">Şifre</label><input id="l-pass" type="password" autocomplete="current-password" required minlength="6"></div>
+        <div class="stack" id="g-kayit-alan" style="gap:12px" hidden>
+          <div class="fld"><label for="g-ad" id="g-ad-et" data-k="uye.etiket.adKayit">Görünen ad (isteğe bağlı)</label><input id="g-ad" type="text" maxlength="40" autocomplete="nickname"></div>
+          <div class="fld"><label for="g-meslek" id="g-meslek-et" data-k="uye.etiket.meslekKayit">Meslek durumu (isteğe bağlı)</label><select id="g-meslek"></select></div>
+          <p class="note" id="g-kayit-not" data-k="uye.kayit.not">Gerçek adını yazmak zorunda değilsin. Hasta bilgisi hiçbir yere yazılmaz.</p>
+        </div>
+        <div class="admin-bar"><button class="btn primary" type="submit" id="l-send">Giriş yap</button><button class="linkbtn" type="button" id="g-unuttum" hidden>Şifremi unuttum</button></div>
         <div class="msg" id="l-msg" role="status"></div>
       </form>
+    </div>
+  </section>
+
+  <!-- HESABIM (4. adım, uye.js): görünen ad, meslek durumu, eşitleme bilgisi, şifre sıfırlama, çıkış, hesabı silme -->
+  <section id="hesap" data-tab hidden>
+    <div class="stack">
+      <div class="alt-bas">
+        <a class="geri-ok" href="#ayarlar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="gizli-yazi">Geri: Ayarlar</span></a>
+        <h2 data-k="uye.hesap.baslik2">Hesabım</h2>
+      </div>
+      <p class="note" id="hs-eposta"></p>
+      <div class="msg" id="hs-dogrula-kutu" hidden><span id="hs-dogrula-yazi"></span> <button class="linkbtn" type="button" id="hs-dogrula">Doğrulama e-postasını yeniden gönder</button></div>
+      <form class="f" id="hs-form" style="padding:0">
+        <div class="fld"><label for="hs-ad" id="hs-ad-et" data-k="uye.etiket.ad">Görünen ad</label><input id="hs-ad" type="text" maxlength="40" autocomplete="nickname"></div>
+        <div class="fld"><label for="hs-meslek" id="hs-meslek-et" data-k="uye.etiket.meslek">Meslek durumu</label><select id="hs-meslek"></select></div>
+        <div class="admin-bar"><button class="btn primary" type="submit" id="hs-kaydet">Kaydet</button></div>
+        <div class="msg" id="hs-msg" role="status"></div>
+      </form>
+      <p class="note" data-k="uye.hesap.esitleme">Eşitlenenler: favori notların ve sözlükteki öğrenme durumun. Vaka kayıtların yalnızca bu cihazda kalır, hiçbir zaman sunucuya gönderilmez.</p>
+      <div class="admin-bar"><button class="btn" type="button" id="hs-sifre">Şifre sıfırlama e-postası gönder</button><button class="btn" type="button" id="hs-cikis2">Çıkış yap</button></div>
+      <details class="hs-sil">
+        <summary id="hs-sil-baslik" data-k="uye.hesap.silBaslik">Hesabı sil</summary>
+        <div class="stack" style="gap:10px;padding-top:8px">
+          <p class="note" data-k="uye.hesap.silNot">Hesabın ve sunucudaki bilgilerin (görünen ad, meslek durumu, favoriler, sözlük ilerlemesi) kalıcı olarak silinir. Bu cihazdaki vaka kayıtların ve ayarların silinmez.</p>
+          <div class="admin-bar"><button class="btn uye-sil" type="button" id="hs-sil">Hesabımı kalıcı olarak sil</button></div>
+          <div class="msg" id="hs-sil-msg" role="status"></div>
+        </div>
+      </details>
+
+      <!-- Hesap yazıları (yönetici). Düğme ve mesaj yazıları buradan okunur (uye.js → M). -->
+      <details class="compose b-metinler" id="uye-metinler">
+        <summary>Hesap yazıları (yönetici)</summary>
+        <div class="yedek-ic">
+          <p data-k="uye.m.girisBaslik" data-m="girisBaslik">Giriş yap</p>
+          <p data-k="uye.m.kayitBaslik" data-m="kayitBaslik">Hesap oluştur</p>
+          <p data-k="uye.m.yoneticiBaslik" data-m="yoneticiBaslik">Yönetici girişi</p>
+          <p data-k="uye.m.girisLead" data-m="girisLead">Hesabınla giriş yap. Favori notların ve sözlük ilerlemen cihazların arasında eşitlenir.</p>
+          <p data-k="uye.m.kayitLead" data-m="kayitLead">Ücretsiz hesap oluştur. Üyelik isteğe bağlıdır; uygulamanın her bölümü üyeliksiz de kullanılır.</p>
+          <p data-k="uye.m.yoneticiLead" data-m="yoneticiLead">Bu sayfa yalnızca ilan, haber, ders notları ve cihaz açıklamalarını yöneten kişi içindir.</p>
+          <p data-k="uye.m.ayarGiris" data-m="ayarGiris">Giriş yap ya da hesap oluştur</p>
+          <p data-k="uye.m.ayarYonetici" data-m="ayarYonetici">Yönetici girişi</p>
+          <p data-k="uye.m.girisDugme" data-m="girisDugme">Giriş yap</p>
+          <p data-k="uye.m.kayitDugme" data-m="kayitDugme">Hesap oluştur</p>
+          <p data-k="uye.m.google" data-m="google">Google ile devam et</p>
+          <p data-k="uye.m.yaDa" data-m="yaDa">ya da e-posta ile</p>
+          <p data-k="uye.m.unuttum" data-m="unuttum">Şifremi unuttum</p>
+          <p data-k="uye.m.meslekSecilmedi" data-m="meslekSecilmedi">Belirtmek istemiyorum</p>
+          <p data-k="uye.m.meslekOgrenci" data-m="meslekOgrenci">Odyoloji öğrencisi</p>
+          <p data-k="uye.m.meslekOdyolog" data-m="meslekOdyolog">Odyolog</p>
+          <p data-k="uye.m.meslekDiger" data-m="meslekDiger">Diğer</p>
+          <p data-k="uye.m.adsiz" data-m="adsiz">Adsız üye</p>
+          <p data-k="uye.m.hesapAyarlari" data-m="hesapAyarlari">Hesap ayarları</p>
+          <p data-k="uye.m.cikis" data-m="cikis">Çıkış yap</p>
+          <p data-k="uye.m.kaydet" data-m="kaydet">Kaydet</p>
+          <p data-k="uye.m.kaydedildi" data-m="kaydedildi">Kaydedildi.</p>
+          <p data-k="uye.m.dogrulanmadi" data-m="dogrulanmadi">E-posta adresin henüz doğrulanmadı. Gelen kutundaki bağlantıya dokun.</p>
+          <p data-k="uye.m.dogrulaGonder" data-m="dogrulaGonder">Doğrulama e-postasını yeniden gönder</p>
+          <p data-k="uye.m.dogrulaGitti" data-m="dogrulaGitti">Doğrulama e-postası gönderildi. Gelen kutunu (ve gereksiz klasörünü) kontrol et.</p>
+          <p data-k="uye.m.sifreDugme" data-m="sifreDugme">Şifre sıfırlama e-postası gönder</p>
+          <p data-k="uye.m.sifreGitti" data-m="sifreGitti">Bu adres kayıtlıysa şifre sıfırlama bağlantısı gönderildi. Gelen kutunu kontrol et.</p>
+          <p data-k="uye.m.epostaYaz" data-m="epostaYaz">Önce e-posta adresini yaz.</p>
+          <p data-k="uye.m.kisaSifre" data-m="kisaSifre">Şifre en az 8 karakter olmalı.</p>
+          <p data-k="uye.m.hosgeldin" data-m="hosgeldin">Hesabın oluşturuldu. Doğrulama e-postası gönderildi.</p>
+          <p data-k="uye.m.silOnay" data-m="silOnay">Hesabın kalıcı olarak silinecek. Emin misin?</p>
+          <p data-k="uye.m.silDugme" data-m="silDugme">Hesabımı kalıcı olarak sil</p>
+          <p data-k="uye.m.silindi" data-m="silindi">Hesabın silindi.</p>
+          <p data-k="uye.m.yenidenGiris" data-m="yenidenGiris">Güvenlik için çıkış yapıp yeniden giriş yap, sonra tekrar dene.</p>
+          <p data-k="uye.m.eslemeHata" data-m="eslemeHata">Hesap bilgilerin sunucuya kaydedilemedi. İnternet bağlantını kontrol et; sorun sürerse yöneticiye bildir.</p>
+          <p data-k="uye.m.kayitKapali" data-m="kayitKapali">Yeni üye kaydı şu an kapalı.</p>
+          <p data-k="uye.m.googleIpucu" data-m="googleIpucu">Açılan pencerede Google hesabını seç. Pencere açılmadıysa tarayıcının açılır pencere iznini kontrol et.</p>
+        </div>
+      </details>
     </div>
   </section>
 
@@ -1083,6 +1181,7 @@
 <script src="akis.js"></script>
 <script src="sozluk-veri.js"></script>
 <script src="sozluk.js"></script>
+<script src="uye.js"></script>
 <script src="odyo-hesap.js"></script>
 <script src="vaka-testler.js"></script>
 <script src="vakalarim.js"></script>

@@ -443,6 +443,13 @@ button.btn.b-vaka { display: flex; align-items: center; gap: 10px; text-align: l
 .b-vaka-kutu { flex: none; width: 20px; height: 20px; border: 2px solid var(--muted); border-radius: 6px; }
 button.btn.b-vaka[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
 button.btn.b-vaka[aria-pressed="true"] .b-vaka-kutu { background: var(--accent); border-color: var(--accent); }
+/* 4. adım: hesap (uye.js) */
+.uye-anahtar { display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: 15px; }
+.uye-anahtar input { width: 22px; height: 22px; }
+.g-google { width: 100%; min-height: 48px; }
+.g-ayrac { text-align: center; margin: 0; }
+.hs-sil summary { cursor: pointer; color: var(--danger); min-height: 44px; display: flex; align-items: center; }
+.btn.uye-sil { color: var(--danger); border-color: var(--danger); }
 .b-metinler { display: none; }
 .yonetici .b-metinler { display: block; }
 .b-metinler p { margin: 0; font-size: 14px; }

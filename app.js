@@ -762,7 +762,10 @@
     var l = favoriler(), i = l.indexOf(key);
     if (i === -1) l.push(key); else l.splice(i, 1);
     yerelYaz('odybot:favoriNotlar', JSON.stringify(l));
+    bildir('odyo:favori', l);   // giriş yapmış üyede uye.js hesaba da yazar
   }
+  // Hesaptan gelen favoriler (uye.js yerel kopyayı yazdıktan sonra haber verir)
+  window.addEventListener('odyo:favori-yuklendi', function () { if (gorunen === 'anasayfa') anaCiz(); if (gorunen === 'not-sayfa') notSayfaCiz(); });
   function notSayfaCiz() {
     var n = acikNot && notBul(acikNot), govde = $('not-govde');
     $('not-yildiz').hidden = !n;
@@ -863,7 +866,7 @@
   /* ---------- tabs ---------- */
   // 'uc-boyut' = 3D sayfası; adresi #3d. Alt çubukta sekmesi yok, o sırada Ana sayfa seçili görünür.
   // Alt sayfalar (2026-11-17): 'duyurular' (tam liste), 'not-sayfa' (#not/<anahtar>). Alt çubukta sekmeleri yok; bağlı oldukları sekme seçili görünür.
-  var TABS = ['anasayfa', 'depo', 'odybot', 'notlar', 'vakalarim', 'ayarlar', 'giris', 'uc-boyut', 'duyurular', 'not-sayfa', 'seslab', 'sozluk'];
+  var TABS = ['anasayfa', 'depo', 'odybot', 'notlar', 'vakalarim', 'ayarlar', 'giris', 'hesap', 'uc-boyut', 'duyurular', 'not-sayfa', 'seslab', 'sozluk'];
   var UST_SEKME = { 'uc-boyut': 'anasayfa', duyurular: 'anasayfa', 'not-sayfa': 'notlar', seslab: 'anasayfa', sozluk: 'anasayfa' };
   var UC_ESKI = ['uc-boyut', '3d-model', 'gorsel3d', 'depo/3d', 'model'];   // olası eski/başka adresler -> #3d/periferik (eskiden #3d doğrudan kulak modeliydi)
   var oncekiHash = '', ucGeldigi = null, ucListedenGeldi = false, slGeldigi = null, slSecimdenGeldi = false, ilkRota = true, gorunen = 'anasayfa';
@@ -1550,9 +1553,8 @@
   function setEditMode(on, email) {
     canEdit = !!on;
     $('ayar-body').hidden = !canEdit;
-    $('ayar-giris').hidden = canEdit;   // girişliyken "Yönetici girişi" düğmesi gizlenir
+    // Hesap grupları (giriş düğmesi, Hesabım) uye.js'te
     $('compose').hidden = !canEdit;
-    $('who').textContent = canEdit ? 'Giriş yapan: ' + (email || '') : '';
     // Yalnızca yöneticiye görünen bölümler (ör. OdyoBOT mesaj metinleri) CSS'te .yonetici ile açılır.
     document.documentElement.classList.toggle('yonetici', canEdit);
     if (!canEdit) editingKey = null;
@@ -1569,21 +1571,8 @@
     if (/operation-not-supported|unsupported/.test(c)) return 'Giriş, dosya olarak açılan sayfada çalışmaz. Uygulamayı web adresinden aç.';
     return 'Giriş yapılamadı.' + (c ? ' (' + c + ')' : '');
   }
-  $('login-form').addEventListener('submit', function (e) {
-    e.preventDefault();
-    var msg = $('l-msg'); msg.className = 'msg'; msg.textContent = '';
-    if (!authRef) { msg.textContent = 'Giriş sistemine ulaşılamıyor. Bağlantını kontrol edip sayfayı yeniden aç.'; msg.className = 'msg err'; return; }
-    $('l-send').disabled = true;
-    authRef.signInWithEmailAndPassword($('l-email').value.trim(), $('l-pass').value).then(function () {
-      $('l-pass').value = '';
-    }).catch(function (err) {
-      msg.textContent = authErrorText(err); msg.className = 'msg err';
-    }).then(function () { $('l-send').disabled = false; });
-  });
-  $('logout').addEventListener('click', function () {
-    if (!authRef) return;
-    authRef.signOut().then(function () { location.hash = '#anasayfa'; });
-  });
+  // Giriş, hesap oluşturma ve çıkış formları uye.js'te (2026-11-21, 4. adım). authErrorText oradan da kullanılır.
+  window.OdyoUI.authHata = authErrorText;
 
   connectShared().then(function (r) {
     var db = r.db;
@@ -1591,13 +1580,11 @@
     window.OdyoUI.db = db; bildir('odyo:db', db);
     setupAyarlar(db);
     if (authRef) authRef.onAuthStateChanged(function (u) {
+      // 4. adım: üyeler de giriş yapabilir; düzenleme yetkisi yine yalnızca yönetici hesabında (asıl koruma firestore.rules)
       var isAdmin = !!u && u.uid === window.ODYOBOT_ADMIN_UID;
-      if (u && !isAdmin) {
-        authRef.signOut();
-        $('l-msg').textContent = 'Bu hesabın düzenleme yetkisi yok.'; $('l-msg').className = 'msg err';
-      }
       setEditMode(isAdmin, u && u.email);
-      if (isAdmin && location.hash === '#giris') location.hash = '#ayarlar';
+      window.OdyoUI.uye = u || null; bildir('odyo:uye', u || null);
+      if (u && location.hash === '#giris') location.hash = '#ayarlar';
     });
   }, function () { window.OdyoUI.dbYok = true; bildir('odyo:db-yok'); });
 })();
