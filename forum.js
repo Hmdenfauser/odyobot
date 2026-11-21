@@ -35,6 +35,15 @@
   function gorunur(x) { return x && (!x.gizli || yonetici) && !engelli()[x.yazarId]; }
   function benim(x) { var u = uye(); return !!(u && x && x.yazarId === u.uid); }
   function yazabilir() { var u = U(); return !!(u && u.kim() && u.dogrulandi() && u.hazir() && (acik || yonetici)); }
+  // Hata yazısı: izin reddi (çoğu zaman eski giriş kimliği) ile bağlantı sorununu ayırır
+  function hataYaz(e) {
+    var c = (e && e.code) || '';
+    if (/permission-denied/.test(c)) return M('hataYetki');
+    if (/unavailable|network|deadline/.test(c)) return M('hata');
+    return M('hata') + (c ? ' (' + c + ')' : '');
+  }
+  // Yazmadan önce giriş kimliğini tazele (e-posta sonradan doğrulandıysa)
+  function hazirla() { var u = U(); return u && u.kimlikTazele ? u.kimlikTazele() : Promise.resolve(); }
   function bildirim(m, hata) { var O = window.OdyoUI; if (O && O.bildirim) O.bildirim(m, hata ? 'hata' : undefined); }
 
   /* ---------- veri ---------- */
@@ -147,7 +156,7 @@
       var a = h('a', 'linkbtn', M('sikayetGit')); a.href = '#topluluk/g/' + encodeURIComponent(gid || '');
       satir.appendChild(h('span', null, (p[2] === 'cevaplar' ? M('cevapOge') : M('gonderiOge')) + ': ' + (s.neden || '—') + ' · ' + tarih(s.olusturma)));
       satir.appendChild(a);
-      satir.appendChild(btn('linkbtn', M('sikayetKapat'), function () { db.collection('sikayetler').doc(s.id).delete().catch(function () { bildirim(M('hata'), true); }); }));
+      satir.appendChild(btn('linkbtn', M('sikayetKapat'), function () { db.collection('sikayetler').doc(s.id).delete().catch(function (e) { bildirim(hataYaz(e), true); }); }));
       ic.appendChild(satir);
     });
     d.appendChild(ic); return d;
@@ -234,14 +243,14 @@
       var b = bas.value.trim(), m = ta.value.trim(), k = sec.value;
       if (!k || b.length < 3 || !m) { msg.textContent = M('eksik'); msg.className = 'msg err'; return; }
       gb.disabled = true;
-      var simdi = Date.now(), is;
-      if (eski) is = db.collection('forum').doc(eski.id).update({ kategori: k, baslik: b, metin: m, guncelleme: simdi }).then(function () { return eski.id; });
+      var simdi = Date.now(), is = hazirla();
+      if (eski) is = is.then(function () { return db.collection('forum').doc(eski.id).update({ kategori: k, baslik: b, metin: m, guncelleme: simdi }); }).then(function () { return eski.id; });
       else {
         var ref = db.collection('forum').doc();
-        is = ref.set(Object.assign({ kategori: k, baslik: b, metin: m, olusturma: simdi, guncelleme: simdi, cevapSayisi: 0, sonCevap: 0, gizli: false }, yazar())).then(function () { return ref.id; });
+        is = is.then(function () { return ref.set(Object.assign({ kategori: k, baslik: b, metin: m, olusturma: simdi, guncelleme: simdi, cevapSayisi: 0, sonCevap: 0, gizli: false }, yazar())); }).then(function () { return ref.id; });
       }
       is.then(function (yid) { bildirim(eski ? M('kaydedildi') : M('gonderildi')); location.hash = '#topluluk/g/' + encodeURIComponent(yid); },
-        function () { gb.disabled = false; msg.textContent = M('hata'); msg.className = 'msg err'; });
+        function (e) { gb.disabled = false; msg.textContent = hataYaz(e); msg.className = 'msg err'; });
     });
     kap.appendChild(f);
     return kap;
@@ -278,21 +287,21 @@
     var ref = db.collection('forum').doc(g.id), cref = ref.collection('cevaplar').doc(), simdi = Date.now(), b = db.batch();
     b.set(cref, Object.assign({ metin: metin, olusturma: simdi, guncelleme: simdi, gizli: false }, yazar()));
     b.update(ref, { cevapSayisi: (g.cevapSayisi || 0) + 1, sonCevap: simdi, sonCevapYazar: uye().uid });   // zil: gönderi sahibine yeni cevap
-    b.commit().then(function () { var ta = $('fr-cevap-metin'); if (ta) ta.value = ''; bildirim(M('gonderildi')); }, function () { bildirim(M('hata'), true); })
+    hazirla().then(function () { return b.commit(); }).then(function () { var ta = $('fr-cevap-metin'); if (ta) ta.value = ''; bildirim(M('gonderildi')); }, function (e) { bildirim(hataYaz(e), true); })
       .then(function () { gb.disabled = false; });
   }
   function cevapDuzenle(c) {
     var yeni = window.prompt(M('cevapDuzenle'), c.metin || '');
     if (yeni == null) return; yeni = yeni.trim(); if (!yeni || yeni === c.metin) return;
     db.collection('forum').doc(gonderi.id).collection('cevaplar').doc(c.id).update({ metin: yeni.slice(0, 2000), guncelleme: Date.now() })
-      .then(function () { bildirim(M('kaydedildi')); }, function () { bildirim(M('hata'), true); });
+      .then(function () { bildirim(M('kaydedildi')); }, function (e) { bildirim(hataYaz(e), true); });
   }
   function cevapSil(c) {
     if (!window.confirm(M('silOnayCevap'))) return;
     var ref = db.collection('forum').doc(gonderi.id), b = db.batch();
     b.delete(ref.collection('cevaplar').doc(c.id));
     b.update(ref, { cevapSayisi: Math.max(0, (gonderi.cevapSayisi || 0) - 1), sonCevap: gonderi.sonCevap || 0 });
-    b.commit().then(function () { bildirim(M('silindi')); }, function () { bildirim(M('hata'), true); });
+    b.commit().then(function () { bildirim(M('silindi')); }, function (e) { bildirim(hataYaz(e), true); });
   }
   function gonderiSil(g) {
     if (!window.confirm(M('silOnayGonderi'))) return;
@@ -300,18 +309,18 @@
     // Önce cevaplar (gönderi sahibi ve yönetici altındaki cevapları silebilir), sonra gönderi
     ref.collection('cevaplar').get().then(function (s) {
       var b = db.batch(); s.docs.slice(0, 450).forEach(function (d) { b.delete(ref.collection('cevaplar').doc(d.id)); }); b.delete(ref); return b.commit();
-    }).then(function () { bildirim(M('silindi')); location.hash = '#topluluk'; }, function () { bildirim(M('hata'), true); });
+    }).then(function () { bildirim(M('silindi')); location.hash = '#topluluk'; }, function (e) { bildirim(hataYaz(e), true); });
   }
   function gizliYap(x, tur, gizli) {
     var ref = tur === 'gonderi' ? db.collection('forum').doc(x.id) : db.collection('forum').doc(gonderi.id).collection('cevaplar').doc(x.id);
-    ref.update({ gizli: gizli }).then(function () { bildirim(gizli ? M('gizlendi') : M('gosterildi')); }, function () { bildirim(M('hata'), true); });
+    ref.update({ gizli: gizli }).then(function () { bildirim(gizli ? M('gizlendi') : M('gosterildi')); }, function (e) { bildirim(hataYaz(e), true); });
   }
   function sikayetEt(x, tur) {
     var neden = window.prompt(M('sikayetNeden'), '');
     if (neden == null) return;
     var hedef = tur === 'gonderi' ? 'forum/' + x.id : 'forum/' + gonderi.id + '/cevaplar/' + x.id;
-    db.collection('sikayetler').doc().set({ hedef: hedef, neden: neden.trim().slice(0, 300), sikayetEden: uye().uid, olusturma: Date.now() })
-      .then(function () { bildirim(M('sikayetAlindi')); }, function () { bildirim(M('hata'), true); });
+    hazirla().then(function () { return db.collection('sikayetler').doc().set({ hedef: hedef, neden: neden.trim().slice(0, 300), sikayetEden: uye().uid, olusturma: Date.now() }); })
+      .then(function () { bildirim(M('sikayetAlindi')); }, function (e) { bildirim(hataYaz(e), true); });
   }
 
   /* ---------- olaylar ---------- */

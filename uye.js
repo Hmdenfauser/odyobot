@@ -94,6 +94,14 @@
 
   // Forum (forum.js) için: üye, profil, e-posta doğrulandı mı, engelleme
   function profilHaber() { try { window.dispatchEvent(new CustomEvent('odyo:profil', { detail: profil })); } catch (e) {} }
+  // Giriş kimliği (ID token) yaklaşık 1 saat önbellekte kalır: e-posta girişten SONRA doğrulandıysa sunucu kuralları onu hâlâ
+  // "doğrulanmamış" görür ve forum yazması reddedilir. Kullanıcı bilgisini yenile; doğrulanmışsa kimliği zorla yenile.
+  function kimlikTazele() {
+    var u = uye; if (!u || typeof u.reload !== 'function') return Promise.resolve();
+    return u.reload().then(function () { return u.getIdTokenResult(); }).then(function (r) {
+      if (u.emailVerified && !(r && r.claims && r.claims.email_verified)) return u.getIdToken(true);
+    }).then(function () { ciz(); }, function () {});
+  }
   function dogrulandi() { return !!uye && (!!uye.emailVerified || (uye.providerData || []).some(function (p) { return p && p.providerId === 'google.com'; })); }
   function engelliCiz() {
     var kutu = $('hs-engelli'), liste = $('hs-engelli-liste'); if (!kutu) return;
@@ -112,7 +120,7 @@
   window.OdyoUye = {
     kim: function () { return uye; }, hazir: function () { return profilHazir; }, dogrulandi: dogrulandi, kayitAcik: function () { return kayitAcik; },
     profil: function () { return profil ? { ad: profil.ad, meslek: profil.meslek, engelli: Object.assign({}, profil.engelli) } : null; },
-    engelle: engelle, engelKaldir: engelKaldir
+    engelle: engelle, engelKaldir: engelKaldir, kimlikTazele: kimlikTazele
   };
 
   /* ---------- ekran ---------- */
@@ -267,7 +275,7 @@
   function uyeDegisti(u) {
     if (uye && u && uye.uid === u.uid) { uye = u; ciz(); return; }
     uye = u; profil = null; profilHazir = false; clearTimeout(yazZ); sonProfil = null; profilHaber();
-    if (uye) profilYukle(); else bekleyenKayit = null;
+    if (uye) { profilYukle(); kimlikTazele(); } else bekleyenKayit = null;
     ciz();
   }
   window.addEventListener('odyo:uye', function (e) { uyeDegisti(e.detail || null); });
