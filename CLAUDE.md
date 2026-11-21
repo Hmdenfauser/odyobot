@@ -55,7 +55,8 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 **Durum:** Yayında, son sürüm **sw v45** (main; dal `corti-sinyal` birleşti). Önceki yayının yedeği git etiketi `yedek-yayin-v44`. Bekleyen kod değişikliği yok. **Eski dalların hepsi silindi** (2026-11-21, proje sahibinin onayıyla; yalnızca main var).
 **v45:** Ses laboratuvarı → Corti organı: işitme siniri lifindeki sinyal daha geniş (gauss 0,085), tam renk/opak (`--kt-elek`), daha yavaş (lif boyunca ≈1,7 sn, `sp += dt * 0.9`); en öndeki İTH lifi boyunca ilerleyen mor küre (`kortiAnim` → `LIF`, `AKSON`).
 **Bekleyen (proje sahibi başka gün):** Ses laboratuvarında ampulla kesiti (krista + kupula) 3D animasyonu.
-**Oturum başında hatırlat:** telefonda v42–v45 denemeleri; aşağıdaki v44/v43 maddeleri.
+**Telefon denemesi (2026-11-21):** proje sahibi v42–v45 yeniliklerini telefonda denedi: çalışıyor.
+**Oturum başında hatırlat:** sözlükte yönetici olarak gerçek veritabanı yazma denemesi (düzenle/sil/geri getir) hâlâ yapılmadı; taslak metinlerin doğrulanması (iç kulak, denge, Corti, sözlük); sıradaki büyük iş 4. adım (yalnızca "sıradaki adıma geç" ile).
 
 ### Önceki: KALDIĞIMIZ YER (2026-11-21 gece, v44)
 **Durum:** Yayında, son sürüm **sw v44** (main; dallar `denge-yazilar` ve `periferik-simgeler` birleşti). Önceki yayının yedeği git etiketi `yedek-yayin-v43`. Bekleyen kod değişikliği yok.
