@@ -51,6 +51,11 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 - Alt çubuk sırası: Ana sayfa, Görsel depo, OdyoBOT, Vakalarım, Notlar.
 - Odyogram çıktısı (`cikti.js`), Vakalarım → OdyoBOT gönderme, düğmeli sohbet (`odybot.js`). sw v12. Ayrıntı: `PROGRESS.md`.
 
+### ÖNİZLEMEDE (2026-11-21, dal `adim3-modeller`, yayında değil)
+- **3D modeller listesi** (`#3d`): Periferik işitme sistemi (`#3d/periferik`, eski 3D sayfası; eski adresler buraya yönlenir), Otolit hareketi (→ `#seslab/denge`, geri okuyla listeye döner), Koklea kesiti ve tüylü hücreler (`#3d/korti`). Başlıklar `#uc-metinler` (yönetici). Ana sayfa 3D kartı: "3D modeller".
+- **Koklea kesiti** (`korti/`): kodla çizilen şematik, **hareketsiz** 3D dilim (proje sahibi: 3D'de yalnızca yapılar, hareketli kısım Ses laboratuvarında). 17 yapı (kemik, OSL+limbus, 3 skala arka yüzde renkli, Reissner, baziler, tektoryal, İTH, 3 sıra DTH, stereosilya, pilar+tünel, destek hücreleri, stria, ligament, gangliyon, sinir lifleri). Dokunma/listeden seçme, seçilene yaklaşma, genel görünüm düğmesi. Metinler taslak (ders notu: İşitme ve Denge Sistemleri-1 iç kulak, slayt 8–20). İnternette uygun lisanslı hazır model bulunamadı (ücretli ya da ticari olmayan lisanslı).
+- **Sıradaki (onaydan sonra):** Ses laboratuvarına hareketli Corti organı (baziler membran titreşimi, tüylerin bükülmesi).
+
 ### KALDIĞIMIZ YER (2026-11-21, v41) — oturum başında bunu özetle
 **Durum:** Yayında, son sürüm **sw v41** (main; dal `sozluk-yon` birleşti). Önceki yayının yedeği git etiketi `yedek-yayin-v40`. Bekleyen kod değişikliği yok.
 **v41 (2026-11-21), sözlük kaydırma yönü (proje sahibinin kararı, kırmızı olumsuzu çağrıştırdığı için):** sola at = **Biliyorum**, mavi X damgası; sağa at = **Tekrar et**, kırmızı yuvarlak damgası (odyogram sembolleri, renkler `--left`/`--right`). Düğmeler: solda "← Biliyorum", sağda "Tekrar et →"; klavyede sol ok biliyorum, sağ ok tekrar. Öğrenme durumu korunur.
