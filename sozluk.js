@@ -1,5 +1,5 @@
 /* Terimler sözlüğü (#sozluk): odyolojik terimler, öğrenme kartları ve liste.
-   - Terimler Firestore 'sozluk' koleksiyonunda: tr (Türkçe karşılık), en (İngilizce terim), kisaltma, aciklama.
+   - Temel terimler kodda (sozluk-veri.js, window.SOZLUK_TEMEL); yöneticinin ekledikleri ve düzenlemeleri Firestore 'sozluk' koleksiyonunda: tr (Türkçe karşılık), en (İngilizce terim), kisaltma, aciklama.
      Herkes okur, yalnızca yönetici yazar (firestore.rules). Liste Türkçe karşılığa göre alfabetik.
    - Kartlar: ön yüzde Türkçe (kalın) ve İngilizce (küçük), dokununca döner, arkada açıklama.
      Sola at = "Tekrar et": tekrar listesine girer, aynı oturumda birkaç kart sonra yeniden gelir.
@@ -19,6 +19,15 @@
   var SINIR = { tr: 100, en: 120, kisaltma: 30, aciklama: 1000 };
   var DEPO = 'odybot:sozlukTekrar';
   var GUN = 86400000;
+
+  /* ---------- temel terimler (sozluk-veri.js, 2026-11-21) ----------
+     Kodda gelen terimler hemen (internetsiz de) görünür. Yönetici düzenlerse aynı kimlikle Firestore 'sozluk/<kimlik>'
+     belgesi yazılır ve koddaki metnin yerine geçer ("Varsayılana dön" o belgeyi siler). Silerse
+     'icerik/sozluk-gizli.<kimlik>' belgesiyle gizlenir (firestore.rules değişmeden; icerik kuralı yeterli). */
+  var TEMEL = (window.SOZLUK_TEMEL || []).filter(function (t) { return t && t.id && t.tr; });
+  var TEMEL_ID = {}; TEMEL.forEach(function (t) { TEMEL_ID[t.id] = t; });
+  var GIZLI_ON = 'sozluk-gizli.';
+  var dbTerim = {}, gizli = {};
 
   /* ---------- durum ---------- */
   var db = null, yonetici = !!U.yonetici, terimler = [], yuklendi = false, ulasilamadi = false;
@@ -100,7 +109,7 @@
     $('sz-bos').hidden = !bos && !(ulasilamadi && !terimler.length);
     $('sz-bos').textContent = ulasilamadi && !terimler.length ? M('ulasilamadi') : M('bos');
     $('sz-yukleniyor').hidden = yuklendi || ulasilamadi;
-    sayaclar();
+    sayaclar(); gizliYaz();
     if (panel === 'kartlar') kartCiz();
     else listeCiz(panel === 'tekrar');
   }
@@ -212,7 +221,12 @@
           var duz = h('button', { type: 'button', 'class': 'linkbtn', text: M('duzenle') }), sil = h('button', { type: 'button', 'class': 'linkbtn danger', text: M('sil') });
           duz.addEventListener('click', function () { formDoldur(t); });
           sil.addEventListener('click', function () { terimSil(t); });
-          ek.push(h('div', { 'class': 'admin-bar' }, [duz, sil]));
+          var don = null;
+          if (t.temel && t.degisti) {   // düzenlenmiş temel terim: koddaki metne dönülebilir
+            don = h('button', { type: 'button', 'class': 'linkbtn', text: M('varsayilan') });
+            don.addEventListener('click', function () { varsayilanaDon(t); });
+          }
+          ek.push(h('div', { 'class': 'admin-bar' }, [duz, don, sil]));
         }
       }
       var li = h('li', { 'class': 'sz-oge' + (acik ? ' acik' : '') }, [dugme].concat(ek));
@@ -246,7 +260,8 @@
     if (ayni) { mesaj(M('zatenVar'), true); return; }
     var dugme = $('sz-gonder'); dugme.disabled = true; mesaj(M('kaydediliyor'));
     v.guncelleme = Date.now();
-    var is = duzenlenen ? db.collection('sozluk').doc(duzenlenen).update(v) : db.collection('sozluk').add(Object.assign({ olusturma: Date.now() }, v));
+    // Temel terim ilk kez düzenleniyorsa veritabanında belgesi yoktur: aynı kimlikle oluşturulur (set + merge).
+    var is = duzenlenen ? db.collection('sozluk').doc(duzenlenen).set(v, { merge: true }) : db.collection('sozluk').add(Object.assign({ olusturma: Date.now() }, v));
     is.then(function () { var yeniMi = !duzenlenen; formSifirla(); mesaj(yeniMi ? M('eklendi') : M('kaydedildi')); if (U.bildirim) U.bildirim(yeniMi ? M('eklendi') : M('kaydedildi')); })
       .catch(function () { mesaj(M('kaydedilemedi'), true); })
       .then(function () { dugme.disabled = false; });
@@ -255,9 +270,51 @@
   function terimSil(t) {
     if (!db || !yonetici) return;
     if (!window.confirm(M('silOnay').replace('{terim}', t.tr))) return;
-    db.collection('sozluk').doc(t.id).delete().then(function () {
+    var isler = [];
+    if (dbTerim[t.id]) isler.push(db.collection('sozluk').doc(t.id).delete());
+    if (TEMEL_ID[t.id]) isler.push(db.collection('icerik').doc(GIZLI_ON + t.id).set({ alanlar: { gizli: '1' }, guncelleme: Date.now() }));
+    Promise.all(isler).then(function () {
       delete DURUM[t.id]; durumYaz(); if (duzenlenen === t.id) formSifirla(); if (U.bildirim) U.bildirim(M('silindi'));
     }).catch(function () { if (U.bildirim) U.bildirim(M('silinemedi'), 'hata'); });
+  }
+  function varsayilanaDon(t) {
+    if (!db || !yonetici) return;
+    db.collection('sozluk').doc(t.id).delete().then(function () {
+      if (duzenlenen === t.id) formSifirla(); if (U.bildirim) U.bildirim(M('varsayilanaDonuldu'));
+    }).catch(function () { if (U.bildirim) U.bildirim(M('kaydedilemedi'), 'hata'); });
+  }
+  // Silinen (gizlenen) temel terimleri geri getir
+  function gizlileriGeriGetir() {
+    if (!db || !yonetici) return;
+    var ids = Object.keys(gizli); if (!ids.length) return;
+    Promise.all(ids.map(function (id) { return db.collection('icerik').doc(GIZLI_ON + id).delete(); }))
+      .then(function () { if (U.bildirim) U.bildirim(M('geriGeldi')); })
+      .catch(function () { if (U.bildirim) U.bildirim(M('kaydedilemedi'), 'hata'); });
+  }
+  $('sz-gizli-geri').addEventListener('click', gizlileriGeriGetir);
+  function gizliYaz() {
+    var n = Object.keys(gizli).length, kutu = $('sz-gizli');
+    kutu.hidden = !yonetici || !n;
+    $('sz-gizli-yazi').textContent = M('gizliSayi').replace('{n}', n);
+    $('sz-gizli-geri').textContent = M('gizliGeri');
+  }
+
+  /* ---------- temel + veritabanı terimlerini birleştir ---------- */
+  function birlestir() {
+    var l = [], gor = {};
+    TEMEL.forEach(function (t) {
+      if (gizli[t.id]) return;
+      var d = dbTerim[t.id];
+      l.push(d ? Object.assign({}, d, { temel: true, degisti: true }) : Object.assign({}, t, { temel: true, degisti: false }));
+      gor[t.id] = true;
+    });
+    Object.keys(dbTerim).forEach(function (id) { if (!gor[id]) l.push(dbTerim[id]); });
+    l.sort(sirala);
+    var ilk = !terimler.length && !kuyruk.length;
+    terimler = l;
+    if (ilk) kuyrukKur(false);
+    else terimler.forEach(function (t) { if (!DURUM[t.id] && kuyruk.indexOf(t.id) === -1) kuyruk.push(t.id); });   // yeni terim kuyruğun sonuna; silinenler kartCiz'de atlanır
+    ciz(); window.dispatchEvent(new CustomEvent('odyo:sozluk'));
   }
 
   /* ---------- olaylar ---------- */
@@ -275,21 +332,21 @@
   function dbGeldi(d) {
     if (db) return; db = d;
     db.collection('sozluk').limit(2000).onSnapshot(function (snap) {
-      var ilk = !yuklendi;
-      terimler = [];
+      dbTerim = {};
       snap.forEach(function (doc) {
         var x = doc.data() || {};
         if (!yazi(x.tr)) return;
-        terimler.push({ id: doc.id, tr: yazi(x.tr), en: yazi(x.en), kisaltma: yazi(x.kisaltma), aciklama: yazi(x.aciklama) });
+        dbTerim[doc.id] = { id: doc.id, tr: yazi(x.tr), en: yazi(x.en), kisaltma: yazi(x.kisaltma), aciklama: yazi(x.aciklama) };
       });
-      terimler.sort(sirala);
       yuklendi = true; ulasilamadi = false;
-      if (ilk) kuyrukKur(false);
-      else {   // yeni eklenen terim kuyruğun sonuna; silinen terimler kartCiz'de atlanır
-        terimler.forEach(function (t) { if (!DURUM[t.id] && kuyruk.indexOf(t.id) === -1) kuyruk.push(t.id); });
-      }
-      ciz(); window.dispatchEvent(new CustomEvent('odyo:sozluk'));
+      birlestir();
     }, function () { ulasilamadi = true; ciz(); });
+    // Yöneticinin sildiği (gizlediği) temel terimler
+    db.collection('icerik').onSnapshot(function (snap) {
+      gizli = {};
+      snap.forEach(function (doc) { if (doc.id.indexOf(GIZLI_ON) === 0) gizli[doc.id.slice(GIZLI_ON.length)] = true; });
+      birlestir();
+    }, function () {});
   }
   window.addEventListener('odyo:db', function (e) { dbGeldi(e.detail); });
   window.addEventListener('odyo:db-yok', function () { if (!yuklendi) { ulasilamadi = true; ciz(); } });
@@ -300,8 +357,10 @@
     panel = 'liste'; acikTerim = e.detail || null; arama = ''; $('sz-ara').value = ''; ciz();
     var y = acikTerim && $('sz-t-' + acikTerim); if (y) { try { y.scrollIntoView({ block: 'center' }); } catch (x) {} y.focus(); }
   });
+  formSifirla();
+  if (TEMEL.length) { yuklendi = true; birlestir(); }   // temel terimler veritabanını beklemeden görünür
   if (U.db) dbGeldi(U.db); else if (U.dbYok) { ulasilamadi = true; }
-  formSifirla(); ciz();
+  ciz();
 
   window.Sozluk = { terimler: function () { return terimler.slice(); } };
 })();

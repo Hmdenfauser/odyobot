@@ -180,7 +180,8 @@
             </div>
             <div class="msg" id="sz-msg" role="status"></div>
           </form>
-          <p class="note">Bir terimi düzenlemek ya da silmek için Liste'de terime dokun.</p>
+          <p class="note">Bir terimi düzenlemek ya da silmek için Liste'de terime dokun. Uygulamayla gelen temel terimlerde yaptığın değişiklik koddaki metnin yerine geçer; "Varsayılana dön" ile geri alınır.</p>
+          <div class="admin-bar" id="sz-gizli" hidden><span class="meta" id="sz-gizli-yazi"></span><button class="linkbtn" type="button" id="sz-gizli-geri"></button></div>
         </div>
       </details>
       <details class="compose b-metinler" id="sz-metinler">
@@ -224,6 +225,11 @@
           <p data-k="sozluk.m.silOnay" data-m="silOnay">"{terim}" silinsin mi?</p>
           <p data-k="sozluk.m.silindi" data-m="silindi">Terim silindi.</p>
           <p data-k="sozluk.m.silinemedi" data-m="silinemedi">Terim silinemedi.</p>
+          <p data-k="sozluk.m.varsayilan" data-m="varsayilan">Varsayılana dön</p>
+          <p data-k="sozluk.m.varsayilanaDonuldu" data-m="varsayilanaDonuldu">Terim ilk hâline döndü.</p>
+          <p data-k="sozluk.m.gizliSayi" data-m="gizliSayi">Silinen temel terim: {n}</p>
+          <p data-k="sozluk.m.gizliGeri" data-m="gizliGeri">Hepsini geri getir</p>
+          <p data-k="sozluk.m.geriGeldi" data-m="geriGeldi">Silinen temel terimler geri geldi.</p>
         </div>
       </details>
     </div>
@@ -1048,6 +1054,7 @@
 <script src="goruntuleyici.js"></script>
 <script src="app.js"></script>
 <script src="akis.js"></script>
+<script src="sozluk-veri.js"></script>
 <script src="sozluk.js"></script>
 <script src="odyo-hesap.js"></script>
 <script src="vaka-testler.js"></script>
