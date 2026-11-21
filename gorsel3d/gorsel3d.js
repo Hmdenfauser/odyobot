@@ -59,7 +59,12 @@
     // yazı ipucunda: fareyle üzerine gelince ya da uzun basınca; seslab/ipucu.js). Her görünümde durur; basınca seçim ve kepçe kapanır, Tüm sistem'e ve başlangıç açısına dönülür.
     var IP = window.SesLabIpucu, geriBtn = h('button', 'sl-yuv g3d-genel'); geriBtn.type = 'button'; geriBtn.hidden = true;
     if (IP) { IP.simge(geriBtn, 'genel'); IP.bagla(geriBtn, function () { return M.genelGorunum || 'Genel görünüme geç'; }); } else geriBtn.textContent = '← ' + (M.genelGorunum || 'Genel görünüme geç');
-    var sagAlt = h('div', 'sl-sag-alt'); sagAlt.appendChild(geriBtn);
+    var sagAlt = h('div', 'sl-sag-alt');
+    // Büyüteç (2026-11-21): genel görünüm düğmesinin solunda; yakın = 2 kat (iki parmakla yakınlaştırmayla aynı değişken)
+    var buyBtn = h('button', 'sl-yuv'), buyIp = null; sagAlt.appendChild(buyBtn); sagAlt.appendChild(geriBtn);
+    if (IP) buyIp = IP.buyutec(buyBtn, { yakinMi: function () { return zoom < 0.8; }, degistir: function () { zoom = zoom < 0.8 ? 1 : 0.5; auto = false; dirty = true; },
+      yakinlastir: function () { return M.yakinlastir || 'Yakınlaştır'; }, uzaklastir: function () { return M.uzaklastir || 'Uzaklaştır'; } });
+    else { buyBtn.type = 'button'; buyBtn.textContent = '⌕'; buyBtn.addEventListener('click', function () { zoom = zoom < 0.8 ? 1 : 0.5; auto = false; dirty = true; }); }
     sahne.appendChild(cv); sahne.appendChild(neresi); sahne.appendChild(olcek); sahne.appendChild(sagAlt); sahne.appendChild(durum);
     var ipucu = h('p', 'g3d-not g3d-ipucu', M.ipucu);
     var secBox = h('div', 'g3d-satir g3d-bolumler'), partBox = h('div', 'g3d-yapilar');

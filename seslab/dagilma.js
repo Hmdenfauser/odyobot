@@ -52,7 +52,7 @@
     var B = { x0: 288, x1: 352, y0: 70 };
     var SEx = E.x - S.x, SEy = E.y - S.y, SE = Math.sqrt(SEx * SEx + SEy * SEy);
     return {
-      id: 'duvar', engel: DUVAR_BOYU, PXM: PXM, IZ: 1.5,
+      id: 'duvar', engel: DUVAR_BOYU, PXM: PXM, IZ: 1.5, odak: { x: wx + 40, y: yer - hp / 2 - 20 },   // büyüteç: duvar ve arkası
       // ızgara noktası: [uzaklık (faz için), zayıflama 0–1]; null = dalga yok (yer, duvar, bina)
       nokta: function (px, py, lam, D) {
         if (py > yer || (px >= wx - kal / 2 && px <= wx + kal / 2 && py >= E.y) || (px >= B.x0 && py >= B.y0)) return null;
@@ -93,7 +93,7 @@
   var BS = (function () {
     var R = 22, PXM = (2 * R) / BAS_GENISLIGI, S = { x: 22, y: H / 2 }, C = { x: 232, y: H / 2 };
     return {
-      id: 'bas', engel: BAS_GENISLIGI, PXM: PXM, IZ: 2,
+      id: 'bas', engel: BAS_GENISLIGI, PXM: PXM, IZ: 2, odak: { x: C.x + 10, y: C.y },   // büyüteç: baş ve gölgesi
       nokta: function (px, py, lam, D, ka) {
         var dx = px - S.x, dy = py - S.y, r = Math.sqrt(dx * dx + dy * dy) || 1, ux = dx / r, uy = dy / r;
         var cx = C.x - S.x, cy = C.y - S.y, t = cx * ux + cy * uy;
@@ -133,7 +133,12 @@
     var cv = el('canvas', { 'class': 'sl-g-tuval', role: 'img' });
     // Oynat/duraklat: İşitme'deki gibi sağ altta yalnızca simgeli yuvarlak düğme; yazı ipucunda (seslab/ipucu.js)
     var IP = window.SesLabIpucu, oynat = el('button', { type: 'button', 'class': 'sl-yuv' });
-    var cerceve = el('div', { 'class': 'sl-g-sahne' }, [cv, el('div', { 'class': 'sl-sag-alt' }, [oynat])]);
+    // Büyüteç (2026-11-21): oynatın solunda; yakın = çizim 1,7 kat, ortadan büyütülür
+    var buyBtn = el('button', { type: 'button', 'class': 'sl-yuv' }), yakin = false, buyIp = null;
+    var cerceve = el('div', { 'class': 'sl-g-sahne' }, [cv, el('div', { 'class': 'sl-sag-alt' }, [buyBtn, oynat])]);
+    if (IP) buyIp = IP.buyutec(buyBtn, { yakinMi: function () { return yakin; }, degistir: function () { yakin = !yakin; ciz(); },
+      yakinlastir: function () { return veri.metinler.yakinlastir || 'Yakınlaştır'; }, uzaklastir: function () { return veri.metinler.basiGoster || 'Uzaklaştır'; } });
+    else { buyBtn.textContent = '⌕'; buyBtn.addEventListener('click', function () { yakin = !yakin; ciz(); }); }
     var oynatIp = IP ? IP.bagla(oynat, function () { return oynuyor ? veri.metinler.duraklat : veri.metinler.oynat; }) : null;
     // Frekans: İşitme kipindeki gibi sağa sola çekilen sayı doğrusu (seslab.css → .sl-frcizgi); standart frekanslara oturur,
     // çentiğe dokununca da o frekansa gider. Çentikler sahne değişince o sahnenin frekanslarına göre yeniden dizilir.
@@ -211,7 +216,10 @@
       var f = fSec[sahne.id], gen = cv.clientWidth || W, dpr = Math.min(window.devicePixelRatio || 1, 2), olc = gen / W;
       if (cv.width !== Math.round(gen * dpr)) { cv.width = Math.round(gen * dpr); cv.height = Math.round(gen * H / W * dpr); }
       var x = cv.getContext('2d');
-      x.setTransform(olc * dpr, 0, 0, olc * dpr, 0, 0);
+      // Büyüteç: engel (odak) ortada olacak biçimde büyütülür; çizim çerçevenin dışına kaymaz
+      var Z = yakin ? 1.7 : 1, k = olc * dpr * Z, od = sahne.odak || { x: W / 2, y: H / 2 };
+      var tx = Math.min(0, Math.max(W - W * Z, W / 2 - od.x * Z)), ty = Math.min(0, Math.max(H - H * Z, H / 2 - od.y * Z));
+      x.setTransform(k, 0, 0, k, tx * olc * dpr, ty * olc * dpr);
       alan(f);
       x.imageSmoothingEnabled = true; x.drawImage(kucuk, 0, 0, W, H);
       x.font = '500 12px "IBM Plex Sans", sans-serif'; x.textBaseline = 'middle';

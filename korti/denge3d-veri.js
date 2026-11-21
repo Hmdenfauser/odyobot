@@ -27,6 +27,8 @@
       ipucu: 'Döndürmek için sürükle, yakınlaştırmak için iki parmakla aç. Bir yapıya ya da aşağıdaki listeden bir ada dokun.',
       not: 'Labirent, kulak taramasından elde edilen modelden alındı (OpenEar, Sieber ve ark., CC BY 4.0). Makulalar ölçülmüş veri değildir: yerleri yaklaşık seçildi, tüy demetleri ve kristaller görünsün diye çok büyütüldü. Bu sayfada hareket yoktur; otolit hareketi, BPPV ve manevralar Ses laboratuvarındadır. Bilgiler proje sahibinin ders notlarından (İşitme ve Denge Sistemleri-1) alındı; kendi kaynağınla doğrula.',
       genelGorunum: 'Genel görünüme dön',
+      yakinlastir: 'Yakınlaştır',
+      uzaklastir: 'Uzaklaştır',
       etiket: 'Sağ kulak · sağdan bakış',
       yukleniyor: 'Model indiriliyor…',
       indirilemedi: 'Model indirilemedi. İnternet bağlantını kontrol edip sayfayı yeniden aç.',

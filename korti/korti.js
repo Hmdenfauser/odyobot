@@ -206,6 +206,8 @@
 
   /* ---------- görüntüleyici ---------- */
   function h(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  // Sahnenin arka plan rengi (CSS'ten, ör. "rgb(255, 255, 255)"): tuval opak boyanır (2026-11-21)
+  function arkaRenk(el) { var m = /rgba?\(([\d.]+),\s*([\d.]+),\s*([\d.]+)/.exec(window.getComputedStyle(el).backgroundColor || ''); return m ? [m[1] / 255, m[2] / 255, m[3] / 255] : [1, 1, 1]; }
   function renkCoz(s) {
     s = (s || '').trim(); var m = /^#([0-9a-f]{6})$/i.exec(s);
     if (m) { var n = parseInt(m[1], 16); return [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255]; }
@@ -261,6 +263,11 @@
     var genelIp = null;
     if (IP) { IP.simge(genelBtn, 'genel'); genelIp = IP.bagla(genelBtn, function () { return M.genelGorunum; }); }
     else genelBtn.textContent = '⟲';
+    // Büyüteç: sağ alttaki düğmelerin en solunda; yakın = model 2 kat yakın (iki parmakla yakınlaştırmayla aynı değişken)
+    var YAKIN = 0.5 * (ayar.genelZoom || 1), buyBtn = h('button', 'sl-yuv'), buyIp = null; sagAlt.insertBefore(buyBtn, sagAlt.firstChild);
+    if (IP) buyIp = IP.buyutec(buyBtn, { yakinMi: function () { return zoom < 0.8 * (ayar.genelZoom || 1); }, degistir: function () { zoom = zoom < 0.8 * (ayar.genelZoom || 1) ? (ayar.genelZoom || 1) : YAKIN; dirty = true; },
+      yakinlastir: function () { return M.yakinlastir || 'Yakınlaştır'; }, uzaklastir: function () { return M.uzaklastir || 'Uzaklaştır'; } });
+    else { buyBtn.type = 'button'; buyBtn.textContent = '⌕'; buyBtn.addEventListener('click', function () { zoom = zoom < 0.8 * (ayar.genelZoom || 1) ? (ayar.genelZoom || 1) : YAKIN; dirty = true; }); }
     var renkAd = ayar.renk || function (id) { return '--kt-' + id; }, noktaAd = ayar.nokta || renkAd;
     // Hareket (yalnızca Ses laboratuvarı): oynat/duraklat düğmesi sağ altta (genel görünümün solunda), aşama yazısı modelin altında
     var ANIM = ayar.anim || null, oynuyor = false, oynatBtn = null, oynatIp = null, asamaEl = null;
@@ -325,14 +332,15 @@
     }
     var U = konum(PR), US = konum(PS);
 
-    var PARCA = {}, SIRA = [], SIVI = ayar.sivi || [], RENK = {}, SILIK = [0.62, 0.68, 0.7], VURGU = [1, 0.42, 0.62], ELEK = [0.6, 0.35, 1];
+    var PARCA = {}, SIRA = [], SIVI = ayar.sivi || [], RENK = {}, SILIK = [0.62, 0.68, 0.7], ARKA = [1, 1, 1], VURGU = [1, 0.42, 0.62], ELEK = [0.6, 0.35, 1];
     function renkleriOku() {
       var cs = window.getComputedStyle(kok);
       SIRA.forEach(function (id) { RENK[id] = renkCoz(cs.getPropertyValue(renkAd(id))) || SILIK; });
+      ARKA = arkaRenk(sahne);
       VURGU = renkCoz(cs.getPropertyValue('--kt-vurgu')) || VURGU; ELEK = renkCoz(cs.getPropertyValue('--kt-elek')) || ELEK; PRENK = {};
     }
     // Kamera: kullanıcı döndürmesi R, merkez cen, yarıçap rad (seçilen yapıya yumuşakça yaklaşır)
-    var BAS_R = ayar.basR || mul(rx(D(16)), ry(D(-32))), R = BAS_R.slice(), zoom = 1, FOV = D(26), TAN = Math.tan(FOV / 2);
+    var BAS_R = ayar.basR || mul(rx(D(16)), ry(D(-32))), R = BAS_R.slice(), zoom = ayar.genelZoom || 1, FOV = D(26), TAN = Math.tan(FOV / 2);
     var GENEL = null, cen = [0, 0, 0], rad = 1, hedef = { cen: [0, 0, 0], rad: 1 };
     var reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     var dirty = true, durdu = false, mvpSon = null;
@@ -388,7 +396,9 @@
     function ciz() {
       var mvp = matris(); mvpSon = mvp;
       gl.useProgram(PR); gl.enable(gl.DEPTH_TEST); gl.disable(gl.CULL_FACE); gl.depthFunc(gl.LESS);
-      gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+      // Tuval opak: arka plan burada boyanır, saydam yapılar onun üstüne karışır. Böylece tarayıcının tuvali sayfayla
+      // ikinci kez karıştırması (cihaza göre farklı) sonucu değiştirmez; saydamlık telefonda da bilgisayardaki gibi görünür.
+      gl.clearColor(ARKA[0], ARKA[1], ARKA[2], 1); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
       gl.uniformMatrix4fv(U.mvp, false, mvp);
       gl.uniformMatrix3fv(U.rot, false, new Float32Array([R[0], R[3], R[6], R[1], R[4], R[7], R[2], R[5], R[8]]));
       hareketYaz(U, true); gl.uniform1f(U.sp, DURUM.sp); gl.uniform1f(U.spOn, DURUM.spOn);
@@ -399,13 +409,13 @@
         var sd = SIRA.filter(function (id) { return PARCA[id].saydam; });
         if (sd.length) {
           gl.colorMask(false, false, false, false); sd.forEach(function (id) { parcaCiz(id, 1); });
-          gl.colorMask(true, true, true, true); gl.depthFunc(gl.LEQUAL); gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false);
+          gl.colorMask(true, true, true, true); gl.depthFunc(gl.LEQUAL); gl.enable(gl.BLEND); gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false);
           sd.forEach(function (id) { parcaCiz(id, PARCA[id].saydam); });
         }
       } else {
         // Seçim var: seçilen yapı opak, diğerleri silik ve yarı saydam
         SIRA.forEach(function (id) { if (PARCA[id].grup === sel) parcaCiz(id, 1); });
-        gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false);
+        gl.enable(gl.BLEND); gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false);
         SIRA.forEach(function (id) { if (PARCA[id].grup !== sel) parcaCiz(id, SIVI.indexOf(id) >= 0 ? 0.35 : 0.16); });
       }
       gl.disable(gl.BLEND); gl.depthMask(true); gl.depthFunc(gl.LESS);
@@ -434,7 +444,7 @@
     // Yazıları gizle/göster düğmesi (yalnızca yazısı olan modellerde; durum cihazda saklanmaz)
     var yaziAcik = true, yaziBtn = null, yaziIp = null;
     if ((ayar.etiketler || []).length) {
-      yaziBtn = h('button', 'sl-yuv'); yaziBtn.type = 'button'; sagAlt.insertBefore(yaziBtn, sagAlt.firstChild);
+      yaziBtn = h('button', 'sl-yuv'); yaziBtn.type = 'button'; sagAlt.insertBefore(yaziBtn, buyBtn.nextSibling);
       if (IP) yaziIp = IP.bagla(yaziBtn, function () { return yaziAcik ? M.yazilariGizle : M.yazilariGoster; });
       yaziBtn.addEventListener('click', function () { yaziAcik = !yaziAcik; yaziYaz(); dirty = true; });
     }
@@ -515,7 +525,7 @@
       if (reduce) { cen = hedef.cen.slice(); rad = hedef.rad; }
       dirty = true;
     }
-    genelBtn.addEventListener('click', function () { if (!hazir) return; R = BAS_R.slice(); zoom = 1; sec(null); });
+    genelBtn.addEventListener('click', function () { if (!hazir) return; R = BAS_R.slice(); zoom = ayar.genelZoom || 1; sec(null); dirty = true; if (buyIp) buyIp.guncelle(); });   // genelZoom: genel görünüm düğmesi ne kadar geriden baksın (Corti animasyonu 1,4)
 
     function boyut() {
       if (!cv.clientWidth) return;
@@ -553,7 +563,7 @@
       if (hazir && cv.clientWidth) {
         var fark = Math.abs(hedef.cen[0] - cen[0]) + Math.abs(hedef.cen[1] - cen[1]) + Math.abs(hedef.cen[2] - cen[2]) + Math.abs(hedef.rad - rad);
         if (fark > GENEL.rad * 0.002) { for (var a = 0; a < 3; a++) cen[a] += (hedef.cen[a] - cen[a]) * 0.15; rad += (hedef.rad - rad) * 0.15; dirty = true; }
-        if (dirty) { dirty = false; ciz(); }
+        if (dirty) { dirty = false; ciz(); if (buyIp) buyIp.guncelle(); }
       }
       window.requestAnimationFrame(dongu);
     }
@@ -566,7 +576,7 @@
     window.requestAnimationFrame(dongu);
 
     if (ANIM) { DURUM = ANIM.adim(0); if (asamaEl) { asamaSon = DURUM.yazi; asamaEl.textContent = DURUM.yazi; } }
-    api.yenile = function () { metinler(); listeCiz(); kartYaz(); oynatYaz(); yaziYaz(); if (ANIM) { asamaSon = ''; DURUM = ANIM.adim(0); } if (hazir) { renkleriOku(); dirty = true; } };
+    api.yenile = function () { metinler(); listeCiz(); kartYaz(); oynatYaz(); yaziYaz(); if (buyIp) buyIp.yenile(); if (ANIM) { asamaSon = ''; DURUM = ANIM.adim(0); } if (hazir) { renkleriOku(); dirty = true; } };
     api.durdur = function () { if (ANIM && oynuyor) { oynuyor = false; oynatYaz(); } };
     return api;
   }
@@ -645,7 +655,7 @@
   function kurKortiAnim(kok, ayar) {
     var V = ayar.veri;   // { genel, gruplar, yapilar, metinler } — yapılar 3D modelle ortak
     return kur(kok, { veri: V, kartEki: ayar.kartEki, model: modelKur, sivi: ['sv', 'sm', 'st'], etiketler: ETIKET_ANIM, anim: kortiAnim(V), sinif: 'kt-anim',
-      basR: mul(rx(D(10)), ry(D(-24))), genel: { cen: [-0.03, 0.1, 0.12], rad: 0.42 } });
+      basR: mul(rx(D(10)), ry(D(-24))), genel: { cen: [-0.02, 0.1, 0.1], rad: 0.6 }, genelZoom: 1.8 });   // 2026-11-21: biraz daha geniş açıyla başlar
   }
 
   window.Korti = { kur: kurKorti, kurAnim: kurKortiAnim, goruntuleyici: kur, _model: modelKur, rx: rx, ry: ry, mul: mul, D: D };
