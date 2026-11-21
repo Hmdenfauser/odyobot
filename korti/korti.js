@@ -454,7 +454,7 @@
       yaziBtn.setAttribute('aria-pressed', yaziAcik ? 'false' : 'true'); if (yaziIp) yaziIp.yenile();
     }
     yaziYaz();
-    var ETIKETLER = (ayar.etiketler || []).map(function (e) { var el = h('span', 'kt-yazi'); el.setAttribute('aria-hidden', 'true'); sahne.appendChild(el); return { id: e.id, p: e.p, yuz: e.yuz, yon: e.yon, hareket: e.hareket, metin: e.metin, el: el }; });
+    var ETIKETLER = (ayar.etiketler || []).map(function (e) { var el = h('span', 'kt-yazi'); el.setAttribute('aria-hidden', 'true'); sahne.appendChild(el); return { id: e.id, k: e, yuz: e.yuz, yon: e.yon, hareket: e.hareket, metin: e.metin, el: el }; });   // k.p model yüklenince de verilebilir (Denge sistemi)
     // Animasyonda yazı bağlı olduğu yapıyla birlikte kayar (gölgelendiricideki hareketin aynısı)
     function kaydir(tur, p) {
       var th = DURUM.th || 0; if (!tur || !th) return p;
@@ -466,7 +466,8 @@
       if (!ETIKETLER.length) return;
       var w = cv.clientWidth, hh = cv.clientHeight;
       ETIKETLER.forEach(function (e) {
-        var y = V.yapilar[e.id], p = kaydir(e.hareket, e.p), X = mvp[0] * p[0] + mvp[4] * p[1] + mvp[8] * p[2] + mvp[12], Y = mvp[1] * p[0] + mvp[5] * p[1] + mvp[9] * p[2] + mvp[13], W = mvp[3] * p[0] + mvp[7] * p[1] + mvp[11] * p[2] + mvp[15];
+        if (!e.k.p) { e.el.hidden = true; return; }
+        var y = V.yapilar[e.id], p = kaydir(e.hareket, e.k.p), X = mvp[0] * p[0] + mvp[4] * p[1] + mvp[8] * p[2] + mvp[12], Y = mvp[1] * p[0] + mvp[5] * p[1] + mvp[9] * p[2] + mvp[13], W = mvp[3] * p[0] + mvp[7] * p[1] + mvp[11] * p[2] + mvp[15];
         var yz = e.yuz ? R[6] * e.yuz[0] + R[7] * e.yuz[1] + R[8] * e.yuz[2] : 1;
         var gizle = !yaziAcik || !y || W <= 0 || yz < 0.3 || (sel && sel !== e.id);
         var sx = (X / W * 0.5 + 0.5) * w, sy = (0.5 - Y / W * 0.5) * hh;

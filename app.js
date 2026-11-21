@@ -1358,15 +1358,15 @@
   }
   function kurKorti() { if (kt || !KT || !window.Korti) return; kt = window.Korti.kur($('kt-kok'), { veri: KT, kartEki: ktKartEki }); }
   // Denge sistemi (korti/denge3d.js): yönetici düzenlemesi icerik/denge3d.yapi.<id>, denge3d.genel, denge3d.metin
-  var DN = window.DENGE3D_VERI, dn = null;
+  var DN = window.DENGE3D_VERI, dn = null, DN_METIN_ALAN = KT_METIN_ALAN.concat([{ f: 'yazilariGizle', ad: 'Yazıları gizle düğmesinin ipucu' }, { f: 'yazilariGoster', ad: 'Yazıları göster düğmesinin ipucu' }]);
   if (DN) {
-    Object.keys(DN.yapilar).forEach(function (id) { var y = DN.yapilar[id]; y.key = 'denge3d.yapi.' + id; editable(y, ['ad', 'aciklama']); });
+    Object.keys(DN.yapilar).forEach(function (id) { var y = DN.yapilar[id]; y.key = 'denge3d.yapi.' + id; editable(y, y.etiket != null ? ['ad', 'aciklama', 'etiket'] : ['ad', 'aciklama']); });
     DN.genel.key = 'denge3d.genel'; editable(DN.genel, ['ad', 'aciklama']);
-    DN.metinler.key = 'denge3d.metin'; editable(DN.metinler, ['ipucu', 'not', 'etiket', 'genelGorunum']);
+    DN.metinler.key = 'denge3d.metin'; editable(DN.metinler, DN_METIN_ALAN.map(function (a) { return a.f; }));
   }
   function dnKartEki(tur, kimlik, yuva) {
     var o = tur === 'yapi' ? DN.yapilar[kimlik] : tur === 'metin' ? DN.metinler : DN.genel; if (!o) return;
-    var a = tur === 'metin' ? adminPart(o.key, o, KT_METIN_ALAN, 'İpucu ve notu düzenle') : adminPart(o.key, o, G3D_ALAN, 'Düzenle');
+    var a = tur === 'metin' ? adminPart(o.key, o, DN_METIN_ALAN, 'İpucu, not ve düğme yazılarını düzenle') : adminPart(o.key, o, o.etiket != null ? KT_YAPI_ALAN : G3D_ALAN, 'Düzenle');
     if (a) yuva.appendChild(a);
   }
   function kurDenge() { if (dn || !DN || !window.Denge3D) return; dn = window.Denge3D.kur($('dn-kok'), { veri: DN, kartEki: dnKartEki }); }

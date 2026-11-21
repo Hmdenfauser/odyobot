@@ -19,8 +19,8 @@
       lat: { ad: 'Lateral (horizontal) semisirküler kanal', aciklama: 'Yatay kanal; horizontal düzleme göre önde yaklaşık 30° yukarı eğimlidir. Ampulla dışındaki bacağı tek başına vestibüle açılır. Kalorik test ve video baş itme testinde en çok değerlendirilen kanaldır.' },
       crus: { ad: 'Krus kommune', aciklama: 'Anterior ve posterior semisirküler kanalların ampulla taşımayan bacaklarının birleşerek vestibüle açıldığı ortak bacak (krus kommunis).' },
       amp: { ad: 'Ampullalar', aciklama: 'Her semisirküler kanalın vestibüle bağlanan bir ucundaki şişkinlik (zar labirentte yaklaşık 2 mm çapında). İçinde eyer biçimli duyu epiteli krista ampullaris ve onun üstünde yelpaze biçimli, jelatinimsi kupula bulunur. Baş dönünce endolenf kupulayı büker ve tüylü hücreler uyarılır. (Krista ve kupula bu modelde çizilmedi.)' },
-      utr: { ad: 'Utrikulus makulası', aciklama: 'Utrikulus vestibülün resesus eliptikusunda oturur; makulası yatay düzlemdedir. Bu yüzden daha çok yatay doğrusal hızlanmayı ve başın eğilmesini algılar. Makulada tüylü hücreler, destek hücreleri ve üstünde otolitik membran bulunur. Semisirküler kanallar utrikulustan başlayıp yine utrikulusa döner.' },
-      sak: { ad: 'Sakkulus makulası', aciklama: 'Sakkulus utrikulustan daha küçük, oval bir kesedir; vestibülün ön alt tarafındaki resesus sferikusta oturur. Makulası düşey düzlemdedir (utrikulusunkine dik); daha çok dikey doğrusal hızlanmayı ve yerçekimini algılar. Servikal VEMP ile değerlendirilir.' },
+      utr: { ad: 'Utrikulus makulası', etiket: 'Utrikulus', aciklama: 'Utrikulus vestibülün resesus eliptikusunda oturur; makulası yatay düzlemdedir. Bu yüzden daha çok yatay doğrusal hızlanmayı ve başın eğilmesini algılar. Makulada tüylü hücreler, destek hücreleri ve üstünde otolitik membran bulunur. Semisirküler kanallar utrikulustan başlayıp yine utrikulusa döner.' },
+      sak: { ad: 'Sakkulus makulası', etiket: 'Sakkulus', aciklama: 'Sakkulus utrikulustan daha küçük, oval bir kesedir; vestibülün ön alt tarafındaki resesus sferikusta oturur. Makulası düşey düzlemdedir (utrikulusunkine dik); daha çok dikey doğrusal hızlanmayı ve yerçekimini algılar. Servikal VEMP ile değerlendirilir.' },
       otolit: { ad: 'Otolitik membran ve otokoni', aciklama: 'Makulaların tüylü hücrelerinin tüycükleri jelatinimsi otolitik membranın içine gömülüdür. Membranın üstünde kalsiyum karbonat kristalleri (otokoni) bulunur; özgül ağırlığı yüksek olduğundan yerçekimi ve doğrusal hızlanmayla kayar ve tüyleri büker. Kristaller büyütülerek çizildi.' }
     },
     metinler: {
@@ -29,6 +29,8 @@
       genelGorunum: 'Genel görünüme dön',
       yakinlastir: 'Yakınlaştır',
       uzaklastir: 'Uzaklaştır',
+      yazilariGizle: 'Yazıları gizle',
+      yazilariGoster: 'Yazıları göster',
       etiket: 'Sağ kulak · sağdan bakış',
       yukleniyor: 'Model indiriliyor…',
       indirilemedi: 'Model indirilemedi. İnternet bağlantını kontrol edip sayfayı yeniden aç.',
