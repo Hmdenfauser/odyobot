@@ -1310,12 +1310,13 @@
      sonraki açılışlarda aynı örnek kullanılır. Yönetici düzenlemesi: icerik/g3d.bolum.<id>, g3d.yapi.<id>,
      g3d.kepce (ad, aciklama) ve g3d.metin (ipucu, not). "Düzenle" bilgi kartına kartEki kancasıyla eklenir. */
   var G3D = window.GORSEL3D_VERI, g3d = null, G3D_ALAN = [{ f: 'ad', ad: 'Ad' }, { f: 'aciklama', ad: 'Açıklama', cok: true }];
-  var G3D_METIN_ALAN = [{ f: 'ipucu', ad: 'İpucu (modelin altında)', cok: true }, { f: 'not', ad: 'Not (sayfanın altında)', cok: true }, { f: 'yakinlastir', ad: 'Büyüteç ipucu: yakınlaştır' }, { f: 'uzaklastir', ad: 'Büyüteç ipucu: uzaklaştır' }];
+  var G3D_METIN_ALAN = [{ f: 'ipucu', ad: 'İpucu (modelin altında)', cok: true }, { f: 'not', ad: 'Not (sayfanın altında)', cok: true }, { f: 'yakinlastir', ad: 'Büyüteç ipucu: yakınlaştır' }, { f: 'uzaklastir', ad: 'Büyüteç ipucu: uzaklaştır' },
+    { f: 'etiketKepce', ad: 'Model üzerinde kepçe yazısı' }, { f: 'etiketKoklea', ad: 'Model üzerinde koklea yazısı' }, { f: 'yazilariGizle', ad: 'Yazıları gizle düğmesinin ipucu' }, { f: 'yazilariGoster', ad: 'Yazıları göster düğmesinin ipucu' }];
   if (G3D) {
     G3D.bolumler.forEach(function (b) { b.key = 'g3d.bolum.' + b.id; editable(b, ['ad', 'aciklama']); });
-    Object.keys(G3D.yapilar).forEach(function (id) { var y = G3D.yapilar[id]; y.key = 'g3d.yapi.' + id; editable(y, ['ad', 'aciklama']); });
+    Object.keys(G3D.yapilar).forEach(function (id) { var y = G3D.yapilar[id]; y.key = 'g3d.yapi.' + id; editable(y, y.etiket != null ? ['ad', 'aciklama', 'etiket'] : ['ad', 'aciklama']); });
     G3D.kepce.key = 'g3d.kepce'; editable(G3D.kepce, ['ad', 'aciklama']);
-    G3D.metinler.key = 'g3d.metin'; editable(G3D.metinler, ['ipucu', 'not']);
+    G3D.metinler.key = 'g3d.metin'; editable(G3D.metinler, G3D_METIN_ALAN.map(function (a) { return a.f; }));
   }
   function g3dNesne(tur, kimlik) {
     if (tur === 'yapi') return G3D.yapilar[kimlik];
@@ -1325,7 +1326,7 @@
   }
   function g3dKartEki(tur, kimlik, yuva) {
     var o = g3dNesne(tur, kimlik); if (!o) return;
-    var a = tur === 'metin' ? adminPart(o.key, o, G3D_METIN_ALAN, 'İpucu ve notu düzenle') : adminPart(o.key, o, G3D_ALAN, 'Düzenle');
+    var a = tur === 'metin' ? adminPart(o.key, o, G3D_METIN_ALAN, 'İpucu, not ve model yazılarını düzenle') : adminPart(o.key, o, o.etiket != null ? KT_YAPI_ALAN : G3D_ALAN, 'Düzenle');
     if (a) yuva.appendChild(a);
   }
   function kur3d() {
@@ -1358,15 +1359,15 @@
   }
   function kurKorti() { if (kt || !KT || !window.Korti) return; kt = window.Korti.kur($('kt-kok'), { veri: KT, kartEki: ktKartEki }); }
   // Denge sistemi (korti/denge3d.js): yönetici düzenlemesi icerik/denge3d.yapi.<id>, denge3d.genel, denge3d.metin
-  var DN = window.DENGE3D_VERI, dn = null;
+  var DN = window.DENGE3D_VERI, dn = null, DN_METIN_ALAN = KT_METIN_ALAN.concat([{ f: 'yazilariGizle', ad: 'Yazıları gizle düğmesinin ipucu' }, { f: 'yazilariGoster', ad: 'Yazıları göster düğmesinin ipucu' }]);
   if (DN) {
-    Object.keys(DN.yapilar).forEach(function (id) { var y = DN.yapilar[id]; y.key = 'denge3d.yapi.' + id; editable(y, ['ad', 'aciklama']); });
+    Object.keys(DN.yapilar).forEach(function (id) { var y = DN.yapilar[id]; y.key = 'denge3d.yapi.' + id; editable(y, y.etiket != null ? ['ad', 'aciklama', 'etiket'] : ['ad', 'aciklama']); });
     DN.genel.key = 'denge3d.genel'; editable(DN.genel, ['ad', 'aciklama']);
-    DN.metinler.key = 'denge3d.metin'; editable(DN.metinler, ['ipucu', 'not', 'etiket', 'genelGorunum']);
+    DN.metinler.key = 'denge3d.metin'; editable(DN.metinler, DN_METIN_ALAN.map(function (a) { return a.f; }));
   }
   function dnKartEki(tur, kimlik, yuva) {
     var o = tur === 'yapi' ? DN.yapilar[kimlik] : tur === 'metin' ? DN.metinler : DN.genel; if (!o) return;
-    var a = tur === 'metin' ? adminPart(o.key, o, KT_METIN_ALAN, 'İpucu ve notu düzenle') : adminPart(o.key, o, G3D_ALAN, 'Düzenle');
+    var a = tur === 'metin' ? adminPart(o.key, o, DN_METIN_ALAN, 'İpucu, not ve düğme yazılarını düzenle') : adminPart(o.key, o, o.etiket != null ? KT_YAPI_ALAN : G3D_ALAN, 'Düzenle');
     if (a) yuva.appendChild(a);
   }
   function kurDenge() { if (dn || !DN || !window.Denge3D) return; dn = window.Denge3D.kur($('dn-kok'), { veri: DN, kartEki: dnKartEki }); }

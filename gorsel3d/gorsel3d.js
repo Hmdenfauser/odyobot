@@ -62,10 +62,17 @@
     var sagAlt = h('div', 'sl-sag-alt');
     // Büyüteç (2026-11-21): genel görünüm düğmesinin solunda; yakın = 2 kat (iki parmakla yakınlaştırmayla aynı değişken)
     var buyBtn = h('button', 'sl-yuv'), buyIp = null; sagAlt.appendChild(buyBtn); sagAlt.appendChild(geriBtn);
+    // Yapı adları (2026-11-21, İç kulak yapılarındaki gibi): modelin üstünde küçük yazılar + sağ altta yazıları gizle/göster.
+    // Yalnızca üst katman: çizim/kamera/dokunma hesapları değişmez; draw()'un hesapladığı matris okunur.
+    var yaziAcik = true, yaziBtn = h('button', 'sl-yuv'), yaziIp = null; yaziBtn.type = 'button'; sagAlt.insertBefore(yaziBtn, geriBtn);
+    if (IP) yaziIp = IP.bagla(yaziBtn, function () { return yaziAcik ? (M.yazilariGizle || 'Yazıları gizle') : (M.yazilariGoster || 'Yazıları göster'); });
+    function yaziDugme() { if (IP) IP.simge(yaziBtn, yaziAcik ? 'yazi' : 'yaziYok'); else yaziBtn.textContent = 'T'; yaziBtn.setAttribute('aria-pressed', yaziAcik ? 'false' : 'true'); if (yaziIp) yaziIp.yenile(); }
+    yaziBtn.addEventListener('click', function () { yaziAcik = !yaziAcik; yaziDugme(); dirty = true; }); yaziDugme();
+    var YAZILAR = (veri.etiketler || []).map(function (e) { var el = h('span', 'kt-yazi'); el.setAttribute('aria-hidden', 'true'); el.hidden = true; return { e: e, el: el, p: null }; });
     if (IP) buyIp = IP.buyutec(buyBtn, { yakinMi: function () { return zoom < 0.8; }, degistir: function () { zoom = zoom < 0.8 ? 1 : 0.5; auto = false; dirty = true; },
       yakinlastir: function () { return M.yakinlastir || 'Yakınlaştır'; }, uzaklastir: function () { return M.uzaklastir || 'Uzaklaştır'; } });
     else { buyBtn.type = 'button'; buyBtn.textContent = '⌕'; buyBtn.addEventListener('click', function () { zoom = zoom < 0.8 ? 1 : 0.5; auto = false; dirty = true; }); }
-    sahne.appendChild(cv); sahne.appendChild(neresi); sahne.appendChild(olcek); sahne.appendChild(sagAlt); sahne.appendChild(durum);
+    sahne.appendChild(cv); YAZILAR.forEach(function (y) { sahne.appendChild(y.el); }); sahne.appendChild(neresi); sahne.appendChild(olcek); sahne.appendChild(sagAlt); sahne.appendChild(durum);
     var ipucu = h('p', 'g3d-not g3d-ipucu', M.ipucu);
     var secBox = h('div', 'g3d-satir g3d-bolumler'), partBox = h('div', 'g3d-yapilar');
     var kart = h('div', 'g3d-kart'), nmEl = h('h4'), dsEl = h('p'), yuva = h('div', 'g3d-kart-ek');
@@ -170,9 +177,42 @@
         }
       }
       gl.disable(gl.BLEND); gl.depthMask(true);
+      yazilariYaz(o);
       var px = 10 * f / d * cv.clientHeight / 2;
       olcek.hidden = !(px > 14 && px < cv.clientWidth * 0.6);
       cubuk.style.width = Math.round(px) + 'px';
+    }
+    // Yazının yeri: parçanın noktalarının ortalamasına en yakın köşe noktası (kanal gibi halka yapılarda yazı boşlukta kalmasın)
+    function yaziYeri(id) {
+      var p = PART[id]; if (!p) return null;
+      var P = p.P, c = [0, 0, 0], n = P.length / 3, en = 0, ed = 1e18;
+      for (var j = 0; j < P.length; j += 3) { c[0] += P[j] / n; c[1] += P[j + 1] / n; c[2] += P[j + 2] / n; }
+      for (var i = 0; i < P.length; i += 3) { var dx = P[i] - c[0], dy = P[i + 1] - c[1], dz = P[i + 2] - c[2], q = dx * dx + dy * dy + dz * dz; if (q < ed) { ed = q; en = i; } }
+      return [P[en], P[en + 1], P[en + 2]];
+    }
+    function yazilariYaz(o) {
+      if (!YAZILAR.length) return;
+      var w = cv.clientWidth, hh = cv.clientHeight, yerler = [];
+      YAZILAR.forEach(function (y) {
+        var e = y.e, id = e.id, st = style(id), ilgili = e.ilgili || [id];
+        // Görünür: yazılar açık, yapı bu bölümde ve silik değil; bir şey seçiliyse yalnızca o yapının yazısı; Tüm sistem'de yalnızca ana yapılar
+        var gor = yaziAcik && st && (st.a >= 0.9 || sec.id === 'cevre' && !sel) && (inSec(id) || sec.id === 'tum' && e.tum) && (!sel || ilgili.indexOf(sel) >= 0) && (sec.id !== 'tum' || e.tum) && !(e.kepce && pinOpen);
+        if (gor && !y.p) y.p = yaziYeri(e.yer || id);
+        if (!gor || !y.p) { y.el.hidden = true; return; }
+        var p = y.p, X = o[0] * p[0] + o[4] * p[1] + o[8] * p[2] + o[12], Y = o[1] * p[0] + o[5] * p[1] + o[9] * p[2] + o[13], W = o[3] * p[0] + o[7] * p[1] + o[11] * p[2] + o[15];
+        var sx = (X / W * 0.5 + 0.5) * w, sy = (0.5 - Y / W * 0.5) * hh;
+        if (W <= 0 || sx < 8 || sx > w - 8 || sy < 8 || sy > hh - 8) { y.el.hidden = true; return; }
+        var yapi = veri.yapilar[id];
+        y.el.textContent = (e.metin && M[e.metin]) || (yapi && (yapi.etiket || yapi.ad)) || '';
+        y.el.hidden = false;
+        var yw = y.el.offsetWidth / 2 + 6, yh = y.el.offsetHeight + 2; sx = Math.max(yw, Math.min(w - yw, sx));
+        // Üst üste binmesin: önceki bir yazıyla çakışırsa biraz aşağı kaydır; yer yoksa gizle
+        function carpar() { return yerler.some(function (r) { return Math.abs(r[0] - sx) < r[2] + yw - 6 && Math.abs(r[1] - sy) < yh; }); }
+        for (var k = 0; k < 3 && carpar(); k++) sy += yh;
+        if (carpar() || sy > hh - 8) { y.el.hidden = true; return; }
+        yerler.push([sx, sy, yw - 6]);
+        y.el.style.left = Math.round(sx) + 'px'; y.el.style.top = Math.round(sy) + 'px';
+      });
     }
     function loop() {
       if (durdu) return;
@@ -325,7 +365,7 @@
     window.requestAnimationFrame(loop);
 
     return {
-      yenile: function () { metinler(); if (!hazir) return; renkleriOku(); secBtns.forEach(function (b, k) { b.textContent = SECS[k].ad; }); chips(); card(); dirty = true; },
+      yenile: function () { metinler(); yaziDugme(); if (!hazir) return; renkleriOku(); secBtns.forEach(function (b, k) { b.textContent = SECS[k].ad; }); chips(); card(); dirty = true; },
       kaldir: function () { durdu = true; dinleyiciler.forEach(function (d) { d[0].removeEventListener(d[1], d[2], d[3]); }); kok.textContent = ''; }
     };
   }

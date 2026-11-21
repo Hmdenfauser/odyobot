@@ -6,6 +6,9 @@
    Kullanım: Denge3D.kur(kok, { veri, kartEki }) → { yenile }. */
 (function () {
   'use strict';
+  // Model üzerindeki ad yazıları (İç kulak yapılarındaki gibi); yerleri model yüklenince makulaların ortasından hesaplanır.
+  // Yazı: yapının 'etiket' alanı (yönetici düzenler), yoksa adı. Sağ altta yazıları gizle/göster düğmesi.
+  var ETIKET = [{ id: 'utr', p: null }, { id: 'sak', p: null }];
   var LABIRENT = ['vest', 'ant', 'post', 'lat', 'crus', 'amp'], LABIRENT_A = 0.68, YOL = 'gorsel3d/';
 
   function modelIndir() {
@@ -26,12 +29,14 @@
           M[m.id] = { P: P, N: N, I: I, saydam: LABIRENT_A };
         });
         var DS = window.SesLabDenge;
+        function merkez(P) { var mn = [1e9, 1e9, 1e9], mx = [-1e9, -1e9, -1e9]; for (var i = 0; i < P.length; i += 3) for (var a = 0; a < 3; a++) { mn[a] = Math.min(mn[a], P[i + a]); mx[a] = Math.max(mx[a], P[i + a]); } return [(mn[0] + mx[0]) / 2, (mn[1] + mx[1]) / 2, (mn[2] + mx[2]) / 2]; }
         if (DS && PART.vest) {
           var MAK = DS.makulalar(PART);
           ['utr', 'sak'].forEach(function (a) {
             M[a + '_ep'] = { P: MAK[a].epitel.P, N: MAK[a].epitel.N, I: MAK[a].epitel.I, grup: a };
             M[a + '_tuy'] = { P: MAK[a].tuy.P, N: MAK[a].tuy.N, I: MAK[a].tuy.I, grup: a };
             M[a + '_zar'] = { P: MAK[a].zar.P, N: MAK[a].zar.N, I: MAK[a].zar.I, grup: 'otolit' };
+            ETIKET.forEach(function (e) { if (e.id === a) e.p = merkez(MAK[a].zar.P); });   // yazı makulanın ortasında
           });
         }
         return M;
@@ -50,7 +55,7 @@
     // Hastanın sağından bakış (ekranın sağı = hastanın önü, yukarısı = yukarı); biraz yukarıdan ve önden
     var KAM = [0, 0, 1, 0, 1, 0, -1, 0, 0];
     return K.goruntuleyici(kok, { veri: ayar.veri, kartEki: ayar.kartEki, sinif: 'kt-denge', model: modelIndir, renk: renk, nokta: nokta,
-      basR: K.mul(K.mul(K.rx(K.D(12)), K.ry(K.D(-18))), KAM), yaklasEnAz: 1.2 });
+      basR: K.mul(K.mul(K.rx(K.D(12)), K.ry(K.D(-18))), KAM), yaklasEnAz: 1.2, etiketler: ETIKET });
   }
 
   window.Denge3D = { kur: kur };
