@@ -77,10 +77,22 @@
   }
 
   /* ---------- çizim ---------- */
+  // Yazarın güncel adı ve mesleği profiller/{uid}'den (herkese açık); yoksa yazıya kaydedilmiş eski ad. Her yazar oturumda bir kez okunur.
+  var PROFIL = {}, profilIstendi = {}, profilCizZ = null;
+  function profilAl(uid) {
+    if (!uid || !db || profilIstendi[uid]) return PROFIL[uid];
+    profilIstendi[uid] = true;
+    db.collection('profiller').doc(uid).get().then(function (s) {
+      if (s.exists) { PROFIL[uid] = s.data() || {}; clearTimeout(profilCizZ); profilCizZ = setTimeout(ciz, 50); }
+    }, function () {});
+    return PROFIL[uid];
+  }
+  function yazarAdi(x) { var p = profilAl(x.yazarId); return (p && p.ad) || x.yazarAd || M('adsiz'); }
+  window.addEventListener('odyo:profil-adi', function (e) { var v = e.detail; if (v && v.uid) { PROFIL[v.uid] = { ad: v.ad, meslek: v.meslek }; ciz(); } });
   function yazarSatir(x) {
     var s = h('div', 'fr-yazar');
-    s.appendChild(h('span', 'fr-ad', x.yazarAd || M('adsiz')));
-    var r = rozet(x.yazarMeslek); if (r) s.appendChild(h('span', 'fr-rozet', r));
+    s.appendChild(h('span', 'fr-ad', yazarAdi(x)));
+    var pr = PROFIL[x.yazarId], r = rozet(pr ? pr.meslek : x.yazarMeslek); if (r) s.appendChild(h('span', 'fr-rozet', r));
     s.appendChild(h('span', 'fr-tarih', tarih(x.olusturma) + (x.guncelleme && x.guncelleme > x.olusturma + 60000 ? ' · ' + M('duzenlendi') : '')));
     if (x.gizli) s.appendChild(h('span', 'fr-gizli-et', M('gizliEtiket')));
     return s;
@@ -151,8 +163,8 @@
     if (!benim(x)) {
       bar.appendChild(btn('linkbtn', M('sikayetEt'), function () { sikayetEt(x, tur); }));
       bar.appendChild(btn('linkbtn', M('engelle'), function () {
-        if (!window.confirm(M('engelOnay').replace('{ad}', x.yazarAd || M('adsiz')))) return;
-        U().engelle(x.yazarId, x.yazarAd).then(function () { bildirim(M('engellendi')); if (tur === 'gonderi') location.hash = '#topluluk'; else ciz(); });
+        if (!window.confirm(M('engelOnay').replace('{ad}', yazarAdi(x)))) return;
+        U().engelle(x.yazarId, yazarAdi(x)).then(function () { bildirim(M('engellendi')); if (tur === 'gonderi') location.hash = '#topluluk'; else ciz(); });
       }));
     }
     if (yonetici) bar.appendChild(btn('linkbtn', x.gizli ? M('goster') : M('gizle'), function () { gizliYap(x, tur, !x.gizli); }));

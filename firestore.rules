@@ -200,6 +200,17 @@ service cloud.firestore {
         && request.resource.data.olusturma is number;
     }
 
+    // Herkese açık küçük profil (forumda yazar adı ve meslek rozeti; ad değişince eski yazılarda da yeni ad görünür).
+    // Yalnızca görünen ad ve meslek; e-posta ve diğer bilgiler burada YOK. Herkes okur; yalnızca sahibi yazar/siler.
+    match /profiller/{uid} {
+      allow read: if true;
+      allow delete: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['ad', 'meslek'])
+        && shortString('ad', 40)
+        && (!('meslek' in request.resource.data) || request.resource.data.meslek in ['', 'ogrenci', 'odyolog', 'diger']);
+    }
+
     // Üye hesapları (4. adım, 2026-11-21). Belge adı üyenin kimliği (uid).
     // Her üye YALNIZCA kendi belgesini okur, yazar, siler; başka hiç kimse (yönetici dahil) okuyamaz.
     // Alanlar: ad (görünen ad ≤40), meslek, favoriler (not anahtarları ≤200), sozluk (terim → öğrenme durumu ≤2000),

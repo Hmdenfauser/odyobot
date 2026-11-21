@@ -77,7 +77,15 @@
     if (!profilHazir || !belge()) return Promise.resolve();
     clearTimeout(yazZ);
     if (!hemen) { yazZ = setTimeout(function () { kaydet(true); }, 1500); return Promise.resolve(); }
-    return belge().set(veri()).catch(function (e) { mesaj($('hs-msg'), M('eslemeHata'), true); throw e; });
+    return belge().set(veri()).then(profilYaz).catch(function (e) { mesaj($('hs-msg'), M('eslemeHata'), true); throw e; });
+  }
+  // Herkese açık küçük profil (profiller/{uid}: ad, meslek): forum yazılarında ad buradan okunur; ad değişince eski yazılarda da yeni ad görünür.
+  var sonProfil = null;
+  function profilYaz() {
+    if (!db || !uye || !profil) return;
+    var v = { ad: (profil.ad || '').slice(0, 40), meslek: profil.meslek || '' }, s = JSON.stringify(v);
+    if (s === sonProfil) return;
+    return db.collection('profiller').doc(uye.uid).set(v).then(function () { sonProfil = s; try { window.dispatchEvent(new CustomEvent('odyo:profil-adi', { detail: { uid: uye.uid, ad: v.ad, meslek: v.meslek } })); } catch (e) {} });
   }
   window.addEventListener('odyo:favori', function () { kaydet(false); });
   window.addEventListener('odyo:sozluk-durum', function () { kaydet(false); });
@@ -227,7 +235,7 @@
     var msg = $('hs-sil-msg'), u = uye, b = belge();
     clearTimeout(yazZ); profilHazir = false;
     // Önce sunucudaki bilgiler (hesap silinince artık silinemez), sonra hesap
-    (b ? b.delete() : Promise.resolve()).then(function () { return u.delete(); }).then(function () {
+    (b ? b.delete() : Promise.resolve()).then(function () { return db.collection('profiller').doc(u.uid).delete().catch(function () {}); }).then(function () { return u.delete(); }).then(function () {
       mesaj(msg, M('silindi')); location.hash = '#ayarlar';
       if (window.OdyoUI && window.OdyoUI.bildirim) window.OdyoUI.bildirim(M('silindi'));
     }, function (err) { profilHazir = !!profil; mesaj(msg, hataYazi(err), true); });
@@ -250,7 +258,7 @@
   window.addEventListener('odyo:db', function (e) { dbBaglan(e.detail); });
   function uyeDegisti(u) {
     if (uye && u && uye.uid === u.uid) { uye = u; ciz(); return; }
-    uye = u; profil = null; profilHazir = false; clearTimeout(yazZ); profilHaber();
+    uye = u; profil = null; profilHazir = false; clearTimeout(yazZ); sonProfil = null; profilHaber();
     if (uye) profilYukle(); else bekleyenKayit = null;
     ciz();
   }
