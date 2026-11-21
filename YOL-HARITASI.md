@@ -7,8 +7,8 @@ Her oturumda önce bu dosyaya, `CLAUDE.md` ve `PROGRESS.md`'ye bak. **Yalnızca 
 |---|---|---|---|
 | 1 | Tasarım yenilemesi | `adim1-tasarim` | ✅ Onaylandı, yayında (2026-11-17, sw v27). Önceki yayın yedeği: git etiketi `yedek-yayin-v25` + `ham-gorseller/yedek-yayin-2026-11-17/`. Yayından sonra telefonda eşik tablosu denenecek. |
 | 2 | Vakalarım'a yeni testler | `adim2-testler` | ✅ Onaylandı, yayında (2026-11-17, sw v30; önceki yayın yedeği git etiketi `yedek-yayin-v28`): timpanometri (tip dahil), akustik refleks, OAE, ABR. ABR kayıt fotoğrafı eklendi. Refleks yorumu OdyoBOT'ta (v32, yayında). Telefonda denenecek. Klinik değerler proje sahibinin Drive'ındaki ders slaytlarından, onaylatılarak. |
-| 3 | 3D modeller | `adim3-seslab` | Başladı (2026-11-18): Ses laboratuvarı (`#seslab`, mevcut 3D modelin kopyası üzerinden animasyon) yapıldı, onay bekliyor (sw v33, yayında değil). Otolit ve tüylü hücre modelleri henüz yok. |
-| 4 | Üye girişi, forum, bildirim | — | Bekliyor |
+| 3 | 3D modeller | (birleşti) | ✅ Yayında (v42–v45): 3D modeller listesi (Periferik, Denge sistemi, İç kulak yapıları), Ses laboratuvarı (İşitme, Denge, Dağılma, Corti organı). İleride: ampulla kesiti animasyonu. |
+| 4 | Üye girişi, forum, bildirim | `adim4-uye` | Başladı (2026-11-21): üye girişi yapıldı (e-posta + Google, Hesabım, favori/sözlük eşitleme, hesabı silme; üyelik anahtarı kapalı başlar). Sırada: Kütüphane çizimi, forum, bildirim araştırması, yasal metinler. |
 | 5 | Vestibüler modül, işitme taraması, gelir | — | Bekliyor |
 
 ## Genel kurallar (bütün adımlar)
