@@ -34,6 +34,10 @@
   --kt-silya: #FFB547; --kt-pilar: #5CC98A; --kt-destek: #C9978A; --kt-stria: #E0574D; --kt-ligament: #B98581;
   --kt-ganglion: #F0B441; --kt-sinir: #F5D860;
 }
+/* Denge sistemi modeli (korti/denge3d.js): makula katmanları. Labirent renkleri gorsel3d.css (--g3d-vest, --g3d-ant …). */
+.kt { --kt-mak-ep: #D98C9E; --kt-mak-tuy: #8C73C2; --kt-mak-zar: #E07A10; }
+:root[data-theme="dark"] .kt { --kt-mak-ep: #E8A3B3; --kt-mak-tuy: #B59CF0; --kt-mak-zar: #FFB040; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .kt { --kt-mak-ep: #E8A3B3; --kt-mak-tuy: #B59CF0; --kt-mak-zar: #FFB040; } }
 .kt-liste { display: flex; flex-direction: column; gap: 6px; }
 
 /* 3D modeller listesi (#3d) */

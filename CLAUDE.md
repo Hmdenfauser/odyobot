@@ -52,8 +52,11 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 - Odyogram çıktısı (`cikti.js`), Vakalarım → OdyoBOT gönderme, düğmeli sohbet (`odybot.js`). sw v12. Ayrıntı: `PROGRESS.md`.
 
 ### ÖNİZLEMEDE (2026-11-21, dal `adim3-modeller`, yayında değil)
-- **3D modeller listesi** (`#3d`): Periferik işitme sistemi (`#3d/periferik`, eski 3D sayfası; eski adresler buraya yönlenir), Otolit hareketi (→ `#seslab/denge`, geri okuyla listeye döner), Koklea kesiti ve tüylü hücreler (`#3d/korti`). Başlıklar `#uc-metinler` (yönetici). Ana sayfa 3D kartı: "3D modeller".
-- **Koklea kesiti** (`korti/`): kodla çizilen şematik, **hareketsiz** 3D dilim (proje sahibi: 3D'de yalnızca yapılar, hareketli kısım Ses laboratuvarında). 17 yapı (kemik, OSL+limbus, 3 skala arka yüzde renkli, Reissner, baziler, tektoryal, İTH, 3 sıra DTH, stereosilya, pilar+tünel, destek hücreleri, stria, ligament, gangliyon, sinir lifleri). Dokunma/listeden seçme, seçilene yaklaşma, genel görünüm düğmesi. Metinler taslak (ders notu: İşitme ve Denge Sistemleri-1 iç kulak, slayt 8–20). İnternette uygun lisanslı hazır model bulunamadı (ücretli ya da ticari olmayan lisanslı).
+- **Kural (proje sahibi, 2026-11-21):** 3D sekmesinde **yalnızca hareketsiz modeller** var: Periferik işitme sistemi, Denge sistemi, İç kulak yapıları. **Bütün animasyonlar (yapılan ve yapılacak) Ses laboratuvarında.** 3D listesine Ses laboratuvarına giden bağlantı konmaz; BPPV, kristal kayması, manevra 3D'de olmaz.
+- **3D modeller listesi** (`#3d`): `#3d/periferik` (gorsel3d/, eski 3D sayfası; eski adresler buraya), `#3d/denge` (korti/denge3d.js), `#3d/korti` (korti/korti.js, listede adı "İç kulak yapıları"). Başlıklar `#uc-metinler` (yönetici). Ana sayfa 3D kartı: "3D modeller".
+- **Ortak görüntüleyici** `korti/korti.js` → `Korti.goruntuleyici(kok, ayar)`: kodla ya da dosyadan gelen parçalar, grup (alt parçalar tek yapı), saydam parça (derinlik ön geçişi), dokunarak/listeden seçme, seçilene yaklaşma, genel görünüm düğmesi.
+- **İç kulak yapıları** (koklea kesiti): kodla çizilen şematik dilim, 17 yapı. Metinler taslak (ders notu: İşitme ve Denge Sistemleri-1 iç kulak, slayt 8–20). İnternette uygun lisanslı hazır model bulunamadı.
+- **Denge sistemi:** labirent (vest, ant, post, lat, crus, amp) periferik.bin'den, tek saydamlık `LABIRENT_A` 0,68; utrikulus/sakkulus makulaları + otolitik membran `SesLabDenge.makulalar` ile hareketsiz. 9 yapı, metinler taslak (periferik vestibüler sistem dersi). Krista/kupula çizilmedi.
 - **Sıradaki (onaydan sonra):** Ses laboratuvarına hareketli Corti organı (baziler membran titreşimi, tüylerin bükülmesi).
 
 ### KALDIĞIMIZ YER (2026-11-21, v41) — oturum başında bunu özetle

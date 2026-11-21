@@ -875,10 +875,11 @@
     // Eski adres: Geçmiş sekmesinin adı Vakalarım oldu; eski bağlantılar da çalışsın.
     if (t === 'gecmis') { t = 'vakalarim'; adresDegistir('#vakalarim'); }
     if (UC_ESKI.indexOf(t) !== -1) { t = '3d/periferik'; ham = t; adresDegistir('#3d/periferik'); }
-    // 3D modeller (2026-11-21): #3d = liste, #3d/periferik = kulak modeli (gorsel3d/), #3d/korti = koklea kesiti (korti/).
+    // 3D modeller (2026-11-21): #3d = liste, #3d/periferik = kulak modeli (gorsel3d/), #3d/denge = denge sistemi, #3d/korti = iç kulak yapıları (korti/).
+    // Yalnızca hareketsiz modeller; animasyonlar Ses laboratuvarında (proje sahibinin kararı).
     if (t.split('/')[0] === '3d') {
       var ucAlt = t.split('/')[1] || '';
-      if (ucAlt && ['periferik', 'korti'].indexOf(ucAlt) === -1) { ucAlt = ''; ham = '3d'; adresDegistir('#3d'); }
+      if (ucAlt && ['periferik', 'denge', 'korti'].indexOf(ucAlt) === -1) { ucAlt = ''; ham = '3d'; adresDegistir('#3d'); }
       if (oncekiHash.split('/')[0] !== '3d') { ucGeldigi = ilkRota ? null : oncekiHash; ucListedenGeldi = false; }   // geri düğmesi için: nereden gelindi
       else if (ucAlt && oncekiHash === '3d') ucListedenGeldi = true;
       t = 'uc-boyut'; setTimeout(function () { ucGoster(ucAlt); }, 0);   // modeller yalnızca ilk açılışta kurulur (kulak modeli ~4 MB iner)
@@ -925,8 +926,7 @@
   $('sl-geri').addEventListener('click', function () {
     // Laboratuvardayken geri oku seçim ekranına döner (seçim ekranından gelindiyse tarayıcı geçmişinde bir adım geri).
     if (oncekiHash !== 'seslab') {
-      if ((slSecimdenGeldi || (slGeldigi && slGeldigi.split('/')[0] === '3d')) && history.length > 1) history.back();   // 3D modeller listesinden gelindiyse oraya döner
-      else location.hash = '#seslab';
+      if (slSecimdenGeldi && history.length > 1) history.back(); else location.hash = '#seslab';
       return;
     }
     if ((slGeldigi === 'anasayfa' || slGeldigi === '') && history.length > 1) history.back();
@@ -1347,18 +1347,36 @@
     if (a) yuva.appendChild(a);
   }
   function kurKorti() { if (kt || !KT || !window.Korti) return; kt = window.Korti.kur($('kt-kok'), { veri: KT, kartEki: ktKartEki }); }
+  // Denge sistemi (korti/denge3d.js): yönetici düzenlemesi icerik/denge3d.yapi.<id>, denge3d.genel, denge3d.metin
+  var DN = window.DENGE3D_VERI, dn = null;
+  if (DN) {
+    Object.keys(DN.yapilar).forEach(function (id) { var y = DN.yapilar[id]; y.key = 'denge3d.yapi.' + id; editable(y, ['ad', 'aciklama']); });
+    DN.genel.key = 'denge3d.genel'; editable(DN.genel, ['ad', 'aciklama']);
+    DN.metinler.key = 'denge3d.metin'; editable(DN.metinler, ['ipucu', 'not', 'etiket', 'genelGorunum']);
+  }
+  function dnKartEki(tur, kimlik, yuva) {
+    var o = tur === 'yapi' ? DN.yapilar[kimlik] : tur === 'metin' ? DN.metinler : DN.genel; if (!o) return;
+    var a = tur === 'metin' ? adminPart(o.key, o, KT_METIN_ALAN, 'İpucu ve notu düzenle') : adminPart(o.key, o, G3D_ALAN, 'Düzenle');
+    if (a) yuva.appendChild(a);
+  }
+  function kurDenge() { if (dn || !DN || !window.Denge3D) return; dn = window.Denge3D.kur($('dn-kok'), { veri: DN, kartEki: dnKartEki }); }
   function refreshKorti() {
     if (!KT) return;
     Object.keys(KT.yapilar).forEach(function (id) { applyOv(KT.yapilar[id].key, KT.yapilar[id]); });
     applyOv(KT.genel.key, KT.genel); applyOv(KT.metinler.key, KT.metinler);
     if (kt) kt.yenile();
+    if (DN) {
+      Object.keys(DN.yapilar).forEach(function (id) { applyOv(DN.yapilar[id].key, DN.yapilar[id]); });
+      applyOv(DN.genel.key, DN.genel); applyOv(DN.metinler.key, DN.metinler);
+      if (dn) dn.yenile();
+    }
   }
   // 3D sayfası: liste ya da seçilen model; başlık #uc-metinler'den (yönetici düzenler)
 
   function ucGoster(alt) {
-    $('uc-liste-kutu').hidden = !!alt; $('g3d-kok').hidden = alt !== 'periferik'; $('kt-kok').hidden = alt !== 'korti';
+    $('uc-liste-kutu').hidden = !!alt; $('g3d-kok').hidden = alt !== 'periferik'; $('dn-kok').hidden = alt !== 'denge'; $('kt-kok').hidden = alt !== 'korti';
     var b = document.querySelector('#uc-metinler [data-m="' + (alt || 'liste') + '"]'); $('uc-baslik').textContent = b ? b.textContent.trim() : '';
-    if (alt === 'periferik') kur3d(); else if (alt === 'korti') kurKorti();
+    if (alt === 'periferik') kur3d(); else if (alt === 'denge') kurDenge(); else if (alt === 'korti') kurKorti();
   }
   function refresh3d() {
     if (!G3D) return;
@@ -1462,7 +1480,7 @@
   }
 
   // Açık/koyu görünüm değişince yapı renkleri (CSS değişkenleri) yeniden okunur.
-  function g3dRenk() { if (g3d) g3d.yenile(); if (sl) sl.yenile(); if (slG) slG.yenile(); if (kt) kt.yenile(); }
+  function g3dRenk() { if (g3d) g3d.yenile(); if (sl) sl.yenile(); if (slG) slG.yenile(); if (kt) kt.yenile(); if (dn) dn.yenile(); }
   new MutationObserver(g3dRenk).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
   if (window.matchMedia) { var g3dMq = window.matchMedia('(prefers-color-scheme: dark)'); if (g3dMq.addEventListener) g3dMq.addEventListener('change', g3dRenk); }
 

@@ -33,6 +33,8 @@ var ASSETS = [
   './korti/korti.js',
   './korti/korti-veri.js',
   './korti/korti.css',
+  './korti/denge3d.js',
+  './korti/denge3d-veri.js',
   './seslab/denge.js',
   './seslab/dagilma.js',
   './seslab/seslab.js',

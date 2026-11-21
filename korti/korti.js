@@ -210,9 +210,17 @@
     'void main(){vec3 nn=normalize(vn);float d=abs(nn.z);float s=pow(d,24.0)*0.16;vec3 c=col.rgb*(0.62+0.38*d)+vec3(s);c=mix(c,col.rgb*(0.86+0.14*d),duz);gl_FragColor=vec4(c,col.a);}';
   var FS_SEC = 'precision mediump float;uniform vec4 col;void main(){gl_FragColor=col;}';
 
+  /* Görüntüleyici (iki model ortak kullanır: koklea kesiti burada, denge sistemi korti/denge3d.js).
+     ayar: { veri, kartEki, sinif (kök öğeye ek sınıf),
+             model: function () → parçalar ya da Promise (parçalar: { kimlik: { P, N, I, grup?, saydam? } }),
+             sivi: [kimlik] (düz gölgeli sıvı yüzeyleri), renk: function (kimlik) → CSS değişken adı,
+             nokta: function (yapı kimliği) → listedeki noktanın CSS değişkeni, basR, genel: { cen, rad } (yoksa modelden),
+             yaklasEnAz: seçilen yapıya yaklaşırken en küçük yarıçap }
+     grup: parçanın ait olduğu yapı (seçim ve listede yapı kimliği); yoksa parça kimliği.
+     saydam: seçim yokken bu parça yarı saydam çizilir (yalnızca en öndeki yüzeyi, derinlik ön geçişiyle). */
   function kur(kok, ayar) {
     var V = ayar.veri, M = V.metinler, IP = window.SesLabIpucu;
-    kok.textContent = ''; kok.classList.add('g3d', 'kt');
+    kok.textContent = ''; kok.classList.add('g3d', 'kt'); if (ayar.sinif) kok.classList.add(ayar.sinif);
     var sahne = h('div', 'g3d-sahne'), cv = h('canvas'), etiket = h('div', 'g3d-etiket g3d-sagust'), durum = h('p', 'g3d-durum', M.yukleniyor);
     var genelBtn = h('button', 'sl-yuv'); genelBtn.type = 'button';
     var sagAlt = h('div', 'sl-sag-alt'); sagAlt.appendChild(genelBtn);
@@ -222,10 +230,12 @@
     kart.appendChild(nmEl); kart.appendChild(dsEl); kart.appendChild(yuva);
     var listeKutu = h('div', 'kt-liste'), notEl = h('p', 'g3d-not'), metinYuva = h('div', 'g3d-kart-ek');
     [sahne, ipucu, kart, listeKutu, notEl, metinYuva].forEach(function (e) { kok.appendChild(e); });
-    if (IP) { IP.simge(genelBtn, 'genel'); var genelIp = IP.bagla(genelBtn, function () { return M.genelGorunum; }); }
+    var genelIp = null;
+    if (IP) { IP.simge(genelBtn, 'genel'); genelIp = IP.bagla(genelBtn, function () { return M.genelGorunum; }); }
     else genelBtn.textContent = '⟲';
+    var renkAd = ayar.renk || function (id) { return '--kt-' + id; }, noktaAd = ayar.nokta || renkAd;
 
-    var sel = null, dugmeler = {};
+    var sel = null, dugmeler = {}, hazir = false;
     function metinler() {
       etiket.textContent = M.etiket; ipucu.textContent = M.ipucu; notEl.textContent = M.not;
       cv.setAttribute('aria-label', V.genel.ad + '. ' + M.etiket);
@@ -236,16 +246,16 @@
       listeKutu.textContent = ''; dugmeler = {};
       V.gruplar.forEach(function (g) {
         listeKutu.appendChild(h('p', 'g3d-baslik', g.ad));
-        var kutu = h('div', 'g3d-yapilar');
+        var kutuEl = h('div', 'g3d-yapilar');
         g.yapilar.forEach(function (id) {
           var y = V.yapilar[id]; if (!y) return;
           var b = h('button'); b.type = 'button'; b.setAttribute('aria-pressed', sel === id ? 'true' : 'false');
-          var nk = h('span', 'g3d-nokta'); nk.style.background = 'var(--kt-' + id + ')';
+          var nk = h('span', 'g3d-nokta'); nk.style.background = 'var(' + noktaAd(id) + ')';
           b.appendChild(nk); b.appendChild(h('span', null, y.ad));
-          b.addEventListener('click', function () { sec(sel === id ? null : id, true); });
-          kutu.appendChild(b); dugmeler[id] = b;
+          b.addEventListener('click', function () { if (hazir) sec(sel === id ? null : id, true); });
+          kutuEl.appendChild(b); dugmeler[id] = b;
         });
-        listeKutu.appendChild(kutu);
+        listeKutu.appendChild(kutuEl);
       });
     }
     function kartYaz() {
@@ -255,9 +265,10 @@
       Object.keys(dugmeler).forEach(function (id) { dugmeler[id].setAttribute('aria-pressed', sel === id ? 'true' : 'false'); });
     }
     metinler(); listeCiz(); kartYaz();
+    var api = { yenile: function () { metinler(); listeCiz(); kartYaz(); } };
 
     var gl = cv.getContext('webgl', { antialias: true, alpha: true, premultipliedAlpha: false }) || cv.getContext('experimental-webgl');
-    if (!gl) { durum.textContent = M.baslatilamadi; return { yenile: function () { metinler(); listeCiz(); kartYaz(); } }; }
+    if (!gl) { durum.textContent = M.baslatilamadi; return api; }
     function derle(vs, fs) {
       function sh(t, s) { var x = gl.createShader(t); gl.shaderSource(x, s); gl.compileShader(x); return x; }
       var pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, vs)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, fs)); gl.linkProgram(pr);
@@ -267,34 +278,40 @@
     function konum(pr) { return { p: gl.getAttribLocation(pr, 'p'), n: gl.getAttribLocation(pr, 'n'), mvp: gl.getUniformLocation(pr, 'mvp'), rot: gl.getUniformLocation(pr, 'rot'), col: gl.getUniformLocation(pr, 'col'), duz: gl.getUniformLocation(pr, 'duz') }; }
     var U = konum(PR), US = konum(PS);
 
-    // Parçalar: tampon, sınır kutusu, seçim rengi
-    var MODEL = modelKur(), PARCA = {}, SIRA = [];
-    var SIVI = ['sv', 'sm', 'st'];
-    Object.keys(MODEL).forEach(function (id, no) {
-      var A = MODEL[id], P = new Float32Array(A.P), N = new Float32Array(A.N), I = new Uint16Array(A.I);
-      var mn = [1e9, 1e9, 1e9], mx = [-1e9, -1e9, -1e9];
-      for (var j = 0; j < P.length; j++) { var a = j % 3; if (P[j] < mn[a]) mn[a] = P[j]; if (P[j] > mx[a]) mx[a] = P[j]; }
-      function tampon(t, v) { var b = gl.createBuffer(); gl.bindBuffer(t, b); gl.bufferData(t, v, gl.STATIC_DRAW); return b; }
-      PARCA[id] = { pb: tampon(gl.ARRAY_BUFFER, P), nb: tampon(gl.ARRAY_BUFFER, N), ib: tampon(gl.ELEMENT_ARRAY_BUFFER, I), n: I.length, mn: mn, mx: mx, kod: no + 1 };
-      SIRA.push(id);
-    });
-    var RENK = {}, SILIK = [0.62, 0.68, 0.7];
+    var PARCA = {}, SIRA = [], SIVI = ayar.sivi || [], RENK = {}, SILIK = [0.62, 0.68, 0.7];
     function renkleriOku() {
       var cs = window.getComputedStyle(kok);
-      SIRA.forEach(function (id) { RENK[id] = renkCoz(cs.getPropertyValue('--kt-' + id)) || SILIK; });
-      SILIK = renkCoz(cs.getPropertyValue('--g3d-silik')) || SILIK;
+      SIRA.forEach(function (id) { RENK[id] = renkCoz(cs.getPropertyValue(renkAd(id))) || SILIK; });
     }
-    renkleriOku();
-
     // Kamera: kullanıcı döndürmesi R, merkez cen, yarıçap rad (seçilen yapıya yumuşakça yaklaşır)
-    var BAS_R = mul(rx(D(16)), ry(D(-32))), R = BAS_R.slice(), zoom = 1, FOV = D(26), TAN = Math.tan(FOV / 2);
-    var GENEL = { cen: [-0.08, 0.06, 0], rad: 0.95 }, cen = GENEL.cen.slice(), rad = GENEL.rad, hedef = { cen: cen.slice(), rad: rad };
+    var BAS_R = ayar.basR || mul(rx(D(16)), ry(D(-32))), R = BAS_R.slice(), zoom = 1, FOV = D(26), TAN = Math.tan(FOV / 2);
+    var GENEL = null, cen = [0, 0, 0], rad = 1, hedef = { cen: [0, 0, 0], rad: 1 };
     var reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     var dirty = true, durdu = false, mvpSon = null;
+    function kutu(ids) {
+      var mn = [1e9, 1e9, 1e9], mx = [-1e9, -1e9, -1e9];
+      ids.forEach(function (id) { var p = PARCA[id]; for (var a = 0; a < 3; a++) { if (p.mn[a] < mn[a]) mn[a] = p.mn[a]; if (p.mx[a] > mx[a]) mx[a] = p.mx[a]; } });
+      return { cen: [(mn[0] + mx[0]) / 2, (mn[1] + mx[1]) / 2, (mn[2] + mx[2]) / 2], rad: Math.hypot(mx[0] - mn[0], mx[1] - mn[1], mx[2] - mn[2]) / 2 };
+    }
+    function parcalariKur(MODEL) {
+      Object.keys(MODEL).forEach(function (id, no) {
+        var A = MODEL[id];
+        var P = A.P instanceof Float32Array ? A.P : new Float32Array(A.P), N = A.N instanceof Float32Array ? A.N : new Float32Array(A.N), I = A.I instanceof Uint16Array ? A.I : new Uint16Array(A.I);
+        var mn = [1e9, 1e9, 1e9], mx = [-1e9, -1e9, -1e9];
+        for (var j = 0; j < P.length; j++) { var a = j % 3; if (P[j] < mn[a]) mn[a] = P[j]; if (P[j] > mx[a]) mx[a] = P[j]; }
+        function tampon(t, v) { var b = gl.createBuffer(); gl.bindBuffer(t, b); gl.bufferData(t, v, gl.STATIC_DRAW); return b; }
+        PARCA[id] = { pb: tampon(gl.ARRAY_BUFFER, P), nb: tampon(gl.ARRAY_BUFFER, N), ib: tampon(gl.ELEMENT_ARRAY_BUFFER, I), n: I.length, mn: mn, mx: mx, kod: no + 1, grup: A.grup || id, saydam: A.saydam || 0 };
+        SIRA.push(id);
+      });
+      renkleriOku();
+      GENEL = ayar.genel || kutu(SIRA);
+      cen = GENEL.cen.slice(); rad = GENEL.rad; hedef = { cen: cen.slice(), rad: rad };
+      hazir = true; durum.hidden = true; boyut(); dirty = true;
+    }
 
     function matris() {
       var asp = cv.width / cv.height, f = 1 / TAN, sig = asp < 1 ? 1 / asp : 1;
-      var d = rad / Math.sin(FOV / 2) * 0.92 * Math.min(sig, 1.8) * zoom, near = Math.max(0.02, d - rad * 3), far = d + rad * 4;
+      var d = rad / Math.sin(FOV / 2) * 0.92 * Math.min(sig, 1.8) * zoom, near = Math.max(rad * 0.02, d - rad * 3), far = d + rad * 4;
       var Pm = [f / asp, 0, 0, 0, 0, f, 0, 0, 0, 0, (far + near) / (near - far), -1, 0, 0, 2 * far * near / (near - far), 0];
       var t = [-(R[0] * cen[0] + R[1] * cen[1] + R[2] * cen[2]), -(R[3] * cen[0] + R[4] * cen[1] + R[5] * cen[2]), -(R[6] * cen[0] + R[7] * cen[1] + R[8] * cen[2]) - d];
       var Mm = [R[0], R[3], R[6], 0, R[1], R[4], R[7], 0, R[2], R[5], R[8], 0, t[0], t[1], t[2], 1];
@@ -307,28 +324,36 @@
       if (u.n >= 0) { gl.bindBuffer(gl.ARRAY_BUFFER, p.nb); gl.enableVertexAttribArray(u.n); gl.vertexAttribPointer(u.n, 3, gl.FLOAT, false, 0, 0); }
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, p.ib);
     }
+    function parcaCiz(id, alfa) {
+      var c = RENK[id]; gl.uniform4f(U.col, c[0], c[1], c[2], alfa); gl.uniform1f(U.duz, SIVI.indexOf(id) >= 0 ? 1 : 0);
+      bagla(U, PARCA[id]); gl.drawElements(gl.TRIANGLES, PARCA[id].n, gl.UNSIGNED_SHORT, 0);
+    }
     function ciz() {
       var mvp = matris(); mvpSon = mvp;
-      gl.useProgram(PR); gl.enable(gl.DEPTH_TEST); gl.disable(gl.CULL_FACE);
+      gl.useProgram(PR); gl.enable(gl.DEPTH_TEST); gl.disable(gl.CULL_FACE); gl.depthFunc(gl.LESS);
       gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
       gl.uniformMatrix4fv(U.mvp, false, mvp);
       gl.uniformMatrix3fv(U.rot, false, new Float32Array([R[0], R[3], R[6], R[1], R[4], R[7], R[2], R[5], R[8]]));
-      // 1. geçiş: opak (seçim yoksa hepsi; seçim varsa yalnızca seçilen). 2. geçiş: seçim varken diğerleri silik ve yarı saydam.
-      [0, 1].forEach(function (gecis) {
-        if (gecis === 1) { if (!sel) return; gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false); }
-        SIRA.forEach(function (id) {
-          var secili = !sel || sel === id; if ((gecis === 0) !== secili) return;
-          var c = RENK[id], siv = SIVI.indexOf(id) >= 0;
-          if (gecis === 1) gl.uniform4f(U.col, c[0], c[1], c[2], siv ? 0.35 : 0.16); else gl.uniform4f(U.col, c[0], c[1], c[2], 1);
-          gl.uniform1f(U.duz, siv ? 1 : 0);
-          bagla(U, PARCA[id]); gl.drawElements(gl.TRIANGLES, PARCA[id].n, gl.UNSIGNED_SHORT, 0);
-        });
-      });
-      gl.disable(gl.BLEND); gl.depthMask(true);
+      if (!sel) {
+        // Seçim yok: önce opak parçalar; sonra saydam parçalar önce yalnızca derinliğe yazılır, sonra yalnızca en öndeki yüzeyleri boyanır.
+        SIRA.forEach(function (id) { if (!PARCA[id].saydam) parcaCiz(id, 1); });
+        var sd = SIRA.filter(function (id) { return PARCA[id].saydam; });
+        if (sd.length) {
+          gl.colorMask(false, false, false, false); sd.forEach(function (id) { parcaCiz(id, 1); });
+          gl.colorMask(true, true, true, true); gl.depthFunc(gl.LEQUAL); gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false);
+          sd.forEach(function (id) { parcaCiz(id, PARCA[id].saydam); });
+        }
+      } else {
+        // Seçim var: seçilen yapı opak, diğerleri silik ve yarı saydam
+        SIRA.forEach(function (id) { if (PARCA[id].grup === sel) parcaCiz(id, 1); });
+        gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false);
+        SIRA.forEach(function (id) { if (PARCA[id].grup !== sel) parcaCiz(id, SIVI.indexOf(id) >= 0 ? 0.35 : 0.16); });
+      }
+      gl.disable(gl.BLEND); gl.depthMask(true); gl.depthFunc(gl.LESS);
     }
     // Dokunulan yapıyı bulmak: her parça kendi kod rengiyle ayrı bir tampona çizilir, dokunulan pikselin rengi okunur.
     var fbo = null, fboTex = null, fboDer = null, fboW = 0, fboH = 0;
-    function sec_bul(cx, cy) {
+    function secBul(cx, cy) {
       var w = cv.width, hh = cv.height;
       if (!fbo || fboW !== w || fboH !== hh) {
         fbo = fbo || gl.createFramebuffer(); fboTex = fboTex || gl.createTexture(); fboDer = fboDer || gl.createRenderbuffer();
@@ -342,10 +367,9 @@
         fboW = w; fboH = hh;
       }
       gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
-      gl.viewport(0, 0, w, hh); gl.useProgram(PS); gl.enable(gl.DEPTH_TEST); gl.disable(gl.BLEND);
+      gl.viewport(0, 0, w, hh); gl.useProgram(PS); gl.enable(gl.DEPTH_TEST); gl.disable(gl.BLEND); gl.depthFunc(gl.LESS);
       gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
       gl.uniformMatrix4fv(US.mvp, false, mvpSon || matris());
-      if (US.n >= 0) gl.disableVertexAttribArray(US.n);
       SIRA.forEach(function (id) {
         var k = PARCA[id].kod; gl.uniform4f(US.col, k / 255, 0, 0, 1);
         bagla(US, PARCA[id]); gl.drawElements(gl.TRIANGLES, PARCA[id].n, gl.UNSIGNED_SHORT, 0);
@@ -353,21 +377,20 @@
       var px = new Uint8Array(4), r = cv.getBoundingClientRect(), dpr = cv.width / (r.width || 1);
       gl.readPixels(Math.round((cx - r.left) * dpr), Math.round(hh - (cy - r.top) * dpr), 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px);
       gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-      var bulunan = null; if (px[3]) SIRA.forEach(function (id) { if (PARCA[id].kod === px[0]) bulunan = id; });
+      var bulunan = null; if (px[3]) SIRA.forEach(function (id) { if (PARCA[id].kod === px[0]) bulunan = PARCA[id].grup; });
       dirty = true; return bulunan;
     }
     // Seçim: kart, liste ve (listeden seçildiyse) kamera o yapıya yaklaşır
     function sec(id, yaklas) {
       sel = id; kartYaz();
       if (id && yaklas) {
-        var p = PARCA[id], c = [(p.mn[0] + p.mx[0]) / 2, (p.mn[1] + p.mx[1]) / 2, 0];
-        var r = Math.max(0.35, Math.hypot(p.mx[0] - p.mn[0], p.mx[1] - p.mn[1]) / 2 * 1.1);
-        hedef = { cen: c, rad: Math.min(GENEL.rad, r) };
+        var k = kutu(SIRA.filter(function (x) { return PARCA[x].grup === id; }));
+        hedef = { cen: k.cen, rad: Math.min(GENEL.rad, Math.max(ayar.yaklasEnAz || 0.35, k.rad * 1.1)) };
       } else if (!id) hedef = { cen: GENEL.cen.slice(), rad: GENEL.rad };
       if (reduce) { cen = hedef.cen.slice(); rad = hedef.rad; }
       dirty = true;
     }
-    genelBtn.addEventListener('click', function () { R = BAS_R.slice(); zoom = 1; sec(null); });
+    genelBtn.addEventListener('click', function () { if (!hazir) return; R = BAS_R.slice(); zoom = 1; sec(null); });
 
     function boyut() {
       if (!cv.clientWidth) return;
@@ -386,7 +409,7 @@
     });
     function birak(e) {
       var vardi = ptr[e.pointerId]; delete ptr[e.pointerId];
-      if (vardi && oynadi < 8 && e.type === 'pointerup' && !anahtarlar().length) { var id = sec_bul(e.clientX, e.clientY); sec(id === sel ? null : id, false); }
+      if (hazir && vardi && oynadi < 8 && e.type === 'pointerup' && !anahtarlar().length) { var id = secBul(e.clientX, e.clientY); sec(id === sel ? null : id, false); }
     }
     cv.addEventListener('pointerup', birak); cv.addEventListener('pointercancel', birak);
     cv.addEventListener('wheel', function (e) { e.preventDefault(); zoom = Math.max(0.2, Math.min(2.5, zoom * (1 + e.deltaY * 0.001))); dirty = true; }, { passive: false });
@@ -396,19 +419,30 @@
 
     function dongu() {
       if (durdu) return;
-      if (cv.clientWidth) {
+      if (hazir && cv.clientWidth) {
         var fark = Math.abs(hedef.cen[0] - cen[0]) + Math.abs(hedef.cen[1] - cen[1]) + Math.abs(hedef.cen[2] - cen[2]) + Math.abs(hedef.rad - rad);
-        if (fark > 0.002) { for (var a = 0; a < 3; a++) cen[a] += (hedef.cen[a] - cen[a]) * 0.15; rad += (hedef.rad - rad) * 0.15; dirty = true; }
+        if (fark > GENEL.rad * 0.002) { for (var a = 0; a < 3; a++) cen[a] += (hedef.cen[a] - cen[a]) * 0.15; rad += (hedef.rad - rad) * 0.15; dirty = true; }
         if (dirty) { dirty = false; ciz(); }
       }
       window.requestAnimationFrame(dongu);
     }
-    durum.hidden = true; boyut(); window.requestAnimationFrame(dongu);
+    // Model: hemen (koklea) ya da indirildikten sonra (denge); hata olursa durum yazısı
+    try {
+      var m = (ayar.model || modelKur)();
+      if (m && typeof m.then === 'function') m.then(function (x) { if (!durdu) parcalariKur(x); }, function () { durum.textContent = M.indirilemedi || M.baslatilamadi; });
+      else parcalariKur(m);
+    } catch (e) { durum.textContent = M.baslatilamadi; }
+    window.requestAnimationFrame(dongu);
 
-    return {
-      yenile: function () { metinler(); listeCiz(); kartYaz(); renkleriOku(); dirty = true; }
-    };
+    api.yenile = function () { metinler(); listeCiz(); kartYaz(); if (hazir) { renkleriOku(); dirty = true; } };
+    return api;
   }
 
-  window.Korti = { kur: kur, _model: modelKur };
+  /* Koklea kesiti: kamera başlangıcı ve sıvı yüzeyleri */
+  function kurKorti(kok, ayar) {
+    return kur(kok, { veri: ayar.veri, kartEki: ayar.kartEki, model: modelKur, sivi: ['sv', 'sm', 'st'],
+      basR: mul(rx(D(16)), ry(D(-32))), genel: { cen: [-0.08, 0.06, 0], rad: 0.95 } });
+  }
+
+  window.Korti = { kur: kurKorti, goruntuleyici: kur, _model: modelKur, rx: rx, ry: ry, mul: mul, D: D };
 })();
