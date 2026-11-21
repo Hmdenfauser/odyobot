@@ -51,7 +51,15 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 - Alt çubuk sırası: Ana sayfa, Görsel depo, OdyoBOT, Vakalarım, Notlar.
 - Odyogram çıktısı (`cikti.js`), Vakalarım → OdyoBOT gönderme, düğmeli sohbet (`odybot.js`). sw v12. Ayrıntı: `PROGRESS.md`.
 
-### KALDIĞIMIZ YER (2026-11-21 gece, v43) — oturum başında bunu özetle
+### KALDIĞIMIZ YER (2026-11-21 gece, v44) — oturum başında bunu özetle
+**Durum:** Yayında, son sürüm **sw v44** (main; dallar `denge-yazilar` ve `periferik-simgeler` birleşti). Önceki yayının yedeği git etiketi `yedek-yayin-v43`. Bekleyen kod değişikliği yok.
+**v44 (2026-11-21):**
+- **Denge sistemi (3D):** modelde "Utrikulus" / "Sakkulus" yazıları (makula ortasında; `denge3d.js` → `ETIKET`, yer model yüklenince hesaplanır; yazı `etiket` alanı, yönetici düzenler) + sağ altta yazıları gizle/göster. `korti.js` etiketleri artık yeri sonradan verilebilir (`k.p`).
+- **Periferik (3D):** bölüme göre yapı adları (`gorsel3d-veri.js` → `etiketler`; Tüm sistem görünümünde **hiç yazı yok**, proje sahibinin isteği), çakışan yazı aşağı kayar, seçilince yalnızca seçilenin yazısı; sağ altta yazıları gizle/göster. Yalnızca üst katman; çizim/kamera/dokunma hesapları değişmedi. Temporal kemik yazısı kaldırıldı (yanlış yere düşüyordu); Sigmoid sinüs yazısının yeri proje sahibinin kontrolünde.
+- **Periferik bölüm düğmeleri simgeli** (tek satır 6 düğme, ad ipucunda; `ipucu.js` bolumDis/bolumOrta/bolumIc/bolumSinir/bolumCevre, Tüm sistem = genel). Orta kulak: malleus-inkus-stapes; iç kulak: koklea.
+**Oturum başında hatırlat:** telefonda v44 (yazılar, gizle/göster, simgeli bölüm düğmeleri, uzun basınca ad) + aşağıdaki v43 maddeleri. Temizlik: `denge-yazilar`, `periferik-simgeler` dalları da silinebilir.
+
+### Önceki: KALDIĞIMIZ YER (2026-11-21 gece, v43)
 **Durum:** Yayında, son sürüm **sw v43** (main; dal `opak-tuval` birleşti). Önceki yayının yedeği git etiketi `yedek-yayin-v42`. Bekleyen kod değişikliği yok.
 **v43 (2026-11-21):**
 - **Opak tuval** (seslab.js, korti.js): arka plan WebGL içinde boyanır (`ARKA`, `gl.clearColor`) + `blendFuncSeparate`; telefonda modellerin bilgisayardakinden saydam görünmesi düzeltildi. Saydamlık yine yalnızca `LABIRENT_A`.
