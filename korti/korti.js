@@ -428,24 +428,31 @@
     var PRENK = {};
     // Geniş yapıların içindeki küçük ad yazıları: 3B noktası ekrana izdüşürülür; yüzü kameraya dönük değilse ya da başka yapı seçiliyse gizlenir
     // yon: ikinci bir 3B nokta verilirse yazı o yöne döndürülür (ince ve eğik yapılar, ör. Reissner membranı, boyunca yazılır)
-    var ETIKETLER = (ayar.etiketler || []).map(function (e) { var el = h('span', 'kt-yazi'); el.setAttribute('aria-hidden', 'true'); sahne.appendChild(el); return { id: e.id, p: e.p, yuz: e.yuz, yon: e.yon, el: el }; });
+    var ETIKETLER = (ayar.etiketler || []).map(function (e) { var el = h('span', 'kt-yazi'); el.setAttribute('aria-hidden', 'true'); sahne.appendChild(el); return { id: e.id, p: e.p, yuz: e.yuz, yon: e.yon, hareket: e.hareket, metin: e.metin, el: el }; });
+    // Animasyonda yazı bağlı olduğu yapıyla birlikte kayar (gölgelendiricideki hareketin aynısı)
+    function kaydir(tur, p) {
+      var th = DURUM.th || 0; if (!tur || !th) return p;
+      if (tur === 'tm') return [p[0] - th * 0.76 * (p[1] - 0.185), p[1] + th * 0.76 * (p[0] + 0.44), p[2]];
+      if (tur === 'bm') return [p[0], p[1] + dBjs(th, p[0]), p[2]];
+      return orgJs(th, p);
+    }
     function etiketYaz(mvp) {
       if (!ETIKETLER.length) return;
       var w = cv.clientWidth, hh = cv.clientHeight;
       ETIKETLER.forEach(function (e) {
-        var y = V.yapilar[e.id], p = e.p, X = mvp[0] * p[0] + mvp[4] * p[1] + mvp[8] * p[2] + mvp[12], Y = mvp[1] * p[0] + mvp[5] * p[1] + mvp[9] * p[2] + mvp[13], W = mvp[3] * p[0] + mvp[7] * p[1] + mvp[11] * p[2] + mvp[15];
+        var y = V.yapilar[e.id], p = kaydir(e.hareket, e.p), X = mvp[0] * p[0] + mvp[4] * p[1] + mvp[8] * p[2] + mvp[12], Y = mvp[1] * p[0] + mvp[5] * p[1] + mvp[9] * p[2] + mvp[13], W = mvp[3] * p[0] + mvp[7] * p[1] + mvp[11] * p[2] + mvp[15];
         var yz = e.yuz ? R[6] * e.yuz[0] + R[7] * e.yuz[1] + R[8] * e.yuz[2] : 1;
         var gizle = !y || W <= 0 || yz < 0.3 || (sel && sel !== e.id);
         var sx = (X / W * 0.5 + 0.5) * w, sy = (0.5 - Y / W * 0.5) * hh;
         if (sx < 8 || sx > w - 8 || sy < 8 || sy > hh - 8) gizle = true;
         e.el.hidden = gizle; if (gizle) return;
-        e.el.textContent = y.etiket || y.ad;
+        e.el.textContent = (e.metin && M[e.metin]) || y.etiket || y.ad;
         var yw = e.el.offsetWidth / 2 + 6;   // yazı çerçeveden taşmasın
         sx = Math.max(yw, Math.min(w - yw, sx));
         e.el.style.left = Math.round(sx) + 'px'; e.el.style.top = Math.round(sy) + 'px';
         var aci = 0;
         if (e.yon) {
-          var q = e.yon, X2 = mvp[0] * q[0] + mvp[4] * q[1] + mvp[8] * q[2] + mvp[12], Y2 = mvp[1] * q[0] + mvp[5] * q[1] + mvp[9] * q[2] + mvp[13], W2 = mvp[3] * q[0] + mvp[7] * q[1] + mvp[11] * q[2] + mvp[15];
+          var q = kaydir(e.hareket, e.yon), X2 = mvp[0] * q[0] + mvp[4] * q[1] + mvp[8] * q[2] + mvp[12], Y2 = mvp[1] * q[0] + mvp[5] * q[1] + mvp[9] * q[2] + mvp[13], W2 = mvp[3] * q[0] + mvp[7] * q[1] + mvp[11] * q[2] + mvp[15];
           if (W2 > 0) { aci = Math.atan2(-(Y2 / W2 - Y / W) * hh, (X2 / W2 - X / W) * w) * 180 / Math.PI; if (aci > 90) aci -= 180; if (aci < -90) aci += 180; }
         }
         e.el.style.transform = 'translate(-50%, -50%)' + (aci ? ' rotate(' + aci.toFixed(1) + 'deg)' : '');
@@ -553,7 +560,7 @@
   var ETIKET_3D = [
     { id: 'sv', p: [0.05, 0.7, Z0], yuz: ON }, { id: 'sm', p: [0.3, 0.36, Z0], yuz: ON }, { id: 'st', p: [0.05, -0.56, Z0], yuz: ON },
     { id: 'ligament', p: [0.86, -0.32, Z1], yuz: ON }, { id: 'kemik', p: [0.05, 1.11, Z1], yuz: ON }, { id: 'osl', p: [-0.62, 0.115, Z1], yuz: ON },
-    { id: 'tektoryal', p: [0.05, 0.27, Z1], yuz: ON }, { id: 'baziler', p: [0.55, -0.022, Z1], yuz: ON },
+    { id: 'tektoryal', p: [0.02, 0.231, Z1], yuz: ON, yon: [0.25, 0.243, Z1] }, { id: 'baziler', p: [0.55, -0.022, Z1], yuz: ON },
     { id: 'reissner', p: [0.08, 0.376, Z1], yuz: ON, yon: [0.35, 0.447, Z1] }
   ];
   function kurKorti(kok, ayar) {
@@ -614,8 +621,8 @@
     return { tur: tur, adim: adim };
   }
   var ETIKET_ANIM = [
-    { id: 'tektoryal', p: [0.02, 0.27, Z1], yuz: ON }, { id: 'baziler', p: [0.5, -0.024, Z1], yuz: ON },
-    { id: 'ith', p: [ITH_X, 0.165, Z1], yuz: ON }, { id: 'dth', p: [0.155, 0.255, Z1 - 0.05], yuz: ON },
+    { id: 'tektoryal', p: [-0.05, 0.226, Z1], yuz: ON, yon: [0.25, 0.243, Z1], hareket: 'tm' }, { id: 'baziler', p: [0.5, -0.024, Z1], yuz: ON, hareket: 'bm' },
+    { id: 'ith', p: [ITH_X, 0.078, Z1 + 0.012], yuz: ON, hareket: 'org', metin: 'etiketIth' }, { id: 'dth', p: [0.155, 0.125, Z1 + 0.012], yuz: ON, hareket: 'org', metin: 'etiketDth' },
     { id: 'sinir', p: [-0.55, -0.045, Z1], yuz: ON }, { id: 'reissner', p: [0.24, 0.418, Z1], yuz: ON, yon: [0.5, 0.486, Z1] }
   ];
   function kurKortiAnim(kok, ayar) {

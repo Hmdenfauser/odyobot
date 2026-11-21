@@ -44,6 +44,8 @@
         not: 'Renkler: sarı noktalar potasyum (K⁺) iyonları, yeşil noktalar nörotransmitter (glutamat), sinirde ilerleyen mor ışık aksiyon potansiyeli; hücre pembeleşince depolarize olmuştur. Hareket çok büyütüldü ve yavaşlatıldı: gerçekte titreşim nanometre düzeyindedir ve saniyede yüzlerce, binlerce kez olur. Şematik bir öğretim çizimidir. Bilgiler proje sahibinin ders notlarından (İşitme ve Denge Sistemleri-1, Elektrofizyolojik Testler) ve NCBI kaynaklarından alındı; kendi kaynağınla doğrula.',
         etiket: 'Kokleanın bir dilimi · yavaşlatılmış',
         genelGorunum: 'Genel görünüme dön',
+        etiketIth: 'İTH',
+        etiketDth: 'DTH',
         oynat: 'Oynat',
         duraklat: 'Duraklat',
         yukleniyor: 'Model hazırlanıyor…',
