@@ -444,6 +444,7 @@ button.btn.b-vaka { display: flex; align-items: center; gap: 10px; text-align: l
 button.btn.b-vaka[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
 button.btn.b-vaka[aria-pressed="true"] .b-vaka-kutu { background: var(--accent); border-color: var(--accent); }
 /* 4. adım: hesap (uye.js) */
+.hs-engel-satir { display: flex; justify-content: space-between; align-items: center; gap: 10px; min-height: 44px; padding: 0 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
 .uye-anahtar { display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: 15px; }
 .uye-anahtar input { width: 22px; height: 22px; }
 .g-google { width: 100%; min-height: 48px; }
@@ -451,6 +452,32 @@ button.btn.b-vaka[aria-pressed="true"] .b-vaka-kutu { background: var(--accent);
 .hs-sil summary { cursor: pointer; color: var(--danger); min-height: 44px; display: flex; align-items: center; }
 .btn.uye-sil { color: var(--danger); border-color: var(--danger); }
 /* 4. adım: Kütüphane kartları ve Topluluk tanıtımı */
+/* 4. adım: Topluluk (forum.js) */
+.fr-ust { display: flex; flex-direction: column; gap: 10px; }
+.fr-tanitim { margin: 0; }
+.fr-yeni { align-self: flex-start; }
+.fr-uyari { font-size: 14px; color: var(--muted); padding: 10px 12px; border: 1px dashed var(--line); border-radius: 10px; }
+.fr-cipler { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+.fr-cip { flex: none; min-height: 36px; padding: 6px 12px; border-radius: 18px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-size: 13px; }
+.fr-cip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.fr-kart, .fr-gonderi, .fr-cevap { display: flex; flex-direction: column; gap: 6px; padding: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; color: var(--ink); text-decoration: none; }
+.fr-cevap { padding: 12px 14px; }
+.fr-kat { align-self: flex-start; font-size: 11.5px; font-weight: 600; color: var(--accent); }
+.fr-kart-baslik { font-size: 15.5px; line-height: 1.3; }
+.fr-gonderi-baslik { margin: 0; font-size: 18px; line-height: 1.3; }
+.fr-ozet { font-size: 13.5px; color: var(--muted); line-height: 1.4; }
+.fr-yazar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 12.5px; color: var(--muted); }
+.fr-ad { font-weight: 600; color: var(--ink); }
+.fr-rozet { font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 9px; background: var(--line); color: var(--ink); }
+.fr-gizli-et { font-size: 11px; font-weight: 700; color: var(--danger); }
+.fr-cevap-say { margin-left: auto; }
+.fr-metin { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 15px; line-height: 1.5; }
+.fr-islem { display: flex; flex-wrap: wrap; gap: 4px 14px; }
+.fr-islem .linkbtn { min-height: 36px; font-size: 13px; }
+.fr-cevaplar-baslik { margin: 8px 0 0; font-size: 15px; }
+.fr-hasta-uyari { margin: 0; }
+.fr-sikayet { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; font-size: 13px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.fr-kural { font-size: 12.5px; }
 .kp-kartlar { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .kp-kart { display: flex; flex-direction: column; gap: 10px; min-height: 120px; padding: 16px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; color: var(--ink); text-decoration: none; }
 .kp-kartlar .k-admin { grid-column: span 2; }

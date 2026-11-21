@@ -57,10 +57,12 @@
       profil = {
         ad: (v && typeof v.ad === 'string') ? v.ad : (uye.displayName || '').slice(0, 40),
         meslek: (v && typeof v.meslek === 'string') ? v.meslek : '',
-        olusturma: (v && v.olusturma) || zaman()
+        olusturma: (v && v.olusturma) || zaman(),
+        engelli: (v && v.engelli && typeof v.engelli === 'object') ? v.engelli : {}   // forum: engellenen üyeler { uid: ad }
       };
       if (bekleyenKayit) { profil.ad = bekleyenKayit.ad; profil.meslek = bekleyenKayit.meslek; bekleyenKayit = null; }
       profilHazir = true;
+      profilHaber();
       kaydet(true);
       ciz();
     }, function () { mesaj($('hs-msg'), M('eslemeHata'), true); });
@@ -68,7 +70,8 @@
   function veri() {
     var fav = yerelFav().slice(0, 200), sz = sozlukDurum(), szK = Object.keys(sz).slice(0, 2000), szT = {};
     szK.forEach(function (k) { var d = sz[k] || {}; szT[k] = { k: +d.k || 0, s: +d.s || 0, g: +d.g || 0 }; });
-    return { ad: (profil.ad || '').slice(0, 40), meslek: profil.meslek || '', favoriler: fav, sozluk: szT, olusturma: profil.olusturma, guncelleme: zaman() };
+    var en = {}; Object.keys(profil.engelli || {}).slice(0, 200).forEach(function (k) { en[k] = String(profil.engelli[k] || '').slice(0, 40); });
+    return { ad: (profil.ad || '').slice(0, 40), meslek: profil.meslek || '', favoriler: fav, sozluk: szT, engelli: en, olusturma: profil.olusturma, guncelleme: zaman() };
   }
   function kaydet(hemen) {
     if (!profilHazir || !belge()) return Promise.resolve();
@@ -78,6 +81,29 @@
   }
   window.addEventListener('odyo:favori', function () { kaydet(false); });
   window.addEventListener('odyo:sozluk-durum', function () { kaydet(false); });
+
+  // Forum (forum.js) için: üye, profil, e-posta doğrulandı mı, engelleme
+  function profilHaber() { try { window.dispatchEvent(new CustomEvent('odyo:profil', { detail: profil })); } catch (e) {} }
+  function dogrulandi() { return !!uye && (!!uye.emailVerified || (uye.providerData || []).some(function (p) { return p && p.providerId === 'google.com'; })); }
+  function engelliCiz() {
+    var kutu = $('hs-engelli'), liste = $('hs-engelli-liste'); if (!kutu) return;
+    var en = (profil && profil.engelli) || {}, k = Object.keys(en);
+    kutu.hidden = !k.length; liste.replaceChildren();
+    k.forEach(function (uid) {
+      var satir = document.createElement('div'); satir.className = 'hs-engel-satir';
+      var ad = document.createElement('span'); ad.textContent = en[uid] || M('adsiz');
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'linkbtn'; b.textContent = M('engelKaldir');
+      b.addEventListener('click', function () { engelKaldir(uid); });
+      satir.appendChild(ad); satir.appendChild(b); liste.appendChild(satir);
+    });
+  }
+  function engelle(uid, ad) { if (!profilHazir || !uid || (uye && uid === uye.uid)) return Promise.resolve(); profil.engelli[uid] = (ad || '').slice(0, 40); profilHaber(); ciz(); return kaydet(true); }
+  function engelKaldir(uid) { if (!profilHazir) return Promise.resolve(); delete profil.engelli[uid]; profilHaber(); ciz(); return kaydet(true); }
+  window.OdyoUye = {
+    kim: function () { return uye; }, hazir: function () { return profilHazir; }, dogrulandi: dogrulandi, kayitAcik: function () { return kayitAcik; },
+    profil: function () { return profil ? { ad: profil.ad, meslek: profil.meslek, engelli: Object.assign({}, profil.engelli) } : null; },
+    engelle: engelle, engelKaldir: engelKaldir
+  };
 
   /* ---------- ekran ---------- */
   function meslekDoldur(sec, deger) {
@@ -122,6 +148,7 @@
       if (document.activeElement !== $('hs-ad')) $('hs-ad').value = profil ? profil.ad : '';
       if (document.activeElement !== $('hs-meslek')) meslekDoldur($('hs-meslek'), profil ? profil.meslek : '');
       $('hs-form').hidden = !profilHazir;
+      engelliCiz();
     }
     $('uye-kayit-acik').checked = kayitAcik;
   }
@@ -217,13 +244,13 @@
     if (db || !d) return;
     db = d;
     try { auth = window.firebase.auth(); } catch (x) { auth = null; }
-    db.collection('ayar').doc('uyelik').onSnapshot(function (s) { kayitAcik = !!(s.exists && s.data() && s.data().kayitAcik === true); ciz(); }, function () {});
+    db.collection('ayar').doc('uyelik').onSnapshot(function (s) { kayitAcik = !!(s.exists && s.data() && s.data().kayitAcik === true); ciz(); try { window.dispatchEvent(new CustomEvent('odyo:uyelik', { detail: kayitAcik })); } catch (e) {} }, function () {});
     ciz();
   }
   window.addEventListener('odyo:db', function (e) { dbBaglan(e.detail); });
   function uyeDegisti(u) {
     if (uye && u && uye.uid === u.uid) { uye = u; ciz(); return; }
-    uye = u; profil = null; profilHazir = false; clearTimeout(yazZ);
+    uye = u; profil = null; profilHazir = false; clearTimeout(yazZ); profilHaber();
     if (uye) profilYukle(); else bekleyenKayit = null;
     ciz();
   }

@@ -17,7 +17,7 @@ var ASSETS = [
   './app.js',
   './akis.js',
   './sozluk-veri.js',
-  './sozluk.js', './uye.js',
+  './sozluk.js', './uye.js', './forum.js',
   './odyo-hesap.js',
   './vaka-testler.js', './vakalarim.js',
   './cikti.js',

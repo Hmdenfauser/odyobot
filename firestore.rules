@@ -123,6 +123,83 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // ---- Topluluk (forum), 4. adım, 2026-11-21 ----
+    // Herkes okur. Yazmak için giriş yapmış ve e-postası doğrulanmış üye; üyelik anahtarı (ayar/uyelik.kayitAcik) açık olmalı
+    // (yönetici her zaman). Yazar yalnızca kendi adına yazar ve yalnızca kendi yazısını düzenler. Fotoğraf yok.
+    function dogrulanmis() {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+    function uyelikAcik() {
+      return get(/databases/$(database)/documents/ayar/uyelik).data.kayitAcik == true;
+    }
+    function meslekGecerli(field) {
+      return request.resource.data[field] in ['', 'ogrenci', 'odyolog', 'diger'];
+    }
+    match /forum/{id} {
+      allow read: if true;
+      allow create: if dogrulanmis() && (uyelikAcik() || isAdmin())
+        && request.resource.data.keys().hasOnly(['kategori', 'baslik', 'metin', 'yazarId', 'yazarAd', 'yazarMeslek',
+             'olusturma', 'guncelleme', 'cevapSayisi', 'sonCevap', 'gizli'])
+        && request.resource.data.yazarId == request.auth.uid
+        && request.resource.data.gizli == false
+        && request.resource.data.cevapSayisi == 0
+        && request.resource.data.kategori is string && request.resource.data.kategori.size() <= 30
+        && request.resource.data.baslik is string && request.resource.data.baslik.size() >= 3 && request.resource.data.baslik.size() <= 120
+        && request.resource.data.metin is string && request.resource.data.metin.size() >= 1 && request.resource.data.metin.size() <= 3000
+        && request.resource.data.yazarAd is string && request.resource.data.yazarAd.size() <= 40
+        && meslekGecerli('yazarMeslek')
+        && request.resource.data.olusturma is number;
+      allow update: if (
+          // yazar: içeriği düzenler
+          request.auth != null && resource.data.yazarId == request.auth.uid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['kategori', 'baslik', 'metin', 'guncelleme'])
+          && request.resource.data.baslik is string && request.resource.data.baslik.size() >= 3 && request.resource.data.baslik.size() <= 120
+          && request.resource.data.metin is string && request.resource.data.metin.size() >= 1 && request.resource.data.metin.size() <= 3000
+          && request.resource.data.kategori is string && request.resource.data.kategori.size() <= 30
+        ) || (
+          // cevap eklenince/silinince sayaç yalnızca bir artar ya da azalır
+          dogrulanmis()
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['cevapSayisi', 'sonCevap'])
+          && (request.resource.data.cevapSayisi == resource.data.cevapSayisi + 1 || request.resource.data.cevapSayisi == resource.data.cevapSayisi - 1)
+        ) || (
+          isAdmin() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['gizli', 'cevapSayisi', 'sonCevap'])
+        );
+      allow delete: if isAdmin() || (request.auth != null && resource.data.yazarId == request.auth.uid);
+
+      match /cevaplar/{cid} {
+        allow read: if true;
+        allow create: if dogrulanmis() && (uyelikAcik() || isAdmin())
+          && request.resource.data.keys().hasOnly(['metin', 'yazarId', 'yazarAd', 'yazarMeslek', 'olusturma', 'guncelleme', 'gizli'])
+          && request.resource.data.yazarId == request.auth.uid
+          && request.resource.data.gizli == false
+          && request.resource.data.metin is string && request.resource.data.metin.size() >= 1 && request.resource.data.metin.size() <= 2000
+          && request.resource.data.yazarAd is string && request.resource.data.yazarAd.size() <= 40
+          && meslekGecerli('yazarMeslek')
+          && request.resource.data.olusturma is number;
+        allow update: if (
+            request.auth != null && resource.data.yazarId == request.auth.uid
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['metin', 'guncelleme'])
+            && request.resource.data.metin is string && request.resource.data.metin.size() >= 1 && request.resource.data.metin.size() <= 2000
+          ) || (
+            isAdmin() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['gizli'])
+          );
+        // cevabın yazarı, gönderinin sahibi ya da yönetici siler
+        allow delete: if isAdmin()
+          || (request.auth != null && resource.data.yazarId == request.auth.uid)
+          || (request.auth != null && get(/databases/$(database)/documents/forum/$(id)).data.yazarId == request.auth.uid);
+      }
+    }
+    // Şikâyetler: doğrulanmış üye oluşturur; yalnızca yönetici okur ve kapatır (siler).
+    match /sikayetler/{sid} {
+      allow read, delete: if isAdmin();
+      allow create: if dogrulanmis()
+        && request.resource.data.keys().hasOnly(['hedef', 'neden', 'sikayetEden', 'olusturma'])
+        && request.resource.data.sikayetEden == request.auth.uid
+        && request.resource.data.hedef is string && request.resource.data.hedef.size() <= 200
+        && request.resource.data.neden is string && request.resource.data.neden.size() <= 300
+        && request.resource.data.olusturma is number;
+    }
+
     // Üye hesapları (4. adım, 2026-11-21). Belge adı üyenin kimliği (uid).
     // Her üye YALNIZCA kendi belgesini okur, yazar, siler; başka hiç kimse (yönetici dahil) okuyamaz.
     // Alanlar: ad (görünen ad ≤40), meslek, favoriler (not anahtarları ≤200), sozluk (terim → öğrenme durumu ≤2000),
@@ -130,11 +207,12 @@ service cloud.firestore {
     match /uyeler/{uid} {
       allow read, delete: if request.auth != null && request.auth.uid == uid;
       allow create, update: if request.auth != null && request.auth.uid == uid
-        && request.resource.data.keys().hasOnly(['ad', 'meslek', 'favoriler', 'sozluk', 'olusturma', 'guncelleme'])
+        && request.resource.data.keys().hasOnly(['ad', 'meslek', 'favoriler', 'sozluk', 'engelli', 'olusturma', 'guncelleme'])
         && shortString('ad', 40)
         && (!('meslek' in request.resource.data) || request.resource.data.meslek in ['', 'ogrenci', 'odyolog', 'diger'])
         && (!('favoriler' in request.resource.data) || (request.resource.data.favoriler is list && request.resource.data.favoriler.size() <= 200))
         && (!('sozluk' in request.resource.data) || (request.resource.data.sozluk is map && request.resource.data.sozluk.size() <= 2000))
+        && (!('engelli' in request.resource.data) || (request.resource.data.engelli is map && request.resource.data.engelli.size() <= 200))
         && (!('olusturma' in request.resource.data) || request.resource.data.olusturma is number)
         && (!('guncelleme' in request.resource.data) || request.resource.data.guncelleme is number);
     }

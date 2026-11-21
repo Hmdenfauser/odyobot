@@ -913,6 +913,7 @@
       t = 'vakalarim'; ham = 'vakalarim'; adresDegistir('#vakalarim');
       sonra = function () { bildir('odyo:vaka-ac', p[1] === 'yeni' ? { yeni: true } : { id: p[2] || '' }); };
     } else if (p[0] === 'duyurular' && p[1] === 'yeni') { t = 'duyurular'; ham = 'duyurular'; adresDegistir('#duyurular'); sonra = function () { bildir('odyo:paylasim-yeni'); }; }
+    else if (p[0] === 'topluluk' && p.length > 1) { t = 'topluluk'; }   // forum alt sayfaları forum.js'te (#topluluk/g/<id>, /yeni, /duzenle/<id>)
     else if (p[0] === 'sozluk' && p[1] === 'terim') { t = 'sozluk'; ham = 'sozluk'; adresDegistir('#sozluk'); sonra = function () { bildir('odyo:sozluk-terim', decodeURIComponent(p[2] || '')); }; }
     else if (p[0] === 'not' && p[1]) {
       if (oncekiHash !== ham) notGeldigi = ilkRota ? null : oncekiHash;

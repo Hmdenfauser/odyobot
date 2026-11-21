@@ -405,12 +405,82 @@
   <!-- TOPLULUK (4. adım): forum buraya gelecek; şimdilik yalnızca tanıtım -->
   <section id="topluluk" data-tab hidden>
     <div class="stack">
-      <h2 data-k="topluluk.baslik">Topluluk</h2>
-      <div class="kp-yakinda">
+      <h2 data-k="topluluk.baslik" id="fr-ust-bas">Topluluk</h2>
+      <div class="alt-bas" id="fr-alt-bas" hidden>
+        <a class="geri-ok" href="#topluluk" id="fr-geri"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="gizli-yazi">Geri: Topluluk</span></a>
+        <h2 id="fr-alt-baslik"></h2>
+      </div>
+      <!-- Forum (forum.js): üyelik anahtarı açılınca herkese, öncesinde yalnızca yöneticiye -->
+      <div id="forum" class="stack" hidden></div>
+      <div class="kp-yakinda" id="topluluk-yakinda">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h11v8H9l-4 3v-3H4z"/><path d="M15 9h5v8h-1v3l-4-3h-4v-2"/></svg>
         <p data-k="topluluk.yakinda.baslik" class="kp-yakinda-bas">Yakında</p>
         <p class="note" data-k="topluluk.yakinda.metin">Odyoloji öğrencileri ve odyologların soru sorup deneyim paylaşacağı bölüm hazırlanıyor.</p>
       </div>
+      <details class="compose b-metinler" id="forum-metinler">
+        <summary>Topluluk yazıları (yönetici)</summary>
+        <div class="yedek-ic">
+          <p data-k="forum.m.tanitim" data-m="tanitim">Odyoloji öğrencileri ve odyologlar için soru-cevap. Saygılı ol; hasta bilgisi paylaşma.</p>
+          <p data-k="forum.m.yeniGonderi" data-m="yeniGonderi">Yeni gönderi</p>
+          <p data-k="forum.m.tumu" data-m="tumu">Tümü</p>
+          <p data-k="forum.m.kategori" data-m="kategori">Kategori</p>
+          <p data-k="forum.m.kategoriSec" data-m="kategoriSec">Kategori seç</p>
+          <p data-k="forum.m.kat_vaka" data-m="kat_vaka">Vaka tartışması</p>
+          <p data-k="forum.m.kat_cihaz" data-m="kat_cihaz">Cihaz ve implant</p>
+          <p data-k="forum.m.kat_ders" data-m="kat_ders">Ders ve sınavlar</p>
+          <p data-k="forum.m.kat_kariyer" data-m="kat_kariyer">Kariyer ve iş</p>
+          <p data-k="forum.m.katDiger" data-m="katDiger">Diğer</p>
+          <p data-k="forum.m.rozetOgrenci" data-m="rozetOgrenci">Öğrenci</p>
+          <p data-k="forum.m.rozetOdyolog" data-m="rozetOdyolog">Odyolog</p>
+          <p data-k="forum.m.adsiz" data-m="adsiz">Adsız üye</p>
+          <p data-k="forum.m.baslik" data-m="baslik">Başlık</p>
+          <p data-k="forum.m.metin" data-m="metin">Metin</p>
+          <p data-k="forum.m.gonder" data-m="gonder">Gönder</p>
+          <p data-k="forum.m.kaydet" data-m="kaydet">Kaydet</p>
+          <p data-k="forum.m.vazgec" data-m="vazgec">Vazgeç</p>
+          <p data-k="forum.m.hastaUyari" data-m="hastaUyari">Hasta adı, kimlik numarası, doğum tarihi gibi tanımlayıcı bilgi yazma. Vakadan söz ediyorsan yalnızca yaş grubu ve bulgular gibi anonim bilgiler kullan.</p>
+          <p data-k="forum.m.eksik" data-m="eksik">Kategori, başlık (en az 3 harf) ve metin gerekli.</p>
+          <p data-k="forum.m.gonderildi" data-m="gonderildi">Gönderildi.</p>
+          <p data-k="forum.m.kaydedildi" data-m="kaydedildi">Kaydedildi.</p>
+          <p data-k="forum.m.silindi" data-m="silindi">Silindi.</p>
+          <p data-k="forum.m.hata" data-m="hata">İşlem yapılamadı. İnternet bağlantını kontrol et.</p>
+          <p data-k="forum.m.yukleniyor" data-m="yukleniyor">Yükleniyor…</p>
+          <p data-k="forum.m.bos" data-m="bos">Henüz gönderi yok. İlk soruyu sen sor.</p>
+          <p data-k="forum.m.bulunamadi" data-m="bulunamadi">Bu gönderi bulunamadı. Silinmiş ya da gizlenmiş olabilir.</p>
+          <p data-k="forum.m.cevap" data-m="cevap">cevap</p>
+          <p data-k="forum.m.cevapYaz" data-m="cevapYaz">Cevap yaz</p>
+          <p data-k="forum.m.cevapDuzenle" data-m="cevapDuzenle">Cevabını düzenle:</p>
+          <p data-k="forum.m.duzenle" data-m="duzenle">Düzenle</p>
+          <p data-k="forum.m.sil" data-m="sil">Sil</p>
+          <p data-k="forum.m.sikayetEt" data-m="sikayetEt">Şikâyet et</p>
+          <p data-k="forum.m.engelle" data-m="engelle">Engelle</p>
+          <p data-k="forum.m.gizle" data-m="gizle">Gizle</p>
+          <p data-k="forum.m.goster" data-m="goster">Göster</p>
+          <p data-k="forum.m.duzenlendi" data-m="duzenlendi">düzenlendi</p>
+          <p data-k="forum.m.gizliEtiket" data-m="gizliEtiket">Gizli</p>
+          <p data-k="forum.m.silOnayGonderi" data-m="silOnayGonderi">Gönderi ve altındaki bütün cevaplar silinecek. Emin misin?</p>
+          <p data-k="forum.m.silOnayCevap" data-m="silOnayCevap">Cevap silinecek. Emin misin?</p>
+          <p data-k="forum.m.engelOnay" data-m="engelOnay">{ad} adlı üyenin gönderi ve cevaplarını artık görmeyeceksin. Engeli Hesabım sayfasından kaldırabilirsin. Devam edilsin mi?</p>
+          <p data-k="forum.m.engellendi" data-m="engellendi">Üye engellendi.</p>
+          <p data-k="forum.m.engelliGizlendi" data-m="engelliGizlendi">yazı engellediğin üyelerden olduğu için gizlendi.</p>
+          <p data-k="forum.m.sikayetNeden" data-m="sikayetNeden">Şikâyet nedenin (isteğe bağlı; ör. hasta bilgisi, hakaret, reklam):</p>
+          <p data-k="forum.m.sikayetAlindi" data-m="sikayetAlindi">Şikâyetin yöneticiye iletildi.</p>
+          <p data-k="forum.m.gizlendi" data-m="gizlendi">Gizlendi.</p>
+          <p data-k="forum.m.gosterildi" data-m="gosterildi">Yeniden görünür.</p>
+          <p data-k="forum.m.sikayetlerBaslik" data-m="sikayetlerBaslik">Şikâyetler (yönetici)</p>
+          <p data-k="forum.m.sikayetGit" data-m="sikayetGit">Gönderiye git</p>
+          <p data-k="forum.m.sikayetKapat" data-m="sikayetKapat">Şikâyeti kapat</p>
+          <p data-k="forum.m.gonderiOge" data-m="gonderiOge">Gönderi</p>
+          <p data-k="forum.m.cevapOge" data-m="cevapOge">Cevap</p>
+          <p data-k="forum.m.girisGerekli" data-m="girisGerekli">Yazmak için giriş yapman gerekiyor.</p>
+          <p data-k="forum.m.girisYap" data-m="girisYap">Giriş yap</p>
+          <p data-k="forum.m.dogrulaGerekli" data-m="dogrulaGerekli">Yazmak için e-posta adresini doğrulaman gerekiyor. Gelen kutundaki bağlantıya dokun, sonra sayfayı yenile.</p>
+          <p data-k="forum.m.gonderiBaslik" data-m="gonderiBaslik">Gönderi</p>
+          <p data-k="forum.m.yeniBaslik" data-m="yeniBaslik">Yeni gönderi</p>
+          <p data-k="forum.m.duzenleBaslik" data-m="duzenleBaslik">Gönderiyi düzenle</p>
+          <p data-k="forum.m.kurallar" data-m="kurallar">Topluluk kuralları: saygılı ol, hasta bilgisi paylaşma, reklam yapma. Kurallara uymayan yazılar yönetici tarafından gizlenebilir ya da silinebilir. Burada yazılanlar tıbbi tavsiye değildir.</p>
+        </div>
+      </details>
     </div>
   </section>
 
@@ -735,6 +805,11 @@
       </form>
       <p class="note" data-k="uye.hesap.esitleme">Eşitlenenler: favori notların ve sözlükteki öğrenme durumun. Vaka kayıtların yalnızca bu cihazda kalır, hiçbir zaman sunucuya gönderilmez.</p>
       <div class="admin-bar"><button class="btn" type="button" id="hs-sifre">Şifre sıfırlama e-postası gönder</button><button class="btn" type="button" id="hs-cikis2">Çıkış yap</button></div>
+      <div class="stack" id="hs-engelli" style="gap:6px" hidden>
+        <h3 data-k="uye.hesap.engelliBaslik">Engellediğin üyeler</h3>
+        <p class="note" data-k="uye.hesap.engelliNot">Bu üyelerin Topluluk'taki gönderi ve cevaplarını görmezsin.</p>
+        <div id="hs-engelli-liste" class="stack" style="gap:4px"></div>
+      </div>
       <details class="hs-sil">
         <summary id="hs-sil-baslik" data-k="uye.hesap.silBaslik">Hesabı sil</summary>
         <div class="stack" style="gap:10px;padding-top:8px">
@@ -784,6 +859,7 @@
           <p data-k="uye.m.yenidenGiris" data-m="yenidenGiris">Güvenlik için çıkış yapıp yeniden giriş yap, sonra tekrar dene.</p>
           <p data-k="uye.m.eslemeHata" data-m="eslemeHata">Hesap bilgilerin sunucuya kaydedilemedi. İnternet bağlantını kontrol et; sorun sürerse yöneticiye bildir.</p>
           <p data-k="uye.m.kayitKapali" data-m="kayitKapali">Yeni üye kaydı şu an kapalı.</p>
+          <p data-k="uye.m.engelKaldir" data-m="engelKaldir">Engeli kaldır</p>
           <p data-k="uye.m.googleIpucu" data-m="googleIpucu">Açılan pencerede Google hesabını seç. Pencere açılmadıysa tarayıcının açılır pencere iznini kontrol et.</p>
         </div>
       </details>
@@ -1231,6 +1307,7 @@
 <script src="sozluk-veri.js"></script>
 <script src="sozluk.js"></script>
 <script src="uye.js"></script>
+<script src="forum.js"></script>
 <script src="odyo-hesap.js"></script>
 <script src="vaka-testler.js"></script>
 <script src="vakalarim.js"></script>
