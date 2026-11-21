@@ -219,12 +219,13 @@ service cloud.firestore {
     match /uyeler/{uid} {
       allow read, delete: if request.auth != null && request.auth.uid == uid;
       allow create, update: if request.auth != null && request.auth.uid == uid
-        && request.resource.data.keys().hasOnly(['ad', 'meslek', 'favoriler', 'sozluk', 'engelli', 'olusturma', 'guncelleme'])
+        && request.resource.data.keys().hasOnly(['ad', 'meslek', 'favoriler', 'sozluk', 'engelli', 'onay', 'olusturma', 'guncelleme'])
         && shortString('ad', 40)
         && (!('meslek' in request.resource.data) || request.resource.data.meslek in ['', 'ogrenci', 'odyolog', 'diger'])
         && (!('favoriler' in request.resource.data) || (request.resource.data.favoriler is list && request.resource.data.favoriler.size() <= 200))
         && (!('sozluk' in request.resource.data) || (request.resource.data.sozluk is map && request.resource.data.sozluk.size() <= 2000))
         && (!('engelli' in request.resource.data) || (request.resource.data.engelli is map && request.resource.data.engelli.size() <= 200))
+        && (!('onay' in request.resource.data) || request.resource.data.onay is number)
         && (!('olusturma' in request.resource.data) || request.resource.data.olusturma is number)
         && (!('guncelleme' in request.resource.data) || request.resource.data.guncelleme is number);
     }

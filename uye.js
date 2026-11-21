@@ -58,9 +58,11 @@
         ad: (v && typeof v.ad === 'string') ? v.ad : (uye.displayName || '').slice(0, 40),
         meslek: (v && typeof v.meslek === 'string') ? v.meslek : '',
         olusturma: (v && v.olusturma) || zaman(),
-        engelli: (v && v.engelli && typeof v.engelli === 'object') ? v.engelli : {}   // forum: engellenen üyeler { uid: ad }
+        engelli: (v && v.engelli && typeof v.engelli === 'object') ? v.engelli : {},   // forum: engellenen üyeler { uid: ad }
+        onay: (v && typeof v.onay === 'number') ? v.onay : (bekleyenOnay || 0)   // kullanım koşullarını kabul zamanı (kayıtta ya da ilk Google girişinde)
       };
       if (bekleyenKayit) { profil.ad = bekleyenKayit.ad; profil.meslek = bekleyenKayit.meslek; bekleyenKayit = null; }
+      bekleyenOnay = 0;
       profilHazir = true;
       profilHaber();
       kaydet(true);
@@ -71,7 +73,7 @@
     var fav = yerelFav().slice(0, 200), sz = sozlukDurum(), szK = Object.keys(sz).slice(0, 2000), szT = {};
     szK.forEach(function (k) { var d = sz[k] || {}; szT[k] = { k: +d.k || 0, s: +d.s || 0, g: +d.g || 0 }; });
     var en = {}; Object.keys(profil.engelli || {}).slice(0, 200).forEach(function (k) { en[k] = String(profil.engelli[k] || '').slice(0, 40); });
-    return { ad: (profil.ad || '').slice(0, 40), meslek: profil.meslek || '', favoriler: fav, sozluk: szT, engelli: en, olusturma: profil.olusturma, guncelleme: zaman() };
+    return { ad: (profil.ad || '').slice(0, 40), meslek: profil.meslek || '', favoriler: fav, sozluk: szT, engelli: en, onay: profil.onay || 0, olusturma: profil.olusturma, guncelleme: zaman() };
   }
   function kaydet(hemen) {
     if (!profilHazir || !belge()) return Promise.resolve();
@@ -141,6 +143,8 @@
     $('g-baslik').textContent = !kayitAcik ? M('yoneticiBaslik') : kip === 'kayit' ? M('kayitBaslik') : M('girisBaslik');
     $('g-lead').textContent = !kayitAcik ? M('yoneticiLead') : kip === 'kayit' ? M('kayitLead') : M('girisLead');
     $('g-kayit-alan').hidden = kip !== 'kayit';
+    $('g-onay-kutu').hidden = kip !== 'kayit' || !kayitAcik;
+    $('g-google-not').hidden = kip === 'kayit' || !kayitAcik; $('g-google-not').textContent = M('googleGirisNot');
     $('l-pass').setAttribute('autocomplete', kip === 'kayit' ? 'new-password' : 'current-password');
     $('l-send').textContent = kip === 'kayit' ? M('kayitDugme') : M('girisDugme');
     $('g-unuttum').hidden = kip !== 'giris'; $('g-unuttum').textContent = M('unuttum');
@@ -164,7 +168,7 @@
   window.addEventListener('hashchange', function () { if (location.hash === '#hesap' && auth && !uye) location.hash = '#giris'; });
 
   /* ---------- olaylar ---------- */
-  var bekleyenKayit = null;
+  var bekleyenKayit = null, bekleyenOnay = 0;
   [].forEach.call($('g-kip').querySelectorAll('button'), function (b) {
     b.addEventListener('click', function () { kip = b.getAttribute('data-kip'); mesaj($('l-msg'), ''); ciz(); });
   });
@@ -178,6 +182,8 @@
     if (kip === 'kayit') {
       if (!kayitAcik) { mesaj(msg, M('kayitKapali'), true); $('l-send').disabled = false; return; }
       if (sf.length < 8) { mesaj(msg, M('kisaSifre'), true); $('l-send').disabled = false; return; }
+      if (!$('g-onay').checked) { mesaj(msg, M('onayGerekli'), true); $('l-send').disabled = false; return; }
+      bekleyenOnay = zaman();
       bekleyenKayit = { ad: $('g-ad').value.trim().slice(0, 40), meslek: $('g-meslek').value };
       is = auth.createUserWithEmailAndPassword(ep, sf).then(function (r) {
         try { auth.languageCode = 'tr'; } catch (x) {}
@@ -204,6 +210,8 @@
     var msg = $('l-msg');
     if (!auth || !window.firebase || !firebase.auth.GoogleAuthProvider) { mesaj(msg, 'Giriş sistemine ulaşılamıyor.', true); return; }
     if (!kayitAcik && !yonetici) { mesaj(msg, M('kayitKapali'), true); return; }
+    if (kayitAcik && kip === 'kayit' && !$('g-onay').checked) { mesaj(msg, M('onayGerekli'), true); return; }
+    bekleyenOnay = zaman();   // yeni hesapsa onay zamanı olarak kaydedilir (var olan hesapta değişmez)
     var p = new firebase.auth.GoogleAuthProvider(); p.setCustomParameters({ prompt: 'select_account' });
     try { auth.languageCode = 'tr'; } catch (x) {}
     mesaj(msg, M('googleIpucu'));

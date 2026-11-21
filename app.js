@@ -874,7 +874,7 @@
   /* ---------- tabs ---------- */
   // 'uc-boyut' = 3D sayfası; adresi #3d. Alt çubukta sekmesi yok, o sırada Ana sayfa seçili görünür.
   // Alt sayfalar (2026-11-17): 'duyurular' (tam liste), 'not-sayfa' (#not/<anahtar>). Alt çubukta sekmeleri yok; bağlı oldukları sekme seçili görünür.
-  var TABS = ['anasayfa', 'depo', 'odybot', 'notlar', 'vakalarim', 'ayarlar', 'giris', 'hesap', 'uc-boyut', 'duyurular', 'not-sayfa', 'seslab', 'sozluk', 'kutuphane', 'topluluk'];
+  var TABS = ['anasayfa', 'depo', 'odybot', 'notlar', 'vakalarim', 'ayarlar', 'giris', 'hesap', 'uc-boyut', 'duyurular', 'not-sayfa', 'seslab', 'sozluk', 'kutuphane', 'topluluk', 'yasal'];
   // 4. adım (2026-11-21): Görsel depo, Ders notları ve Terimler sözlüğü alt çubukta Kütüphane'nin altında
   var UST_SEKME = { 'uc-boyut': 'anasayfa', duyurular: 'anasayfa', depo: 'kutuphane', notlar: 'kutuphane', 'not-sayfa': 'kutuphane', seslab: 'anasayfa', sozluk: 'kutuphane' };
   var UC_ESKI = ['uc-boyut', '3d-model', 'gorsel3d', 'depo/3d', 'model'];   // olası eski/başka adresler -> #3d/periferik (eskiden #3d doğrudan kulak modeliydi)
@@ -913,7 +913,8 @@
       t = 'vakalarim'; ham = 'vakalarim'; adresDegistir('#vakalarim');
       sonra = function () { bildir('odyo:vaka-ac', p[1] === 'yeni' ? { yeni: true } : { id: p[2] || '' }); };
     } else if (p[0] === 'duyurular' && p[1] === 'yeni') { t = 'duyurular'; ham = 'duyurular'; adresDegistir('#duyurular'); sonra = function () { bildir('odyo:paylasim-yeni'); }; }
-    else if (p[0] === 'topluluk' && p.length > 1) { t = 'topluluk'; }   // forum alt sayfaları forum.js'te (#topluluk/g/<id>, /yeni, /duzenle/<id>)
+    else if (p[0] === 'topluluk' && p.length > 1) { t = 'topluluk'; }
+    else if (p[0] === 'yasal') { t = 'yasal'; }   // yasal metinler: yasal.js hangi sayfanın görüneceğini seçer   // forum alt sayfaları forum.js'te (#topluluk/g/<id>, /yeni, /duzenle/<id>)
     else if (p[0] === 'sozluk' && p[1] === 'terim') { t = 'sozluk'; ham = 'sozluk'; adresDegistir('#sozluk'); sonra = function () { bildir('odyo:sozluk-terim', decodeURIComponent(p[2] || '')); }; }
     else if (p[0] === 'not' && p[1]) {
       if (oncekiHash !== ham) notGeldigi = ilkRota ? null : oncekiHash;

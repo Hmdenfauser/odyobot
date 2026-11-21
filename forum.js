@@ -83,16 +83,17 @@
     if (!uid || !db || profilIstendi[uid]) return PROFIL[uid];
     profilIstendi[uid] = true;
     db.collection('profiller').doc(uid).get().then(function (s) {
-      if (s.exists) { PROFIL[uid] = s.data() || {}; clearTimeout(profilCizZ); profilCizZ = setTimeout(ciz, 50); }
+      PROFIL[uid] = s.exists ? (s.data() || {}) : { silinmis: true };   // profil yoksa hesap silinmiş: eski ad gösterilmez
+      clearTimeout(profilCizZ); profilCizZ = setTimeout(ciz, 50);
     }, function () {});
     return PROFIL[uid];
   }
-  function yazarAdi(x) { var p = profilAl(x.yazarId); return (p && p.ad) || x.yazarAd || M('adsiz'); }
+  function yazarAdi(x) { var p = profilAl(x.yazarId); if (p && p.silinmis) return M('silinmisUye'); return (p && p.ad) || x.yazarAd || M('adsiz'); }
   window.addEventListener('odyo:profil-adi', function (e) { var v = e.detail; if (v && v.uid) { PROFIL[v.uid] = { ad: v.ad, meslek: v.meslek }; ciz(); } });
   function yazarSatir(x) {
     var s = h('div', 'fr-yazar');
     s.appendChild(h('span', 'fr-ad', yazarAdi(x)));
-    var pr = PROFIL[x.yazarId], r = rozet(pr ? pr.meslek : x.yazarMeslek); if (r) s.appendChild(h('span', 'fr-rozet', r));
+    var pr = PROFIL[x.yazarId], r = pr && pr.silinmis ? '' : rozet(pr ? pr.meslek : x.yazarMeslek); if (r) s.appendChild(h('span', 'fr-rozet', r));
     s.appendChild(h('span', 'fr-tarih', tarih(x.olusturma) + (x.guncelleme && x.guncelleme > x.olusturma + 60000 ? ' · ' + M('duzenlendi') : '')));
     if (x.gizli) s.appendChild(h('span', 'fr-gizli-et', M('gizliEtiket')));
     return s;

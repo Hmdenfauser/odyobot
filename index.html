@@ -451,6 +451,7 @@
           <p data-k="forum.m.rozetOgrenci" data-m="rozetOgrenci">Öğrenci</p>
           <p data-k="forum.m.rozetOdyolog" data-m="rozetOdyolog">Odyolog</p>
           <p data-k="forum.m.adsiz" data-m="adsiz">Adsız üye</p>
+          <p data-k="forum.m.silinmisUye" data-m="silinmisUye">Silinmiş üye</p>
           <p data-k="forum.m.baslik" data-m="baslik">Başlık</p>
           <p data-k="forum.m.metin" data-m="metin">Metin</p>
           <p data-k="forum.m.gonder" data-m="gonder">Gönder</p>
@@ -741,6 +742,15 @@
         </div>
         <p class="note" data-k="ayar.dil.not">Şimdilik yalnızca Türkçe. Başka diller ileride eklenecek.</p>
       </div>
+      <div class="stack ayar-grup">
+        <h3 data-k="ayar.yasal.baslik">Yasal bilgiler</h3>
+        <div class="yasal-baglantilar">
+          <a class="linkbtn" href="#yasal/uyari" data-k="ayar.yasal.uyari">Tıbbi uyarı</a>
+          <a class="linkbtn" href="#yasal/kosullar" data-k="ayar.yasal.kosullar">Kullanım koşulları</a>
+          <a class="linkbtn" href="#yasal/kvkk" data-k="ayar.yasal.kvkk">KVKK aydınlatma metni</a>
+          <a class="linkbtn" href="#yasal/gizlilik" data-k="ayar.yasal.gizlilik">Gizlilik politikası</a>
+        </div>
+      </div>
       <!-- Hesap (4. adım, uye.js). Üyelik kapalıyken eskisi gibi yalnızca "Yönetici girişi"; açıkken herkese "Giriş yap"; giriş yapınca "Hesabım". -->
       <div class="stack ayar-grup" id="ayar-giris">
         <div class="stack" id="ayar-yonetici-giris" style="gap:8px">
@@ -790,6 +800,7 @@
       </div>
       <div class="stack" id="g-google-kutu" style="gap:8px" hidden>
         <button class="btn g-google" type="button" id="g-google">Google ile devam et</button>
+        <p class="note g-google-not" id="g-google-not" hidden></p>
         <p class="note g-ayrac" id="g-ya-da">ya da e-posta ile</p>
       </div>
       <form class="f" id="login-form" style="padding:0">
@@ -800,9 +811,111 @@
           <div class="fld"><label for="g-meslek" id="g-meslek-et" data-k="uye.etiket.meslekKayit">Meslek durumu (isteğe bağlı)</label><select id="g-meslek"></select></div>
           <p class="note" id="g-kayit-not" data-k="uye.kayit.not">Gerçek adını yazmak zorunda değilsin. Hasta bilgisi hiçbir yere yazılmaz.</p>
         </div>
+        <label class="g-onay" id="g-onay-kutu" hidden><input type="checkbox" id="g-onay"> <span><a href="#yasal/kosullar" id="g-onay-kosul">Kullanım koşullarını</a> okudum ve kabul ediyorum. <a href="#yasal/kvkk" id="g-onay-kvkk">KVKK aydınlatma metnini</a> ve <a href="#yasal/gizlilik" id="g-onay-gizlilik">gizlilik politikasını</a> okudum.</span></label>
         <div class="admin-bar"><button class="btn primary" type="submit" id="l-send">Giriş yap</button><button class="linkbtn" type="button" id="g-unuttum" hidden>Şifremi unuttum</button></div>
         <div class="msg" id="l-msg" role="status"></div>
       </form>
+    </div>
+  </section>
+
+  <!-- YASAL METİNLER (4. adım, 2026-11-21; yasal.js). #yasal/uyari, #yasal/kosullar, #yasal/kvkk, #yasal/gizlilik.
+       Claude'un TASLAĞI: proje sahibi ve tercihen bir hukukçu doğrulayacak; köşeli parantezli yerler doldurulacak. Her paragraf yönetici düzenler. -->
+  <section id="yasal" data-tab hidden>
+    <div class="stack">
+      <div class="alt-bas">
+        <a class="geri-ok" href="#ayarlar" id="yasal-geri"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="gizli-yazi">Geri</span></a>
+        <h2 id="yasal-ust" data-k="yasal.ust">Yasal bilgiler</h2>
+      </div>
+      <article class="yasal-sayfa" data-yasal="uyari" hidden>
+        <h2 data-k="yasal.uyari.baslik" class="yasal-baslik">Tıbbi uyarı</h2>
+        <p data-k="yasal.uyari.1">OdyoBOT, odyoloji öğrencileri ve klinisyenler için hazırlanmış bir eğitim ve başvuru uygulamasıdır. Tıbbi cihaz değildir; tanı koymaz, tedavi önermez ve klinik değerlendirmenin yerine geçmez.</p>
+        <ul class="yasal-liste">
+          <li data-k="yasal.uyari.2">OdyoBOT asistanının önerileri (maskeleme kararları, akustik refleks yorumu) girilen değerlere göre sabit kurallarla hesaplanır. Sonuçlar bir yardımcıdır; klinik karar ve sorumluluk uygulayan uzmana aittir.</li>
+          <li data-k="yasal.uyari.3">Ders notları, terimler sözlüğü, şemalar, 3D modeller ve animasyonlar şematik ve eğitim amaçlıdır. Klinik sınır değerler kaynağa, yaşa ve kliniğe göre değişebilir; her zaman kendi kaynağınla doğrula.</li>
+          <li data-k="yasal.uyari.4">Vakalarım bölümüne girilen kayıtlar yalnızca senin cihazında saklanır. Hasta adı, kimlik numarası, doğum tarihi gibi tanımlayıcı bilgiler girme.</li>
+          <li data-k="yasal.uyari.5">Topluluk bölümünde yazılanlar üyelerin kişisel görüşleridir; tıbbi tavsiye değildir.</li>
+        </ul>
+        <p class="note yasal-tarih" data-k="yasal.uyari.tarih">Son güncelleme: 21 Kasım 2026 (taslak)</p>
+      </article>
+      <article class="yasal-sayfa" data-yasal="kosullar" hidden>
+        <h2 data-k="yasal.kosullar.baslik" class="yasal-baslik">Kullanım koşulları</h2>
+        <p data-k="yasal.kosullar.1">Bu koşullar OdyoBOT uygulamasının (bundan sonra "uygulama") kullanımını düzenler. Uygulamayı kullanarak ve hesap oluşturarak bu koşulları kabul etmiş olursun.</p>
+        <h3 data-k="yasal.kosullar.2">1. Hizmet</h3>
+        <p data-k="yasal.kosullar.3">Uygulama ücretsizdir ve eğitim amaçlıdır (bkz. Tıbbi uyarı). Uygulamanın her bölümü üyeliksiz kullanılabilir; üyelik yalnızca cihazlar arası eşitleme ve Topluluk bölümünde yazmak için gereklidir. Hizmet "olduğu gibi" sunulur; kesintisiz ya da hatasız çalışacağı garanti edilmez.</p>
+        <h3 data-k="yasal.kosullar.4">2. Hesap</h3>
+        <ul class="yasal-liste">
+          <li data-k="yasal.kosullar.5">Hesap oluşturmak için 18 yaşını doldurmuş olmalısın.</li>
+          <li data-k="yasal.kosullar.6">Hesabının ve şifrenin güvenliğinden sen sorumlusun. Görünen ad olarak takma ad kullanabilirsin; başkasının adını ya da kimliğini kullanamazsın.</li>
+          <li data-k="yasal.kosullar.7">Hesabını istediğin zaman Ayarlar → Hesabım → Hesabı sil ile kalıcı olarak silebilirsin.</li>
+        </ul>
+        <h3 data-k="yasal.kosullar.8">3. Topluluk kuralları</h3>
+        <ul class="yasal-liste">
+          <li data-k="yasal.kosullar.9">Hasta adı, kimlik numarası, doğum tarihi, fotoğraf gibi bir kişiyi tanımlayabilecek hiçbir bilgi paylaşma. Vakalardan yalnızca anonim bilgilerle (yaş grubu, bulgular) söz et.</li>
+          <li data-k="yasal.kosullar.10">Saygılı ol: hakaret, taciz, ayrımcılık, tehdit içeren yazılar yasaktır.</li>
+          <li data-k="yasal.kosullar.11">Reklam, spam, yanıltıcı ya da yasa dışı içerik ve başkasının telif hakkını ihlal eden içerik paylaşma.</li>
+          <li data-k="yasal.kosullar.12">Kurallara uymayan yazılar yönetici tarafından gizlenebilir ya da silinebilir; kuralları tekrar tekrar ihlal eden hesapların kullanımı kısıtlanabilir. Uygunsuz bir yazıyı "Şikâyet et" ile bildirebilirsin.</li>
+        </ul>
+        <h3 data-k="yasal.kosullar.13">4. İçerik ve haklar</h3>
+        <p data-k="yasal.kosullar.14">Topluluk bölümüne yazdıklarının sorumluluğu sana aittir. Yazdıklarının uygulamada diğer kullanıcılara gösterilmesine izin vermiş olursun; yazılarını istediğin zaman düzenleyebilir ya da silebilirsin.</p>
+        <p data-k="yasal.kosullar.15">Uygulamadaki özgün metin, şema ve tasarımlar uygulamanın sahibine aittir. Üçüncü taraf içerikler kendi lisanslarıyla kullanılır (ör. 3D kulak modeli: OpenEar, CC BY 4.0; Artec 3D kulak taraması, CC BY 3.0); kaynaklar ilgili sayfalarda belirtilir.</p>
+        <h3 data-k="yasal.kosullar.16">5. Sorumluluğun sınırı</h3>
+        <p data-k="yasal.kosullar.17">Uygulamadaki bilgilere dayanılarak verilen kararlardan, uygulamanın kullanılamamasından ya da kullanıcıların paylaştığı içeriklerden doğan zararlardan, yasaların izin verdiği ölçüde uygulamanın sahibi sorumlu tutulamaz.</p>
+        <h3 data-k="yasal.kosullar.18">6. Değişiklikler ve iletişim</h3>
+        <p data-k="yasal.kosullar.19">Bu koşullar güncellenebilir; önemli değişiklikler uygulama içinde duyurulur. Bu koşullara Türkiye Cumhuriyeti hukuku uygulanır. Sorular için: [iletişim e-posta adresi].</p>
+        <p class="note yasal-tarih" data-k="yasal.kosullar.tarih">Son güncelleme: 21 Kasım 2026 (taslak)</p>
+      </article>
+      <article class="yasal-sayfa" data-yasal="kvkk" hidden>
+        <h2 data-k="yasal.kvkk.baslik" class="yasal-baslik">KVKK aydınlatma metni</h2>
+        <p data-k="yasal.kvkk.1">6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") madde 10 uyarınca, OdyoBOT uygulamasında hangi kişisel verilerinin, hangi amaçla ve nasıl işlendiği aşağıda açıklanmıştır.</p>
+        <h3 data-k="yasal.kvkk.2">1. Veri sorumlusu</h3>
+        <p data-k="yasal.kvkk.3">Veri sorumlusu: [Veri sorumlusunun adı soyadı]. İletişim: [iletişim e-posta adresi].</p>
+        <h3 data-k="yasal.kvkk.4">2. İşlenen kişisel veriler</h3>
+        <ul class="yasal-liste">
+          <li data-k="yasal.kvkk.5">Kimlik ve iletişim: e-posta adresi (giriş için; Google ile girersen Google hesabındaki e-posta ve ad), görünen ad (takma ad olabilir).</li>
+          <li data-k="yasal.kvkk.6">Mesleki bilgi (isteğe bağlı): meslek durumu (öğrenci, odyolog, diğer).</li>
+          <li data-k="yasal.kvkk.7">Kullanım bilgileri: favori notlar, sözlük öğrenme durumu, engellediğin üyeler, Topluluk gönderi ve cevapların, şikâyetlerin ve bunların tarihleri.</li>
+          <li data-k="yasal.kvkk.8">İşlem güvenliği: hesap kimliği, giriş kayıtları ve hizmet sağlayıcıların tuttuğu teknik kayıtlar (ör. IP adresi).</li>
+        </ul>
+        <p data-k="yasal.kvkk.9">Vakalarım bölümüne girilen vaka kayıtları ve fotoğraflar yalnızca cihazında saklanır, sunucuya hiçbir zaman gönderilmez. Uygulama sağlık verisi toplamaz; Topluluk bölümünde hasta bilgisi paylaşılması yasaktır. Uygulamada reklam ya da kullanım ölçümü (analitik) çerezi yoktur.</p>
+        <h3 data-k="yasal.kvkk.10">3. İşleme amaçları ve hukuki sebepler</h3>
+        <ul class="yasal-liste">
+          <li data-k="yasal.kvkk.11">Üyelik hesabının oluşturulması ve yönetilmesi, cihazlar arası eşitleme, Topluluk özelliklerinin sunulması: üyelik sözleşmesinin kurulması ve ifası (KVKK m. 5/2-c).</li>
+          <li data-k="yasal.kvkk.12">Güvenliğin sağlanması, kötüye kullanımın önlenmesi, şikâyetlerin incelenmesi ve moderasyon: veri sorumlusunun meşru menfaati (KVKK m. 5/2-f).</li>
+          <li data-k="yasal.kvkk.13">Yasal yükümlülüklerin yerine getirilmesi ve yetkili kurumların taleplerinin karşılanması: hukuki yükümlülük (KVKK m. 5/2-ç).</li>
+        </ul>
+        <h3 data-k="yasal.kvkk.14">4. Toplama yöntemi</h3>
+        <p data-k="yasal.kvkk.15">Kişisel verilerin, uygulamayı kullanırken senin girdiğin bilgilerden ve hizmet sağlayıcıların sistemlerince otomatik yollarla, elektronik ortamda toplanır.</p>
+        <h3 data-k="yasal.kvkk.16">5. Aktarım</h3>
+        <p data-k="yasal.kvkk.17">Uygulama şu hizmet sağlayıcılar aracılığıyla çalışır ve verilerin bu amaçla onların sunucularında işlenir: Google (Firebase Authentication ve Cloud Firestore; veritabanı Avrupa'da, giriş hizmeti ABD dahil farklı ülkelerde), GitHub (uygulamanın yayınlanması; teknik erişim kayıtları). Bu nedenle kişisel verilerin yurt dışına aktarılmaktadır. Aktarım KVKK m. 9 kapsamında yapılır. [Hukuki dayanak — ör. standart sözleşme — bir hukukçuyla netleştirilecek.] Kişisel verilerin bunun dışında üçüncü kişilere satılmaz, kiralanmaz; yalnızca yasal zorunluluk hâlinde yetkili kamu kurumlarıyla paylaşılır.</p>
+        <h3 data-k="yasal.kvkk.18">6. Saklama süresi</h3>
+        <p data-k="yasal.kvkk.19">Hesap bilgilerin hesabın açık olduğu sürece saklanır. Hesabını sildiğinde hesap, profil ve eşitleme bilgilerin hemen silinir. Topluluk yazıların "Silinmiş üye" adıyla görünmeye devam eder; tamamen silinmesini istersen hesabını silmeden önce kendin silebilir ya da [iletişim e-posta adresi] adresinden talep edebilirsin. Şikâyet kayıtları incelendikten sonra silinir.</p>
+        <h3 data-k="yasal.kvkk.20">7. Hakların (KVKK m. 11)</h3>
+        <p data-k="yasal.kvkk.21">Veri sorumlusuna başvurarak kişisel verilerinin işlenip işlenmediğini öğrenme, işlenmişse bilgi isteme, işlenme amacını ve amacına uygun kullanılıp kullanılmadığını öğrenme, yurt içinde ya da yurt dışında aktarıldığı üçüncü kişileri bilme, eksik ya da yanlış işlenmişse düzeltilmesini, KVKK m. 7 şartlarıyla silinmesini ya da yok edilmesini ve bu işlemlerin aktarıldığı kişilere bildirilmesini isteme, münhasıran otomatik sistemlerle analiz edilmesi sonucu aleyhine bir sonuç çıkmasına itiraz etme ve kanuna aykırı işleme nedeniyle zarara uğrarsan zararın giderilmesini talep etme haklarına sahipsin.</p>
+        <p data-k="yasal.kvkk.22">Başvurularını [iletişim e-posta adresi] adresine iletebilirsin. Başvurular en geç 30 gün içinde ücretsiz yanıtlanır. Yanıtı yeterli bulmazsan Kişisel Verileri Koruma Kurulu'na şikâyette bulunabilirsin.</p>
+        <p class="note yasal-tarih" data-k="yasal.kvkk.tarih">Son güncelleme: 21 Kasım 2026 (taslak)</p>
+      </article>
+      <article class="yasal-sayfa" data-yasal="gizlilik" hidden>
+        <h2 data-k="yasal.gizlilik.baslik" class="yasal-baslik">Gizlilik politikası</h2>
+        <p data-k="yasal.gizlilik.1">Bu sayfa, OdyoBOT'un bilgilerini nasıl kullandığını kısaca anlatır. Ayrıntılar ve hakların için KVKK aydınlatma metnine bak.</p>
+        <h3 data-k="yasal.gizlilik.2">Üyelik olmadan</h3>
+        <p data-k="yasal.gizlilik.3">Uygulamanın tüm bölümleri üyeliksiz kullanılabilir. Bu durumda sunucuya senin hakkında bilgi gönderilmez; ayarların, favorilerin, sözlük ilerlemen ve vaka kayıtların yalnızca cihazında (tarayıcı depolamasında) kalır.</p>
+        <h3 data-k="yasal.gizlilik.4">Üye olursan</h3>
+        <ul class="yasal-liste">
+          <li data-k="yasal.gizlilik.5">Giriş için e-posta adresin Google Firebase'de saklanır. Görünen adın, meslek durumun (isteğe bağlı), favori notların, sözlük ilerlemen ve engellediğin üyeler hesabında tutulur.</li>
+          <li data-k="yasal.gizlilik.6">Görünen adın ve meslek durumun, Topluluk'ta yazdığın yazılarla birlikte herkese görünür. E-posta adresin hiçbir kullanıcıya gösterilmez.</li>
+          <li data-k="yasal.gizlilik.7">Hesap bilgilerine yalnızca sen erişebilirsin; uygulama yöneticisi de dahil kimse başka bir üyenin hesap bilgilerini (favoriler, sözlük ilerlemesi, engellenenler) göremez.</li>
+        </ul>
+        <h3 data-k="yasal.gizlilik.8">Hiçbir zaman yapılmayanlar</h3>
+        <ul class="yasal-liste">
+          <li data-k="yasal.gizlilik.9">Vaka kayıtların sunucuya gönderilmez.</li>
+          <li data-k="yasal.gizlilik.10">Bilgilerin satılmaz, reklam amacıyla kullanılmaz; uygulamada reklam ve kullanım ölçümü (analitik) çerezi yoktur.</li>
+        </ul>
+        <h3 data-k="yasal.gizlilik.11">Güvenlik</h3>
+        <p data-k="yasal.gizlilik.12">Bağlantılar şifrelidir (HTTPS). Veritabanı erişimi, her üyenin yalnızca kendi bilgisine erişebileceği kurallarla korunur. Hiçbir sistem tam güvenli değildir; şifreni kimseyle paylaşma.</p>
+        <h3 data-k="yasal.gizlilik.13">Hesabı silme ve değişiklikler</h3>
+        <p data-k="yasal.gizlilik.14">Hesabını Ayarlar → Hesabım → Hesabı sil ile istediğin zaman silebilirsin. Bu politika güncellenirse uygulama içinde duyurulur. Sorular için: [iletişim e-posta adresi].</p>
+        <p class="note yasal-tarih" data-k="yasal.gizlilik.tarih">Son güncelleme: 21 Kasım 2026 (taslak)</p>
+      </article>
     </div>
   </section>
 
@@ -878,6 +991,8 @@
           <p data-k="uye.m.eslemeHata" data-m="eslemeHata">Hesap bilgilerin sunucuya kaydedilemedi. İnternet bağlantını kontrol et; sorun sürerse yöneticiye bildir.</p>
           <p data-k="uye.m.kayitKapali" data-m="kayitKapali">Yeni üye kaydı şu an kapalı.</p>
           <p data-k="uye.m.engelKaldir" data-m="engelKaldir">Engeli kaldır</p>
+          <p data-k="uye.m.onayGerekli" data-m="onayGerekli">Devam etmek için kullanım koşullarını kabul etmelisin.</p>
+          <p data-k="uye.m.googleGirisNot" data-m="googleGirisNot">Google ile ilk kez giriyorsan hesabın oluşturulur; devam ederek kullanım koşullarını kabul etmiş, KVKK aydınlatma metnini ve gizlilik politikasını okumuş olursun.</p>
           <p data-k="uye.m.googleIpucu" data-m="googleIpucu">Açılan pencerede Google hesabını seç. Pencere açılmadıysa tarayıcının açılır pencere iznini kontrol et.</p>
         </div>
       </details>
@@ -1327,6 +1442,7 @@
 <script src="uye.js"></script>
 <script src="forum.js"></script>
 <script src="zil.js"></script>
+<script src="yasal.js"></script>
 <script src="odyo-hesap.js"></script>
 <script src="vaka-testler.js"></script>
 <script src="vakalarim.js"></script>
