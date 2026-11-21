@@ -45,12 +45,23 @@ window.GORSEL3D_VERI = {
     crus: { ad: 'Ortak krus', aciklama: 'Crus commune. Anterior ve posterior kanalların ampullasız uçlarının birleşerek vestibüle açıldığı ortak bacak.' },
     amp: { ad: 'Ampullalar', aciklama: 'Kanalların vestibüle açılan genişlemiş uçları. Anterior ve lateral ampullalar yan yanadır; posterior ampulla ayrı ve daha aşağıdadır.' },
     n7: { ad: 'Fasiyal sinir', aciklama: 'VII. kranial sinir. İç kulak yolundan girer, genikulat gangliyonda döner, oval pencerenin üstünden geçer ve mastoid parçada aşağı iner. Stapedius kasını uyarır.' },
-    n8: { ad: 'VIII. Kranial (Vestibulokoklear) Sinir', aciklama: 'Vestibulokoklear sinir. İç kulak yolunda koklear ve vestibüler dallara ayrılarak kokleaya ve vestibüler uç organlara ulaşır.' },
+    n8: { ad: 'VIII. Kranial (Vestibulokoklear) Sinir', etiket: 'VIII. sinir', aciklama: 'Vestibulokoklear sinir. İç kulak yolunda koklear ve vestibüler dallara ayrılarak kokleaya ve vestibüler uç organlara ulaşır.' },
     ct: { ad: 'Korda timpani', aciklama: 'Fasiyal sinirin dalı. Orta kulakta malleus sapı ile inkusun uzun kolu arasından geçer; tat ve tükürük bezi liflerini taşır.' },
     car: { ad: 'İnternal karotis', aciklama: 'Arterin petröz parçası. Kokleanın hemen önünden ve altından geçer.' },
-    sin: { ad: 'Sigmoid sinüs ve dura', aciklama: 'Venöz sinüs ve onu çevreleyen dura. Mastoidin arkasında yer alır; burada yalnızca kulağa yakın bölümü gösteriliyor.' },
+    sin: { ad: 'Sigmoid sinüs ve dura', etiket: 'Sigmoid sinüs', aciklama: 'Venöz sinüs ve onu çevreleyen dura. Mastoidin arkasında yer alır; burada yalnızca kulağa yakın bölümü gösteriliyor.' },
     bone: { ad: 'Temporal kemik', aciklama: 'Bütün bu yapıları barındıran kemik. Burada kulağa yakın bölümü yarı saydam gösteriliyor.' }
   },
+  // Model üzerindeki yazılar (2026-11-21). id: yapı; yazı yapının 'etiket' alanı (yönetici düzenler), yoksa adı.
+  // tum: Tüm sistem bölümünde de görünür (iç yapılar kepçenin arkasında kaldığı için yalnızca kepçe). metin: metinler'den yazı.
+  // ilgili: bu yapılardan biri seçiliyken de yazı kalır. kepce: kepçe bölümleri açıkken gizlenir.
+  etiketler: [
+    { id: 'p_cavum', metin: 'etiketKepce', tum: true, kepce: true, ilgili: ['p_helix', 'p_antihelix', 'p_scapha', 'p_fossa', 'p_crush', 'p_cymba', 'p_cavum', 'p_tragus', 'p_antitragus', 'p_notch', 'p_lobule'] },
+    { id: 'eac' }, { id: 'tm' }, { id: 'mal' }, { id: 'inc' }, { id: 'sta' }, { id: 'ct' },
+    { id: 'sv', metin: 'etiketKoklea', ilgili: ['sv', 'sm', 'st'] },
+    { id: 'vest' }, { id: 'ant' }, { id: 'post' }, { id: 'lat' },
+    { id: 'n7' }, { id: 'n8' },
+    { id: 'car' }, { id: 'sin' }
+  ],
   metinler: {
     canvasEtiketi: 'Döndürülebilir periferik işitme sistemi modeli',
     taraf: 'Sağ kulak',
@@ -59,6 +70,10 @@ window.GORSEL3D_VERI = {
     indirilemedi: 'Model indirilemedi. İnternet bağlantını kontrol edip yeniden dene.',
     yenidenDene: 'Yeniden dene',
     genelGorunum: 'Genel görünüme geç',
+    etiketKepce: 'Kepçe',
+    etiketKoklea: 'Koklea',
+    yazilariGizle: 'Yazıları gizle',
+    yazilariGoster: 'Yazıları göster',
     yakinlastir: 'Yakınlaştır',
     uzaklastir: 'Uzaklaştır',
     webglYok: 'Bu cihazda 3D çizim (WebGL) açılamadı. Başka bir tarayıcıda dene.',
