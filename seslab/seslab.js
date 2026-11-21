@@ -354,15 +354,13 @@
       // Baş (yalnızca uzak görünümde, aç/kapa düğmesiyle gizlenebilir). 2026-11-20: çok silikti, opaklık artırıldı.
       // Her şeyden önce ayrı bir geçişte çizilir (bkz. ciz), bu yüzden kanalların üstüne binmez.
       if (id === 'bas') return on && uzak && basAcik ? { c: c, a: pid === 'bas_deri' || pid === 'bas_boyun' ? 0.28 : pid === 'bas_kulak' ? 0.55 : pid === 'bas_burun' ? 0.5 : 0.6, duz: 0.5 } : null;
+      // Denge (2026-11-21, proje sahibi: "vestibül ile kanalların saydamlıkları her zaman aynı olsun"): labirentin bütün
+      // parçaları (vestibül + kanallar) TEK bir saydamlıkla (LABIRENT_A) çizilir; sahne, adım, yakın/uzak görünüm ya da
+      // dokunarak seçme bunu değiştirmez. Önceden her parçanın ayrı sayısı vardı ve seçim/yakın görünüm de saydamlığı
+      // değiştiriyordu; her düzeltmede görünümün değişmesinin nedeni buydu. Derinlik sırası ciz() içinde ön geçişle çözülür.
+      if (mod === 'denge') return yari ? { c: c, a: LABIRENT_A, duz: 0.1 } : { c: c, a: 1, duz: 0 };
       if (sel && sel !== id) return { c: SILIK, a: on ? 0.22 : 0.08, duz: 1 };
       if (sel === id) return { c: c, a: 1, duz: 0 };
-      if (yari && mod === 'denge') {
-        if (dsah && dsah.tip === 'makula' && !uzak) return { c: c, a: 0.08, duz: 0.6 };   // makulaya yakınken çevre yapılar ekranı kaplamasın
-        // 2026-11-20: kanallar opak çizilir. Yarı saydamken derinlik yazılmadığı için arkadaki kanal öndekinin önünde görünüyordu
-        // (proje sahibi: "modellerde sorun var"). Kristaller ve makulalar 3. geçişte en üstte çizildiği için görünür kalır.
-        if (KANAL.indexOf(id) >= 0) return { c: c, a: 1, duz: 0.15 };
-        return { c: c, a: 0.18, duz: 0.4 };
-      }
       if (yari) return { c: c, a: 0.28, duz: 0.4 };
       if (!on) return { c: SILIK, a: 0.12, duz: 1 };
       return { c: c, a: 1, duz: 0 };
@@ -390,7 +388,7 @@
       var mdlS = new Float32Array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, kay[0], kay[1], kay[2], 1]);
       return { mdlM: M1.m, nM: M1.n, mdlI: I1.m, nI: I1.n, mdlS: mdlS, zar: sc(G.umboYer, Math.sin(aM)), fM: fM, fI: fI };
     }
-    var KRISTAL_SAYI = 12, BIRIM_3 = [1, 0, 0, 0, 1, 0, 0, 0, 1];
+    var KRISTAL_SAYI = 30, BIRIM_3 = [1, 0, 0, 0, 1, 0, 0, 0, 1];
     var ODAK = /^(kristal|utr_|sak_)/;   // denge kipinde en üstte çizilenler
     // Yarı saydam geçişte çizim sırası: önce silik baş, sonra diğer yapılar, en son kanallar. Derinlik yazılmadığı için sonra çizilen
     // üstte kalır; baş en sona kalınca ten rengi yüzeyi kanalların üstüne binip onları soluklaştırıyordu (2026-11-20 düzeltmesi).
@@ -400,6 +398,10 @@
       return bas.concat(orta, kanal);
     }
     var KANAL = ['ant', 'post', 'lat', 'crus', 'amp'];
+    // Denge kipinde labirentin (vestibül + semisirküler kanallar) ortak saydamlığı: tek sayı, tek yer.
+    var LABIRENT_A = 0.55;
+    // Kristal izi: kanalda kayan her tanenin arkasında kısa, sönen bir iz kalır; tanelerin kanal boyunca nereye gittiği izlenir.
+    var IZ_ARALIK = 0.2, IZ_SAYI = 11, IZ_OMUR = 1.8;   // mm, en çok nokta, saniye
     // Utrikulusa dönen kristaller orada küçük bir küme olarak durur
     function makulaKaymasi(q, iv) {
       var fM = DS.kuvvetModelde(DS.q2mat(q), iv);
@@ -427,28 +429,51 @@
       gl.bindBuffer(gl.ARRAY_BUFFER, p.nb); gl.vertexAttribPointer(aN, 3, gl.FLOAT, false, 0, 0);
       gl.disableVertexAttribArray(aS); gl.vertexAttrib1f(aS, 0);
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, p.ib);
-      KR.forEach(function (k, i) {
-        var q, Rk = mul(rx(k.don[0]), ry(k.don[1]));
-        if (k.cikti) q = add(Y.utrikulus, DS.cikisYeri(i));
-        else {
-          // Kanal kesitinde yan konum (düzlem normali ve onunla yola dik yön) + kayarken yuvarlanma
-          var y = DS.yolNokta(Y, k.u), yan = nrm(cross(y.t, Y.n));
-          q = add(y.p, add(sc(Y.n, Math.cos(k.a) * k.d), sc(yan, Math.sin(k.a) * k.d)));
-          Rk = mul(donme(yan, -k.u / (0.3 * k.b)), Rk);
-        }
-        var b = k.b;
+      function tane(Rk, b, q) {
         gl.uniformMatrix4fv(U.mdl, false, new Float32Array([Rk[0] * b, Rk[3] * b, Rk[6] * b, 0, Rk[1] * b, Rk[4] * b, Rk[7] * b, 0, Rk[2] * b, Rk[5] * b, Rk[8] * b, 0, q[0], q[1], q[2], 1]));
         gl.uniformMatrix3fv(U.mdlN, false, new Float32Array([Rk[0], Rk[3], Rk[6], Rk[1], Rk[4], Rk[7], Rk[2], Rk[5], Rk[8]]));
         gl.drawElements(gl.TRIANGLES, p.n, gl.UNSIGNED_SHORT, 0);
+      }
+      // Önce izler (yarı saydam, sönerek), sonra taneler (opak)
+      gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false);
+      KR.forEach(function (k) {
+        (k.iz || []).forEach(function (z, j, L) {
+          var yas = (dsaat - z.t) / IZ_OMUR; if (yas >= 1) return;
+          var a = 0.55 * (1 - yas) * (0.4 + 0.6 * (j + 1) / L.length);
+          gl.uniform4f(U.col, st.c[0], st.c[1], st.c[2], a);
+          tane(BIRIM_3, k.b * (0.35 + 0.3 * (1 - yas)), z.p);
+        });
+      });
+      gl.disable(gl.BLEND); gl.depthMask(true);
+      gl.uniform4f(U.col, st.c[0], st.c[1], st.c[2], st.a);
+      KR.forEach(function (k, i) { var y = kristalYeri(k, i); tane(y.R, k.b, y.q); });
+    }
+    // Tanenin yeri ve duruşu: utrikulusa geçtiyse oradaki küçük kümede; kanaldaysa kesitte yan konum
+    // (düzlem normali ve onunla yola dik yön) + kayarken yuvarlanma.
+    function kristalYeri(k, i) {
+      var Rk = mul(rx(k.don[0]), ry(k.don[1]));
+      if (k.cikti) return { q: add(Y.utrikulus, DS.cikisYeri(i)), R: Rk };
+      var y = DS.yolNokta(Y, k.u), yan = nrm(cross(y.t, Y.n));
+      return { q: add(y.p, add(sc(Y.n, Math.cos(k.a) * k.d), sc(yan, Math.sin(k.a) * k.d))), R: mul(donme(yan, -k.u / (0.3 * k.b)), Rk) };
+    }
+    var dsaat = 0;   // denge animasyon saati (yalnızca oynarken ilerler; izlerin sönmesi için)
+    function izEkle() {
+      KR.forEach(function (k, i) {
+        var iz = k.iz || (k.iz = []);
+        while (iz.length && dsaat - iz[0].t > IZ_OMUR) iz.shift();
+        if (k.cikti) return;
+        var q = kristalYeri(k, i).q, son = iz[iz.length - 1], f = son ? sub(q, son.p) : null;
+        if (!son || Math.hypot(f[0], f[1], f[2]) >= IZ_ARALIK) { iz.push({ p: q, t: dsaat }); if (iz.length > IZ_SAYI) iz.shift(); }
       });
     }
-    function fizik(dt) {
+    function fizik(dt, izsiz) {
       if (!Y || !KR.length) return;
       var g = DS.kuvvetModelde(dengeW(), null), n = Math.max(1, Math.ceil(dt / 0.02)), k = 0;
       for (var i = 0; i < n; i++) k = DS.adim(Y, KR, g, dt / n);
       kupula = k;
+      if (!izsiz) { dsaat += dt; izEkle(); }
     }
-    function dinlen() { for (var i = 0; i < 500; i++) fizik(0.02); kupula = 0; kupGor = 0; }
+    function dinlen() { for (var i = 0; i < 500; i++) fizik(0.02, true); kupula = 0; kupGor = 0; KR.forEach(function (k) { k.iz = []; }); }
     // Denge kipinde görünüm: kullanıcı döndürmesi · kamera (sağdan) · baş pozisyonu (modelden dünyaya)
     function dengeW() { return DS.q2mat(pozQ); }
     function draw() {
@@ -471,17 +496,22 @@
       var pass, id, st, p, tur;
       // Geçiş −1 (yalnızca denge, uzak görünüm): yarı saydam baş, derinlik yazmadan, her şeyden önce — iç kulağın üstüne binmesin.
       // Geçiş 0: opak, 1: yarı saydam, 2 (yalnızca denge): odak parçaları (kristaller, makulalar) en üstte, soluklaşmasın diye.
-      var SIRA = cizimSirasi();
-      for (pass = -1; pass < 3; pass++) {
+      // Geçiş 0,5 (yalnızca denge, 2026-11-21): labirent önce yalnızca derinliğe yazılır (renk yok); 1. geçişte de yalnızca en öndeki
+      // yüzey boyanır (LEQUAL). Böylece her yerde tek kat saydamlık görünür: arkadaki kanal öndekinin önüne geçmez, kanalların üst
+      // üste bindiği yerler koyulaşmaz, vestibül ve kanallar aynı saydamlıkta kalır, çizim sırası sonucu değiştirmez.
+      var SIRA = cizimSirasi(), GECISLER = [-1, 0, 0.5, 1, 2], gi;
+      for (gi = 0; gi < GECISLER.length; gi++) {
+        pass = GECISLER[gi];
         if (pass === -1) { gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false); }
         if (pass === 0) { gl.disable(gl.BLEND); gl.depthMask(true); }
-        if (pass === 1) { gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false); }
-        if (pass === 2) { if (mod !== 'denge') break; gl.disable(gl.BLEND); gl.depthMask(true); gl.clear(gl.DEPTH_BUFFER_BIT); }
+        if (pass === 0.5) { if (mod !== 'denge') continue; gl.disable(gl.BLEND); gl.depthMask(true); gl.colorMask(false, false, false, false); }
+        if (pass === 1) { gl.colorMask(true, true, true, true); gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false); if (mod === 'denge') gl.depthFunc(gl.LEQUAL); }
+        if (pass === 2) { gl.depthFunc(gl.LESS); if (mod !== 'denge') break; gl.disable(gl.BLEND); gl.depthMask(true); gl.clear(gl.DEPTH_BUFFER_BIT); }
         for (k = 0; k < SIRA.length; k++) {
           id = SIRA[k]; st = style(id); if (!st) continue;
-          var odak = mod === 'denge' && ODAK.test(id), basP = grup(id) === 'bas';
+          var odak = mod === 'denge' && ODAK.test(id), basP = grup(id) === 'bas', saydamGecis = pass === 0.5 || pass === 1;
           if (pass === -1 ? !basP : basP) continue;
-          if (pass !== -1 && (pass === 2 ? !odak : (odak || (st.a < 1) !== (pass === 1)))) continue;
+          if (pass !== -1 && (pass === 2 ? !odak : (odak || (st.a < 1) !== saydamGecis))) continue;
           p = PART[id];
           var mdl = BIRIM, mdlN = BIRIM3, fz = 0;
           tur = id === 'mal' || id === 'inc' || id === 'sta' ? 1 : id === 'tm' ? 2 : id === 'sm' ? 3 : (id === 'eac' || grup(id) === 'pinna') ? 4 : id === 'vest' ? 5 : id === 'n8' ? 6 : 0;
@@ -510,7 +540,7 @@
           gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, p.ib); gl.drawElements(gl.TRIANGLES, p.n, gl.UNSIGNED_SHORT, 0);
         }
       }
-      gl.disable(gl.BLEND); gl.depthMask(true);
+      gl.disable(gl.BLEND); gl.depthMask(true); gl.colorMask(true, true, true, true); gl.depthFunc(gl.LESS);
       var px = 10 * f / d * cv.clientHeight / 2;
       olcek.hidden = mod === 'denge' || !(px > 14 && px < cv.clientWidth * 0.6);
       cubuk.style.width = Math.round(px) + 'px';
@@ -779,7 +809,7 @@
         try {
           Y = DS.kanalYolu(PART); MAK = DS.makulalar(PART);
           ['utr', 'sak'].forEach(function (m) { parcaEkle(m + '_ep', MAK[m].epitel); parcaEkle(m + '_tuy', MAK[m].tuy); parcaEkle(m + '_zar', MAK[m].zar); });
-          parcaEkle('kristal', DS.kristalAg(0.3));
+          parcaEkle('kristal', DS.kristalAg(0.2));
           var BA = DS.basAg(PART); parcaEkle('bas_deri', BA.deri); parcaEkle('bas_yuz', BA.yuz); parcaEkle('bas_kulak', BA.kulak); parcaEkle('bas_boyun', BA.boyun); parcaEkle('bas_burun', BA.burun);
           var AP = PART.amp.P, aw = new Float32Array(AP.length / 3);
           for (var ai = 0; ai < aw.length; ai++) aw[ai] = Math.pow(Math.max(0, 1 - Math.hypot(AP[ai * 3] - Y.ampulla[0], AP[ai * 3 + 1] - Y.ampulla[1], AP[ai * 3 + 2] - Y.ampulla[2]) / 1.8), 1.2);
