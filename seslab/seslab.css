@@ -7,12 +7,12 @@
   --sl-makula: #D98C9E;   /* makula epiteli */
   --sl-tuy: #8C73C2;      /* tüy demetleri */
   --sl-otolit: #E07A10;   /* otolit zarı ve kristalleri (belirgin turuncu) */
-  --sl-kristal: #E8590C;  /* BPPV kristalleri (belirgin turuncu) */
+  --sl-kristal: #FFFFFF;  /* BPPV kristalleri (beyaz, 2026-11-21 proje sahibinin isteği; gölgelendirme biçimini verir) */
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .sl { --sl-tepe: #FF6FA3; --sl-cukur: #7FA6FF; --sl-elektrik: #C49BFF; --sl-otolit: #FFB040; --sl-kristal: #FF9A3C; }
+  :root:not([data-theme="light"]) .sl { --sl-tepe: #FF6FA3; --sl-cukur: #7FA6FF; --sl-elektrik: #C49BFF; --sl-otolit: #FFB040; --sl-kristal: #FFFFFF; }
 }
-:root[data-theme="dark"] .sl { --sl-tepe: #FF6FA3; --sl-cukur: #7FA6FF; --sl-elektrik: #C49BFF; --sl-otolit: #FFB040; --sl-kristal: #FF9A3C; }
+:root[data-theme="dark"] .sl { --sl-tepe: #FF6FA3; --sl-cukur: #7FA6FF; --sl-elektrik: #C49BFF; --sl-otolit: #FFB040; --sl-kristal: #FFFFFF; }
 
 /* Animasyonun sağ alt köşesi (2026-11-20): yalnızca simgeli yuvarlak düğmeler (genel görünüm, oynat/duraklat). Yazı ipucunda
    (seslab/ipucu.js: fareyle üzerine gelince ya da uzun basınca). Sol altta ölçek çubuğu var. Dağılma bölümü de aynısını kullanır. */

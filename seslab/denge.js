@@ -128,7 +128,7 @@
     }
     return K;
   }
-  var IVME = 5, SURTUNME = 2.2, ARALIK = 0.12;   // yavaş tutuldu: kayış ekranda izlenebilsin; taneler birbirine yaklaşabilir (yanlara dağılırlar)
+  var IVME = 5, SURTUNME = 2.2, ARALIK = 0.05;   // (2026-11-21: daha çok ve küçük tane, aralık küçüldü) yavaş tutuldu: kayış ekranda izlenebilsin; taneler birbirine yaklaşabilir (yanlara dağılırlar)
   function adim(Y, K, gModel, dt) {
     var kupula = 0;
     K.forEach(function (k) {

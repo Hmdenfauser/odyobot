@@ -388,7 +388,7 @@
       var mdlS = new Float32Array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, kay[0], kay[1], kay[2], 1]);
       return { mdlM: M1.m, nM: M1.n, mdlI: I1.m, nI: I1.n, mdlS: mdlS, zar: sc(G.umboYer, Math.sin(aM)), fM: fM, fI: fI };
     }
-    var KRISTAL_SAYI = 12, BIRIM_3 = [1, 0, 0, 0, 1, 0, 0, 0, 1];
+    var KRISTAL_SAYI = 30, BIRIM_3 = [1, 0, 0, 0, 1, 0, 0, 0, 1];
     var ODAK = /^(kristal|utr_|sak_)/;   // denge kipinde en üstte çizilenler
     // Yarı saydam geçişte çizim sırası: önce silik baş, sonra diğer yapılar, en son kanallar. Derinlik yazılmadığı için sonra çizilen
     // üstte kalır; baş en sona kalınca ten rengi yüzeyi kanalların üstüne binip onları soluklaştırıyordu (2026-11-20 düzeltmesi).
@@ -401,7 +401,7 @@
     // Denge kipinde labirentin (vestibül + semisirküler kanallar) ortak saydamlığı: tek sayı, tek yer.
     var LABIRENT_A = 0.55;
     // Kristal izi: kanalda kayan her tanenin arkasında kısa, sönen bir iz kalır; tanelerin kanal boyunca nereye gittiği izlenir.
-    var IZ_ARALIK = 0.22, IZ_SAYI = 16, IZ_OMUR = 2.6;   // mm, en çok nokta, saniye
+    var IZ_ARALIK = 0.2, IZ_SAYI = 11, IZ_OMUR = 1.8;   // mm, en çok nokta, saniye
     // Utrikulusa dönen kristaller orada küçük bir küme olarak durur
     function makulaKaymasi(q, iv) {
       var fM = DS.kuvvetModelde(DS.q2mat(q), iv);
@@ -809,7 +809,7 @@
         try {
           Y = DS.kanalYolu(PART); MAK = DS.makulalar(PART);
           ['utr', 'sak'].forEach(function (m) { parcaEkle(m + '_ep', MAK[m].epitel); parcaEkle(m + '_tuy', MAK[m].tuy); parcaEkle(m + '_zar', MAK[m].zar); });
-          parcaEkle('kristal', DS.kristalAg(0.3));
+          parcaEkle('kristal', DS.kristalAg(0.2));
           var BA = DS.basAg(PART); parcaEkle('bas_deri', BA.deri); parcaEkle('bas_yuz', BA.yuz); parcaEkle('bas_kulak', BA.kulak); parcaEkle('bas_boyun', BA.boyun); parcaEkle('bas_burun', BA.burun);
           var AP = PART.amp.P, aw = new Float32Array(AP.length / 3);
           for (var ai = 0; ai < aw.length; ai++) aw[ai] = Math.pow(Math.max(0, 1 - Math.hypot(AP[ai * 3] - Y.ampulla[0], AP[ai * 3 + 1] - Y.ampulla[1], AP[ai * 3 + 2] - Y.ampulla[2]) / 1.8), 1.2);
