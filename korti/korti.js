@@ -525,7 +525,7 @@
       if (reduce) { cen = hedef.cen.slice(); rad = hedef.rad; }
       dirty = true;
     }
-    genelBtn.addEventListener('click', function () { if (!hazir) return; R = BAS_R.slice(); zoom = 1; sec(null); if (buyIp) buyIp.guncelle(); });
+    genelBtn.addEventListener('click', function () { if (!hazir) return; R = BAS_R.slice(); zoom = ayar.genelZoom || 1; sec(null); dirty = true; if (buyIp) buyIp.guncelle(); });   // genelZoom: genel görünüm düğmesi ne kadar geriden baksın (Corti animasyonu 1,4)
 
     function boyut() {
       if (!cv.clientWidth) return;
@@ -655,7 +655,7 @@
   function kurKortiAnim(kok, ayar) {
     var V = ayar.veri;   // { genel, gruplar, yapilar, metinler } — yapılar 3D modelle ortak
     return kur(kok, { veri: V, kartEki: ayar.kartEki, model: modelKur, sivi: ['sv', 'sm', 'st'], etiketler: ETIKET_ANIM, anim: kortiAnim(V), sinif: 'kt-anim',
-      basR: mul(rx(D(10)), ry(D(-24))), genel: { cen: [-0.02, 0.1, 0.1], rad: 0.6 } });   // 2026-11-21: biraz daha geniş açıyla başlar
+      basR: mul(rx(D(10)), ry(D(-24))), genel: { cen: [-0.02, 0.1, 0.1], rad: 0.6 }, genelZoom: 1.4 });   // 2026-11-21: biraz daha geniş açıyla başlar
   }
 
   window.Korti = { kur: kurKorti, kurAnim: kurKortiAnim, goruntuleyici: kur, _model: modelKur, rx: rx, ry: ry, mul: mul, D: D };
