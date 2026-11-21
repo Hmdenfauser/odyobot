@@ -22,6 +22,20 @@
     // yazı (T harfi) ve üstü çizili hâli: modeldeki ad yazılarını göster/gizle (İç kulak yapıları, Corti organı)
     yazi: '<path d="M5 6V4.5h14V6"/><path d="M12 4.5v15"/><path d="M9 19.5h6"/>',
     yaziYok: '<path d="M5 6V4.5h14V6" opacity=".45"/><path d="M12 4.5v15" opacity=".45"/><path d="M9 19.5h6" opacity=".45"/><path d="M3.5 3.5l17 17"/>',
+    // Periferik 3D bölüm düğmeleri (2026-11-21): yazı yerine simge, ad ipucunda. Tüm sistem 'genel' simgesini kullanır.
+    // dış kulak: kepçe ve içindeki kıvrım
+    bolumDis: '<path d="M7 9.5a5 5 0 0 1 10 0c0 2.8-1.6 3.9-2.7 5.3-1 1.3-1 2.4-1.6 3.4-.7 1.2-1.8 1.8-3 1.8-1.6 0-2.7-1.2-2.7-2.6"/>' +
+      '<path d="M10 9.8a2 2 0 0 1 4 0c0 1.3-1.2 1.9-1.6 3"/><path d="M10.4 14.2c.9-.1 1.6.4 1.8 1.2"/>',
+    // orta kulak: kemikçik zinciri — malleus (baş + sap), inkus (gövde, kısa ve uzun kol), stapes (üzengi: iki krus + taban plağı)
+    bolumOrta: '<circle cx="5.8" cy="6.4" r="2.4"/><path d="M6.5 8.7L7.8 18.5"/>' +
+      '<path d="M8.3 5.1c1.9-1.1 4.3-.9 5.4.6l2.1 1.5-2.5.2c-.7.7-1 1.8-1 3v3.4c0 .9.5 1.4 1.2 1.4M8.4 7.9c1.2.2 2.3.7 2.9 1.5"/>' +
+      '<path d="M14.4 15.1h1.4"/><path d="M20.2 12.4c-2.9 0-4.4 1.2-4.4 2.7s1.5 2.7 4.4 2.7"/><path d="M20.4 11.8v6.6"/>',
+    // iç kulak: koklea (yaklaşık iki buçuk tur sarmal) ve bazal kıvrımın başlangıcı
+    bolumIc: '<path d="M12 12a1.3 1.3 0 0 1 2.6 0a2.6 2.6 0 0 1-5.2 0a3.9 3.9 0 0 1 7.8 0a5.2 5.2 0 0 1-10.4 0c0 3-1.1 5.1-3.2 6.6"/>',
+    // sinirler: dallanan sinir lifi
+    bolumSinir: '<path d="M3 12h6.5"/><path d="M9.5 12c2.5 0 3.5-4.5 7-5.5H21"/><path d="M9.5 12h11.5"/><path d="M9.5 12c2.5 0 3.5 4.5 7 5.5H21"/><circle cx="3.6" cy="12" r="1.1"/>',
+    // çevre yapılar: kafatası (temporal kemik ve komşulukları)
+    bolumCevre: '<path d="M5 11.5a7 7 0 0 1 14 0v2.6l-1.8 1v3.4h-2.7v-2h-5v2H6.8v-3.4l-1.8-1z"/><circle cx="9.4" cy="12" r="1.4"/><circle cx="14.6" cy="12" r="1.4"/>',
     // kepçe (C biçimi) → dış kulak yolu → zar (dikey çizgi) → kemikçik (nokta) → koklea (sarmal)
     genel: '<path d="M8 3.5C5 3.5 3 6 3 9c0 2 .9 3.2 1.8 4.2.8.9 1.2 2 1.2 3.3 0 2 1.3 3.5 3.2 3.5"/>' +
       '<path d="M6 9.5c0-1.4.9-2.4 2.1-2.4"/><path d="M6.4 12H11"/><path d="M11.4 9.6v4.8"/><path d="M11.9 12.6l1.3-1.3 1.8.7"/>' +

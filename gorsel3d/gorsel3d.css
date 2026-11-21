@@ -82,6 +82,11 @@
 /* Bölüm: eşit genişlikte 3 sütun */
 .g3d-bolumler { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
 .g3d-bolumler button { padding: 6px 4px; font-size: 13px; text-align: center; }
+/* 2026-11-21: bölüm düğmeleri simgeli, tek satırda altı düğme; ad ipucunda (fareyle üzerine gelince ya da uzun basınca) */
+.g3d-bolumler.g3d-bolumler-simge { position: relative; grid-template-columns: repeat(6, 1fr); }
+.g3d-bolumler .g3d-bolum-simge { display: flex; align-items: center; justify-content: center; min-height: 44px; padding: 0;
+  -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+.g3d-bolumler .g3d-bolum-simge svg { width: 26px; height: 26px; }
 /* Görünüm: tek satır, uygulamadaki seçim çubuğu gibi */
 .g3d-gorunumler { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; padding: 3px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
 .g3d-gorunumler button { border: none; background: none; color: var(--muted); padding: 4px 2px; font-size: 12px; min-width: 0; border-radius: 7px; overflow-wrap: anywhere; }

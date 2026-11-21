@@ -330,7 +330,14 @@
       gl.enable(gl.DEPTH_TEST); gl.clearColor(0, 0, 0, 0);
       renkleriOku();
 
-      SECS.forEach(function (s) { var b = h('button', null, s.ad); b.type = 'button'; b.setAttribute('aria-pressed', 'false'); b.addEventListener('click', function () { setSec(s); modeleKaydir(); }); secBox.appendChild(b); secBtns.push(b); });
+      // Bölüm düğmeleri (2026-11-21): yazı yerine simge (küçük, tek satır); ad ipucunda ve sahnenin sağ üstündeki yazıda
+      var BOLUM_SIMGE = { tum: 'genel', dis: 'bolumDis', orta: 'bolumOrta', ic: 'bolumIc', sinir: 'bolumSinir', cevre: 'bolumCevre' };
+      SECS.forEach(function (s) {
+        var b = h('button', IP && BOLUM_SIMGE[s.id] ? 'g3d-bolum-simge' : null, IP && BOLUM_SIMGE[s.id] ? null : s.ad); b.type = 'button'; b.setAttribute('aria-pressed', 'false');
+        if (IP && BOLUM_SIMGE[s.id]) { IP.simge(b, BOLUM_SIMGE[s.id]); b._ip = IP.bagla(b, function () { return s.ad; }); }
+        b.addEventListener('click', function () { setSec(s); modeleKaydir(); }); secBox.appendChild(b); secBtns.push(b);
+      });
+      if (IP) secBox.classList.add('g3d-bolumler-simge');
       Object.keys(M.gorunumler).forEach(function (v) { var b = h('button', null, M.gorunumler[v]); b.type = 'button'; b.addEventListener('click', function () { if (VIEWS[v]) { R = VIEWS[v].slice(); zoom = 1; auto = false; dirty = true; } }); viewBox.appendChild(b); });
 
       var ptr = {}, moved = 0, pd = 0;
@@ -365,7 +372,7 @@
     window.requestAnimationFrame(loop);
 
     return {
-      yenile: function () { metinler(); yaziDugme(); if (!hazir) return; renkleriOku(); secBtns.forEach(function (b, k) { b.textContent = SECS[k].ad; }); chips(); card(); dirty = true; },
+      yenile: function () { metinler(); yaziDugme(); if (!hazir) return; renkleriOku(); secBtns.forEach(function (b, k) { if (b._ip) b._ip.yenile(); else b.textContent = SECS[k].ad; }); chips(); card(); dirty = true; },
       kaldir: function () { durdu = true; dinleyiciler.forEach(function (d) { d[0].removeEventListener(d[1], d[2], d[3]); }); kok.textContent = ''; }
     };
   }
