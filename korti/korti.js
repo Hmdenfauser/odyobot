@@ -236,7 +236,7 @@
   var FS = 'precision mediump float;varying vec3 vn;varying float vs;uniform vec4 col;uniform float duz;uniform float parla;uniform vec3 vurgu;uniform vec3 elek;uniform float sp;uniform float spOn;uniform float sinirF;' +
     'void main(){vec3 nn=normalize(vn);float d=abs(nn.z);float s=pow(d,24.0)*0.16;vec3 c=col.rgb*(0.62+0.38*d)+vec3(s);c=mix(c,col.rgb*(0.86+0.14*d),duz);' +
     'c=mix(c,vurgu,clamp(parla,0.0,1.0)*0.6);' +
-    'if(sinirF>0.5&&vs<1.5){float g=exp(-pow((vs-sp)/0.045,2.0))*spOn;c=mix(c,elek,clamp(g,0.0,1.0));}' +
+    'if(sinirF>0.5&&vs<1.5){float g=exp(-pow((vs-sp)/0.085,2.0))*spOn*1.8;c=mix(c,elek,clamp(g,0.0,1.0));}' +   // 2026-11-21: sinyal daha geniş ve tam renk (opak)
     'gl_FragColor=vec4(c,col.a);}';
   var FS_SEC = 'precision mediump float;uniform vec4 col;void main(){gl_FragColor=col;}';
 
@@ -614,6 +614,11 @@
     var M = veri.metinler, t = 0, sp = -1, iyon = [], glu = [], tohum = 1;
     function rnd() { tohum = (tohum * 16807) % 2147483647; return (tohum - 1) / 2147483646; }
     var onZ = [hucreZ(SAYI - 1), hucreZ(SAYI - 2), hucreZ(SAYI - 3)];
+    // Sinyal noktası (2026-11-21): en öndeki iç tüylü hücre lifi boyunca (modelKur'daki yolun aynısı) ilerleyen parlak küre
+    var lz = hucreZ((SAYI - 1) - ((SAYI - 1) % 2));
+    var LIF = [[ITH_X, 0.04, lz], [-0.25, 0.012, lz], [-0.3, -0.002, lz], [-0.62, -0.012, lz], [-1.0, -0.025, lz], [-1.08, -0.03, lz]];
+    var AKSON = [[-1.32, -0.03, lz], [-1.42, -0.06, lz], [-1.62, -0.12, lz]];
+    function yolda(Y, u) { var f = Math.max(0, Math.min(1, u)) * (Y.length - 1), i = Math.min(Y.length - 2, Math.floor(f)), r = f - i; return [Y[i][0] + (Y[i + 1][0] - Y[i][0]) * r, Y[i][1] + (Y[i + 1][1] - Y[i][1]) * r, Y[i][2] + (Y[i + 1][2] - Y[i][2]) * r]; }
     function tur(id) { return { baziler: 1, ith: 2, pilar: 2, destek: 2, dth: 3, tektoryal: 4, silya: 5, sinir: 6 }[id] || 0; }
     function adim(dt) {
       t += dt;
@@ -623,7 +628,7 @@
       var kis = vD > 0 ? 0.08 * vD : 0.025 * vD;   // depolarizasyonda kısalır, hiperpolarizasyonda biraz uzar
       // İç tüylü hücre depolarizeyken sinirde aksiyon potansiyeli (fazla kilitli)
       if (sp < 0 && vI > 0.6) sp = 0;
-      if (sp >= 0) { sp += dt / 0.8 * 1.4; if (sp > 1.5) sp = -1; }
+      if (sp >= 0) { sp += dt * 0.9; if (sp > 1.55) sp = -1; }   // 2026-11-21: daha yavaş (lif boyunca ≈1,7 sn; eskiden ≈0,85 sn)
       // K⁺ iyonları: kanallar açıkken tüylerin ucundan hücreye girer
       if (dt > 0) {
         if (vD > 0.25 && rnd() < dt * 18 * vD) iyon.push({ x: DTH_X[Math.floor(rnd() * 3)] - 0.004, z: onZ[Math.floor(rnd() * 3)] + (rnd() - 0.5) * 0.02, ust: DTH_UST, t: 0 });
@@ -633,6 +638,10 @@
       iyon = iyon.filter(function (q) { q.t += dt / 0.7; return q.t < 1; });
       glu = glu.filter(function (q) { q.t += dt / 0.55; return q.t < 1; });
       var parcacik = [];
+      if (sp >= 0) {
+        var sn = sp <= 1 ? yolda(LIF, sp) : sp <= 1.4 ? yolda(AKSON, (sp - 1) / 0.4) : null;
+        if (sn) parcacik.push({ p: sn[0] > -0.3 ? orgJs(th, sn) : sn, r: 0.02, renk: '--kt-elek' });
+      }
       iyon.forEach(function (q) {
         // Kanallar kısa tüylerin ucunda (uç bağının alt ucu): iyon oradan girip hücre gövdesine iner
         var y = q.ust + 0.032 - q.t * 0.05;
