@@ -232,6 +232,10 @@
     'else if(tur>3.5&&tur<4.5){q.xy+=tmD(q.xy);}' +
     'else if(tur>4.5&&tur<5.5){if(s<1.5){vec2 b=org(q.xy)+vec2(0.0,-kis*0.096);q.xy+=mix(b,tmD(q.xy),s);}else{q.xy+=org(q.xy)+vec2(ihc*0.04*(s-2.0),0.0);}}' +
     'else if(tur>5.5&&tur<6.5){q.xy+=org(q.xy)*clamp((q.x+0.3)/0.012,0.0,1.0);}' +
+    // Ampulla animasyonu (korti/ampulla3d.js, 2026-11-22): th = kupulanın bükülmesi (+ = utrikulusa doğru).
+    // 7 kupula: diyafram gibi, tabanı ve tavanı sabit, ortası en çok (s = tabandan tavana 0→1). 8 tüyler: dipten uca (s 0→1) bükülür.
+    'else if(tur>6.5&&tur<7.5){q.x+=th*sin(3.14159*clamp(s,0.0,1.0));}' +
+    'else if(tur>7.5&&tur<8.5){q.x+=th*0.45*s;}' +
     'vn=rot*n;gl_Position=mvp*vec4(q,1.0);}';
   var FS = 'precision mediump float;varying vec3 vn;varying float vs;uniform vec4 col;uniform float duz;uniform float parla;uniform vec3 vurgu;uniform vec3 elek;uniform float sp;uniform float spOn;uniform float sinirF;' +
     'void main(){vec3 nn=normalize(vn);float d=abs(nn.z);float s=pow(d,24.0)*0.16;vec3 c=col.rgb*(0.62+0.38*d)+vec3(s);c=mix(c,col.rgb*(0.86+0.14*d),duz);' +

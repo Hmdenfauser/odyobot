@@ -56,6 +56,18 @@
     --amp-silya: #FFB547; --amp-kino: #FF8A4C; --amp-kupula: #7FD0B5; --amp-kaliks: #F0B441; --amp-sinir: #F5D860;
   }
 }
+/* Ampulla animasyonu: endolenf parçacıkları ve sol üstteki baş göstergesi (korti/ampulla3d.js -> basGostergesi) */
+.kt-ampulla { --amp-akim: #2F7FD0; }
+:root[data-theme="dark"] .kt-ampulla { --amp-akim: #7DB8F5; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .kt-ampulla { --amp-akim: #7DB8F5; } }
+.amp-bas { position: absolute; left: 8px; top: 8px; display: flex; flex-direction: column; align-items: center; gap: 2px; pointer-events: none;
+  padding: 4px 6px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); }
+.amp-bas svg { width: 56px; height: 56px; display: block; }
+.amp-bas span { font-size: 11px; line-height: 1.2; color: var(--muted); }
+.amp-bas-kafa { fill: var(--surface); stroke: var(--ink); stroke-width: 1.6; }
+.amp-bas-sag { fill: var(--right); stroke: var(--ink); stroke-width: 1; }
+.amp-bas-sol { fill: var(--left); stroke: var(--ink); stroke-width: 1; }
+.amp-bas-ok { fill: none; stroke: var(--accent); stroke-width: 2.2; stroke-linecap: round; }
 .kt-liste { display: flex; flex-direction: column; gap: 6px; }
 /* Geniş yapıların içindeki küçük ad yazıları (korti.js → etiketYaz) */
 .kt-yazi { position: absolute; transform: translate(-50%, -50%); font: 600 10.5px/1.15 var(--font-body); color: var(--ink); white-space: nowrap;
