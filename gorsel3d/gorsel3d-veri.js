@@ -1,6 +1,9 @@
 /* Gorsel3D içerik verisi: bölüm ve yapı adları, açıklamalar, arayüz yazıları.
    Buradaki her metin varsayılandır; yönetici düzenlemesi için uygulamanın editable/applyOv düzenine bağlanmalıdır.
-   Klinik metinler proje sahibi tarafından kendi kaynağıyla doğrulanmalıdır. */
+   Klinik metinler proje sahibi tarafından kendi kaynağıyla doğrulanmalıdır.
+   2026-11-22 denetimi (kaynağı bulunamayan bilgi yazılmaz): İşitme ve Denge Sistemleri-1 (orta kulak sl. 2–17, iç kulak sl. 5–8),
+   İşitme ve Denge Sistemleri-2 (sl. 14–17, 30–41), Vestibüler Sistemin Değerlendirilmesi 1. ders (kanal açıları); StatPearls:
+   External Ear (kepçe bölümleri), Geniculate Ganglion ve Facial Nerve (fasiyal sinir, korda timpani). */
 window.GORSEL3D_VERI = {
   bolumler: [
     { id: 'tum', ad: 'Tüm sistem', aciklama: 'Kulak kepçesinden iç kulağa bütün periferik yapılar. Ayrıntı için bir bölüm seç ya da bir yapıya dokun.',
