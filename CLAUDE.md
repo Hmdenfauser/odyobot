@@ -51,14 +51,21 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 - Alt çubuk sırası: Ana sayfa, Görsel depo, OdyoBOT, Vakalarım, Notlar.
 - Odyogram çıktısı (`cikti.js`), Vakalarım → OdyoBOT gönderme, düğmeli sohbet (`odybot.js`). sw v12. Ayrıntı: `PROGRESS.md`.
 
-### Devam eden iş (2026-11-22): İçerik denetimi — dal `icerik-denetim`, YAYINDA DEĞİL
+### KALDIĞIMIZ YER (2026-11-22, v49) — oturum başında bunu özetle
+**Durum:** Yayında **sw v49** (main; `onizleme-birlesik` = `icerik-denetim` + `ampulla-model` birleşti). Yedek etiketi `yedek-yayin-v48`. Ayrıntılar aşağıdaki iki "Yayında v49" bölümünde.
+- Ampulla kesiti (3D, `#3d/ampulla`) ve Ses laboratuvarı → Ampulla ve kupula animasyonu (`#seslab/ampulla`); genel görünüm düğmesinde ampulla simgesi (`ipucu.js` → `ampulla`, `Korti.goruntuleyici` `genelSimge`).
+- Bütün öğretici metinler ders notları ve güvenilir kaynaklarla denetlendi; 10 yeni ders notu.
+- Yayın öncesi bulunan hata: ampulla verisi `AM` adıyla ana sayfanın `AM()` yazı fonksiyonunu eziyordu (arama ve "Kaldığın yerden" çöküyordu) → `AMV`. **Ders:** app.js'e yeni üst düzey değişken eklerken adın kullanılmadığını grep ile kontrol et.
+**Oturum başında hatırlat:** (1) Telefonda v49: arama, yeni notlar, ampulla modeli ve animasyonu. (2) Yeni 10 notu ve düzeltilen sözlük açıklamalarını gözden geçir. (3) Daha önce uygulamadan düzenlenmiş metin varsa "Varsayılana dön" ile yeni metne geçilebilir. (4) Önceki notlardaki üyelik açma adımları hâlâ bekliyor. (5) Temizlik: `ampulla-model`, `icerik-denetim`, `onizleme-birlesik` dalları silinebilir.
+**Test aracı:** scratchpad'de `cdp.js` (Edge `--remote-debugging-port` + Node WebSocket) ile sayfada JS hatası yakalanabiliyor; testten sonra yalnızca o tarayıcı `Browser.close` ile kapatılır (bütün Edge'i kapatma).
+
+### Yayında v49 (2026-11-22): İçerik denetimi (dal `icerik-denetim`)
 - **Kural (proje sahibi, 2026-11-22):** klinik/anatomik metin yalnızca ders notlarına ve güvenilir kaynaklara dayanır; kaynağı bulunamayan cümle yazılmaz. Ders notları Drive'dan indirilip `pdftotext -enc UTF-8` / pptx XML ile metne çevrildi (scratchpad, git dışı).
 - Denetlenenler: 8 temel ders notu (her notta kaynak satırı), işitme yolağı, refleks arkı, yenidoğan taraması (JCIH 2007 risk faktörleri eklendi), işitsel hafıza, 3D periferik/iç kulak/denge metinleri, Ses laboratuvarı (işitme, BPPV/Epley), sözlük 112 terim (57 açıklama düzeltildi). Her veri dosyasının başında kaynak notu var.
 - Yeni: ders notlarından 10 not (`NOTES` 8–17) ve 4 yeni konu başlığı (ayırıcı tanı, vestibüler, pediatrik, tinnitus). Firestore'da `ayar/notGruplari` kayıtlıysa yeni notlar "Diğer notlar"da görünür; yönetici taşır.
 - Dikkat: yönetici daha önce uygulamadan bir metni düzenlediyse (Firestore `icerik/...`), o düzenleme koddaki yeni metnin önüne geçer.
 - Değişmeyen: maskeleme (Katz) ve refleks yorumu (Jerger) kuralları, timpanogram/OAE sınırları (önceden onaylı); cihaz kartı açıklamaları boş.
-- Yayın: `ampulla-model` ve `icerik-denetim` dalları proje sahibi onaylayınca main'e birleştirilir; sw VERSION 49.
-### Devam eden iş (2026-11-22): Ampulla kesiti 3D modeli + animasyonu — dal `ampulla-model`, YAYINDA DEĞİL
+### Yayında v49 (2026-11-22): Ampulla kesiti 3D modeli + animasyonu (dal `ampulla-model`)
 - 3D modeller listesine 4. model: `#3d/ampulla` (`korti/ampulla3d.js` + `ampulla3d-veri.js`, renkler `korti.css` → `--amp-*`). Görüntüleyici `Korti.goruntuleyici`; ağ yardımcıları `Korti.ag` olarak açıldı (korti.js'te başka değişiklik yok).
 - Kanal ekseni boyunca kalın dilim: kemik ampulla, perilenf, zar duvar, endolenf, krista (yarı saydam, içinden sinir lifleri), destek hücreleri, Tip I (kaliksli) / Tip II tüylü hücreler, stereosilyalar, kinosilyum (lateral kanal gibi utrikulus tarafında), kupula (yarı saydam), ampullar sinir. Krista eyer değil düz sırt (sadeleştirme). Hareketsiz.
 - Metinler Claude'un TASLAĞI (ders notuyla karşılaştırılmadı); yönetici: `icerik/ampulla3d.yapi.<id>`, `ampulla3d.genel`, `ampulla3d.metin` (yön yazıları dahil). sw ASSETS'e eklendi, VERSION yayında artırılacak.
