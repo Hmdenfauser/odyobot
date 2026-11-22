@@ -1483,25 +1483,25 @@
   function kurDenge() { if (dn || !DN || !window.Denge3D) return; dn = window.Denge3D.kur($('dn-kok'), { veri: DN, kartEki: dnKartEki }); }
   // Ampulla kesiti (korti/ampulla3d.js, 2026-11-22): yönetici düzenlemesi icerik/ampulla3d.yapi.<id>, ampulla3d.genel, ampulla3d.metin
   var AM_ANIM_ALAN = [{ f: 'asamaDinlenim', ad: 'Aşama yazısı: dinlenim', cok: true }, { f: 'asamaHizlanma', ad: 'Aşama yazısı: hızlanma', cok: true }, { f: 'asamaSabit', ad: 'Aşama yazısı: sabit hız', cok: true }, { f: 'asamaYavaslama', ad: 'Aşama yazısı: yavaşlama', cok: true }, { f: 'asamaDonus', ad: 'Aşama yazısı: kupulanın dönüşü', cok: true }, { f: 'ipucu', ad: 'İpucu (modelin altında)', cok: true }, { f: 'not', ad: 'Not (renkler ve kaynak)', cok: true }, { f: 'etiket', ad: 'Modelin sağ üstündeki yazı' }, { f: 'basEtiket', ad: 'Baş göstergesinin yazısı' }, { f: 'yonKanal', ad: 'Model üzerindeki yön yazısı: kanal tarafı' }, { f: 'yonUtrikulus', ad: 'Model üzerindeki yön yazısı: utrikulus tarafı' }, { f: 'yazilariGizle', ad: 'Yazıları gizle düğmesinin ipucu' }, { f: 'yazilariGoster', ad: 'Yazıları göster düğmesinin ipucu' }, { f: 'yakinlastir', ad: 'Büyüteç ipucu: yakınlaştır' }, { f: 'uzaklastir', ad: 'Büyüteç ipucu: uzaklaştır' }, { f: 'oynat', ad: 'Oynat düğmesinin ipucu' }, { f: 'duraklat', ad: 'Duraklat düğmesinin ipucu' }, { f: 'genelGorunum', ad: 'Genel görünüm düğmesinin ipucu' }];
-  var AM = window.AMPULLA3D_VERI, am = null, AM_METIN_ALAN = DN_METIN_ALAN.concat([{ f: 'yonKanal', ad: 'Model üzerindeki yön yazısı: kanal tarafı' }, { f: 'yonUtrikulus', ad: 'Model üzerindeki yön yazısı: utrikulus tarafı' }]);
-  if (AM) {
-    Object.keys(AM.yapilar).forEach(function (id) { var y = AM.yapilar[id]; y.key = 'ampulla3d.yapi.' + id; editable(y, y.etiket != null ? ['ad', 'aciklama', 'etiket'] : ['ad', 'aciklama']); });
-    AM.genel.key = 'ampulla3d.genel'; editable(AM.genel, ['ad', 'aciklama']);
-    AM.metinler.key = 'ampulla3d.metin'; editable(AM.metinler, AM_METIN_ALAN.map(function (a) { return a.f; }));
-    if (AM.anim) { AM.anim.genel.key = 'ampulla3d.anim.genel'; editable(AM.anim.genel, ['ad', 'aciklama']); AM.anim.metinler.key = 'ampulla3d.anim.metin'; editable(AM.anim.metinler, AM_ANIM_ALAN.map(function (a) { return a.f; })); }
+  var AMV = window.AMPULLA3D_VERI, am = null, AM_METIN_ALAN = DN_METIN_ALAN.concat([{ f: 'yonKanal', ad: 'Model üzerindeki yön yazısı: kanal tarafı' }, { f: 'yonUtrikulus', ad: 'Model üzerindeki yön yazısı: utrikulus tarafı' }]);
+  if (AMV) {
+    Object.keys(AMV.yapilar).forEach(function (id) { var y = AMV.yapilar[id]; y.key = 'ampulla3d.yapi.' + id; editable(y, y.etiket != null ? ['ad', 'aciklama', 'etiket'] : ['ad', 'aciklama']); });
+    AMV.genel.key = 'ampulla3d.genel'; editable(AMV.genel, ['ad', 'aciklama']);
+    AMV.metinler.key = 'ampulla3d.metin'; editable(AMV.metinler, AM_METIN_ALAN.map(function (a) { return a.f; }));
+    if (AMV.anim) { AMV.anim.genel.key = 'ampulla3d.anim.genel'; editable(AMV.anim.genel, ['ad', 'aciklama']); AMV.anim.metinler.key = 'ampulla3d.anim.metin'; editable(AMV.anim.metinler, AM_ANIM_ALAN.map(function (a) { return a.f; })); }
   }
   function amKartEki(tur, kimlik, yuva) {
-    var o = tur === 'yapi' ? AM.yapilar[kimlik] : tur === 'metin' ? AM.metinler : AM.genel; if (!o) return;
+    var o = tur === 'yapi' ? AMV.yapilar[kimlik] : tur === 'metin' ? AMV.metinler : AMV.genel; if (!o) return;
     var a = tur === 'metin' ? adminPart(o.key, o, AM_METIN_ALAN, 'İpucu, not ve model yazılarını düzenle') : adminPart(o.key, o, o.etiket != null ? KT_YAPI_ALAN : G3D_ALAN, 'Düzenle');
     if (a) yuva.appendChild(a);
   }
   function amAnimKartEki(tur, kimlik, yuva) {
     if (tur === 'yapi') return amKartEki(tur, kimlik, yuva);
-    var o = tur === 'metin' ? AM.anim.metinler : AM.anim.genel;
+    var o = tur === 'metin' ? AMV.anim.metinler : AMV.anim.genel;
     var a = tur === 'metin' ? adminPart(o.key, o, AM_ANIM_ALAN, 'Animasyon yazılarını düzenle') : adminPart(o.key, o, G3D_ALAN, 'Düzenle');
     if (a) yuva.appendChild(a);
   }
-  function kurAmpulla() { if (am || !AM || !window.Ampulla3D) return; am = window.Ampulla3D.kur($('am-kok'), { veri: AM, kartEki: amKartEki }); }
+  function kurAmpulla() { if (am || !AMV || !window.Ampulla3D) return; am = window.Ampulla3D.kur($('am-kok'), { veri: AMV, kartEki: amKartEki }); }
   function refreshKorti() {
     if (!KT) return;
     Object.keys(KT.yapilar).forEach(function (id) { applyOv(KT.yapilar[id].key, KT.yapilar[id]); });
@@ -1514,10 +1514,10 @@
       applyOv(DN.genel.key, DN.genel); applyOv(DN.metinler.key, DN.metinler);
       if (dn) dn.yenile();
     }
-    if (AM) {
-      Object.keys(AM.yapilar).forEach(function (id) { applyOv(AM.yapilar[id].key, AM.yapilar[id]); });
-      applyOv(AM.genel.key, AM.genel); applyOv(AM.metinler.key, AM.metinler);
-      if (AM.anim) { applyOv(AM.anim.genel.key, AM.anim.genel); applyOv(AM.anim.metinler.key, AM.anim.metinler); }
+    if (AMV) {
+      Object.keys(AMV.yapilar).forEach(function (id) { applyOv(AMV.yapilar[id].key, AMV.yapilar[id]); });
+      applyOv(AMV.genel.key, AMV.genel); applyOv(AMV.metinler.key, AMV.metinler);
+      if (AMV.anim) { applyOv(AMV.anim.genel.key, AMV.anim.genel); applyOv(AMV.anim.metinler.key, AMV.anim.metinler); }
       if (am) am.yenile();
     }
   }
@@ -1615,7 +1615,7 @@
     if (!kip || dag || cor || amp) { if (sl) sl.durdur(); }
     if (!kip) return;
     if (amp) {   // Ampulla (korti/ampulla3d.js -> Ampulla3D.kurAnim); yapılar 3D modelle ortak (icerik/ampulla3d.yapi.<id>)
-      if (!slA && AM && AM.anim && window.Ampulla3D) slA = window.Ampulla3D.kurAnim($('sl-ampulla'), { veri: { genel: AM.anim.genel, gruplar: AM.gruplar, yapilar: AM.yapilar, metinler: AM.anim.metinler }, kartEki: amAnimKartEki });
+      if (!slA && AMV && AMV.anim && window.Ampulla3D) slA = window.Ampulla3D.kurAnim($('sl-ampulla'), { veri: { genel: AMV.anim.genel, gruplar: AMV.gruplar, yapilar: AMV.yapilar, metinler: AMV.anim.metinler }, kartEki: amAnimKartEki });
       return;
     }
     if (cor) {   // Corti organı (korti/korti.js → Korti.kurAnim); yapılar 3D modelle ortak (icerik/korti.yapi.<id>)
