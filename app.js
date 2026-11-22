@@ -574,46 +574,60 @@
 
   /* ---------- ders notları ---------- */
   var customNotes = [];
+  /* Temel ders notları (2026-11-22 denetimi): her madde proje sahibinin ders notlarına ya da güvenilir bir kaynağa dayanır;
+     her notun son maddesi kaynak satırıdır. Kaynağı bulunamayan bilgi yazılmaz (proje sahibinin kuralı). Sırayı değiştirme
+     (anahtar not.<sıra>; yönetici düzenlemeleri bu sıraya bağlı). */
   var NOTES = [
     { t: 'Saf ses odyometrisi', p: [
-      'Hava yolu genellikle 250–8000 Hz, kemik yolu 250–4000 Hz aralığında test edilir.',
-      'Yetişkinde eşikler genellikle 25 dB HL ve altındaysa normal kabul edilir; sınıflamalar kaynağa göre değişir.',
-      'Hava-kemik aralığı yaklaşık 10 dB’den büyükse iletim komponenti düşünülür.',
-      'Odyogramda maskesiz hava yolu için sağ kulak kırmızı O, sol kulak mavi X kullanılır.' ] },
+      'Tip 1 (tanısal) odyometrede hava yolu 125–8000 Hz, kemik yolu 250–6000 Hz aralığında test edilebilir. Hava yolunda en yüksek çıkış 120 dB’dir; kemik yolu çıkışı aynı frekanstaki hava yolu çıkışından 50 dB düşük sınırlanır.',
+      'İşitme kaybı derecesinin sınırları kaynağa göre değişir. Bu uygulama Clark (1981) tablosunu kullanır: −10–15 dB HL normal, 16–25 çok hafif, 26–40 hafif, 41–55 orta, 56–70 orta-ileri, 71–90 ileri, 91 ve üzeri çok ileri.',
+      'Hava ve kemik yolu eşikleri arasındaki fark (hava-kemik aralığı) bu uygulamada 10 dB ve üzerindeyse anlamlı sayılır; bu sınır kaynağa göre 10–15 dB arasında değişir.',
+      'Odyogram sembolleri: sağ kulak hava yolu kırmızı O, kemik yolu <; sol kulak hava yolu mavi X, kemik yolu >. Maskeli kemik yolunda sağ kulak [, sol kulak ] kullanılır.',
+      'Kaynak: Odyolojide Enstrümantasyon, Odyometre (sl. 26–27); Odyolojide Ayırıcı Tanı Testleri 1. ders (sl. 2); ASHA, Type, Degree, and Configuration of Hearing Loss (Clark 1981 tablosu).' ] },
     { t: 'İşitme kaybı tipleri', p: [
-      'İletim tipi: hava yolunda kayıp var, kemik yolu normal, hava-kemik aralığı var.',
-      'Sensörinöral: hava ve kemik yolu benzer düzeyde etkilenir, hava-kemik aralığı yok.',
-      'Mikst: kemik yolunda kayıp var ve buna ek olarak hava-kemik aralığı var.' ] },
+      'İletim tipi: ses dış ve orta kulaktan iç kulağa verimli iletilemez. Hava yolu eşikleri yükselmiş, kemik yolu eşikleri normaldir; arada hava-kemik aralığı vardır.',
+      'Sensörinöral: iç kulak ya da işitme sinirinden kaynaklanır. Hava ve kemik yolu eşikleri birlikte yükselir; aralarında anlamlı fark yoktur.',
+      'Mikst: iletim ve sensörinöral bileşen birliktedir. Kemik yolu eşikleri yükselmiştir ve buna ek olarak hava-kemik aralığı vardır.',
+      'Kaynak: ASHA, Type, Degree, and Configuration of Hearing Loss (Audiology Information Series).' ] },
     { t: 'Timpanometri', p: [
-      'Tip A: tepe basıncı ve compliance normal sınırlarda.',
-      'Tip As: compliance düşük (sığ eğri); otoskleroz gibi sertleşme durumlarında görülür.',
-      'Tip Ad: compliance çok yüksek; ossiküler diskontinüite veya atrofik timpanik membranda görülür.',
-      'Tip B: düz eğri; orta kulak efüzyonu düşündürür. Kanal hacmi belirgin büyükse perforasyon veya açık ventilasyon tüpü düşünülür.',
-      'Tip C: belirgin negatif orta kulak basıncı; Östaki tüpü işlev bozukluğunu düşündürür.',
-      'Sınır değerler yaşa ve cihaza göre değişir.' ] },
+      'Tip A: tepe −100 ile +50 daPa arasında, statik kompliyans 0,39–1,30 cc. Sağlıklı orta kulak.',
+      'Tip As: tepe normal basınç aralığında ama basık; statik kompliyans 0,35 cc’nin altında. Otosklerozun tipik bulgusudur.',
+      'Tip Ad: tepe normal basınç aralığında ama yüksek; statik kompliyans 1,30 cc’nin üstünde. Atrofik timpanik membran, psödomembran ya da kemikçik zincirin kopukluğunda görülür.',
+      'Tip B: tepe yok, düz çizgi. Efüzyonlu otitis media, timpanik membran perforasyonu, buşon ya da probun kanal duvarına dayanmasında görülür. Ayırımda kanal hacmine bakılır: prob tıkanınca hacim düşük, perforasyonda çok yüksektir.',
+      'Tip C: normal yükseklikte tepe, −100 daPa’dan daha negatif basınçta. Östaki tüpü işlev bozukluğunda ve efüzyonlu otitis medianın erken döneminde görülür.',
+      'Kaynak: Elektrofizyolojik Testler, Timpanometri (sl. 25, 30–34); Odyolojide Enstrümantasyon, Akustik İmmitansmetre (sl. 29–34).' ] },
     { t: 'Konuşma odyometrisi', p: [
-      'Konuşmayı alma eşiği (SRT) ile 500, 1000 ve 2000 Hz saf ses ortalaması genellikle yaklaşık 10 dB içinde uyumludur.',
-      'Belirgin uyumsuzluk fonksiyonel işitme kaybı şüphesi uyandırır.',
-      'Kelime ayırt etme skoru sensörinöral kayıpta beklenenden düşük olabilir. Retrokoklear patolojide şiddet artınca skorun düşmesi (rollover) görülebilir.' ] },
+      'Konuşmayı alma eşiği (SRT) saf ses ortalamasının sağlamasıdır: fark 6 dB ve altındaysa ideal, 7–12 dB kabul edilebilir; 13 dB ve üzerindeyse sorun düşünülür ve test tekrarlanır.',
+      'Doğuştan işitme kaybı olanlarda ve işitme cihazı kullananlarda SRT ile saf ses eşikleri arasında aynı uyum görülmeyebilir.',
+      'Organik olmayan işitme kayıplarında SRT, saf ses eşiklerinden daha iyi çıkar.',
+      'Retrokoklear patolojide en yüksek ayırt etme skoru (PBmax) saf ses ortalamasına göre beklenenden düşük olabilir. Şiddet arttıkça skorun %20’den fazla düşmesine roll-over denir.',
+      'Kaynak: Odyolojide Ayırıcı Tanı Testleri 2. ders (sl. 6, 12, 13) ve 3. ders (sl. 22).' ] },
     { t: 'Maskeleme: neden ve ne zaman', p: [
-      'Kulaklar arası azalma (IA), sinyalin kafatasından karşı kulağa geçerken kaybettiği şiddettir. Sık kullanılan konservatif değerler: supra-aural kulaklıkta yaklaşık 40 dB, insert kulaklıkta yaklaşık 55 dB; kemik yolunda 0 dB’e yakın.',
-      'Hava yolunda, test kulağına verilen şiddet ile karşı kulağın kemik yolu eşiği arasındaki fark IA’ya ulaşıyorsa maskeleme gerekir.',
-      'Aşırı maskeleme riski vardır: maskeleyici gürültü test kulağına geçip eşiği olduğundan yüksek gösterebilir.',
-      'Plato tekniğinin adımları ve hesaplar OdyoBOT bölümünde verilecek.' ] },
+      'Kulaklar arası azalma (IA), sinyalin kafatasından karşı kulağa geçerken kaybettiği şiddettir. Kemik yolunda 0 dB’dir. Kulak üstü kulaklıkta 40 dB standart kabul edilir; insert kulaklıkta daha yüksektir.',
+      'Kulak üstü kulaklıkla, test edilen kulağın hava yolu eşiği karşı kulağın kemik yolu eşiğinden 40 dB ya da daha fazla yüksekse maskeleme gerekir.',
+      'Aşırı maskeleme: maskeleme gürültüsü test kulağına geçip eşiği olduğundan kötü gösterir. Verilebilecek en yüksek düzey yaklaşık: IA + test kulağının kemik yolu eşiği.',
+      'Plato yöntemi: maskeleme 5 dB’lik adımlarla artırılır; üç artışta (15 dB) eşik değişmiyorsa plato bulunmuştur. OdyoBOT’taki hesaplar Katz’a göredir (insert kulaklıkta IA: 1000 Hz ve altında 75 dB, üstünde 50 dB).',
+      'Kaynak: Vakalarla Odyoloji, Maskeleme (sl. 9–15); Katz, Handbook of Clinical Audiology, 7. baskı, Bölüm 6.' ] },
     { t: 'Otoakustik emisyon (OAE)', p: [
-      'Dış tüy hücrelerinin işlevini yansıtır; dış ve orta kulağın sağlıklı olması gerekir.',
-      'Genellikle yaklaşık 30–40 dB HL üzerindeki işitme kayıplarında alınamaz.',
-      'OAE var, ABR yok veya bozuksa işitsel nöropati spektrumu düşünülür.' ] },
+      'Sağlıklı kokleadaki dış tüylü hücrelerin hareketiyle üretilen seslerdir; kulak yoluna yerleştirilen bir probla uyarılıp ölçülür.',
+      'Kaydedilebilmesi için dış ve orta kulağın da sağlıklı olması gerekir.',
+      'TEOAE 35 dB ve üzeri işitme kaybında genellikle görülmez (ders tablosu: 20–30 dB kayıpta %11, 40 dB üzerinde %0). DPOAE, 40–50 dB’den iyi işitenlerin %90’ında elde edilir.',
+      'OAE ve koklear mikrofonik elde edildiği hâlde ABR’de V. dalga yoksa ya da dalga morfolojisi bozuksa işitsel nöropati spektrum bozukluğu düşünülür.',
+      'Kaynak: Elektrofizyolojik Testler, OAE (sl. 3, 5, 22, 26) ve ABR (sl. 41).' ] },
     { t: 'İşitsel beyin sapı yanıtı (ABR)', p: [
-      'Klinikte en çok I, III ve V. dalgalar kullanılır; V. dalga en dayanıklı olandır ve eşik tayininde kullanılır.',
-      'I–V aralığı (interpeak latans) genellikle yaklaşık 4 ms’dir; sınırlar laboratuvar normlarına göre değişir.',
-      'Klik uyaranı geniş bantlıdır; tone-burst frekansa özgü bilgi verir.',
-      'Kulaklar arası V. dalga latans farkının belirgin olması retrokoklear patolojiden şüphelendirir.' ] },
+      'Rutinde ilk 5 dalga değerlendirilir; I, III ve V. dalgalar güvenilir elde edilir. Eşik tayini için en önemli yanıt V. dalgadır.',
+      'I. dalga uyarandan 1,5–2 ms sonra çıkar. I–III ve III–V aralıkları yaklaşık 2 ms, I–V aralığı yaklaşık 4 ms’dir; V. dalganın latansı yaklaşık 6 ms’dir. Normlar laboratuvara göre değişir.',
+      'I–III aralığının uzaması posterior fossa patolojilerini (ör. akustik nörinom), III–V aralığının uzaması beyin sapı lezyonunu düşündürür.',
+      'İletim tipi kayıpta bütün dalgaların latansı eşit ölçüde gecikir; dalgalar arası süreler değişmez.',
+      'Klik 1–8 kHz’i uyarır ama en çok 2–5 kHz hakkında bilgi verir. Tone burst frekansa özgü eşik içindir (özellikle 500 ve 1000 Hz); genellikle yalnızca V. dalga görülür.',
+      'Kaynak: Elektrofizyolojik Testler, ABR (sl. 5, 16, 26, 27, 37).' ] },
     { t: 'Akustik refleks', p: [
-      'Normal işitmede saf sesle refleks eşiği genellikle yaklaşık 70–100 dB HL arasındadır.',
-      'İpsilateral ve kontralateral ölçümler birlikte yorumlanır.',
-      'Prob kulağında orta kulak patolojisi, o kulakta ölçülen refleksleri engeller.',
-      'Refleks decay: uzun süreli uyaranda yanıtın hızla azalması retrokoklear patolojiyi düşündürebilir.' ] }
+      'Şiddetli seste stapedius kası kasılır, orta kulağın sertliği artar ve admitans azalır. Refleks yalnızca uyarılan kulakta değil, iki kulakta birden görülür.',
+      'Normal işitmede refleks eşiği davranışsal hava yolu eşiğinin 70–90 dB üzerindedir.',
+      'İşitme eşiği ile refleks eşiği arasındaki fark 50–55 dB’nin altındaysa Metz rekruitmenti pozitiftir; koklear patolojiyi düşündürür.',
+      'Refleks decay: refleks eşiğinin 10 dB üzerinde, 500 ya da 1000 Hz uyaran 10 sn verilir. 5. saniyeden önce refleksin büyüklüğü %50 ya da daha fazla azalırsa pozitiftir; retrokoklear patoloji ya da MS gibi miyelin hastalıklarıyla ilişkili olabilir.',
+      'Kontralateral test çapraz yoldaki sorunlara daha duyarlıdır; yalnızca ipsilateral bakılırsa birçok retrokoklear patoloji kaçabilir. Prob kulağındaki orta kulak patolojisi o kulakta ölçülen refleksleri engeller.',
+      'Kaynak: Elektrofizyolojik Testler, Akustik refleksler (sl. 3–4, 17–19, 21); Davranışsal Testler 04.12.2023 (sl. 15); Jerger ve Jerger (1977).' ] }
   ];
   // Koddaki temel notlar da yönetici tarafından düzenlenebilir (anahtar: not.<sıra>). Sırayı değiştirme.
   var NOT_ALAN = [{ f: 't', ad: 'Başlık' }, { f: 'p', ad: 'Maddeler (her satıra bir madde)', cok: true }];
