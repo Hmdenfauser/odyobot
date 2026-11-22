@@ -51,7 +51,16 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 - Alt çubuk sırası: Ana sayfa, Görsel depo, OdyoBOT, Vakalarım, Notlar.
 - Odyogram çıktısı (`cikti.js`), Vakalarım → OdyoBOT gönderme, düğmeli sohbet (`odybot.js`). sw v12. Ayrıntı: `PROGRESS.md`.
 
-### KALDIĞIMIZ YER (2026-11-22, v49) — oturum başında bunu özetle
+### KALDIĞIMIZ YER (2026-11-22 akşam) — oturum başında bunu özetle
+**Durum:** Yayında **sw v49**, bekleyen kod değişikliği yok. v49 ayrıntısı aşağıdaki bölümde.
+**Proje sahibi düşünüyor, karar bekleniyor (mağaza + alan adı + reklam):**
+1. **Mağaza (Google Play), önerilen yöntem TWA** (Bubblewrap/PWABuilder; APK ≈1–3 MB, güncellemeler `git push` ile). Capacitor ≈12–15 MB. iOS App Store web sarmalayıcıları çoğunlukla reddediyor (4.2) → önce Google Play.
+2. **Eksikler (hiçbiri yapılmadı):** (a) TWA için `/.well-known/assetlinks.json` alan adının kökünde olmalı; şu an uygulama `hmdenfauser.github.io/odyobot/` alt klasöründe, kökte dosya yok (404). (b) Yasal metin boşlukları + hukukçu; gizlilik politikası herkese açık adres. (c) Hesap silme için web bağlantısı (uygulama içi silme var). (d) Sağlık uygulaması beyanı, açıklamada "tıbbi cihaz değildir, tanı koymaz"; bireysel hesapta Sağlık/Tıp kategorisi kısıtı olabilir (doğrulanmadı) → "Eğitim" kategorisi düşünülebilir. (e) Geliştirici hesabı 25 $, 2023-11-13 sonrası bireysel hesapta 12 test kullanıcısı × 14 gün kapalı test. (f) Mağaza görselleri (1024×500, ekran görüntüleri), içerik derecelendirme, Veri güvenliği formu. (g) Claude yapacak: manifest `id`, eski `theme_color` (#0B6E78) → logo mavisi, paket oluşturma.
+3. **Alan adı:** proje sahibi kendi alan adını almaya eğilimli ("daha mantıklı"); henüz almadı. Öneri odyobot.com (ya da .com.tr / .app); 2026-11-22'de DNS'te hiçbiri kayıtlı görünmüyordu. Aldıktan sonra: proje sahibi DNS satırlarını girer (Claude yazar), Claude GitHub Pages özel alan adı + `.well-known/assetlinks.json` + yasal metin/manifest adreslerini günceller, proje sahibi Firebase → Authentication → Yetkili alan adlarına ekler. **Uyarı:** adres değişince localStorage'daki vakalar yeni adreste görünmez → geçişten önce herkes Vakalarım yedeği alıp yeni adreste geri yükler. Site, ana ekran uygulaması ve Play uygulaması aynı adresi açar (Android'de TWA Chrome ile veriyi paylaşır).
+4. **Reklam:** proje sahibi düşünüyor. Anlatılanlar: AdSense kendi alan adı ister; çerez onayı + KVKK metni, Play "Reklam içerir" + Veri güvenliği, CSP'ye reklam adresleri, sağlık içeriği reklam kısıtları, hız/çevrimdışı etkisi. Yol haritası kuralı: gelir 5. adımda (önce sponsorlu duyuru / ücretli ilan), **Vakalarım ve OdyoBOT'ta asla reklam yok**; 5. adım yalnızca "sıradaki adıma geç" ile.
+**Temizlik (onay bekliyor):** `ampulla-model`, `icerik-denetim`, `onizleme-birlesik` dalları silinebilir.
+
+### KALDIĞIMIZ YER (2026-11-22, v49)
 **Durum:** Yayında **sw v49** (main; `onizleme-birlesik` = `icerik-denetim` + `ampulla-model` birleşti). Yedek etiketi `yedek-yayin-v48`. Ayrıntılar aşağıdaki iki "Yayında v49" bölümünde.
 - Ampulla kesiti (3D, `#3d/ampulla`) ve Ses laboratuvarı → Ampulla ve kupula animasyonu (`#seslab/ampulla`); genel görünüm düğmesinde ampulla simgesi (`ipucu.js` → `ampulla`, `Korti.goruntuleyici` `genelSimge`).
 - Bütün öğretici metinler ders notları ve güvenilir kaynaklarla denetlendi; 10 yeni ders notu.
