@@ -133,46 +133,50 @@
   tick(); setInterval(tick, 30000);
 
   /* ---------- pathway diagram ---------- */
+  /* İşitme yolağı (2026-11-22 denetimi). Kaynaklar: İşitme ve Denge Sistemleri-1, santral işitme sistemi (sl. 3–15);
+     Elektrofizyolojik Testler, ABR (sl. 7, 26–27, 41) ve giriş dersi (sl. 4); Enstrümantasyon, ABR (sl. 15; Møller ve Jannetta);
+     İşitsel İşlemleme Bozuklukları, SOC ve IC dersleri; Bamiou ve Musiek, JAAA 2017 (santral tutulumda eşikler).
+     Kaynağı bulunamayan bilgi yazılmaz. Kimlikler (id) değiştirilmez. */
   var NODES = [
     { id: 'koklea', label: 'Koklea', latin: 'Cochlea', abr: 'Yok (OAE ve koklear mikrofonik burada üretilir)',
       yer: 'İç kulak, temporal kemik içinde.',
-      islev: 'Mekanik titreşimi iç ve dış tüy hücreleri aracılığıyla elektriksel sinyale çevirir. Tonotopik yapıdadır: taban yüksek, apeks düşük frekanslara yanıt verir.',
-      klinik: 'Sensörinöral işitme kaybının en sık yeri. Dış tüy hücre işlevi otoakustik emisyonlarla (OAE) değerlendirilir.' },
+      islev: 'Mekanik titreşimi iç ve dış tüylü hücreler aracılığıyla elektriksel sinyale çevirir. Tonotopik yapıdadır: taban yüksek, apeks alçak frekanslara yanıt verir.',
+      klinik: 'Dış tüylü hücrelerin işlevi otoakustik emisyonlarla (OAE) değerlendirilir.' },
     { id: 'n8', label: 'Koklear sinir (VIII)', latin: 'N. cochlearis', abr: 'Dalga I (distal) ve II (proksimal)',
-      yer: 'Spiral ganglion hücre gövdelerinden çıkar, internal akustik kanaldan geçerek beyin sapına girer.',
-      islev: 'İç tüy hücrelerinden gelen bilgiyi koklear çekirdeğe taşır. Tonotopi sinir boyunca korunur.',
-      klinik: 'Retrokoklear patolojide (örneğin vestibüler schwannom) ABR’de I–V aralığında uzama görülebilir. Nöropati spektrumunda OAE var, ABR yok ya da bozuktur.' },
-    { id: 'cn', label: 'Koklear çekirdek', latin: 'Nucleus cochlearis', abr: 'Dalga III (genellikle)',
-      yer: 'Beyin sapı, pontomedüller bileşke. Dorsal ve ventral bölümleri vardır.',
-      islev: 'İşitsel sinir liflerinin ilk sinaps yeri ve aynı taraflı bir işlem istasyonudur. Buradan çıkan lifler büyük oranda karşı tarafa geçer.',
-      klinik: 'Bu düzeydeki lezyonlar ABR’de III. dalga ve sonrasını etkiler.' },
-    { id: 'striya', label: 'Akustik striyalar', bolge: 'Medulla – pons', latin: 'Striae acusticae', abr: 'Ayrı bir dalga karşılığı yok',
-      yer: 'Koklear çekirdekten çıkıp beyin sapında karşı tarafa geçen lif demetleri.',
-      islev: 'Dorsal striya dorsal koklear çekirdekten çıkar ve karşı taraftaki lateral lemniskus yoluyla inferior kolikulusa ulaşır. Ara striya posteroventral koklear çekirdekten çıkar. Ventral striya (trapezoid cisim) anteroventral koklear çekirdekten çıkar ve iki taraftaki süperior olivar komplekse gider.',
-      klinik: 'Liflerin çoğu karşı tarafa geçtiği için koklear çekirdeğin üstündeki tek taraflı lezyonlar genellikle saf ses eşiğini bozmaz. Striyaların ayrıntılı hedefleri kaynaklara göre farklı anlatılır.' },
-    { id: 'soc', label: 'Süperior olivar kompleks', latin: 'Complexus olivaris superior', abr: 'Dalga III–IV (yaklaşık)',
-      yer: 'Pons, trapezoid cisim düzeyi.',
-      islev: 'İki kulaktan gelen bilgiyi ilk kez birleştirir. Zaman farkı (ITD) ve şiddet farkı (ILD) işlenmesiyle yön bulmanın temelini oluşturur. Akustik refleks arkının da parçasıdır.',
-      klinik: 'Bilateral temsil nedeniyle tek taraflı lezyonlar belirgin bir saf ses eşik kaybı vermeyebilir, ancak lokalizasyon ve gürültüde dinleme zorlaşabilir.' },
-    { id: 'll', label: 'Lateral lemniskus', latin: 'Lemniscus lateralis', abr: 'Dalga IV–V (yaklaşık)',
-      yer: 'Pons ve orta beyin arasında yükselen lif demeti ve çekirdekleri.',
-      islev: 'Koklear çekirdek ve süperior olivar kompleksten gelen lifleri inferior kolikulusa taşır.',
-      klinik: 'ABR’de IV ve V. dalga bileşkesi bu bölgeyle ilişkilendirilir.' },
-    { id: 'ic', label: 'İnferior kolikulus', latin: 'Colliculus inferior', abr: 'Dalga V (yaklaşık)',
-      yer: 'Orta beyin, tektum.',
-      islev: 'Çıkan yolakların neredeyse tamamının birleştiği merkezi bir istasyondur. Frekans, şiddet ve zaman bilgisini bütünleştirir.',
-      klinik: 'ABR’nin en dayanıklı dalgası olan V. dalga eşik tayininde kullanılır; kaynağı IC ve lateral lemniskus bölgesi olarak kabul edilir.' },
-    { id: 'mgb', label: 'Medial genikulat cisim', latin: 'Corpus geniculatum mediale', abr: 'Klasik ABR dışı',
-      yer: 'Talamus.',
-      islev: 'Duyusal bilginin kortekse son aktarım istasyonudur. Dikkat ve geri bildirim döngüleriyle de bağlantılıdır.',
-      klinik: 'Talamik lezyonlar nadirdir. Orta ve geç latanslı yanıtlar bu düzeyin üstüne ait olabilir.' },
-    { id: 'cortex', label: 'İşitsel korteks', latin: 'Cortex auditivus', abr: 'Kortikal yanıtlar (CAEP: P1–N1–P2)',
-      yer: 'Temporal lob, Heschl girusu (primer alan, Brodmann 41 ve 42).',
-      islev: 'Sesin algılanması, ayrımı ve anlamlandırılması. Primer alanda tonotopi sürer.',
-      klinik: 'Yolak iki taraflı olduğundan tek taraflı kortikal lezyon çoğu zaman eşikleri normal bırakır. Dikotik testlerde karşı kulakta zorluk görülebilir (santral işitsel işlem değerlendirmesi).' }
+      yer: 'Spiral gangliyondan çıkar; iç kulak yolunda vestibüler sinir ve fasiyal sinirle birlikte ilerler, serebellopontin köşeden beyin sapına girer.',
+      islev: 'İç tüylü hücrelerden gelen bilgiyi koklear çekirdeğe taşır.',
+      klinik: 'I–III dalgalar arası sürenin uzaması posterior fossa patolojilerini (ör. akustik nörinom) düşündürür. OAE ve koklear mikrofonik varken ABR’de V. dalga yoksa ya da morfoloji bozuksa işitsel nöropati spektrum bozukluğu düşünülür.' },
+    { id: 'cn', label: 'Koklear çekirdek', latin: 'Nucleus cochlearis', abr: 'Dalga III',
+      yer: 'Kaudal ponsun lateroposteriorunda. Dorsal ve ventral bölümleri vardır; ventral bölüm anteroventral (AVCN) ve posteroventral (PVCN) olarak ikiye ayrılır.',
+      islev: 'Periferik işitme sisteminin sonu, santral işitme sisteminin başlangıcıdır. Her iki taraftadır ve aynı taraftaki kulaktan bilgi alır. Tonotopik düzenlidir.',
+      klinik: 'ABR’nin III. dalgası koklear çekirdekten kaynaklanır.' },
+    { id: 'striya', label: 'Akustik striyalar', bolge: 'Beyin sapı', latin: 'Striae acusticae', abr: 'Ayrı bir dalga karşılığı yok',
+      yer: 'Koklear çekirdekten çıkıp beyin sapında karşı tarafa geçen lif demetleri: dorsal, ara ve ventral striya (trapezoid cisim).',
+      islev: 'Koklear çekirdekten çıkan liflerin çoğu beyin sapında çaprazlaşarak karşı taraftaki süperior olivar komplekse, az bir kısmı aynı taraftaki süperior olivar komplekse gider.',
+      klinik: 'Bu çaprazlaşma nedeniyle koklear çekirdekten sonraki düzeyler iki kulaktan da bilgi alır.' },
+    { id: 'soc', label: 'Süperior olivar kompleks', latin: 'Complexus olivaris superior', abr: 'Dalga IV',
+      yer: 'Ponsun kaudal bölümü. Medial ve lateral süperior olive çekirdekleri, trapezoid cismin çekirdekleri ve periolivar çekirdeklerden oluşur.',
+      islev: 'İki kulaktan gelen bilginin birleştirildiği ilk çekirdek topluluğudur. Sesin yerini belirlemek için iki kulak ipuçlarını kodlar; medial çekirdek iki kulaktaki sinyallerin faz farkını ayırt eder. Lateral lemniskus ve inferior kolikulusa lif gönderir.',
+      klinik: 'Akustik refleks arkının bir parçasıdır.' },
+    { id: 'll', label: 'Lateral lemniskus', latin: 'Lemniscus lateralis', abr: 'Dalga V (pozitif kısmı)',
+      yer: 'Orta beynin kaudal kısmında. Ventral, ara ve dorsal olmak üzere üç çekirdeği vardır.',
+      islev: 'Süperior olivar kompleks ile inferior kolikulus arasındaki bağlantıyı sağlar. Alçak frekanslar dorsal, yüksek frekanslar ventral çekirdeğe gider.',
+      klinik: 'ABR’nin V. dalgasının pozitif kısmı lateral lemniskustan kaynaklanır.' },
+    { id: 'ic', label: 'İnferior kolikulus', latin: 'Colliculus inferior', abr: 'Dalga V (negatif kısmı); VI ve VII',
+      yer: 'Orta beyin (mezensefalon), iki taraflı. Merkezi, eksternal ve perisantral çekirdeklerden oluşur.',
+      islev: 'Çıkan yolda zorunlu bir sinaps istasyonudur: lateral lemniskustan gelen liflerin neredeyse tamamı burada sonlanır. Alt beyin sapından gelen bilgiyi medial genikulat cisme ve işitme korteksine gönderir.',
+      klinik: 'Eşik tayini için en önemli ABR yanıtı olan V. dalga bu bölge ve lateral lemniskusla ilişkilidir.' },
+    { id: 'mgb', label: 'Medial genikulat cisim', latin: 'Corpus geniculatum mediale', abr: 'Orta latans yanıtlar (MLR, 10–100 ms)',
+      yer: 'Talamus. Ventral, medial ve dorsal olmak üzere üç bölümü vardır.',
+      islev: 'İnferior kolikulus ile işitme korteksi arasında bir ara istasyondur; korteksten inen lifleri de alır. Ventral bölüm primer işitme alanına, medial bölüm temporal lobun diğer bölgelerine, dorsal bölüm asosiyasyon alanlarına bilgi gönderir.',
+      klinik: 'Orta latans yanıtlar (MLR) talamus ve işitme korteksini değerlendirir.' },
+    { id: 'cortex', label: 'İşitsel korteks', latin: 'Cortex auditivus', abr: 'Geç latans / kortikal yanıtlar (LLR, CAEP)',
+      yer: 'Temporal lobun üst bölümü, Heschl girusu. Primer işitme alanı Brodmann 41 (A1), sekonder işitme alanı Brodmann 42 (A2). İki hemisferde de bulunur.',
+      islev: 'Medial genikulat cisimden gelen aksonların çoğu primer alana gider. Primer alan, sekonder işitme korteksine ve diğer asosiyasyon alanlarına bağlantı gönderir.',
+      klinik: 'Santral işitme sistemi tutulumunda saf ses eşikleri çoğu zaman normal çıkabilir; odyogram santral işlemleme hakkında bilgi vermez. Beyin sapının üstündeki kortikal hasarda akustik refleks genellikle etkilenmez.' }
   ];
   // Beyin bölgesi etiketleri (kutuda adın altında). MGB talamusa aittir.
-  var BOLGE = { koklea: 'İç kulak', n8: 'İç kulak yolu', cn: 'Medulla (pontomedüller)', soc: 'Pons', ll: 'Pons',
+  var BOLGE = { koklea: 'İç kulak', n8: 'İç kulak yolu', cn: 'Pons (kaudal)', soc: 'Pons (kaudal)', ll: 'Orta beyin (kaudal)',
     ic: 'Orta beyin', mgb: 'Talamus', cortex: 'Temporal lob' };
   var YOLAK_ALAN = [{ f: 'label', ad: 'Ad' }, { f: 'bolge', ad: 'Beyin bölgesi' }, { f: 'latin', ad: 'Latince' },
     { f: 'abr', ad: 'ABR karşılığı' }, { f: 'yer', ad: 'Konum', cok: true }, { f: 'islev', ad: 'İşlev', cok: true }, { f: 'klinik', ad: 'Klinik not', cok: true }];
@@ -254,35 +258,38 @@
      Simetrik şema: sol yarı SAĞ kulak, sağ yarı SOL kulak (ayna).
      Renk uyarılan kulağı gösterir (sağ kırmızı, sol mavi). Düz çizgi kontralateral, noktalı çizgi ipsilateral yol.
      Bu çizgi dili yalnızca refleks şemasına özgüdür (proje sahibinin kararı, 2026-11-09). */
+  /* Akustik refleks arkı (2026-11-22 denetimi). Kaynaklar: İşitme ve Denge Sistemleri-2, 4. ders (sl. 28–34: ipsilateral ve
+     kontralateral yolak); Elektrofizyolojik Testler, Akustik refleksler (sl. 2–4, 17–19, 21); Enstrümantasyon, Akustik
+     İmmitansmetre (sl. 45–47, 49, 60); Davranışsal Testler 04.12.2023 (sl. 15, Metz); Jerger ve Jerger (1977) refleks örüntüleri. */
   var RNODES = [
     { id: 'dis', col: 'aff', y: 470, label: ['Dış kulak'], kol: 'Afferent kol', title: 'Dış kulak', latin: 'Auris externa',
       yer: 'Kulak kepçesi ve dış kulak yolu. Uyaran ve ölçüm probu dış kulak yoluna yerleştirilir.',
-      islev: 'Uyaranı kulak zarına iletir. Ölçüm için prob dış kulak yolunu hava geçirmez biçimde kapatmalıdır.',
-      klinik: 'Buşon, kanal kollapsı ya da probun kanal duvarına dayanması ölçümü bozabilir; test öncesi otoskopi yapılır.' },
+      islev: 'Uyaranı kulak zarına iletir. İpsilateral ölçümde uyaran ve kayıt aynı kulaktan, kontralateral ölçümde uyaran bir kulaktan verilip kayıt karşı kulaktaki probla alınır.',
+      klinik: 'Refleksin gözlenmesi için dış kulak yolunda ve orta kulakta patoloji olmamalıdır. Prob yerleştirildikten sonra önce timpanometri yapılır; prob düşerse ya da hasta hareket ederse test timpanometriyle yeniden başlar.' },
     { id: 'orta', col: 'aff', y: 390, label: ['Orta kulak'], kol: 'İletim ve efektör', title: 'Orta kulak ve stapedius kası', latin: 'Auris media, m. stapedius',
       yer: 'Kulak zarı, kemikçik zinciri ve stapes boynuna tutunan stapedius kası.',
-      islev: 'Afferent kolda sesi kokleaya iletir. Refleksin sonunda stapedius kası kasılır, kemikçik zinciri sertleşir ve kulağın akustik admitansı değişir. Test bu değişimi prob kulağında ölçer.',
+      islev: 'Afferent kolda sesi kokleaya iletir. Refleksin sonunda stapedius kası kasılır, stapesi oval pencereden uzaklaştırır ve kemikçik zinciri gerilir; orta kulağın sertliği artar, admitansı azalır. Test bu değişimi prob kulağında ölçer. Refleks uyaran hangi kulaktan verilirse verilsin iki kulakta birden oluşur.',
       klinik: 'Uyaran kulağındaki iletim kaybı kokleaya ulaşan sesi azaltır; refleks yüksek eşikte çıkabilir ya da alınamayabilir. Prob kulağında orta kulak patolojisi (efüzyon, otoskleroz vb.) varsa kas kasılsa bile admitans değişimi algılanamaz ve o kulakta refleks alınamaz.' },
     { id: 'koklea', col: 'aff', y: 310, label: ['Koklea'], kol: 'Afferent kol', title: 'Koklea', latin: 'Cochlea',
       yer: 'İç kulak; uyarılan kulak.',
-      islev: 'Yeterince şiddetli ses (saf seste genellikle yaklaşık 70–100 dB HL arası) tüy hücrelerinde işlenir ve refleksin duyusal kolunu başlatır.',
-      klinik: 'Koklear kayıpta refleks eşiği çoğu zaman saf ses eşiğine göre daha dar bir duyum düzeyinde (SL) ortaya çıkar; bu bulgu rekrutmanla ilişkilendirilir. Ağır kayıplarda refleks alınamayabilir.' },
+      islev: 'Yeterince şiddetli ses (işitme eşiğinin yaklaşık 70–90 dB üzerinde) kokleada işlenir ve refleksin duyusal kolunu başlatır.',
+      klinik: 'İşitme eşiği ile refleks eşiği arasındaki fark 50–55 dB’nin altındaysa (Metz rekruitmenti) koklear patoloji düşünülür. Refleksin gözlenmesi için yeterli işitme eşiği gerekir; ağır kayıplarda refleks alınamayabilir.' },
     { id: 'n8', col: 'aff', y: 230, label: ['8. sinir'], kol: 'Afferent kol', title: '8. sinir (koklear dal)', latin: 'N. cochlearis',
-      yer: 'Spiral gangliondan çıkar, internal akustik kanaldan beyin sapına girer.',
-      islev: 'Uyaran bilgisini beyin sapındaki ventral koklear çekirdeğe taşır.',
-      klinik: '8. sinir veya retrokoklear lezyonda uyaran bu kulaktan verildiğinde ipsilateral ve kontralateral refleksler alınamayabilir ya da yüksek eşikte çıkabilir; refleks decay anormal olabilir.' },
+      yer: 'Spiral gangliyondan çıkar, iç kulak yolundan geçerek beyin sapına girer.',
+      islev: 'Uyaran bilgisini ponstaki aynı taraf ventral koklear çekirdeğe taşır.',
+      klinik: '8. sinir veya retrokoklear lezyonda uyaran bu kulaktan verildiğinde ipsilateral ve kontralateral refleksler alınamayabilir ya da yüksek eşikte çıkabilir; refleks decay (erime) pozitif olabilir.' },
     { id: 'kn', col: 'aff', y: 150, label: ['Koklear', 'nükleus'], kol: 'Beyin sapı', title: 'Koklear nükleus (ventral)', latin: 'Nucleus cochlearis ventralis',
-      yer: 'Pontomedüller bileşke.',
-      islev: 'Refleksin ilk sinaps yeri. Buradan çıkan lifler aynı taraftaki ve karşı taraftaki süperior olivar komplekse ilerler.',
-      klinik: 'Beyin sapı lezyonlarında ipsilateral ve kontralateral refleks bulgularının karşılaştırılması lezyon düzeyi için ipucu verir.' },
+      yer: 'Pons.',
+      islev: 'Refleksin ilk sinaps yeri. Uyaran burada işlenir ve aynı taraftaki süperior olivar komplekse gider.',
+      klinik: 'Refleksin gözlenmesi için beyin sapında orta hatta lezyon olmamalıdır. İpsilateral ve kontralateral bulguların karşılaştırılması lezyonun yeri için ipucu verir.' },
     { id: 'soc', col: 'soc', y: 60, label: ['Süperior olivar', 'kompleks'], kol: 'Beyin sapı', title: 'Süperior olivar kompleks', latin: 'Complexus olivaris superior',
-      yer: 'Pons; medial süperior olivar bölge ve trapezoid cisim çevresi.',
-      islev: 'İki taraflı bağlantının kurulduğu düğüm. Kontralateral yolun karşıya geçişi bu düzeyde gösterilir. Sinyal buradan fasiyal motor çekirdeğe iletilir.',
-      klinik: 'Pontin lezyonlar kontralateral refleksi ipsilateral refleksten daha belirgin bozabilir; yorum tüm refleks bulgularıyla birlikte yapılır.' },
+      yer: 'Ponsun kaudal bölümü.',
+      islev: 'Sağ ve sol süperior olivar kompleks arasında çapraz bağlantılar vardır; uyarının bir kısmı karşı tarafa geçer (kontralateral yol). Süperior olivar kompleks nöronları fasiyal sinirin motor çekirdeğiyle sinaps yapar. Böylece arkta dört yol oluşur: iki ipsilateral, iki kontralateral.',
+      klinik: 'Kontralateral refleks çapraz yoldaki patolojilere ipsilateral refleksten daha duyarlıdır; yalnızca ipsilateral bakılırsa retrokoklear patolojiler gözden kaçabilir. Yorum tüm refleks bulgularıyla birlikte yapılır.' },
     { id: 'n7', col: 'eff', y: 230, label: ['7. sinir'], kol: 'Efferent kol', title: '7. sinir (stapedius dalı)', latin: 'N. facialis, n. stapedius',
-      yer: 'Motor çekirdeği ponstadır. Sinir temporal kemik içinde fasiyal kanalda seyreder ve stapedius dalını verir.',
-      islev: 'Süperior olivar kompleksten gelen sinyal fasiyal motor çekirdeğe ulaşır. Motor komut 7. sinirin stapedius dalıyla orta kulaktaki stapedius kasına taşınır.',
-      klinik: 'Stapedius dalının proksimalinde fasiyal sinir lezyonu varsa (örneğin Bell paralizisi veya temporal kemik patolojisi), prob lezyonlu kulaktayken uyaran hangi kulaktan verilirse verilsin refleks alınamaz. Pontin lezyonlar refleksi ve yüz sinirinin işlevini birlikte etkileyebilir.' }
+      yer: 'Stapedius kası fasiyal sinir (VII. kafa çifti) tarafından uyarılır.',
+      islev: 'Süperior olivar kompleksten gelen sinyal fasiyal sinirin motor çekirdeğine ulaşır. Motor komut 7. sinirin dalıyla orta kulaktaki stapedius kasına taşınır.',
+      klinik: 'Stapedius dalının proksimalinde fasiyal sinir lezyonu varsa (örneğin Bell paralizisi veya temporal kemik patolojisi), prob lezyonlu kulaktayken uyaran hangi kulaktan verilirse verilsin refleks alınamaz. Refleksin gözlenmesi için fasiyal sinirin sağlam olması gerekir.' }
   ];
   var RCOL = { aff: { x: 58, w: 100 }, soc: { x: 100, w: 120 }, eff: { x: 146, w: 56 } };
   var rsvg = $('reflex'), rsel = 'soc', rgroups = {};
