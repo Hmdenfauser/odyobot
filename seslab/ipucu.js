@@ -36,6 +36,9 @@
     bolumSinir: '<path d="M3 12h6.5"/><path d="M9.5 12c2.5 0 3.5-4.5 7-5.5H21"/><path d="M9.5 12h11.5"/><path d="M9.5 12c2.5 0 3.5 4.5 7 5.5H21"/><circle cx="3.6" cy="12" r="1.1"/>',
     // çevre yapılar: kafatası (temporal kemik ve komşulukları)
     bolumCevre: '<path d="M5 11.5a7 7 0 0 1 14 0v2.6l-1.8 1v3.4h-2.7v-2h-5v2H6.8v-3.4l-1.8-1z"/><circle cx="9.4" cy="12" r="1.4"/><circle cx="14.6" cy="12" r="1.4"/>',
+    // ampulla kesiti (2026-11-22): ince kanal → genişleyen ampulla duvarları, tabanda krista tümseği, ortada tavana uzanan kupula
+    ampulla: '<path d="M2 9.5h3.5C7.5 5.6 9.6 4.5 12 4.5s4.6 1.1 6.5 5H22"/><path d="M2 14.5h3.5c2 3.9 4.1 5 6.5 5s4.6-1.1 6.5-5H22"/>' +
+      '<path d="M8.8 19.1c.7-2.5 1.7-3.8 3.2-3.8s2.5 1.3 3.2 3.8"/><path d="M10.6 15.4L11.2 4.6M13.4 15.4l-.6-10.8"/>',
     // kepçe (C biçimi) → dış kulak yolu → zar (dikey çizgi) → kemikçik (nokta) → koklea (sarmal)
     genel: '<path d="M8 3.5C5 3.5 3 6 3 9c0 2 .9 3.2 1.8 4.2.8.9 1.2 2 1.2 3.3 0 2 1.3 3.5 3.2 3.5"/>' +
       '<path d="M6 9.5c0-1.4.9-2.4 2.1-2.4"/><path d="M6.4 12H11"/><path d="M11.4 9.6v4.8"/><path d="M11.9 12.6l1.3-1.3 1.8.7"/>' +

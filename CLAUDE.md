@@ -51,13 +51,29 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 - Alt çubuk sırası: Ana sayfa, Görsel depo, OdyoBOT, Vakalarım, Notlar.
 - Odyogram çıktısı (`cikti.js`), Vakalarım → OdyoBOT gönderme, düğmeli sohbet (`odybot.js`). sw v12. Ayrıntı: `PROGRESS.md`.
 
+### Devam eden iş (2026-11-22): İçerik denetimi — dal `icerik-denetim`, YAYINDA DEĞİL
+- **Kural (proje sahibi, 2026-11-22):** klinik/anatomik metin yalnızca ders notlarına ve güvenilir kaynaklara dayanır; kaynağı bulunamayan cümle yazılmaz. Ders notları Drive'dan indirilip `pdftotext -enc UTF-8` / pptx XML ile metne çevrildi (scratchpad, git dışı).
+- Denetlenenler: 8 temel ders notu (her notta kaynak satırı), işitme yolağı, refleks arkı, yenidoğan taraması (JCIH 2007 risk faktörleri eklendi), işitsel hafıza, 3D periferik/iç kulak/denge metinleri, Ses laboratuvarı (işitme, BPPV/Epley), sözlük 112 terim (57 açıklama düzeltildi). Her veri dosyasının başında kaynak notu var.
+- Yeni: ders notlarından 10 not (`NOTES` 8–17) ve 4 yeni konu başlığı (ayırıcı tanı, vestibüler, pediatrik, tinnitus). Firestore'da `ayar/notGruplari` kayıtlıysa yeni notlar "Diğer notlar"da görünür; yönetici taşır.
+- Dikkat: yönetici daha önce uygulamadan bir metni düzenlediyse (Firestore `icerik/...`), o düzenleme koddaki yeni metnin önüne geçer.
+- Değişmeyen: maskeleme (Katz) ve refleks yorumu (Jerger) kuralları, timpanogram/OAE sınırları (önceden onaylı); cihaz kartı açıklamaları boş.
+- Yayın: `ampulla-model` ve `icerik-denetim` dalları proje sahibi onaylayınca main'e birleştirilir; sw VERSION 49.
+### Devam eden iş (2026-11-22): Ampulla kesiti 3D modeli + animasyonu — dal `ampulla-model`, YAYINDA DEĞİL
+- 3D modeller listesine 4. model: `#3d/ampulla` (`korti/ampulla3d.js` + `ampulla3d-veri.js`, renkler `korti.css` → `--amp-*`). Görüntüleyici `Korti.goruntuleyici`; ağ yardımcıları `Korti.ag` olarak açıldı (korti.js'te başka değişiklik yok).
+- Kanal ekseni boyunca kalın dilim: kemik ampulla, perilenf, zar duvar, endolenf, krista (yarı saydam, içinden sinir lifleri), destek hücreleri, Tip I (kaliksli) / Tip II tüylü hücreler, stereosilyalar, kinosilyum (lateral kanal gibi utrikulus tarafında), kupula (yarı saydam), ampullar sinir. Krista eyer değil düz sırt (sadeleştirme). Hareketsiz.
+- Metinler Claude'un TASLAĞI (ders notuyla karşılaştırılmadı); yönetici: `icerik/ampulla3d.yapi.<id>`, `ampulla3d.genel`, `ampulla3d.metin` (yön yazıları dahil). sw ASSETS'e eklendi, VERSION yayında artırılacak.
+- Proje sahibi modeli beğendi ve animasyonu onayladı (2026-11-22). Model ve metinler ders notlarıyla karşılaştırıldı (İşitme ve Denge Sistemleri-2 periferik vestibüler sistem sl. 21–31; Vestibüler Sistemin Değerlendirilmesi 1. ders): krista eyer biçimli/ampullaya dik, sinir lifleri kristanın merkezinden, kupula karşı duvara uzanır, Tip I kadeh–Tip II buton, Tip I tepede, lateral kanalda kinosilyum utrikulusa doğru — hepsi uyumlu; metinlere ders notu ayrıntıları eklendi.
+- **Ses laboratuvarı → Ampulla ve kupula** (`#seslab/ampulla`, `Ampulla3D.kurAnim`, kap `#sl-ampulla`): sağ lateral kanal, döner sandalye senaryosu (13,5 sn döngü): dinlenim (bazal deşarj) → hızlanma (ampullopetal, kupula utrikulusa, depolarizasyon, K⁺, deşarj artar) → sabit hız (kupula geri döner) → yavaşlama (ampullofugal, hiperpolarizasyon, deşarj azalır) → dönüş. Kupula dθ/dt = −θ/τ + K·α ile (τ 1,4; K 0,4). Gölgelendiricide yeni tür 7 (kupula diyafram bükülmesi) ve 8 (tüyler) `korti.js` VS'de. Sol üstte yukarıdan baş göstergesi (sağ kulak kırmızı). Yazılar `AMPULLA3D_VERI.anim`, yönetici `icerik/ampulla3d.anim.genel`, `ampulla3d.anim.metin`. Node testi scratchpad'de yapıldı (evreler ve işaretler doğru).
+- Telefonda denenecek: akıcılık, baş göstergesi, oynat/duraklat, 400 px.
+
 ### KALDIĞIMIZ YER (2026-11-21 gece, son durum v48) — oturum başında bunu özetle
 **Durum:** Yayında **sw v48** (main). Yedek etiketleri GitHub'da (son: `yedek-yayin-v47`). Bekleyen kod değişikliği ve açık dal yok (yalnızca main).
 **Proje sahibinin kararı (2026-11-21 gece):** forum/üyelik **şimdilik açılmayacak** (ayar/uyelik kapalı kalır). Ertesi gün devam edilecek.
 **Firebase tarafında yapılanlar:** kurallar yapıştırıldı; Google girişi açık (destek e-postası odyobot hesabı, görünen ad "OdyoBOT"); yetkili alan adı tamam; e-posta şablonu Türkçe; odyobot Google hesabı projeye sahip olarak eklendi; yönetici hesabıyla forum denemesi çalıştı (e-posta doğrulandıktan sonra çıkış/giriş gerekiyordu, v47 ile düzeldi).
 **Üyeliği açmadan önce kalan (proje sahibi):** (1) yasal metinlerdeki köşeli parantezli boşluklar (veri sorumlusu adı, iletişim e-postası; uygulamadan Düzenle ile, koda yazılmaz); (2) KVKK m. 9 yurt dışı aktarım cümlesi + metinler için hukukçu; (3) Ayarlar → Üyelik → "Yeni üye kaydı açık". Açıldıktan sonra: telefonda ikinci hesapla kayıt, iPhone ana ekran uygulamasında Google girişi, zil, doğrulanmamış hesabın yazamaması.
-**Diğer bekleyenler:** taslak içerik doğrulamaları (iç kulak, denge, Corti, 112 sözlük terimi, yasal metinler); sözlükte yönetici ile gerçek yazma denemesi; ampulla kesiti animasyonu (başka gün); 5. adım yalnızca "sıradaki adıma geç" ile.
-**Oturum başında hatırlat:** yukarıdaki üç madde + v46–v48 telefon denemesi (yeni alt çubuk, Kütüphane, zil, selam, yasal sayfalar).
+**Diğer bekleyenler:** taslak içerik doğrulamaları (iç kulak, denge, Corti, 112 sözlük terimi, yasal metinler); ampulla kesiti animasyonu (başka gün); 5. adım yalnızca "sıradaki adıma geç" ile.
+**Yapıldı (2026-11-22, proje sahibi):** v46–v48 telefon denemesi (yeni alt çubuk, Kütüphane, zil, selam, yasal sayfalar) ve sözlükte yönetici ile gerçek yazma denemesi.
+**Oturum başında hatırlat:** yukarıdaki maddeler.
 
 ### Önceki: KALDIĞIMIZ YER (2026-11-21 gece, v46)
 **v48 (2026-11-21):** ana sayfa selamı "Merhaba, <görünen ad>" (giriş yoksa "odyolog"; kalıplar `uye.m.selamUye`/`selamMisafir`, eski `ana.baslik` kullanılmıyor), kayıt açıkken selamın altında "Giriş yap / Kaydol" (`#ana-giris`). Yedek `yedek-yayin-v47`.

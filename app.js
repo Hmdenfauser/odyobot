@@ -133,46 +133,50 @@
   tick(); setInterval(tick, 30000);
 
   /* ---------- pathway diagram ---------- */
+  /* İşitme yolağı (2026-11-22 denetimi). Kaynaklar: İşitme ve Denge Sistemleri-1, santral işitme sistemi (sl. 3–15);
+     Elektrofizyolojik Testler, ABR (sl. 7, 26–27, 41) ve giriş dersi (sl. 4); Enstrümantasyon, ABR (sl. 15; Møller ve Jannetta);
+     İşitsel İşlemleme Bozuklukları, SOC ve IC dersleri; Bamiou ve Musiek, JAAA 2017 (santral tutulumda eşikler).
+     Kaynağı bulunamayan bilgi yazılmaz. Kimlikler (id) değiştirilmez. */
   var NODES = [
     { id: 'koklea', label: 'Koklea', latin: 'Cochlea', abr: 'Yok (OAE ve koklear mikrofonik burada üretilir)',
       yer: 'İç kulak, temporal kemik içinde.',
-      islev: 'Mekanik titreşimi iç ve dış tüy hücreleri aracılığıyla elektriksel sinyale çevirir. Tonotopik yapıdadır: taban yüksek, apeks düşük frekanslara yanıt verir.',
-      klinik: 'Sensörinöral işitme kaybının en sık yeri. Dış tüy hücre işlevi otoakustik emisyonlarla (OAE) değerlendirilir.' },
+      islev: 'Mekanik titreşimi iç ve dış tüylü hücreler aracılığıyla elektriksel sinyale çevirir. Tonotopik yapıdadır: taban yüksek, apeks alçak frekanslara yanıt verir.',
+      klinik: 'Dış tüylü hücrelerin işlevi otoakustik emisyonlarla (OAE) değerlendirilir.' },
     { id: 'n8', label: 'Koklear sinir (VIII)', latin: 'N. cochlearis', abr: 'Dalga I (distal) ve II (proksimal)',
-      yer: 'Spiral ganglion hücre gövdelerinden çıkar, internal akustik kanaldan geçerek beyin sapına girer.',
-      islev: 'İç tüy hücrelerinden gelen bilgiyi koklear çekirdeğe taşır. Tonotopi sinir boyunca korunur.',
-      klinik: 'Retrokoklear patolojide (örneğin vestibüler schwannom) ABR’de I–V aralığında uzama görülebilir. Nöropati spektrumunda OAE var, ABR yok ya da bozuktur.' },
-    { id: 'cn', label: 'Koklear çekirdek', latin: 'Nucleus cochlearis', abr: 'Dalga III (genellikle)',
-      yer: 'Beyin sapı, pontomedüller bileşke. Dorsal ve ventral bölümleri vardır.',
-      islev: 'İşitsel sinir liflerinin ilk sinaps yeri ve aynı taraflı bir işlem istasyonudur. Buradan çıkan lifler büyük oranda karşı tarafa geçer.',
-      klinik: 'Bu düzeydeki lezyonlar ABR’de III. dalga ve sonrasını etkiler.' },
-    { id: 'striya', label: 'Akustik striyalar', bolge: 'Medulla – pons', latin: 'Striae acusticae', abr: 'Ayrı bir dalga karşılığı yok',
-      yer: 'Koklear çekirdekten çıkıp beyin sapında karşı tarafa geçen lif demetleri.',
-      islev: 'Dorsal striya dorsal koklear çekirdekten çıkar ve karşı taraftaki lateral lemniskus yoluyla inferior kolikulusa ulaşır. Ara striya posteroventral koklear çekirdekten çıkar. Ventral striya (trapezoid cisim) anteroventral koklear çekirdekten çıkar ve iki taraftaki süperior olivar komplekse gider.',
-      klinik: 'Liflerin çoğu karşı tarafa geçtiği için koklear çekirdeğin üstündeki tek taraflı lezyonlar genellikle saf ses eşiğini bozmaz. Striyaların ayrıntılı hedefleri kaynaklara göre farklı anlatılır.' },
-    { id: 'soc', label: 'Süperior olivar kompleks', latin: 'Complexus olivaris superior', abr: 'Dalga III–IV (yaklaşık)',
-      yer: 'Pons, trapezoid cisim düzeyi.',
-      islev: 'İki kulaktan gelen bilgiyi ilk kez birleştirir. Zaman farkı (ITD) ve şiddet farkı (ILD) işlenmesiyle yön bulmanın temelini oluşturur. Akustik refleks arkının da parçasıdır.',
-      klinik: 'Bilateral temsil nedeniyle tek taraflı lezyonlar belirgin bir saf ses eşik kaybı vermeyebilir, ancak lokalizasyon ve gürültüde dinleme zorlaşabilir.' },
-    { id: 'll', label: 'Lateral lemniskus', latin: 'Lemniscus lateralis', abr: 'Dalga IV–V (yaklaşık)',
-      yer: 'Pons ve orta beyin arasında yükselen lif demeti ve çekirdekleri.',
-      islev: 'Koklear çekirdek ve süperior olivar kompleksten gelen lifleri inferior kolikulusa taşır.',
-      klinik: 'ABR’de IV ve V. dalga bileşkesi bu bölgeyle ilişkilendirilir.' },
-    { id: 'ic', label: 'İnferior kolikulus', latin: 'Colliculus inferior', abr: 'Dalga V (yaklaşık)',
-      yer: 'Orta beyin, tektum.',
-      islev: 'Çıkan yolakların neredeyse tamamının birleştiği merkezi bir istasyondur. Frekans, şiddet ve zaman bilgisini bütünleştirir.',
-      klinik: 'ABR’nin en dayanıklı dalgası olan V. dalga eşik tayininde kullanılır; kaynağı IC ve lateral lemniskus bölgesi olarak kabul edilir.' },
-    { id: 'mgb', label: 'Medial genikulat cisim', latin: 'Corpus geniculatum mediale', abr: 'Klasik ABR dışı',
-      yer: 'Talamus.',
-      islev: 'Duyusal bilginin kortekse son aktarım istasyonudur. Dikkat ve geri bildirim döngüleriyle de bağlantılıdır.',
-      klinik: 'Talamik lezyonlar nadirdir. Orta ve geç latanslı yanıtlar bu düzeyin üstüne ait olabilir.' },
-    { id: 'cortex', label: 'İşitsel korteks', latin: 'Cortex auditivus', abr: 'Kortikal yanıtlar (CAEP: P1–N1–P2)',
-      yer: 'Temporal lob, Heschl girusu (primer alan, Brodmann 41 ve 42).',
-      islev: 'Sesin algılanması, ayrımı ve anlamlandırılması. Primer alanda tonotopi sürer.',
-      klinik: 'Yolak iki taraflı olduğundan tek taraflı kortikal lezyon çoğu zaman eşikleri normal bırakır. Dikotik testlerde karşı kulakta zorluk görülebilir (santral işitsel işlem değerlendirmesi).' }
+      yer: 'Spiral gangliyondan çıkar; iç kulak yolunda vestibüler sinir ve fasiyal sinirle birlikte ilerler, serebellopontin köşeden beyin sapına girer.',
+      islev: 'İç tüylü hücrelerden gelen bilgiyi koklear çekirdeğe taşır.',
+      klinik: 'I–III dalgalar arası sürenin uzaması posterior fossa patolojilerini (ör. akustik nörinom) düşündürür. OAE ve koklear mikrofonik varken ABR’de V. dalga yoksa ya da morfoloji bozuksa işitsel nöropati spektrum bozukluğu düşünülür.' },
+    { id: 'cn', label: 'Koklear çekirdek', latin: 'Nucleus cochlearis', abr: 'Dalga III',
+      yer: 'Kaudal ponsun lateroposteriorunda. Dorsal ve ventral bölümleri vardır; ventral bölüm anteroventral (AVCN) ve posteroventral (PVCN) olarak ikiye ayrılır.',
+      islev: 'Periferik işitme sisteminin sonu, santral işitme sisteminin başlangıcıdır. Her iki taraftadır ve aynı taraftaki kulaktan bilgi alır. Tonotopik düzenlidir.',
+      klinik: 'ABR’nin III. dalgası koklear çekirdekten kaynaklanır.' },
+    { id: 'striya', label: 'Akustik striyalar', bolge: 'Beyin sapı', latin: 'Striae acusticae', abr: 'Ayrı bir dalga karşılığı yok',
+      yer: 'Koklear çekirdekten çıkıp beyin sapında karşı tarafa geçen lif demetleri: dorsal, ara ve ventral striya (trapezoid cisim).',
+      islev: 'Koklear çekirdekten çıkan liflerin çoğu beyin sapında çaprazlaşarak karşı taraftaki süperior olivar komplekse, az bir kısmı aynı taraftaki süperior olivar komplekse gider.',
+      klinik: 'Bu çaprazlaşma nedeniyle koklear çekirdekten sonraki düzeyler iki kulaktan da bilgi alır.' },
+    { id: 'soc', label: 'Süperior olivar kompleks', latin: 'Complexus olivaris superior', abr: 'Dalga IV',
+      yer: 'Ponsun kaudal bölümü. Medial ve lateral süperior olive çekirdekleri, trapezoid cismin çekirdekleri ve periolivar çekirdeklerden oluşur.',
+      islev: 'İki kulaktan gelen bilginin birleştirildiği ilk çekirdek topluluğudur. Sesin yerini belirlemek için iki kulak ipuçlarını kodlar; medial çekirdek iki kulaktaki sinyallerin faz farkını ayırt eder. Lateral lemniskus ve inferior kolikulusa lif gönderir.',
+      klinik: 'Akustik refleks arkının bir parçasıdır.' },
+    { id: 'll', label: 'Lateral lemniskus', latin: 'Lemniscus lateralis', abr: 'Dalga V (pozitif kısmı)',
+      yer: 'Orta beynin kaudal kısmında. Ventral, ara ve dorsal olmak üzere üç çekirdeği vardır.',
+      islev: 'Süperior olivar kompleks ile inferior kolikulus arasındaki bağlantıyı sağlar. Alçak frekanslar dorsal, yüksek frekanslar ventral çekirdeğe gider.',
+      klinik: 'ABR’nin V. dalgasının pozitif kısmı lateral lemniskustan kaynaklanır.' },
+    { id: 'ic', label: 'İnferior kolikulus', latin: 'Colliculus inferior', abr: 'Dalga V (negatif kısmı); VI ve VII',
+      yer: 'Orta beyin (mezensefalon), iki taraflı. Merkezi, eksternal ve perisantral çekirdeklerden oluşur.',
+      islev: 'Çıkan yolda zorunlu bir sinaps istasyonudur: lateral lemniskustan gelen liflerin neredeyse tamamı burada sonlanır. Alt beyin sapından gelen bilgiyi medial genikulat cisme ve işitme korteksine gönderir.',
+      klinik: 'Eşik tayini için en önemli ABR yanıtı olan V. dalga bu bölge ve lateral lemniskusla ilişkilidir.' },
+    { id: 'mgb', label: 'Medial genikulat cisim', latin: 'Corpus geniculatum mediale', abr: 'Orta latans yanıtlar (MLR, 10–100 ms)',
+      yer: 'Talamus. Ventral, medial ve dorsal olmak üzere üç bölümü vardır.',
+      islev: 'İnferior kolikulus ile işitme korteksi arasında bir ara istasyondur; korteksten inen lifleri de alır. Ventral bölüm primer işitme alanına, medial bölüm temporal lobun diğer bölgelerine, dorsal bölüm asosiyasyon alanlarına bilgi gönderir.',
+      klinik: 'Orta latans yanıtlar (MLR) talamus ve işitme korteksini değerlendirir.' },
+    { id: 'cortex', label: 'İşitsel korteks', latin: 'Cortex auditivus', abr: 'Geç latans / kortikal yanıtlar (LLR, CAEP)',
+      yer: 'Temporal lobun üst bölümü, Heschl girusu. Primer işitme alanı Brodmann 41 (A1), sekonder işitme alanı Brodmann 42 (A2). İki hemisferde de bulunur.',
+      islev: 'Medial genikulat cisimden gelen aksonların çoğu primer alana gider. Primer alan, sekonder işitme korteksine ve diğer asosiyasyon alanlarına bağlantı gönderir.',
+      klinik: 'Santral işitme sistemi tutulumunda saf ses eşikleri çoğu zaman normal çıkabilir; odyogram santral işlemleme hakkında bilgi vermez. Beyin sapının üstündeki kortikal hasarda akustik refleks genellikle etkilenmez.' }
   ];
   // Beyin bölgesi etiketleri (kutuda adın altında). MGB talamusa aittir.
-  var BOLGE = { koklea: 'İç kulak', n8: 'İç kulak yolu', cn: 'Medulla (pontomedüller)', soc: 'Pons', ll: 'Pons',
+  var BOLGE = { koklea: 'İç kulak', n8: 'İç kulak yolu', cn: 'Pons (kaudal)', soc: 'Pons (kaudal)', ll: 'Orta beyin (kaudal)',
     ic: 'Orta beyin', mgb: 'Talamus', cortex: 'Temporal lob' };
   var YOLAK_ALAN = [{ f: 'label', ad: 'Ad' }, { f: 'bolge', ad: 'Beyin bölgesi' }, { f: 'latin', ad: 'Latince' },
     { f: 'abr', ad: 'ABR karşılığı' }, { f: 'yer', ad: 'Konum', cok: true }, { f: 'islev', ad: 'İşlev', cok: true }, { f: 'klinik', ad: 'Klinik not', cok: true }];
@@ -254,35 +258,38 @@
      Simetrik şema: sol yarı SAĞ kulak, sağ yarı SOL kulak (ayna).
      Renk uyarılan kulağı gösterir (sağ kırmızı, sol mavi). Düz çizgi kontralateral, noktalı çizgi ipsilateral yol.
      Bu çizgi dili yalnızca refleks şemasına özgüdür (proje sahibinin kararı, 2026-11-09). */
+  /* Akustik refleks arkı (2026-11-22 denetimi). Kaynaklar: İşitme ve Denge Sistemleri-2, 4. ders (sl. 28–34: ipsilateral ve
+     kontralateral yolak); Elektrofizyolojik Testler, Akustik refleksler (sl. 2–4, 17–19, 21); Enstrümantasyon, Akustik
+     İmmitansmetre (sl. 45–47, 49, 60); Davranışsal Testler 04.12.2023 (sl. 15, Metz); Jerger ve Jerger (1977) refleks örüntüleri. */
   var RNODES = [
     { id: 'dis', col: 'aff', y: 470, label: ['Dış kulak'], kol: 'Afferent kol', title: 'Dış kulak', latin: 'Auris externa',
       yer: 'Kulak kepçesi ve dış kulak yolu. Uyaran ve ölçüm probu dış kulak yoluna yerleştirilir.',
-      islev: 'Uyaranı kulak zarına iletir. Ölçüm için prob dış kulak yolunu hava geçirmez biçimde kapatmalıdır.',
-      klinik: 'Buşon, kanal kollapsı ya da probun kanal duvarına dayanması ölçümü bozabilir; test öncesi otoskopi yapılır.' },
+      islev: 'Uyaranı kulak zarına iletir. İpsilateral ölçümde uyaran ve kayıt aynı kulaktan, kontralateral ölçümde uyaran bir kulaktan verilip kayıt karşı kulaktaki probla alınır.',
+      klinik: 'Refleksin gözlenmesi için dış kulak yolunda ve orta kulakta patoloji olmamalıdır. Prob yerleştirildikten sonra önce timpanometri yapılır; prob düşerse ya da hasta hareket ederse test timpanometriyle yeniden başlar.' },
     { id: 'orta', col: 'aff', y: 390, label: ['Orta kulak'], kol: 'İletim ve efektör', title: 'Orta kulak ve stapedius kası', latin: 'Auris media, m. stapedius',
       yer: 'Kulak zarı, kemikçik zinciri ve stapes boynuna tutunan stapedius kası.',
-      islev: 'Afferent kolda sesi kokleaya iletir. Refleksin sonunda stapedius kası kasılır, kemikçik zinciri sertleşir ve kulağın akustik admitansı değişir. Test bu değişimi prob kulağında ölçer.',
+      islev: 'Afferent kolda sesi kokleaya iletir. Refleksin sonunda stapedius kası kasılır, stapesi oval pencereden uzaklaştırır ve kemikçik zinciri gerilir; orta kulağın sertliği artar, admitansı azalır. Test bu değişimi prob kulağında ölçer. Refleks uyaran hangi kulaktan verilirse verilsin iki kulakta birden oluşur.',
       klinik: 'Uyaran kulağındaki iletim kaybı kokleaya ulaşan sesi azaltır; refleks yüksek eşikte çıkabilir ya da alınamayabilir. Prob kulağında orta kulak patolojisi (efüzyon, otoskleroz vb.) varsa kas kasılsa bile admitans değişimi algılanamaz ve o kulakta refleks alınamaz.' },
     { id: 'koklea', col: 'aff', y: 310, label: ['Koklea'], kol: 'Afferent kol', title: 'Koklea', latin: 'Cochlea',
       yer: 'İç kulak; uyarılan kulak.',
-      islev: 'Yeterince şiddetli ses (saf seste genellikle yaklaşık 70–100 dB HL arası) tüy hücrelerinde işlenir ve refleksin duyusal kolunu başlatır.',
-      klinik: 'Koklear kayıpta refleks eşiği çoğu zaman saf ses eşiğine göre daha dar bir duyum düzeyinde (SL) ortaya çıkar; bu bulgu rekrutmanla ilişkilendirilir. Ağır kayıplarda refleks alınamayabilir.' },
+      islev: 'Yeterince şiddetli ses (işitme eşiğinin yaklaşık 70–90 dB üzerinde) kokleada işlenir ve refleksin duyusal kolunu başlatır.',
+      klinik: 'İşitme eşiği ile refleks eşiği arasındaki fark 50–55 dB’nin altındaysa (Metz rekruitmenti) koklear patoloji düşünülür. Refleksin gözlenmesi için yeterli işitme eşiği gerekir; ağır kayıplarda refleks alınamayabilir.' },
     { id: 'n8', col: 'aff', y: 230, label: ['8. sinir'], kol: 'Afferent kol', title: '8. sinir (koklear dal)', latin: 'N. cochlearis',
-      yer: 'Spiral gangliondan çıkar, internal akustik kanaldan beyin sapına girer.',
-      islev: 'Uyaran bilgisini beyin sapındaki ventral koklear çekirdeğe taşır.',
-      klinik: '8. sinir veya retrokoklear lezyonda uyaran bu kulaktan verildiğinde ipsilateral ve kontralateral refleksler alınamayabilir ya da yüksek eşikte çıkabilir; refleks decay anormal olabilir.' },
+      yer: 'Spiral gangliyondan çıkar, iç kulak yolundan geçerek beyin sapına girer.',
+      islev: 'Uyaran bilgisini ponstaki aynı taraf ventral koklear çekirdeğe taşır.',
+      klinik: '8. sinir veya retrokoklear lezyonda uyaran bu kulaktan verildiğinde ipsilateral ve kontralateral refleksler alınamayabilir ya da yüksek eşikte çıkabilir; refleks decay (erime) pozitif olabilir.' },
     { id: 'kn', col: 'aff', y: 150, label: ['Koklear', 'nükleus'], kol: 'Beyin sapı', title: 'Koklear nükleus (ventral)', latin: 'Nucleus cochlearis ventralis',
-      yer: 'Pontomedüller bileşke.',
-      islev: 'Refleksin ilk sinaps yeri. Buradan çıkan lifler aynı taraftaki ve karşı taraftaki süperior olivar komplekse ilerler.',
-      klinik: 'Beyin sapı lezyonlarında ipsilateral ve kontralateral refleks bulgularının karşılaştırılması lezyon düzeyi için ipucu verir.' },
+      yer: 'Pons.',
+      islev: 'Refleksin ilk sinaps yeri. Uyaran burada işlenir ve aynı taraftaki süperior olivar komplekse gider.',
+      klinik: 'Refleksin gözlenmesi için beyin sapında orta hatta lezyon olmamalıdır. İpsilateral ve kontralateral bulguların karşılaştırılması lezyonun yeri için ipucu verir.' },
     { id: 'soc', col: 'soc', y: 60, label: ['Süperior olivar', 'kompleks'], kol: 'Beyin sapı', title: 'Süperior olivar kompleks', latin: 'Complexus olivaris superior',
-      yer: 'Pons; medial süperior olivar bölge ve trapezoid cisim çevresi.',
-      islev: 'İki taraflı bağlantının kurulduğu düğüm. Kontralateral yolun karşıya geçişi bu düzeyde gösterilir. Sinyal buradan fasiyal motor çekirdeğe iletilir.',
-      klinik: 'Pontin lezyonlar kontralateral refleksi ipsilateral refleksten daha belirgin bozabilir; yorum tüm refleks bulgularıyla birlikte yapılır.' },
+      yer: 'Ponsun kaudal bölümü.',
+      islev: 'Sağ ve sol süperior olivar kompleks arasında çapraz bağlantılar vardır; uyarının bir kısmı karşı tarafa geçer (kontralateral yol). Süperior olivar kompleks nöronları fasiyal sinirin motor çekirdeğiyle sinaps yapar. Böylece arkta dört yol oluşur: iki ipsilateral, iki kontralateral.',
+      klinik: 'Kontralateral refleks çapraz yoldaki patolojilere ipsilateral refleksten daha duyarlıdır; yalnızca ipsilateral bakılırsa retrokoklear patolojiler gözden kaçabilir. Yorum tüm refleks bulgularıyla birlikte yapılır.' },
     { id: 'n7', col: 'eff', y: 230, label: ['7. sinir'], kol: 'Efferent kol', title: '7. sinir (stapedius dalı)', latin: 'N. facialis, n. stapedius',
-      yer: 'Motor çekirdeği ponstadır. Sinir temporal kemik içinde fasiyal kanalda seyreder ve stapedius dalını verir.',
-      islev: 'Süperior olivar kompleksten gelen sinyal fasiyal motor çekirdeğe ulaşır. Motor komut 7. sinirin stapedius dalıyla orta kulaktaki stapedius kasına taşınır.',
-      klinik: 'Stapedius dalının proksimalinde fasiyal sinir lezyonu varsa (örneğin Bell paralizisi veya temporal kemik patolojisi), prob lezyonlu kulaktayken uyaran hangi kulaktan verilirse verilsin refleks alınamaz. Pontin lezyonlar refleksi ve yüz sinirinin işlevini birlikte etkileyebilir.' }
+      yer: 'Stapedius kası fasiyal sinir (VII. kafa çifti) tarafından uyarılır.',
+      islev: 'Süperior olivar kompleksten gelen sinyal fasiyal sinirin motor çekirdeğine ulaşır. Motor komut 7. sinirin dalıyla orta kulaktaki stapedius kasına taşınır.',
+      klinik: 'Stapedius dalının proksimalinde fasiyal sinir lezyonu varsa (örneğin Bell paralizisi veya temporal kemik patolojisi), prob lezyonlu kulaktayken uyaran hangi kulaktan verilirse verilsin refleks alınamaz. Refleksin gözlenmesi için fasiyal sinirin sağlam olması gerekir.' }
   ];
   var RCOL = { aff: { x: 58, w: 100 }, soc: { x: 100, w: 120 }, eff: { x: 146, w: 56 } };
   var rsvg = $('reflex'), rsel = 'soc', rgroups = {};
@@ -378,10 +385,13 @@
      Klinik metinler taslaktır; proje sahibi doğrular ve uygulamadan düzeltir (icerik/tarama.<id>).
      ad: şemadaki kısa ad (satırlar), baslik: kartın başlığı. Ortak kutular (Geçti, Kaldı, sonuçlar) iki şemada aynı kaydı kullanır.
      Renk dili: yeşil = geçti/sağlam, turuncu = kaldı/referans merkeze sevk, gri = risk nedeniyle sevk. Renk yanında her kutuda yazı da var. */
+  /* Yenidoğan taraması (2026-11-22 denetimi). Kaynaklar: proje sahibinin Sağlık Bakanlığı tarama ABR slaytları (ham-gorseller/yenidogan-tarama;
+     zamanlar ve akış); İşitme Taramaları dersi, 4.–5. ders (sl. 33, 35: geçti için iki kulakta da geçti, ikinci tarama en az 1 hafta sonra
+     15 gün içinde, kalanlar referans merkeze) ve 6. ders (sl. 7–16: JCIH 2007 risk faktörleri). */
   var TNODES = {
     deg: { ad: ['Yenidoğanın değerlendirilmesi'], baslik: 'Yenidoğanın değerlendirilmesi', zaman: '',
       aciklama: 'Bebek, işitme kaybı için risk faktörü taşıyıp taşımamasına göre "Risk yok" ya da "Risk var" yoluna ayrılır.',
-      not: 'Risk faktörlerinin listesi bu şemada yer almaz; programın güncel belgesine bakılmalıdır.' },
+      not: 'JCIH 2007 risk faktörleri: bakımverenin işitme ya da konuşma-dil gelişimiyle ilgili endişesi; ailede kalıcı çocukluk çağı işitme kaybı; 5 günden uzun yenidoğan yoğun bakım ya da süresinden bağımsız ECMO, yardımcı ventilasyon, ototoksik ilaç veya loop diüretik kullanımı, kan değişimi gerektiren hiperbilirubinemi; CMV, herpes, rubella, sifiliz, toksoplazmoz gibi intrauterin enfeksiyonlar; kulak kepçesi, kulak kanalı ve temporal kemik anomalilerini de kapsayan kraniofasiyal anomaliler; işitme kaybıyla ilişkili sendrom bulguları (ör. saçta beyaz perçem); geç başlangıçlı ya da ilerleyici kayıpla ilişkili sendromlar (nörofibromatozis, Usher, Waardenburg, Alport, Pendred, Jervell ve Lange-Nielsen vb.); nörodejeneratif bozukluklar ve duyusal-motor nöropatiler; menenjit gibi doğum sonrası enfeksiyonlar; kafa travması ve temporal kemik kırığı; kemoterapi. Kaynak: İşitme Taramaları dersi, 6. ders (sl. 7–13).' },
     riskyok: { ad: ['Risk yok'], baslik: 'Risk yok', zaman: '',
       aciklama: 'İşitme kaybı için risk faktörü olmayan bebek. Tarama ABR en çok üç kez yapılır; herhangi birinde geçerse sonuç "Sağlam"dır. Üçünde de kalırsa referans merkeze sevk edilir.', not: '' },
     riskvar: { ad: ['Risk var'], baslik: 'Risk var', zaman: '',
@@ -393,7 +403,7 @@
     a3: { ad: ['3. tarama ABR'], baslik: '3. tarama ABR', zaman: 'Doğumdan sonraki 15–30 gün içinde (30. günü geçmemeli).',
       aciklama: 'Geçerse: risk yoksa sağlam, risk varsa sağlam / risk nedeniyle sevk. Kalırsa referans merkeze sevk edilir.', not: '' },
     gecti: { ad: ['Geçti'], baslik: 'Geçti', zaman: '',
-      aciklama: 'Tarama ABR geçildi. Bebek bir sonraki taramaya gitmez; sonuç kutusuna yönlenir (risk yoksa sağlam, risk varsa ya da yoğun bakım bebeğiyse sağlam / risk nedeniyle sevk).', not: '' },
+      aciklama: 'Tarama ABR geçildi (geçti sayılması için iki kulakta da geçti gerekir; en az bir kulakta kaldı, taramadan kaldı demektir). Bebek bir sonraki taramaya gitmez; sonuç kutusuna yönlenir (risk yoksa sağlam, risk varsa ya da yoğun bakım bebeğiyse sağlam / risk nedeniyle sevk).', not: '' },
     kaldi: { ad: ['Kaldı'], baslik: 'Kaldı', zaman: '',
       aciklama: 'Tarama ABR geçilemedi. Bebek bir sonraki tarama ABR’ye yönlenir; son taramada da kalırsa referans merkeze sevk edilir.', not: '' },
     saglam: { ad: ['Sağlam'], baslik: 'Sağlam', zaman: '',
@@ -519,6 +529,7 @@
      Proje sahibinin ders slaytına (ham-gorseller/isitsel-hafiza/) bakılarak slayttaki gibi soldan sağa yeniden çizildi; slayt uygulamaya konmadı.
      Metinler taslaktır; proje sahibi doğrular ve uygulamadan düzeltir (icerik/hafiza.<id>).
      Renk dili: bellek depoları ana renkle, süreçler (dikkat, tekrarlama, aktarım, geri çağırma) yuvarlak, bozulma gri. */
+  /* İşitsel hafıza (2026-11-22 denetimi): proje sahibinin ders slaytı (ham-gorseller/isitsel-hafiza, Atkinson ve Shiffrin 1968’den uyarlanmış) ile birebir. */
   var HNODES = {
     uyaran: { ad: ['Uyaran'], baslik: 'Uyaran', zaman: '',
       aciklama: 'Kulağa ulaşan işitsel uyaran; frekansı, şiddeti ve süresiyle birlikte ekoik belleğe girer.', not: '' },
@@ -526,14 +537,14 @@
       aciklama: 'İşitsel uyaran frekansı, şiddeti ve süresiyle tanımlanır; ekoik bellek bu özellikleri kısa bir süre ham hâliyle tutar.', not: '' },
     ekoik: { ad: ['Ekoik', 'bellek', '(≈250 ms)'], baslik: 'Ekoik bellek (işitsel duyusal bellek)', zaman: 'yaklaşık 250 ms',
       aciklama: 'Duyulan ses çok kısa bir süre ham hâliyle burada tutulur. Dikkat edilen bilgi kısa süreli belleğe geçer, edilmeyen bozulur.',
-      not: 'Ekoik belleğin süresi kaynaklara göre farklı verilir (birkaç yüz milisaniyeden birkaç saniyeye kadar). Burada slayttaki değer kullanıldı.' },
+      not: 'Süre, ders slaytındaki değerdir (Atkinson ve Shiffrin 1968’den uyarlanmış).' },
     bozulma1: { ad: ['Bozulma'], baslik: 'Bozulma (ekoik bellek)', zaman: '',
       aciklama: 'İşitsel dikkat olmadığında ileri işlemleme gerçekleşmez; bilgi ekoik bellekten silinir.', not: '' },
     dikkat: { ad: ['Dikkat'], baslik: 'Dikkat', zaman: '',
       aciklama: 'Ekoik bellekteki bilginin kısa süreli belleğe geçebilmesi için dikkat gerekir.', not: '' },
     ksb: { ad: ['Kısa süreli', 'bellek', '(≈30 sn)'], baslik: 'Kısa süreli bellek', zaman: 'yaklaşık 30 sn',
       aciklama: 'Dikkat edilen bilginin geçici olarak tutulduğu bellek. Tekrarlanan bilgi burada kalır; kodlanan bilgi uzun süreli belleğe aktarılır.',
-      not: 'Süre ve kapasite değerleri kaynaklara göre farklı verilir.' },
+      not: 'Süre, ders slaytındaki değerdir (Atkinson ve Shiffrin 1968’den uyarlanmış).' },
     tekrar: { ad: ['Tekrarlama'], baslik: 'Tekrarlama', zaman: '',
       aciklama: 'Bilgiyi zihinde tekrar etmek, kısa süreli bellekte kalma süresini uzatır.', not: '' },
     bozulma2: { ad: ['Bozulma'], baslik: 'Bozulma (kısa süreli bellek)', zaman: '',
@@ -574,46 +585,126 @@
 
   /* ---------- ders notları ---------- */
   var customNotes = [];
+  /* Temel ders notları (2026-11-22 denetimi): her madde proje sahibinin ders notlarına ya da güvenilir bir kaynağa dayanır;
+     her notun son maddesi kaynak satırıdır. Kaynağı bulunamayan bilgi yazılmaz (proje sahibinin kuralı). Sırayı değiştirme
+     (anahtar not.<sıra>; yönetici düzenlemeleri bu sıraya bağlı). */
   var NOTES = [
     { t: 'Saf ses odyometrisi', p: [
-      'Hava yolu genellikle 250–8000 Hz, kemik yolu 250–4000 Hz aralığında test edilir.',
-      'Yetişkinde eşikler genellikle 25 dB HL ve altındaysa normal kabul edilir; sınıflamalar kaynağa göre değişir.',
-      'Hava-kemik aralığı yaklaşık 10 dB’den büyükse iletim komponenti düşünülür.',
-      'Odyogramda maskesiz hava yolu için sağ kulak kırmızı O, sol kulak mavi X kullanılır.' ] },
+      'Tip 1 (tanısal) odyometrede hava yolu 125–8000 Hz, kemik yolu 250–6000 Hz aralığında test edilebilir. Hava yolunda en yüksek çıkış 120 dB’dir; kemik yolu çıkışı aynı frekanstaki hava yolu çıkışından 50 dB düşük sınırlanır.',
+      'İşitme kaybı derecesinin sınırları kaynağa göre değişir. Bu uygulama Clark (1981) tablosunu kullanır: −10–15 dB HL normal, 16–25 çok hafif, 26–40 hafif, 41–55 orta, 56–70 orta-ileri, 71–90 ileri, 91 ve üzeri çok ileri.',
+      'Hava ve kemik yolu eşikleri arasındaki fark (hava-kemik aralığı) bu uygulamada 10 dB ve üzerindeyse anlamlı sayılır; bu sınır kaynağa göre 10–15 dB arasında değişir.',
+      'Odyogram sembolleri: sağ kulak hava yolu kırmızı O, kemik yolu <; sol kulak hava yolu mavi X, kemik yolu >. Maskeli kemik yolunda sağ kulak [, sol kulak ] kullanılır.',
+      'Kaynak: Odyolojide Enstrümantasyon, Odyometre (sl. 26–27); Odyolojide Ayırıcı Tanı Testleri 1. ders (sl. 2); ASHA, Type, Degree, and Configuration of Hearing Loss (Clark 1981 tablosu).' ] },
     { t: 'İşitme kaybı tipleri', p: [
-      'İletim tipi: hava yolunda kayıp var, kemik yolu normal, hava-kemik aralığı var.',
-      'Sensörinöral: hava ve kemik yolu benzer düzeyde etkilenir, hava-kemik aralığı yok.',
-      'Mikst: kemik yolunda kayıp var ve buna ek olarak hava-kemik aralığı var.' ] },
+      'İletim tipi: ses dış ve orta kulaktan iç kulağa verimli iletilemez. Hava yolu eşikleri yükselmiş, kemik yolu eşikleri normaldir; arada hava-kemik aralığı vardır.',
+      'Sensörinöral: iç kulak ya da işitme sinirinden kaynaklanır. Hava ve kemik yolu eşikleri birlikte yükselir; aralarında anlamlı fark yoktur.',
+      'Mikst: iletim ve sensörinöral bileşen birliktedir. Kemik yolu eşikleri yükselmiştir ve buna ek olarak hava-kemik aralığı vardır.',
+      'Kaynak: ASHA, Type, Degree, and Configuration of Hearing Loss (Audiology Information Series).' ] },
     { t: 'Timpanometri', p: [
-      'Tip A: tepe basıncı ve compliance normal sınırlarda.',
-      'Tip As: compliance düşük (sığ eğri); otoskleroz gibi sertleşme durumlarında görülür.',
-      'Tip Ad: compliance çok yüksek; ossiküler diskontinüite veya atrofik timpanik membranda görülür.',
-      'Tip B: düz eğri; orta kulak efüzyonu düşündürür. Kanal hacmi belirgin büyükse perforasyon veya açık ventilasyon tüpü düşünülür.',
-      'Tip C: belirgin negatif orta kulak basıncı; Östaki tüpü işlev bozukluğunu düşündürür.',
-      'Sınır değerler yaşa ve cihaza göre değişir.' ] },
+      'Tip A: tepe −100 ile +50 daPa arasında, statik kompliyans 0,39–1,30 cc. Sağlıklı orta kulak.',
+      'Tip As: tepe normal basınç aralığında ama basık; statik kompliyans 0,35 cc’nin altında. Otosklerozun tipik bulgusudur.',
+      'Tip Ad: tepe normal basınç aralığında ama yüksek; statik kompliyans 1,30 cc’nin üstünde. Atrofik timpanik membran, psödomembran ya da kemikçik zincirin kopukluğunda görülür.',
+      'Tip B: tepe yok, düz çizgi. Efüzyonlu otitis media, timpanik membran perforasyonu, buşon ya da probun kanal duvarına dayanmasında görülür. Ayırımda kanal hacmine bakılır: prob tıkanınca hacim düşük, perforasyonda çok yüksektir.',
+      'Tip C: normal yükseklikte tepe, −100 daPa’dan daha negatif basınçta. Östaki tüpü işlev bozukluğunda ve efüzyonlu otitis medianın erken döneminde görülür.',
+      'Kaynak: Elektrofizyolojik Testler, Timpanometri (sl. 25, 30–34); Odyolojide Enstrümantasyon, Akustik İmmitansmetre (sl. 29–34).' ] },
     { t: 'Konuşma odyometrisi', p: [
-      'Konuşmayı alma eşiği (SRT) ile 500, 1000 ve 2000 Hz saf ses ortalaması genellikle yaklaşık 10 dB içinde uyumludur.',
-      'Belirgin uyumsuzluk fonksiyonel işitme kaybı şüphesi uyandırır.',
-      'Kelime ayırt etme skoru sensörinöral kayıpta beklenenden düşük olabilir. Retrokoklear patolojide şiddet artınca skorun düşmesi (rollover) görülebilir.' ] },
+      'Konuşmayı alma eşiği (SRT) saf ses ortalamasının sağlamasıdır: fark 6 dB ve altındaysa ideal, 7–12 dB kabul edilebilir; 13 dB ve üzerindeyse sorun düşünülür ve test tekrarlanır.',
+      'Doğuştan işitme kaybı olanlarda ve işitme cihazı kullananlarda SRT ile saf ses eşikleri arasında aynı uyum görülmeyebilir.',
+      'Organik olmayan işitme kayıplarında SRT, saf ses eşiklerinden daha iyi çıkar.',
+      'Retrokoklear patolojide en yüksek ayırt etme skoru (PBmax) saf ses ortalamasına göre beklenenden düşük olabilir. Şiddet arttıkça skorun %20’den fazla düşmesine roll-over denir.',
+      'Kaynak: Odyolojide Ayırıcı Tanı Testleri 2. ders (sl. 6, 12, 13) ve 3. ders (sl. 22).' ] },
     { t: 'Maskeleme: neden ve ne zaman', p: [
-      'Kulaklar arası azalma (IA), sinyalin kafatasından karşı kulağa geçerken kaybettiği şiddettir. Sık kullanılan konservatif değerler: supra-aural kulaklıkta yaklaşık 40 dB, insert kulaklıkta yaklaşık 55 dB; kemik yolunda 0 dB’e yakın.',
-      'Hava yolunda, test kulağına verilen şiddet ile karşı kulağın kemik yolu eşiği arasındaki fark IA’ya ulaşıyorsa maskeleme gerekir.',
-      'Aşırı maskeleme riski vardır: maskeleyici gürültü test kulağına geçip eşiği olduğundan yüksek gösterebilir.',
-      'Plato tekniğinin adımları ve hesaplar OdyoBOT bölümünde verilecek.' ] },
+      'Kulaklar arası azalma (IA), sinyalin kafatasından karşı kulağa geçerken kaybettiği şiddettir. Kemik yolunda 0 dB’dir. Kulak üstü kulaklıkta 40 dB standart kabul edilir; insert kulaklıkta daha yüksektir.',
+      'Kulak üstü kulaklıkla, test edilen kulağın hava yolu eşiği karşı kulağın kemik yolu eşiğinden 40 dB ya da daha fazla yüksekse maskeleme gerekir.',
+      'Aşırı maskeleme: maskeleme gürültüsü test kulağına geçip eşiği olduğundan kötü gösterir. Verilebilecek en yüksek düzey yaklaşık: IA + test kulağının kemik yolu eşiği.',
+      'Plato yöntemi: maskeleme 5 dB’lik adımlarla artırılır; üç artışta (15 dB) eşik değişmiyorsa plato bulunmuştur. OdyoBOT’taki hesaplar Katz’a göredir (insert kulaklıkta IA: 1000 Hz ve altında 75 dB, üstünde 50 dB).',
+      'Kaynak: Vakalarla Odyoloji, Maskeleme (sl. 9–15); Katz, Handbook of Clinical Audiology, 7. baskı, Bölüm 6.' ] },
     { t: 'Otoakustik emisyon (OAE)', p: [
-      'Dış tüy hücrelerinin işlevini yansıtır; dış ve orta kulağın sağlıklı olması gerekir.',
-      'Genellikle yaklaşık 30–40 dB HL üzerindeki işitme kayıplarında alınamaz.',
-      'OAE var, ABR yok veya bozuksa işitsel nöropati spektrumu düşünülür.' ] },
+      'Sağlıklı kokleadaki dış tüylü hücrelerin hareketiyle üretilen seslerdir; kulak yoluna yerleştirilen bir probla uyarılıp ölçülür.',
+      'Kaydedilebilmesi için dış ve orta kulağın da sağlıklı olması gerekir.',
+      'TEOAE 35 dB ve üzeri işitme kaybında genellikle görülmez (ders tablosu: 20–30 dB kayıpta %11, 40 dB üzerinde %0). DPOAE, 40–50 dB’den iyi işitenlerin %90’ında elde edilir.',
+      'OAE ve koklear mikrofonik elde edildiği hâlde ABR’de V. dalga yoksa ya da dalga morfolojisi bozuksa işitsel nöropati spektrum bozukluğu düşünülür.',
+      'Kaynak: Elektrofizyolojik Testler, OAE (sl. 3, 5, 22, 26) ve ABR (sl. 41).' ] },
     { t: 'İşitsel beyin sapı yanıtı (ABR)', p: [
-      'Klinikte en çok I, III ve V. dalgalar kullanılır; V. dalga en dayanıklı olandır ve eşik tayininde kullanılır.',
-      'I–V aralığı (interpeak latans) genellikle yaklaşık 4 ms’dir; sınırlar laboratuvar normlarına göre değişir.',
-      'Klik uyaranı geniş bantlıdır; tone-burst frekansa özgü bilgi verir.',
-      'Kulaklar arası V. dalga latans farkının belirgin olması retrokoklear patolojiden şüphelendirir.' ] },
+      'Rutinde ilk 5 dalga değerlendirilir; I, III ve V. dalgalar güvenilir elde edilir. Eşik tayini için en önemli yanıt V. dalgadır.',
+      'I. dalga uyarandan 1,5–2 ms sonra çıkar. I–III ve III–V aralıkları yaklaşık 2 ms, I–V aralığı yaklaşık 4 ms’dir; V. dalganın latansı yaklaşık 6 ms’dir. Normlar laboratuvara göre değişir.',
+      'I–III aralığının uzaması posterior fossa patolojilerini (ör. akustik nörinom), III–V aralığının uzaması beyin sapı lezyonunu düşündürür.',
+      'İletim tipi kayıpta bütün dalgaların latansı eşit ölçüde gecikir; dalgalar arası süreler değişmez.',
+      'Klik 1–8 kHz’i uyarır ama en çok 2–5 kHz hakkında bilgi verir. Tone burst frekansa özgü eşik içindir (özellikle 500 ve 1000 Hz); genellikle yalnızca V. dalga görülür.',
+      'Kaynak: Elektrofizyolojik Testler, ABR (sl. 5, 16, 26, 27, 37).' ] },
     { t: 'Akustik refleks', p: [
-      'Normal işitmede saf sesle refleks eşiği genellikle yaklaşık 70–100 dB HL arasındadır.',
-      'İpsilateral ve kontralateral ölçümler birlikte yorumlanır.',
-      'Prob kulağında orta kulak patolojisi, o kulakta ölçülen refleksleri engeller.',
-      'Refleks decay: uzun süreli uyaranda yanıtın hızla azalması retrokoklear patolojiyi düşündürebilir.' ] }
+      'Şiddetli seste stapedius kası kasılır, orta kulağın sertliği artar ve admitans azalır. Refleks yalnızca uyarılan kulakta değil, iki kulakta birden görülür.',
+      'Normal işitmede refleks eşiği davranışsal hava yolu eşiğinin 70–90 dB üzerindedir.',
+      'İşitme eşiği ile refleks eşiği arasındaki fark 50–55 dB’nin altındaysa Metz rekruitmenti pozitiftir; koklear patolojiyi düşündürür.',
+      'Refleks decay: refleks eşiğinin 10 dB üzerinde, 500 ya da 1000 Hz uyaran 10 sn verilir. 5. saniyeden önce refleksin büyüklüğü %50 ya da daha fazla azalırsa pozitiftir; retrokoklear patoloji ya da MS gibi miyelin hastalıklarıyla ilişkili olabilir.',
+      'Kontralateral test çapraz yoldaki sorunlara daha duyarlıdır; yalnızca ipsilateral bakılırsa birçok retrokoklear patoloji kaçabilir. Prob kulağındaki orta kulak patolojisi o kulakta ölçülen refleksleri engeller.',
+      'Kaynak: Elektrofizyolojik Testler, Akustik refleksler (sl. 3–4, 17–19, 21); Davranışsal Testler 04.12.2023 (sl. 15); Jerger ve Jerger (1977).' ] },
+    /* 2026-11-22: ders notlarından eklenen notlar (8–17) */
+    { t: 'Diyapazon testleri: Weber ve Rinne', p: [
+      'Rinne: aynı kulakta hava ve kemik yoluyla işitme süresi karşılaştırılır. Normal işitende hava yolu kemik yolundan yaklaşık iki kat uzun duyulur: Rinne (+).',
+      'İletim tipi kayıpta kemik yolundan işitme süresi hava yolundan uzun olabilir: Rinne (−). Sensörinöral kayıpta ikisi de kısalır ama oran korunur: patolojik Rinne (+).',
+      'Weber: ses, duyarlılığı daha iyi olan kokleadan ya da hava-kemik aralığı daha büyük olan kulakta daha güçlü algılanır. Tek taraflı sensörinöral kayıpta ses iyi kulakta, tek taraflı iletim tipi kayıpta patolojili kulakta duyulur.',
+      'Mikst tip kayıpta bu testler güvenilir sonuç vermeyebilir; saf iletim ya da saf sensörinöral kayıpta yorum yapılabilir.',
+      'Kaynak: Odyolojide Ayırıcı Tanı Testleri 1. ders (sl. 14–20).' ] },
+    { t: 'Rekrutman ve adaptasyon testleri', p: [
+      'Rekrutman: şiddetteki hafif artışla gürlük algısının anormal hızla artmasıdır; kokleadaki tüylü hücre ve sinir sonu kaybında görülür, iletim tipi kayıpta görülmez. Dekrutman (gürlüğün yavaş artması ya da artmaması) retrokoklear patolojiyi düşündürür.',
+      'ABLB (değişimli binaural gürlük dengeleme): normal kulağa 20 dB SL’de ses verilerek başlanır; iki kulakta eşit gürlükte duyulan şiddetler karşılaştırılır.',
+      'SISI: eşiğin 20 dB üstünde 1 dB’lik 20 artım verilir; normal kulak bunları fark edemez. %70’in üstü koklear patoloji için pozitiftir; koklear bileşeni olmayan retrokoklear patolojide %0’dır.',
+      'Metz rekruitmenti: aynı frekansta işitme eşiği ile akustik refleks eşiği arasındaki fark 50–55 dB’nin altındaysa pozitiftir.',
+      'Tone decay (ton erimesi): normal işitme siniri eşiğin 5 dB üstündeki sürekli sese 60 sn kesintisiz yanıt verebilir. Aşırı adaptasyon bölgesel lezyon olarak değerlendirilir; yorum Carhart’a göre yapılır.',
+      'Kaynak: Davranışsal Testler 04.12.2023 ve 11.12.2023 (sl. 2–15, 25–27); Odyolojide Ayırıcı Tanı Testleri, koklear ve retrokoklear ayırıcı tanı (sl. 25).' ] },
+    { t: 'Elektrokokleografi (ECochG)', p: [
+      'Üç bileşen kaydedilir: koklear mikrofonik (KM), sumasyon potansiyeli (SP) ve işitme sinirinin aksiyon potansiyeli (AP).',
+      'KM en çok koklea bazalindeki dış tüylü hücrelerden kaynaklanır; rarefaction ve condensation polaritelerde elde edilen dalgalar birbirinin ayna görüntüsüdür.',
+      'AP binlerce işitme siniri lifinin eş zamanlı uyarılmasını yansıtır; amplitüdü ve latansı değerlendirilir. İşitme kaybı arttıkça AP yayvanlaşır.',
+      'SP/AP oranındaki artış endolenfatik hidrops bulgusudur; ayrıca rarefaction ve condensation AP latans farkının 0,3 ms’den büyük olması da hidropsla ilişkilendirilir. Hidrops tanısında SP ve AP, KM’den daha güvenilirdir.',
+      'Endokoklear potansiyel (EP) transdüksiyon için gereklidir; endolenfin yapısındaki değişimler EP’yi etkiler.',
+      'Transtimpanik uygulama zarda perforasyon riski nedeniyle ekstratimpanik uygulamaya göre daha az tercih edilir.',
+      'Kaynak: Elektrofizyolojik Testler, ECochG (sl. 7, 14, 15, 22, 23, 28).' ] },
+    { t: 'Orta ve geç latanslı yanıtlar', p: [
+      'Orta latans yanıtlar (MLR, 10–100 ms) talamus ve işitme korteksini; geç latans yanıtlar (50 ms sonrası) işitsel kortikal yolları değerlendirir.',
+      'Kortikal işitsel uyarılmış potansiyeller (CAEP): eksojen yanıt P1–N1–P2 kompleksidir. P1 yaklaşık 50 ms’de, N1 80–100 ms’de, N2 180–250 ms’de görülür. Santral işitsel işlemleme bozukluğunda N1–P2 kompleksinde anomali, N1 latansında artış ve amplitüdünde azalma görülebilir.',
+      'Eşleşmeyen negatiflik (MMN): standart uyaranlar arasında seyrek ve farklı uyarana yaklaşık 150–250 ms’de çıkan negatif dalgadır; dikkat gerektirmez, bu yüzden yenidoğan ve küçük çocuklarda kullanılabilir.',
+      'P300: aynı “oddball” düzeniyle kaydedilir ama kişinin seyrek uyaranlara dikkat edip onları belirlemesi istenir; seyrek uyarandan sonra 250–500 ms’de ortaya çıkar.',
+      'Kaynak: Elektrofizyolojik Testler, giriş dersi (sl. 4), CAEP (sl. 2–5), MMN-ACC-P300 (sl. 2–13); Davranışsal Testler 26.12.2023 (sl. 7).' ] },
+    { t: 'VEMP (vestibüler uyarılmış miyojenik potansiyeller)', p: [
+      'Yüksek şiddette (95 dB’in üstünde), kısa akustik uyaranla otolit organları uyarılır ve kaslardan miyojenik yanıt kaydedilir.',
+      'Servikal VEMP (cVEMP): tonik kasılmış aynı taraf sternokleidomastoid kasından inhibitör yanıt kaydedilir. Yol: sakkulus, alt vestibüler sinir, lateral vestibüler çekirdek, XI. sinir, sternokleidomastoid kası. Dalga p13–n23 olarak adlandırılır (bir tez çalışmasında p13 ≈ 14,7 ms, n23 ≈ 22,5 ms).',
+      'Oküler VEMP (oVEMP) de miyojenik bir yanıttır; utrikulus, üst vestibüler sinir ve refleks yolu hakkında bilgi verir.',
+      'Uyaran ses olduğu için yanıt iletim tipi kayıp yaratan orta kulak sorunlarından etkilenir; hava-kemik aralığı 10 dB’den fazlaysa dalga alınamayabilir ya da bozuk olabilir.',
+      'Semisirküler kanal dehisansında (SSCD) eşik düşük, amplitüd anormal yüksektir: normalde 90–95 dB nHL olan eşik yaklaşık 20 dB daha düşüktür.',
+      'Kaynak: Elektrofizyolojik Testler, VEMP (sl. 2–3, 7, 11, 16–17, 23); Vestibüler Sistemin Değerlendirilmesi, cVEMP-oVEMP (sl. 21).' ] },
+    { t: 'Kalorik test ve video baş itme testi (vHIT)', p: [
+      'Kalorik test yalnızca horizontal kanalları değerlendirir ve iki kulak arasındaki ilişkiyi gösterir. British Society of Audiology sırası: sağ sıcak, sol sıcak, sağ soğuk, sol soğuk; testler arası en az 5 dakika.',
+      'Su: 250 ml, 40 sn (sıcak 44°, soğuk 30°). Hava: 8 l/dk, 60 sn (sıcak 50°, soğuk 24°). Her uyaranda yaklaşık 200 sn kayıt alınır.',
+      'Yanıt nistagmusun yavaş faz hızıyla ölçülür ve Jongkees formülleriyle yorumlanır: kanal parezisi (tek taraflı zayıflık) iki taraf arasındaki farkın %20–25’in, yön üstünlüğü %26–30’un üstünde olmasıdır.',
+      'vHIT altı semisirküler kanalı değerlendirebilir. Normal VOR kazancı 0,76–0,80’in üstünde, kanallar arası asimetri %0–8’dir (cihaza göre değişir). Kalorik sonuçları normal olan hastalarda anormal vHIT bulguları görülebilir.',
+      'Kaynak: Vestibüler Sistemin Değerlendirilmesi, VideoNistagmografi (sl. 30–35) ve vHIT (sl. 6, 14, 17–18).' ] },
+    { t: 'BPPV (benign paroksismal pozisyonel vertigo)', p: [
+      'Periferik kaynaklı vertigonun en yaygın nedenidir (%75–80). Vertigo ataklar hâlinde, pozisyona bağlı ve kısa sürelidir (10–15 sn ile 120 sn arası); provoke eden pozisyon sürdükçe azalır.',
+      'Kanalitiazis: otokoniler kanalda serbesttir, endolenfle hareket ederek yerçekimiyle kupulayı büker (Epley). Kupulolitiazis: otokoniler kupulaya yapışır ve onu yerçekimine duyarlı hâle getirir; latent periyot ve yorulma görülmez.',
+      'Kanallara göre görülme: posterior %80–85, horizontal %5–15, anterior %1–3.',
+      'Dix-Hallpike (vertikal kanallar): baş 45° çevrilir, 30° ekstansiyona getirilir. Sağ posterior kanal kanalitiazisinde sağ Dix-Hallpike’ta yukarı vuran, torsiyonel bileşenli nistagmus görülür; 60 sn’den uzun sürerse kupulolitiazis ya da santral patoloji düşünülür. Horizontal kanal için head roll testi yapılır (geotropik ya da ageotropik nistagmus).',
+      'Tedavi: posterior kanal kanalitiazisinde Epley manevrası (pozisyonlar arası en az 60 sn ya da belirtiler geçene kadar), posterior kanal kupulolitiazisinde Semont manevrası (hızlı yapılır, pozisyonlar arası 2–3 dk), horizontal kanal kanalitiazisinde Barbekü (BBQ) manevrası, horizontal kanal kupulolitiazisinde Casani manevrası.',
+      'Kaynak: Vestibüler Sistem ve Hastalıkları, BPPV (sl. 14–30); Aksoy ve Kabiş, Temel Vestibüler Rehabilitasyon (2020).' ] },
+    { t: 'Yenidoğan işitme taraması', p: [
+      'Tarama taburcu olmadan yapılır; 35 dB SPL klik uyaranla geçti/kaldı sonucu verir. Geçti sayılması için iki kulakta da geçti gerekir; en az bir kulakta kaldı, taramadan kaldı demektir.',
+      'Sağlıklı yenidoğanda TEOAE ile taranır; kalan bebek en az 1 hafta sonra, 15 gün içinde yeniden taranır. İkinci kez kalan bebeğe tarama ABR yapılır; tarama ABR’den kalanlar tanısal değerlendirme için referans merkeze sevk edilir.',
+      'Risk faktörü olan bebeklerde tarama ABR kullanılır: duyarlılığı ve özgüllüğü yüksektir ve işitme sinirini de değerlendirir.',
+      'Yalancı pozitiflik için kabul edilebilir oran %4’tür. Nedenleri: dış kulak yolunda amniyon sıvısı ve doğum kalıntıları, orta kulakta sıvı, gürültülü ortam, personel hataları.',
+      'Geç başlangıçlı ya da ilerleyici kayıp riski olan bebekler taramayı geçseler de izlenir (JCIH 2007: 24–30 ay arasında yeniden değerlendirme). Risk faktörleri Kütüphane → Şemalar → Yenidoğan taraması şemasında.',
+      'Kaynak: İşitme Taramaları, 4.–5. ders (sl. 30–35) ve 6. ders (sl. 6–16).' ] },
+    { t: 'Pediatrik davranışsal testler', p: [
+      'Davranış gözlem odyometrisi: yaklaşık 0–4 aylık bebeklerde sese verilen kendiliğinden tepkiler gözlenir.',
+      'Görsel pekiştireçli odyometri: sese baş çevirme ışıklı ya da hareketli oyuncakla ödüllendirilir; ders notlarında 5–36 ay (tabloda 5–24 ay) için verilir. 5–6 aylık bebekler başlarını ses kaynağına çevirebilir.',
+      'Koşullandırılmış oyun odyometrisi: çocuğa sesi duyunca bir oyun hareketi (tahtaya çubuk geçirme, blok dizme vb.) öğretilir; 24 ay ve üzeri çocuklarda kullanılır.',
+      'Kaynak: Davranışsal Testler, 5. hafta (davranış gözlem odyometrisi, sl. 4–5) ve 6. hafta (görsel pekiştireç ve oyun odyometrisi).' ] },
+    { t: 'Tinnitus, hiperakuzi ve mizofoni', p: [
+      'Tinnitus: dış uyaran olmaksızın ses algısıdır; fantom bir algıdır (Jastreboff 1995).',
+      'Hiperakuzi: normal seslere karşı yaşanan aşırı duyarlılıktır.',
+      'Mizofoni: işitsel sistemde anormal ve yüksek bir aktivasyon olmadan, limbik ve otonom sinir sisteminin sese anormal tepki göstermesidir. Mizofonide işitsel ve limbik yapılar arasındaki bağlantılar artmışken hiperakuzide normaldir; mizofoni ile işitme eşikleri arasında bağlantı yoktur.',
+      'Tedaviler tinnitus sinyalini azaltmaya ya da tinnitusa gelişen tepkileri azaltmaya yöneliktir. Tinnitus yeniden eğitim terapisi (TRT) nörofizyolojik modele dayanır ve tinnitusa alışmayı (habituasyon) amaçlar; bilişsel davranışçı terapi tinnitusun duygusal sonuçlarını hedefler.',
+      'Kaynak: Tinnitus-Hiperakuzi, 1. ders (sl. 4–5), 4. ders (sl. 2, 42), 7. ders (sl. 2–8); Davranışsal Testler 04.12.2023 (sl. 3).' ] }
   ];
   // Koddaki temel notlar da yönetici tarafından düzenlenebilir (anahtar: not.<sıra>). Sırayı değiştirme.
   var NOT_ALAN = [{ f: 't', ad: 'Başlık' }, { f: 'p', ad: 'Maddeler (her satıra bir madde)', cok: true }];
@@ -623,12 +714,17 @@
      Belge yoksa aşağıdaki varsayılan başlıklar kullanılır (adları eski icerik/not.gruplar düzenlemesiyle değişmiş olabilir).
      Hiçbir başlıkta olmayan notlar (yöneticinin yeni eklediği ya da başlığı silinen notlar) en sonda "Diğer notlar" altında. */
   var NOT_GRUPLARI = [
-    { id: 'temel', notlar: [0, 1, 3, 4] },
+    { id: 'temel', notlar: [0, 1, 3, 4, 8] },
+    { id: 'ayirici', notlar: [9] },
     { id: 'immitans', notlar: [2, 7] },
-    { id: 'elektro', notlar: [5, 6] }
+    { id: 'elektro', notlar: [5, 6, 10, 11] },
+    { id: 'vestibuler', notlar: [12, 13, 14] },
+    { id: 'pediatrik', notlar: [15, 16] },
+    { id: 'tinnitus', notlar: [17] }
   ];
-  var GRUP_AD = { key: 'not.gruplar', temel: 'Temel odyometri', immitans: 'İmmitansmetri', elektro: 'Elektrofizyoloji', eklenen: 'Diğer notlar' };
-  editable(GRUP_AD, ['temel', 'immitans', 'elektro', 'eklenen']);
+  var GRUP_AD = { key: 'not.gruplar', temel: 'Temel odyometri', ayirici: 'Ayırıcı tanı testleri', immitans: 'İmmitansmetri', elektro: 'Elektrofizyoloji',
+    vestibuler: 'Vestibüler değerlendirme', pediatrik: 'Pediatrik odyoloji ve tarama', tinnitus: 'Tinnitus ve ses toleransı', eklenen: 'Diğer notlar' };
+  editable(GRUP_AD, ['temel', 'ayirici', 'immitans', 'elektro', 'vestibuler', 'pediatrik', 'tinnitus', 'eklenen']);
   var GRUP_BELGESI = 'ayar/notGruplari', GRUP_EN_COK = 30, GRUP_AD_SINIRI = 60;
   var notDuzen = null;   // Firestore'daki başlık düzeni (yoksa varsayılan)
 
@@ -887,11 +983,11 @@
     // Eski adres: Geçmiş sekmesinin adı Vakalarım oldu; eski bağlantılar da çalışsın.
     if (t === 'gecmis') { t = 'vakalarim'; adresDegistir('#vakalarim'); }
     if (UC_ESKI.indexOf(t) !== -1) { t = '3d/periferik'; ham = t; adresDegistir('#3d/periferik'); }
-    // 3D modeller (2026-11-21): #3d = liste, #3d/periferik = kulak modeli (gorsel3d/), #3d/denge = denge sistemi, #3d/korti = iç kulak yapıları (korti/).
+    // 3D modeller (2026-11-21): #3d = liste, #3d/periferik = kulak modeli (gorsel3d/), #3d/denge = denge sistemi, #3d/korti = iç kulak yapıları (korti/), #3d/ampulla = ampulla kesiti (korti/ampulla3d.js, 2026-11-22).
     // Yalnızca hareketsiz modeller; animasyonlar Ses laboratuvarında (proje sahibinin kararı).
     if (t.split('/')[0] === '3d') {
       var ucAlt = t.split('/')[1] || '';
-      if (ucAlt && ['periferik', 'denge', 'korti'].indexOf(ucAlt) === -1) { ucAlt = ''; ham = '3d'; adresDegistir('#3d'); }
+      if (ucAlt && ['periferik', 'denge', 'korti', 'ampulla'].indexOf(ucAlt) === -1) { ucAlt = ''; ham = '3d'; adresDegistir('#3d'); }
       if (oncekiHash.split('/')[0] !== '3d') { ucGeldigi = ilkRota ? null : oncekiHash; ucListedenGeldi = false; }   // geri düğmesi için: nereden gelindi
       else if (ucAlt && oncekiHash === '3d') ucListedenGeldi = true;
       t = 'uc-boyut'; setTimeout(function () { ucGoster(ucAlt); }, 0);   // modeller yalnızca ilk açılışta kurulur (kulak modeli ~4 MB iner)
@@ -900,12 +996,12 @@
     // 2026-11-20: #seslab = İşitme/Denge seçim ekranı; #seslab/isitme ve #seslab/denge = laboratuvar (seçim ekranı gizli).
     if (t.split('/')[0] === 'seslab') {
       if (oncekiHash.split('/')[0] !== 'seslab') slGeldigi = ilkRota ? null : oncekiHash;
-      var slK = t.split('/')[1]; slK = slK === 'isitme' || slK === 'denge' || slK === 'dagilma' || slK === 'corti' ? slK : null;
+      var slK = t.split('/')[1]; slK = slK === 'isitme' || slK === 'denge' || slK === 'dagilma' || slK === 'corti' || slK === 'ampulla' ? slK : null;
       if (slK && oncekiHash.split('/')[0] !== 'seslab') slSecimdenGeldi = false; else if (slK && oncekiHash === 'seslab') slSecimdenGeldi = true;
       if (!slK && t !== 'seslab') { ham = 'seslab'; adresDegistir('#seslab'); }
       t = 'seslab'; setTimeout(function () { slKipGoster(slK); }, 0);
     }
-    else if (gorunen === 'seslab' && !duyuru) { if (sl) sl.durdur(); if (slG) slG.durdur(); if (slC) slC.durdur(); }
+    else if (gorunen === 'seslab' && !duyuru) { if (sl) sl.durdur(); if (slG) slG.durdur(); if (slC) slC.durdur(); if (slA) slA.durdur(); }
     // Derin bağlantılar: işini yapıp adresi sade hâline çevirir (geri tuşu bir önceki sayfaya döner).
     var p = t.split('/');
     if (p[0] === 'depo' && p.length > 1) { t = 'depo'; ham = 'depo'; adresDegistir('#depo'); sonra = function () { depoGit(p.slice(1)); }; }
@@ -1385,6 +1481,27 @@
     if (a) yuva.appendChild(a);
   }
   function kurDenge() { if (dn || !DN || !window.Denge3D) return; dn = window.Denge3D.kur($('dn-kok'), { veri: DN, kartEki: dnKartEki }); }
+  // Ampulla kesiti (korti/ampulla3d.js, 2026-11-22): yönetici düzenlemesi icerik/ampulla3d.yapi.<id>, ampulla3d.genel, ampulla3d.metin
+  var AM_ANIM_ALAN = [{ f: 'asamaDinlenim', ad: 'Aşama yazısı: dinlenim', cok: true }, { f: 'asamaHizlanma', ad: 'Aşama yazısı: hızlanma', cok: true }, { f: 'asamaSabit', ad: 'Aşama yazısı: sabit hız', cok: true }, { f: 'asamaYavaslama', ad: 'Aşama yazısı: yavaşlama', cok: true }, { f: 'asamaDonus', ad: 'Aşama yazısı: kupulanın dönüşü', cok: true }, { f: 'ipucu', ad: 'İpucu (modelin altında)', cok: true }, { f: 'not', ad: 'Not (renkler ve kaynak)', cok: true }, { f: 'etiket', ad: 'Modelin sağ üstündeki yazı' }, { f: 'basEtiket', ad: 'Baş göstergesinin yazısı' }, { f: 'yonKanal', ad: 'Model üzerindeki yön yazısı: kanal tarafı' }, { f: 'yonUtrikulus', ad: 'Model üzerindeki yön yazısı: utrikulus tarafı' }, { f: 'yazilariGizle', ad: 'Yazıları gizle düğmesinin ipucu' }, { f: 'yazilariGoster', ad: 'Yazıları göster düğmesinin ipucu' }, { f: 'yakinlastir', ad: 'Büyüteç ipucu: yakınlaştır' }, { f: 'uzaklastir', ad: 'Büyüteç ipucu: uzaklaştır' }, { f: 'oynat', ad: 'Oynat düğmesinin ipucu' }, { f: 'duraklat', ad: 'Duraklat düğmesinin ipucu' }, { f: 'genelGorunum', ad: 'Genel görünüm düğmesinin ipucu' }];
+  var AMV = window.AMPULLA3D_VERI, am = null, AM_METIN_ALAN = DN_METIN_ALAN.concat([{ f: 'yonKanal', ad: 'Model üzerindeki yön yazısı: kanal tarafı' }, { f: 'yonUtrikulus', ad: 'Model üzerindeki yön yazısı: utrikulus tarafı' }]);
+  if (AMV) {
+    Object.keys(AMV.yapilar).forEach(function (id) { var y = AMV.yapilar[id]; y.key = 'ampulla3d.yapi.' + id; editable(y, y.etiket != null ? ['ad', 'aciklama', 'etiket'] : ['ad', 'aciklama']); });
+    AMV.genel.key = 'ampulla3d.genel'; editable(AMV.genel, ['ad', 'aciklama']);
+    AMV.metinler.key = 'ampulla3d.metin'; editable(AMV.metinler, AM_METIN_ALAN.map(function (a) { return a.f; }));
+    if (AMV.anim) { AMV.anim.genel.key = 'ampulla3d.anim.genel'; editable(AMV.anim.genel, ['ad', 'aciklama']); AMV.anim.metinler.key = 'ampulla3d.anim.metin'; editable(AMV.anim.metinler, AM_ANIM_ALAN.map(function (a) { return a.f; })); }
+  }
+  function amKartEki(tur, kimlik, yuva) {
+    var o = tur === 'yapi' ? AMV.yapilar[kimlik] : tur === 'metin' ? AMV.metinler : AMV.genel; if (!o) return;
+    var a = tur === 'metin' ? adminPart(o.key, o, AM_METIN_ALAN, 'İpucu, not ve model yazılarını düzenle') : adminPart(o.key, o, o.etiket != null ? KT_YAPI_ALAN : G3D_ALAN, 'Düzenle');
+    if (a) yuva.appendChild(a);
+  }
+  function amAnimKartEki(tur, kimlik, yuva) {
+    if (tur === 'yapi') return amKartEki(tur, kimlik, yuva);
+    var o = tur === 'metin' ? AMV.anim.metinler : AMV.anim.genel;
+    var a = tur === 'metin' ? adminPart(o.key, o, AM_ANIM_ALAN, 'Animasyon yazılarını düzenle') : adminPart(o.key, o, G3D_ALAN, 'Düzenle');
+    if (a) yuva.appendChild(a);
+  }
+  function kurAmpulla() { if (am || !AMV || !window.Ampulla3D) return; am = window.Ampulla3D.kur($('am-kok'), { veri: AMV, kartEki: amKartEki }); }
   function refreshKorti() {
     if (!KT) return;
     Object.keys(KT.yapilar).forEach(function (id) { applyOv(KT.yapilar[id].key, KT.yapilar[id]); });
@@ -1397,13 +1514,19 @@
       applyOv(DN.genel.key, DN.genel); applyOv(DN.metinler.key, DN.metinler);
       if (dn) dn.yenile();
     }
+    if (AMV) {
+      Object.keys(AMV.yapilar).forEach(function (id) { applyOv(AMV.yapilar[id].key, AMV.yapilar[id]); });
+      applyOv(AMV.genel.key, AMV.genel); applyOv(AMV.metinler.key, AMV.metinler);
+      if (AMV.anim) { applyOv(AMV.anim.genel.key, AMV.anim.genel); applyOv(AMV.anim.metinler.key, AMV.anim.metinler); }
+      if (am) am.yenile();
+    }
   }
   // 3D sayfası: liste ya da seçilen model; başlık #uc-metinler'den (yönetici düzenler)
 
   function ucGoster(alt) {
-    $('uc-liste-kutu').hidden = !!alt; $('g3d-kok').hidden = alt !== 'periferik'; $('dn-kok').hidden = alt !== 'denge'; $('kt-kok').hidden = alt !== 'korti';
+    $('uc-liste-kutu').hidden = !!alt; $('g3d-kok').hidden = alt !== 'periferik'; $('dn-kok').hidden = alt !== 'denge'; $('kt-kok').hidden = alt !== 'korti'; $('am-kok').hidden = alt !== 'ampulla';
     var b = document.querySelector('#uc-metinler [data-m="' + (alt || 'liste') + '"]'); $('uc-baslik').textContent = b ? b.textContent.trim() : '';
-    if (alt === 'periferik') kur3d(); else if (alt === 'denge') kurDenge(); else if (alt === 'korti') kurKorti();
+    if (alt === 'periferik') kur3d(); else if (alt === 'denge') kurDenge(); else if (alt === 'korti') kurKorti(); else if (alt === 'ampulla') kurAmpulla();
   }
   function refresh3d() {
     if (!G3D) return;
@@ -1417,7 +1540,8 @@
      seslab/seslab.js, gorsel3d.js'in kopyasından türetildi; 3D modelini (gorsel3d/periferik.*) yalnızca okur.
      Yönetici düzenlemesi: icerik/sl.sahne.<id> (ad, aciklama), sl.metin (uyari, frekansNot, sesNot, not).
      Yapıya dokununca çıkan ad/açıklama 3D sayfasıyla ortak (g3d.yapi.<id>). */
-  var SL = window.SESLAB_VERI, sl = null, slG = null, slC = null;   // slC: Corti organı animasyonu (korti/korti.js)   // slG: dağılma (seslab/dagilma.js)
+  var SL = window.SESLAB_VERI, sl = null, slG = null, slC = null, slA = null;   // slA: ampulla animasyonu (korti/ampulla3d.js)
+    // slC: Corti organı animasyonu (korti/korti.js)   // slG: dağılma (seslab/dagilma.js)
   var SL_METIN_ALAN = [{ f: 'uyari', ad: 'Uyarı (modelin altında)', cok: true }, { f: 'frekansNot', ad: 'Frekans notu ({f} frekans, {y} yüzde, {bolge} bölge)', cok: true },
     { f: 'sesNot', ad: 'Ses düğmesinin altındaki not', cok: true },
     { f: 'genelGorunum', ad: 'Genel görünüm düğmesinin ipucu' }, { f: 'oynat', ad: 'Oynat düğmesinin ipucu' }, { f: 'duraklat', ad: 'Duraklat düğmesinin ipucu' }, { f: 'not', ad: 'Not (sayfanın altında)', cok: true },
@@ -1481,14 +1605,19 @@
   // Seçim ekranı (kip yok) ya da laboratuvar (isitme/denge). Laboratuvar ilk seçimde kurulur; model o zaman iner.
   // Dağılma (dagilma) 3D modeli kullanmaz: ayrı kapta (#sl-dagilma) 2D animasyon; model indirilmez.
   function slKipGoster(kip) {
-    var dag = kip === 'dagilma', cor = kip === 'corti';
-    $('sl-secim').hidden = !!kip; $('sl-kok').hidden = !kip || dag || cor; $('sl-dagilma').hidden = !dag; $('sl-corti').hidden = !cor;
+    var dag = kip === 'dagilma', cor = kip === 'corti', amp = kip === 'ampulla';
+    $('sl-secim').hidden = !!kip; $('sl-kok').hidden = !kip || dag || cor || amp; $('sl-dagilma').hidden = !dag; $('sl-corti').hidden = !cor; $('sl-ampulla').hidden = !amp;
     var ad = $('sl-kip-ad'), M = SL ? SL.metinler : {};
-    ad.hidden = !kip; ad.textContent = dag ? $('sl-dagilma-ad').textContent : cor ? $('sl-corti-ad').textContent : kip === 'denge' ? (M.modDenge || 'Denge') : kip ? (M.modIsitme || 'İşitme') : '';
+    ad.hidden = !kip; ad.textContent = dag ? $('sl-dagilma-ad').textContent : cor ? $('sl-corti-ad').textContent : amp ? $('sl-ampulla-ad').textContent : kip === 'denge' ? (M.modDenge || 'Denge') : kip ? (M.modIsitme || 'İşitme') : '';
     if (!dag && slG) slG.durdur();
     if (!cor && slC) slC.durdur();
-    if (!kip || dag || cor) { if (sl) sl.durdur(); }
+    if (!amp && slA) slA.durdur();
+    if (!kip || dag || cor || amp) { if (sl) sl.durdur(); }
     if (!kip) return;
+    if (amp) {   // Ampulla (korti/ampulla3d.js -> Ampulla3D.kurAnim); yapılar 3D modelle ortak (icerik/ampulla3d.yapi.<id>)
+      if (!slA && AMV && AMV.anim && window.Ampulla3D) slA = window.Ampulla3D.kurAnim($('sl-ampulla'), { veri: { genel: AMV.anim.genel, gruplar: AMV.gruplar, yapilar: AMV.yapilar, metinler: AMV.anim.metinler }, kartEki: amAnimKartEki });
+      return;
+    }
     if (cor) {   // Corti organı (korti/korti.js → Korti.kurAnim); yapılar 3D modelle ortak (icerik/korti.yapi.<id>)
       if (!slC && KT && KT.anim && window.Korti) slC = window.Korti.kurAnim($('sl-corti'), { veri: { genel: KT.anim.genel, gruplar: KT.gruplar, yapilar: KT.yapilar, metinler: KT.anim.metinler }, kartEki: ktAnimKartEki });
       return;
@@ -1510,10 +1639,11 @@
     if (sl) sl.yenile();
     if (slG) slG.yenile();
     if (slC) slC.yenile();
+    if (slA) slA.yenile();
   }
 
   // Açık/koyu görünüm değişince yapı renkleri (CSS değişkenleri) yeniden okunur.
-  function g3dRenk() { if (g3d) g3d.yenile(); if (sl) sl.yenile(); if (slG) slG.yenile(); if (kt) kt.yenile(); if (dn) dn.yenile(); if (slC) slC.yenile(); }
+  function g3dRenk() { if (g3d) g3d.yenile(); if (sl) sl.yenile(); if (slG) slG.yenile(); if (kt) kt.yenile(); if (dn) dn.yenile(); if (slC) slC.yenile(); if (am) am.yenile(); if (slA) slA.yenile(); }
   new MutationObserver(g3dRenk).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
   if (window.matchMedia) { var g3dMq = window.matchMedia('(prefers-color-scheme: dark)'); if (g3dMq.addEventListener) g3dMq.addEventListener('change', g3dRenk); }
 

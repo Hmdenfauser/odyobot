@@ -1,7 +1,11 @@
 /* SesLab (Ses laboratuvarı) içerik verisi: sahneler, frekanslar, arayüz yazıları.
    Her metin varsayılandır; yönetici uygulama içinden değiştirir (app.js: sl.sahne.<id>, sl.metin).
    Yapı adları ve açıklamaları 3D sayfasıyla ortaktır (gorsel3d/gorsel3d-veri.js, g3d.yapi.<id>).
-   Klinik metinler taslaktır; proje sahibi kendi kaynağıyla doğrulayacak. */
+   Klinik metinler taslaktır; proje sahibi kendi kaynağıyla doğrulayacak. 
+   2026-11-22 denetimi: işitme sahneleri İşitme ve Denge Sistemleri-2 (sl. 38–58; kepçe, konka ve kanal kazancı), denge sahneleri
+   Vestibüler Sistem ve Hastalıkları 3. ders BPPV (sl. 14–30) ve Vestibüler Sistemin Değerlendirilmesi 3. ders (Dix-Hallpike, Epley)
+   ile karşılaştırıldı; ders notunda olmayan ayrıntılar aşağıdaki kaynak listesindeki makalelere dayanır.
+   */
 window.SESLAB_VERI = {
   // gorunum: sahne seçilince kamera ('on' = önden; 'eksen' = kemikçik dönme ekseni boyunca)
   // enerji: enerji dönüşümü şeridinde vurgulanan aşamalar (1 akustik, 2 mekanik, 3 hidrolik, 4 elektriksel)
@@ -11,7 +15,7 @@ window.SESLAB_VERI = {
       aciklama: 'Kulak kepçesi sesi toplar. Ses dalgası dış kulak yolunda ilerler ve timpanik membranı titreştirir. Titreşim malleus, inkus ve stapes ile oval pencereye taşınır. Stapes tabanı perilenfi iter; koklea içinde bazalden apekse doğru ilerleyen bir dalga oluşur.',
       yapilar: ['pinna', 'eac', 'tm', 'mal', 'inc', 'sta', 'sm', 'n8'], yari: ['sv', 'st', 'vest'], cerceve: ['pinna', 'eac', 'tm', 'mal', 'inc', 'sta', 'sv', 'st', 'vest'], gorunum: 'on', enerji: [1, 2, 3, 4] },
     { id: 'dis', ad: 'Dış kulak',
-      aciklama: 'Kulak kepçesi sesi toplar ve dış kulak yoluna yönlendirir. Kepçe ve kanal bazı frekansları (yaklaşık 2–5 kHz) biraz güçlendirir. Ses dalgası kanal boyunca ilerleyip timpanik membrana çarpar ve onu titreştirir.',
+      aciklama: 'Kulak kepçesi sesi toplar ve dış kulak yoluna yönlendirir. Konka yaklaşık 4–5 kHz’de (ortalama 4700 Hz’de rezonansa girer) yaklaşık 10 dB, dış kulak yolu ise yetişkinde en çok 3500–4000 Hz’de sesi güçlendirir. Ses dalgası kanal boyunca ilerleyip timpanik membrana çarpar ve onu titreştirir.',
       yapilar: ['pinna', 'eac', 'tm'], cerceve: ['pinna', 'eac', 'tm'], gorunum: 'on', enerji: [1, 2] },
     { id: 'orta', ad: 'Orta kulak',
       aciklama: 'Timpanik membran içe itilince malleus sapı (manubrium) onunla birlikte içe gider. Malleus ve inkus, malleus–inkus ekleminden geçen eksen etrafında döner; inkus malleusu çok az geriden izler. İnkusun uzun kolu stapesi oval pencereye (fenestra vestibuli) doğru iter. Dönme ekseni modelden yaklaşık olarak hesaplandı.',
@@ -24,7 +28,7 @@ window.SESLAB_VERI = {
   yapilar: {
     utrikulus: { ad: 'Utrikulus (makula)', aciklama: 'Otolit organı. Makulası baş dikken yaklaşık yataydır; başın eğilmesini ve öne-arkaya, yana doğrusal hızlanmayı algılar. Otolit kristalleri genellikle buradan kopar. Modelde ayrı parça değildir; yeri ve büyüklüğü yaklaşık çizildi.' },
     sakkulus: { ad: 'Sakkulus (makula)', aciklama: 'Otolit organı. Makulası baş dikken yaklaşık dikeydir; yukarı-aşağı doğrusal hızlanmayı ve yerçekimini algılar. Modelde ayrı parça değildir; yeri ve büyüklüğü yaklaşık çizildi.' },
-    pinna: { ad: 'Kulak kepçesi', aciklama: 'Aurikula. Sesi toplayıp dış kulak yoluna yönlendirir, bazı frekansları biraz güçlendirir ve sesin yönünü (özellikle önde/arkada, yukarıda/aşağıda) ayırt etmeye yardım eder.' }
+    pinna: { ad: 'Kulak kepçesi', aciklama: 'Aurikula. Sesi toplayıp dış kulak yoluna yönlendirir ve bazı frekansları biraz güçlendirir (kepçenin kendi kazancı 4 kHz’de yaklaşık 3 dB). İşitmeye en büyük katkısı sesin yerini belirlemektir: ön-arka, iki yan ve yukarı-aşağı yönlerde üç boyutlu yön tayinine yardım eder.' }
   },
   /* Denge kipi. poz (derece): govde = gövdenin yatması (−90 sırtüstü, −110 sırtüstü + baş 20° sarkık),
      donus = başın sağa (+) / sola (−) dönüşü, egim = çene göğse (+), yan = başın sağ omza (+) eğilmesi.
@@ -40,15 +44,15 @@ window.SESLAB_VERI = {
           { id: 'dik', ad: 'Baş dik', kisa: 'Dik', poz: {}, aciklama: 'Utrikulus yatay olduğu için zarı kaymaz. Sakkulus dikey olduğu için zarı yerçekimiyle aşağı çekilir; dik dururken yerçekimini sakkulus algılar.' },
           { id: 'one', ad: 'Baş öne eğik', kisa: 'Öne', poz: { egim: 30 }, aciklama: 'Baş öne eğilince utrikulustaki zar öne doğru kayar ve tüy demetleri bükülür. Beyin bu bükülmeden başın eğildiğini anlar.' },
           { id: 'sag', ad: 'Baş sağa eğik', kisa: 'Sağa', poz: { yan: 30 }, aciklama: 'Baş sağ omza eğilince utrikulustaki zar sağa (dışa) doğru kayar.' },
-          { id: 'ivme', ad: 'İleri hızlanma', kisa: 'İvme', poz: {}, ivme: [0, 0, 0.5], aciklama: 'Baş dikken ileri doğru hızlanınca zar eylemsizlikle geride kalır, yani geriye kayar. Bu, başın geriye eğilmesindekiyle aynı bükülmedir; beyin ikisini ayırmak için görme ve diğer duyulardan da yararlanır.' }
+          { id: 'ivme', ad: 'İleri hızlanma', kisa: 'İvme', poz: {}, ivme: [0, 0, 0.5], aciklama: 'Baş dikken ileri doğru hızlanınca zar eylemsizlikle geride kalır, yani geriye kayar. Bu, başın geriye eğilmesindekiyle aynı yönde bir bükülmedir.' }
         ] },
       { id: 'bppv', tip: 'bppv', ad: 'BPPV ve Epley', kisa: 'BPPV–Epley',
-        aciklama: 'Benign paroksismal pozisyonel vertigo (BPPV): utrikulustan kopan otolit kristalleri bir semisirküler kanala, en sık posterior kanala düşer (kanalolitiyazis). Baş pozisyonu değişince kristaller kanalda kayar, endolenfi sürükler ve kupulayı büker; kısa süreli baş dönmesi ve nistagmus olur. Burada sağ posterior kanal BPPV\'si, Dix-Hallpike testi ve Epley manevrası gösteriliyor.',
+        aciklama: 'Benign paroksismal pozisyonel vertigo (BPPV): utrikulustan kopan otolit kristalleri bir semisirküler kanala düşer; en sık posterior kanal etkilenir (%80–85). Kristallerin kanalda serbest durduğu biçime kanalitiazis denir (Epley). Baş pozisyonu değişince kristaller kanalda kayar, endolenfi sürükler ve kupulayı büker; kısa süreli baş dönmesi ve nistagmus olur. Burada sağ posterior kanal BPPV\'si, Dix-Hallpike testi ve Epley manevrası gösteriliyor.',
         yapilar: ['kristal', 'bas'], yari: ['post', 'amp', 'vest', 'ant', 'lat', 'crus'], cerceve: ['post', 'vest', 'ant', 'lat'],
         adimlar: [
-          { id: 'basla', ad: 'Başlangıç: oturur', kisa: 'Başla', poz: {}, sifirla: true, aciklama: 'Kopmuş kristaller sağ posterior kanalda, ampullaya yakın en alçak kısımda birikmiş. Baş dik ve hareketsizken kupula itilmez, baş dönmesi olmaz.' },
-          { id: 'dix', ad: 'Dix-Hallpike (sağ)', kisa: 'Dix-H.', poz: { govde: -110, donus: 45 }, aciklama: 'Baş sağa 45° çevrilir, hasta sırtüstü yatırılır ve baş yatak düzeyinin yaklaşık 20° altına sarkıtılır. Kristaller ampulladan uzaklaşarak kanalın en alçak noktasına kayar; kupula ampulladan uzaklaşan yönde bükülür (ampullofugal, posterior kanalda uyarıcı). Kısa bir gecikmeden sonra yukarı vuran, torsiyonel bileşenli (üst kutbu alttaki kulağa dönen) nistagmus ve baş dönmesi olur; genellikle 1 dakikadan kısa sürer.' },
-          { id: 'e2', ad: 'Epley 2: baş sola', kisa: 'Epley 2', poz: { govde: -110, donus: -45 }, aciklama: 'Baş sarkık kalırken yavaşça 90° sola çevrilir. Kristaller kanal boyunca ilerlemeye devam eder. Her pozisyonda baş dönmesi ve nistagmus geçene kadar (genellikle 30–60 saniye) beklenir.' },
+          { id: 'basla', ad: 'Başlangıç: oturur', kisa: 'Başla', poz: {}, sifirla: true, aciklama: 'Kopmuş kristaller sağ posterior kanalda birikmiş. Posterior kanal en alttaki kanal olduğundan kişi ayaktayken kristaller kanalın en dip kısmında toplanabilir. Baş dik ve hareketsizken kupula itilmez, baş dönmesi olmaz.' },
+          { id: 'dix', ad: 'Dix-Hallpike (sağ)', kisa: 'Dix-H.', poz: { govde: -110, donus: 45 }, aciklama: 'Baş sağa 45° çevrilir, hasta sırtüstü yatırılır ve baş yaklaşık 30° ekstansiyona getirilir (ders notu; kılavuzda yaklaşık 20°). Kristaller ampulladan uzaklaşarak kanalın en alçak noktasına kayar; kupula ampulladan uzaklaşan yönde bükülür (ampullofugal, posterior kanalda uyarıcı). Kısa bir gecikmeden sonra yukarı vuran, torsiyonel bileşenli (üst kutbu alttaki kulağa dönen) nistagmus ve baş dönmesi olur; genellikle 1 dakikadan kısa sürer.' },
+          { id: 'e2', ad: 'Epley 2: baş sola', kisa: 'Epley 2', poz: { govde: -110, donus: -45 }, aciklama: 'Baş sarkık kalırken yavaşça 90° sola çevrilir. Kristaller kanal boyunca ilerlemeye devam eder. Her pozisyonda en az 60 saniye ya da belirtiler geçene kadar beklenir (animasyonda süreler kısaltıldı).' },
           { id: 'e3', ad: 'Epley 3: sol yana', kisa: 'Epley 3', poz: { govde: -90, donus: -135 }, aciklama: 'Hasta sol yanına döner ve baş 90° daha çevrilir; yüz yaklaşık 45° aşağı, yere bakar. Kristaller kanalın tepesini aşıp krus kommune yoluyla utrikulusa geçer.' },
           { id: 'e4', ad: 'Epley 4: oturma', kisa: 'Epley 4', poz: { egim: 20, donus: -45 }, aciklama: 'Hasta baş solda kalarak oturtulur, sonra baş hafifçe öne eğilir. Kristaller utrikulusta kalır ve artık posterior kanalı uyarmaz.' },
           { id: 'son', ad: 'Sonuç: oturur', kisa: 'Sonuç', poz: {}, aciklama: 'Baş düz, kristaller utrikulusta. Manevranın etkisi Dix-Hallpike testi tekrarlanarak kontrol edilebilir.' }
