@@ -112,7 +112,7 @@
     var K = window.Korti;
     var model = function () { var M = modelKur(); M.krista.saydam = 0.62; M.kupula.saydam = 0.38; return M; };
     return K.goruntuleyici(kok, { veri: ayar.veri, kartEki: ayar.kartEki, sinif: 'kt-ampulla', model: model, sivi: ['endolenf', 'perilenf'],
-      renk: function (id) { return '--amp-' + id; }, etiketler: ETIKET,
+      renk: function (id) { return '--amp-' + id; }, etiketler: ETIKET, genelSimge: 'ampulla',
       basR: K.mul(K.rx(K.D(8)), K.ry(K.D(-16))), genel: { cen: [0, -0.2, 0], rad: 2.25 }, yaklasEnAz: 0.3 });
   }
 
@@ -195,7 +195,7 @@
     var K = window.Korti, ui = {};
     var model = function () { var X = modelKur(); X.krista.saydam = 0.62; X.kupula.saydam = 0.42; return X; };
     var api = K.goruntuleyici(kok, { veri: ayar.veri, kartEki: ayar.kartEki, sinif: 'kt-ampulla', model: model, sivi: ['endolenf', 'perilenf'],
-      renk: function (id) { return '--amp-' + id; }, etiketler: ETIKET_ANIM, anim: ampAnim(ayar.veri, ui),
+      renk: function (id) { return '--amp-' + id; }, etiketler: ETIKET_ANIM, genelSimge: 'ampulla', anim: ampAnim(ayar.veri, ui),
       basR: K.mul(K.rx(K.D(6)), K.ry(K.D(-12))), genel: { cen: [0, -0.15, 0], rad: 1.9 } });
     var sahne = kok.querySelector('.g3d-sahne'), gos = sahne ? basGostergesi(sahne, ayar.veri.metinler) : null;
     if (gos) { ui.bas = gos.bas; gos.yaz(); gos.bas(0, 0); }

@@ -265,7 +265,7 @@
     var listeKutu = h('div', 'kt-liste'), notEl = h('p', 'g3d-not'), metinYuva = h('div', 'g3d-kart-ek');
     [sahne, ipucu, kart, listeKutu, notEl, metinYuva].forEach(function (e) { kok.appendChild(e); });
     var genelIp = null;
-    if (IP) { IP.simge(genelBtn, 'genel'); genelIp = IP.bagla(genelBtn, function () { return M.genelGorunum; }); }
+    if (IP) { IP.simge(genelBtn, ayar.genelSimge || 'genel'); genelIp = IP.bagla(genelBtn, function () { return M.genelGorunum; }); }
     else genelBtn.textContent = '⟲';
     // Büyüteç: sağ alttaki düğmelerin en solunda; yakın = model 2 kat yakın (iki parmakla yakınlaştırmayla aynı değişken)
     var YAKIN = 0.5 * (ayar.genelZoom || 1), buyBtn = h('button', 'sl-yuv'), buyIp = null; sagAlt.insertBefore(buyBtn, sagAlt.firstChild);
