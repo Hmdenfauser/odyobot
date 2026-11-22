@@ -51,6 +51,14 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 - Alt çubuk sırası: Ana sayfa, Görsel depo, OdyoBOT, Vakalarım, Notlar.
 - Odyogram çıktısı (`cikti.js`), Vakalarım → OdyoBOT gönderme, düğmeli sohbet (`odybot.js`). sw v12. Ayrıntı: `PROGRESS.md`.
 
+### Devam eden iş (2026-11-22): İçerik denetimi — dal `icerik-denetim`, YAYINDA DEĞİL
+- **Kural (proje sahibi, 2026-11-22):** klinik/anatomik metin yalnızca ders notlarına ve güvenilir kaynaklara dayanır; kaynağı bulunamayan cümle yazılmaz. Ders notları Drive'dan indirilip `pdftotext -enc UTF-8` / pptx XML ile metne çevrildi (scratchpad, git dışı).
+- Denetlenenler: 8 temel ders notu (her notta kaynak satırı), işitme yolağı, refleks arkı, yenidoğan taraması (JCIH 2007 risk faktörleri eklendi), işitsel hafıza, 3D periferik/iç kulak/denge metinleri, Ses laboratuvarı (işitme, BPPV/Epley), sözlük 112 terim (57 açıklama düzeltildi). Her veri dosyasının başında kaynak notu var.
+- Yeni: ders notlarından 10 not (`NOTES` 8–17) ve 4 yeni konu başlığı (ayırıcı tanı, vestibüler, pediatrik, tinnitus). Firestore'da `ayar/notGruplari` kayıtlıysa yeni notlar "Diğer notlar"da görünür; yönetici taşır.
+- Dikkat: yönetici daha önce uygulamadan bir metni düzenlediyse (Firestore `icerik/...`), o düzenleme koddaki yeni metnin önüne geçer.
+- Değişmeyen: maskeleme (Katz) ve refleks yorumu (Jerger) kuralları, timpanogram/OAE sınırları (önceden onaylı); cihaz kartı açıklamaları boş.
+- Yayın: `ampulla-model` ve `icerik-denetim` dalları proje sahibi onaylayınca main'e birleştirilir; sw VERSION 49.
+
 ### KALDIĞIMIZ YER (2026-11-21 gece, son durum v48) — oturum başında bunu özetle
 **Durum:** Yayında **sw v48** (main). Yedek etiketleri GitHub'da (son: `yedek-yayin-v47`). Bekleyen kod değişikliği ve açık dal yok (yalnızca main).
 **Proje sahibinin kararı (2026-11-21 gece):** forum/üyelik **şimdilik açılmayacak** (ayar/uyelik kapalı kalır). Ertesi gün devam edilecek.
