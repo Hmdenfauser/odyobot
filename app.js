@@ -385,10 +385,13 @@
      Klinik metinler taslaktır; proje sahibi doğrular ve uygulamadan düzeltir (icerik/tarama.<id>).
      ad: şemadaki kısa ad (satırlar), baslik: kartın başlığı. Ortak kutular (Geçti, Kaldı, sonuçlar) iki şemada aynı kaydı kullanır.
      Renk dili: yeşil = geçti/sağlam, turuncu = kaldı/referans merkeze sevk, gri = risk nedeniyle sevk. Renk yanında her kutuda yazı da var. */
+  /* Yenidoğan taraması (2026-11-22 denetimi). Kaynaklar: proje sahibinin Sağlık Bakanlığı tarama ABR slaytları (ham-gorseller/yenidogan-tarama;
+     zamanlar ve akış); İşitme Taramaları dersi, 4.–5. ders (sl. 33, 35: geçti için iki kulakta da geçti, ikinci tarama en az 1 hafta sonra
+     15 gün içinde, kalanlar referans merkeze) ve 6. ders (sl. 7–16: JCIH 2007 risk faktörleri). */
   var TNODES = {
     deg: { ad: ['Yenidoğanın değerlendirilmesi'], baslik: 'Yenidoğanın değerlendirilmesi', zaman: '',
       aciklama: 'Bebek, işitme kaybı için risk faktörü taşıyıp taşımamasına göre "Risk yok" ya da "Risk var" yoluna ayrılır.',
-      not: 'Risk faktörlerinin listesi bu şemada yer almaz; programın güncel belgesine bakılmalıdır.' },
+      not: 'JCIH 2007 risk faktörleri: bakımverenin işitme ya da konuşma-dil gelişimiyle ilgili endişesi; ailede kalıcı çocukluk çağı işitme kaybı; 5 günden uzun yenidoğan yoğun bakım ya da süresinden bağımsız ECMO, yardımcı ventilasyon, ototoksik ilaç veya loop diüretik kullanımı, kan değişimi gerektiren hiperbilirubinemi; CMV, herpes, rubella, sifiliz, toksoplazmoz gibi intrauterin enfeksiyonlar; kulak kepçesi, kulak kanalı ve temporal kemik anomalilerini de kapsayan kraniofasiyal anomaliler; işitme kaybıyla ilişkili sendrom bulguları (ör. saçta beyaz perçem); geç başlangıçlı ya da ilerleyici kayıpla ilişkili sendromlar (nörofibromatozis, Usher, Waardenburg, Alport, Pendred, Jervell ve Lange-Nielsen vb.); nörodejeneratif bozukluklar ve duyusal-motor nöropatiler; menenjit gibi doğum sonrası enfeksiyonlar; kafa travması ve temporal kemik kırığı; kemoterapi. Kaynak: İşitme Taramaları dersi, 6. ders (sl. 7–13).' },
     riskyok: { ad: ['Risk yok'], baslik: 'Risk yok', zaman: '',
       aciklama: 'İşitme kaybı için risk faktörü olmayan bebek. Tarama ABR en çok üç kez yapılır; herhangi birinde geçerse sonuç "Sağlam"dır. Üçünde de kalırsa referans merkeze sevk edilir.', not: '' },
     riskvar: { ad: ['Risk var'], baslik: 'Risk var', zaman: '',
@@ -400,7 +403,7 @@
     a3: { ad: ['3. tarama ABR'], baslik: '3. tarama ABR', zaman: 'Doğumdan sonraki 15–30 gün içinde (30. günü geçmemeli).',
       aciklama: 'Geçerse: risk yoksa sağlam, risk varsa sağlam / risk nedeniyle sevk. Kalırsa referans merkeze sevk edilir.', not: '' },
     gecti: { ad: ['Geçti'], baslik: 'Geçti', zaman: '',
-      aciklama: 'Tarama ABR geçildi. Bebek bir sonraki taramaya gitmez; sonuç kutusuna yönlenir (risk yoksa sağlam, risk varsa ya da yoğun bakım bebeğiyse sağlam / risk nedeniyle sevk).', not: '' },
+      aciklama: 'Tarama ABR geçildi (geçti sayılması için iki kulakta da geçti gerekir; en az bir kulakta kaldı, taramadan kaldı demektir). Bebek bir sonraki taramaya gitmez; sonuç kutusuna yönlenir (risk yoksa sağlam, risk varsa ya da yoğun bakım bebeğiyse sağlam / risk nedeniyle sevk).', not: '' },
     kaldi: { ad: ['Kaldı'], baslik: 'Kaldı', zaman: '',
       aciklama: 'Tarama ABR geçilemedi. Bebek bir sonraki tarama ABR’ye yönlenir; son taramada da kalırsa referans merkeze sevk edilir.', not: '' },
     saglam: { ad: ['Sağlam'], baslik: 'Sağlam', zaman: '',
@@ -526,6 +529,7 @@
      Proje sahibinin ders slaytına (ham-gorseller/isitsel-hafiza/) bakılarak slayttaki gibi soldan sağa yeniden çizildi; slayt uygulamaya konmadı.
      Metinler taslaktır; proje sahibi doğrular ve uygulamadan düzeltir (icerik/hafiza.<id>).
      Renk dili: bellek depoları ana renkle, süreçler (dikkat, tekrarlama, aktarım, geri çağırma) yuvarlak, bozulma gri. */
+  /* İşitsel hafıza (2026-11-22 denetimi): proje sahibinin ders slaytı (ham-gorseller/isitsel-hafiza, Atkinson ve Shiffrin 1968’den uyarlanmış) ile birebir. */
   var HNODES = {
     uyaran: { ad: ['Uyaran'], baslik: 'Uyaran', zaman: '',
       aciklama: 'Kulağa ulaşan işitsel uyaran; frekansı, şiddeti ve süresiyle birlikte ekoik belleğe girer.', not: '' },
@@ -533,14 +537,14 @@
       aciklama: 'İşitsel uyaran frekansı, şiddeti ve süresiyle tanımlanır; ekoik bellek bu özellikleri kısa bir süre ham hâliyle tutar.', not: '' },
     ekoik: { ad: ['Ekoik', 'bellek', '(≈250 ms)'], baslik: 'Ekoik bellek (işitsel duyusal bellek)', zaman: 'yaklaşık 250 ms',
       aciklama: 'Duyulan ses çok kısa bir süre ham hâliyle burada tutulur. Dikkat edilen bilgi kısa süreli belleğe geçer, edilmeyen bozulur.',
-      not: 'Ekoik belleğin süresi kaynaklara göre farklı verilir (birkaç yüz milisaniyeden birkaç saniyeye kadar). Burada slayttaki değer kullanıldı.' },
+      not: 'Süre, ders slaytındaki değerdir (Atkinson ve Shiffrin 1968’den uyarlanmış).' },
     bozulma1: { ad: ['Bozulma'], baslik: 'Bozulma (ekoik bellek)', zaman: '',
       aciklama: 'İşitsel dikkat olmadığında ileri işlemleme gerçekleşmez; bilgi ekoik bellekten silinir.', not: '' },
     dikkat: { ad: ['Dikkat'], baslik: 'Dikkat', zaman: '',
       aciklama: 'Ekoik bellekteki bilginin kısa süreli belleğe geçebilmesi için dikkat gerekir.', not: '' },
     ksb: { ad: ['Kısa süreli', 'bellek', '(≈30 sn)'], baslik: 'Kısa süreli bellek', zaman: 'yaklaşık 30 sn',
       aciklama: 'Dikkat edilen bilginin geçici olarak tutulduğu bellek. Tekrarlanan bilgi burada kalır; kodlanan bilgi uzun süreli belleğe aktarılır.',
-      not: 'Süre ve kapasite değerleri kaynaklara göre farklı verilir.' },
+      not: 'Süre, ders slaytındaki değerdir (Atkinson ve Shiffrin 1968’den uyarlanmış).' },
     tekrar: { ad: ['Tekrarlama'], baslik: 'Tekrarlama', zaman: '',
       aciklama: 'Bilgiyi zihinde tekrar etmek, kısa süreli bellekte kalma süresini uzatır.', not: '' },
     bozulma2: { ad: ['Bozulma'], baslik: 'Bozulma (kısa süreli bellek)', zaman: '',
