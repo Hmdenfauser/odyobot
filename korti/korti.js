@@ -668,5 +668,7 @@
       basR: mul(rx(D(10)), ry(D(-24))), genel: { cen: [-0.02, 0.1, 0.1], rad: 0.6 }, genelZoom: 1.8 });   // 2026-11-21: biraz daha geniş açıyla başlar
   }
 
-  window.Korti = { kur: kurKorti, kurAnim: kurKortiAnim, goruntuleyici: kur, _model: modelKur, rx: rx, ry: ry, mul: mul, D: D };
+  window.Korti = { kur: kurKorti, kurAnim: kurKortiAnim, goruntuleyici: kur, _model: modelKur, rx: rx, ry: ry, mul: mul, D: D,
+    // Ağ üretim yardımcıları (ampulla kesiti, korti/ampulla3d.js, 2026-11-22)
+    ag: { Ag: Ag, nokta: nokta, uzat: uzat, yuzey: yuzey, dondur: dondur, tup: tup, yay: yay, serit: serit, elips: elips } };
 })();

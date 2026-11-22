@@ -887,11 +887,11 @@
     // Eski adres: Geçmiş sekmesinin adı Vakalarım oldu; eski bağlantılar da çalışsın.
     if (t === 'gecmis') { t = 'vakalarim'; adresDegistir('#vakalarim'); }
     if (UC_ESKI.indexOf(t) !== -1) { t = '3d/periferik'; ham = t; adresDegistir('#3d/periferik'); }
-    // 3D modeller (2026-11-21): #3d = liste, #3d/periferik = kulak modeli (gorsel3d/), #3d/denge = denge sistemi, #3d/korti = iç kulak yapıları (korti/).
+    // 3D modeller (2026-11-21): #3d = liste, #3d/periferik = kulak modeli (gorsel3d/), #3d/denge = denge sistemi, #3d/korti = iç kulak yapıları (korti/), #3d/ampulla = ampulla kesiti (korti/ampulla3d.js, 2026-11-22).
     // Yalnızca hareketsiz modeller; animasyonlar Ses laboratuvarında (proje sahibinin kararı).
     if (t.split('/')[0] === '3d') {
       var ucAlt = t.split('/')[1] || '';
-      if (ucAlt && ['periferik', 'denge', 'korti'].indexOf(ucAlt) === -1) { ucAlt = ''; ham = '3d'; adresDegistir('#3d'); }
+      if (ucAlt && ['periferik', 'denge', 'korti', 'ampulla'].indexOf(ucAlt) === -1) { ucAlt = ''; ham = '3d'; adresDegistir('#3d'); }
       if (oncekiHash.split('/')[0] !== '3d') { ucGeldigi = ilkRota ? null : oncekiHash; ucListedenGeldi = false; }   // geri düğmesi için: nereden gelindi
       else if (ucAlt && oncekiHash === '3d') ucListedenGeldi = true;
       t = 'uc-boyut'; setTimeout(function () { ucGoster(ucAlt); }, 0);   // modeller yalnızca ilk açılışta kurulur (kulak modeli ~4 MB iner)
@@ -1385,6 +1385,19 @@
     if (a) yuva.appendChild(a);
   }
   function kurDenge() { if (dn || !DN || !window.Denge3D) return; dn = window.Denge3D.kur($('dn-kok'), { veri: DN, kartEki: dnKartEki }); }
+  // Ampulla kesiti (korti/ampulla3d.js, 2026-11-22): yönetici düzenlemesi icerik/ampulla3d.yapi.<id>, ampulla3d.genel, ampulla3d.metin
+  var AM = window.AMPULLA3D_VERI, am = null, AM_METIN_ALAN = DN_METIN_ALAN.concat([{ f: 'yonKanal', ad: 'Model üzerindeki yön yazısı: kanal tarafı' }, { f: 'yonUtrikulus', ad: 'Model üzerindeki yön yazısı: utrikulus tarafı' }]);
+  if (AM) {
+    Object.keys(AM.yapilar).forEach(function (id) { var y = AM.yapilar[id]; y.key = 'ampulla3d.yapi.' + id; editable(y, y.etiket != null ? ['ad', 'aciklama', 'etiket'] : ['ad', 'aciklama']); });
+    AM.genel.key = 'ampulla3d.genel'; editable(AM.genel, ['ad', 'aciklama']);
+    AM.metinler.key = 'ampulla3d.metin'; editable(AM.metinler, AM_METIN_ALAN.map(function (a) { return a.f; }));
+  }
+  function amKartEki(tur, kimlik, yuva) {
+    var o = tur === 'yapi' ? AM.yapilar[kimlik] : tur === 'metin' ? AM.metinler : AM.genel; if (!o) return;
+    var a = tur === 'metin' ? adminPart(o.key, o, AM_METIN_ALAN, 'İpucu, not ve model yazılarını düzenle') : adminPart(o.key, o, o.etiket != null ? KT_YAPI_ALAN : G3D_ALAN, 'Düzenle');
+    if (a) yuva.appendChild(a);
+  }
+  function kurAmpulla() { if (am || !AM || !window.Ampulla3D) return; am = window.Ampulla3D.kur($('am-kok'), { veri: AM, kartEki: amKartEki }); }
   function refreshKorti() {
     if (!KT) return;
     Object.keys(KT.yapilar).forEach(function (id) { applyOv(KT.yapilar[id].key, KT.yapilar[id]); });
@@ -1397,13 +1410,18 @@
       applyOv(DN.genel.key, DN.genel); applyOv(DN.metinler.key, DN.metinler);
       if (dn) dn.yenile();
     }
+    if (AM) {
+      Object.keys(AM.yapilar).forEach(function (id) { applyOv(AM.yapilar[id].key, AM.yapilar[id]); });
+      applyOv(AM.genel.key, AM.genel); applyOv(AM.metinler.key, AM.metinler);
+      if (am) am.yenile();
+    }
   }
   // 3D sayfası: liste ya da seçilen model; başlık #uc-metinler'den (yönetici düzenler)
 
   function ucGoster(alt) {
-    $('uc-liste-kutu').hidden = !!alt; $('g3d-kok').hidden = alt !== 'periferik'; $('dn-kok').hidden = alt !== 'denge'; $('kt-kok').hidden = alt !== 'korti';
+    $('uc-liste-kutu').hidden = !!alt; $('g3d-kok').hidden = alt !== 'periferik'; $('dn-kok').hidden = alt !== 'denge'; $('kt-kok').hidden = alt !== 'korti'; $('am-kok').hidden = alt !== 'ampulla';
     var b = document.querySelector('#uc-metinler [data-m="' + (alt || 'liste') + '"]'); $('uc-baslik').textContent = b ? b.textContent.trim() : '';
-    if (alt === 'periferik') kur3d(); else if (alt === 'denge') kurDenge(); else if (alt === 'korti') kurKorti();
+    if (alt === 'periferik') kur3d(); else if (alt === 'denge') kurDenge(); else if (alt === 'korti') kurKorti(); else if (alt === 'ampulla') kurAmpulla();
   }
   function refresh3d() {
     if (!G3D) return;

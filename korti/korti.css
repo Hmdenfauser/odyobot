@@ -38,6 +38,24 @@
 .kt { --kt-mak-ep: #D98C9E; --kt-mak-tuy: #8C73C2; --kt-mak-zar: #E07A10; }
 :root[data-theme="dark"] .kt { --kt-mak-ep: #E8A3B3; --kt-mak-tuy: #B59CF0; --kt-mak-zar: #FFB040; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .kt { --kt-mak-ep: #E8A3B3; --kt-mak-tuy: #B59CF0; --kt-mak-zar: #FFB040; } }
+/* Ampulla kesiti (korti/ampulla3d.js, 2026-11-22): --amp-<kimlik>. Sıvılar Koklea kesitindeki gibi: perilenf açık mavi, endolenf açık sarı. */
+.kt-ampulla {
+  --amp-kemik: #E6DCC6; --amp-perilenf: #CFE4F3; --amp-zar: #5E8FC0; --amp-endolenf: #F2E7B0;
+  --amp-krista: #E7B3A2; --amp-destek: #D98C9E; --amp-tip1: #D9486E; --amp-tip2: #7A5BD0;
+  --amp-silya: #E89A1E; --amp-kino: #C2410C; --amp-kupula: #6FB8A0; --amp-kaliks: #D99A1F; --amp-sinir: #E8C440;
+}
+:root[data-theme="dark"] .kt-ampulla {
+  --amp-kemik: #6E6656; --amp-perilenf: #24445B; --amp-zar: #86B3E0; --amp-endolenf: #4D4727;
+  --amp-krista: #C9978A; --amp-destek: #E8A3B3; --amp-tip1: #FF6F93; --amp-tip2: #A88CFF;
+  --amp-silya: #FFB547; --amp-kino: #FF8A4C; --amp-kupula: #7FD0B5; --amp-kaliks: #F0B441; --amp-sinir: #F5D860;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .kt-ampulla {
+    --amp-kemik: #6E6656; --amp-perilenf: #24445B; --amp-zar: #86B3E0; --amp-endolenf: #4D4727;
+    --amp-krista: #C9978A; --amp-destek: #E8A3B3; --amp-tip1: #FF6F93; --amp-tip2: #A88CFF;
+    --amp-silya: #FFB547; --amp-kino: #FF8A4C; --amp-kupula: #7FD0B5; --amp-kaliks: #F0B441; --amp-sinir: #F5D860;
+  }
+}
 .kt-liste { display: flex; flex-direction: column; gap: 6px; }
 /* Geniş yapıların içindeki küçük ad yazıları (korti.js → etiketYaz) */
 .kt-yazi { position: absolute; transform: translate(-50%, -50%); font: 600 10.5px/1.15 var(--font-body); color: var(--ink); white-space: nowrap;

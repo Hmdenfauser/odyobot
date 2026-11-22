@@ -51,13 +51,20 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 - Alt çubuk sırası: Ana sayfa, Görsel depo, OdyoBOT, Vakalarım, Notlar.
 - Odyogram çıktısı (`cikti.js`), Vakalarım → OdyoBOT gönderme, düğmeli sohbet (`odybot.js`). sw v12. Ayrıntı: `PROGRESS.md`.
 
+### Devam eden iş (2026-11-22): Ampulla kesiti 3D modeli — dal `ampulla-model`, YAYINDA DEĞİL
+- 3D modeller listesine 4. model: `#3d/ampulla` (`korti/ampulla3d.js` + `ampulla3d-veri.js`, renkler `korti.css` → `--amp-*`). Görüntüleyici `Korti.goruntuleyici`; ağ yardımcıları `Korti.ag` olarak açıldı (korti.js'te başka değişiklik yok).
+- Kanal ekseni boyunca kalın dilim: kemik ampulla, perilenf, zar duvar, endolenf, krista (yarı saydam, içinden sinir lifleri), destek hücreleri, Tip I (kaliksli) / Tip II tüylü hücreler, stereosilyalar, kinosilyum (lateral kanal gibi utrikulus tarafında), kupula (yarı saydam), ampullar sinir. Krista eyer değil düz sırt (sadeleştirme). Hareketsiz.
+- Metinler Claude'un TASLAĞI (ders notuyla karşılaştırılmadı); yönetici: `icerik/ampulla3d.yapi.<id>`, `ampulla3d.genel`, `ampulla3d.metin` (yön yazıları dahil). sw ASSETS'e eklendi, VERSION yayında artırılacak.
+- **Proje sahibi beğenirse:** ampulla animasyonu (Ses laboratuvarında) için ayrıca onay alınacak; onaysız başlanmaz.
+
 ### KALDIĞIMIZ YER (2026-11-21 gece, son durum v48) — oturum başında bunu özetle
 **Durum:** Yayında **sw v48** (main). Yedek etiketleri GitHub'da (son: `yedek-yayin-v47`). Bekleyen kod değişikliği ve açık dal yok (yalnızca main).
 **Proje sahibinin kararı (2026-11-21 gece):** forum/üyelik **şimdilik açılmayacak** (ayar/uyelik kapalı kalır). Ertesi gün devam edilecek.
 **Firebase tarafında yapılanlar:** kurallar yapıştırıldı; Google girişi açık (destek e-postası odyobot hesabı, görünen ad "OdyoBOT"); yetkili alan adı tamam; e-posta şablonu Türkçe; odyobot Google hesabı projeye sahip olarak eklendi; yönetici hesabıyla forum denemesi çalıştı (e-posta doğrulandıktan sonra çıkış/giriş gerekiyordu, v47 ile düzeldi).
 **Üyeliği açmadan önce kalan (proje sahibi):** (1) yasal metinlerdeki köşeli parantezli boşluklar (veri sorumlusu adı, iletişim e-postası; uygulamadan Düzenle ile, koda yazılmaz); (2) KVKK m. 9 yurt dışı aktarım cümlesi + metinler için hukukçu; (3) Ayarlar → Üyelik → "Yeni üye kaydı açık". Açıldıktan sonra: telefonda ikinci hesapla kayıt, iPhone ana ekran uygulamasında Google girişi, zil, doğrulanmamış hesabın yazamaması.
-**Diğer bekleyenler:** taslak içerik doğrulamaları (iç kulak, denge, Corti, 112 sözlük terimi, yasal metinler); sözlükte yönetici ile gerçek yazma denemesi; ampulla kesiti animasyonu (başka gün); 5. adım yalnızca "sıradaki adıma geç" ile.
-**Oturum başında hatırlat:** yukarıdaki üç madde + v46–v48 telefon denemesi (yeni alt çubuk, Kütüphane, zil, selam, yasal sayfalar).
+**Diğer bekleyenler:** taslak içerik doğrulamaları (iç kulak, denge, Corti, 112 sözlük terimi, yasal metinler); ampulla kesiti animasyonu (başka gün); 5. adım yalnızca "sıradaki adıma geç" ile.
+**Yapıldı (2026-11-22, proje sahibi):** v46–v48 telefon denemesi (yeni alt çubuk, Kütüphane, zil, selam, yasal sayfalar) ve sözlükte yönetici ile gerçek yazma denemesi.
+**Oturum başında hatırlat:** yukarıdaki maddeler.
 
 ### Önceki: KALDIĞIMIZ YER (2026-11-21 gece, v46)
 **v48 (2026-11-21):** ana sayfa selamı "Merhaba, <görünen ad>" (giriş yoksa "odyolog"; kalıplar `uye.m.selamUye`/`selamMisafir`, eski `ana.baslik` kullanılmıyor), kayıt açıkken selamın altında "Giriş yap / Kaydol" (`#ana-giris`). Yedek `yedek-yayin-v47`.
