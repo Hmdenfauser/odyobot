@@ -4,6 +4,8 @@
      (proje sahibinin kararı: 3D'de yalnızca yapılar; animasyonlar Ses laboratuvarında).
    - Açıklamalar proje sahibinin ders notuna dayanılarak Claude tarafından TASLAK yazıldı (İşitme ve Denge Sistemleri-1,
      "periferik vestibüler sistem" dersi). Yönetici düzenler: icerik/denge3d.yapi.<id>, denge3d.genel, denge3d.metin.
+   - 2026-11-22 denetimi: İşitme ve Denge Sistemleri-1 periferik vestibüler sistem (sl. 3–14), İşitme ve Denge Sistemleri-2 (sl. 20–31),
+     Vestibüler Sistemin Değerlendirilmesi (1. ders; VEMP; vHIT sl. 6, 17) ile karşılaştırıldı.
    - Kimlikler değiştirilmez. Renkler: labirent --g3d-<id> (gorsel3d.css), makula katmanları --kt-mak-* (korti.css). */
 (function () {
   window.DENGE3D_VERI = {
@@ -16,7 +18,7 @@
       vest: { ad: 'Vestibül', aciklama: 'Kemik labirentin en geniş bölümü (erişkinde genişliği yaklaşık 4 mm); koklea ile semisirküler kanalların ortasında yer alır. İç duvarının ön yarısındaki çukurda (resesus sferikus) sakkulus, arka yarısındaki çukurda (resesus eliptikus) utrikulus oturur. Dış duvarında oval pencere bulunur.' },
       ant: { ad: 'Anterior (süperior) semisirküler kanal', aciklama: 'Dikey kanallardan biri; sagittal düzleme yaklaşık 45° açıyla yerleşir. Bir taraftaki anterior kanal, karşı taraftaki posterior kanalla aynı düzlemdedir. Ampullası önde, vestibüle açılan ucundadır; ampulla dışındaki bacağı posterior kanalınkiyle birleşerek krus kommuneyi oluşturur.' },
       post: { ad: 'Posterior (inferior) semisirküler kanal', aciklama: 'Dikey kanallardan biri; sagittal düzleme yaklaşık 45° açıyla yerleşir. Ampullası alt uçtadır. Ampulla dışındaki bacağı anterior kanalınkiyle krus kommunede birleşir. BPPV’de kristallerin en sık girdiği kanaldır.' },
-      lat: { ad: 'Lateral (horizontal) semisirküler kanal', aciklama: 'Yatay kanal; horizontal düzleme göre önde yaklaşık 30° yukarı eğimlidir. Ampulla dışındaki bacağı tek başına vestibüle açılır. Kalorik test ve video baş itme testinde en çok değerlendirilen kanaldır.' },
+      lat: { ad: 'Lateral (horizontal) semisirküler kanal', aciklama: 'Yatay kanal; horizontal düzleme göre önde yaklaşık 30° yukarı eğimlidir. Ampulla dışındaki bacağı tek başına vestibüle açılır. Kalorik test yalnızca horizontal kanalları değerlendirir; video baş itme testinde (vHIT) horizontal kanallar da test edilir.' },
       crus: { ad: 'Krus kommune', aciklama: 'Anterior ve posterior semisirküler kanalların ampulla taşımayan bacaklarının birleşerek vestibüle açıldığı ortak bacak (krus kommunis).' },
       amp: { ad: 'Ampullalar', aciklama: 'Her semisirküler kanalın vestibüle bağlanan bir ucundaki şişkinlik (zar labirentte yaklaşık 2 mm çapında). İçinde eyer biçimli duyu epiteli krista ampullaris ve onun üstünde yelpaze biçimli, jelatinimsi kupula bulunur. Baş dönünce endolenf kupulayı büker ve tüylü hücreler uyarılır. (Krista ve kupula bu modelde çizilmedi.)' },
       utr: { ad: 'Utrikulus makulası', etiket: 'Utrikulus', aciklama: 'Utrikulus vestibülün resesus eliptikusunda oturur; makulası yatay düzlemdedir. Bu yüzden daha çok yatay doğrusal hızlanmayı ve başın eğilmesini algılar. Makulada tüylü hücreler, destek hücreleri ve üstünde otolitik membran bulunur. Semisirküler kanallar utrikulustan başlayıp yine utrikulusa döner.' },
