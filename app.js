@@ -638,7 +638,73 @@
       'İşitme eşiği ile refleks eşiği arasındaki fark 50–55 dB’nin altındaysa Metz rekruitmenti pozitiftir; koklear patolojiyi düşündürür.',
       'Refleks decay: refleks eşiğinin 10 dB üzerinde, 500 ya da 1000 Hz uyaran 10 sn verilir. 5. saniyeden önce refleksin büyüklüğü %50 ya da daha fazla azalırsa pozitiftir; retrokoklear patoloji ya da MS gibi miyelin hastalıklarıyla ilişkili olabilir.',
       'Kontralateral test çapraz yoldaki sorunlara daha duyarlıdır; yalnızca ipsilateral bakılırsa birçok retrokoklear patoloji kaçabilir. Prob kulağındaki orta kulak patolojisi o kulakta ölçülen refleksleri engeller.',
-      'Kaynak: Elektrofizyolojik Testler, Akustik refleksler (sl. 3–4, 17–19, 21); Davranışsal Testler 04.12.2023 (sl. 15); Jerger ve Jerger (1977).' ] }
+      'Kaynak: Elektrofizyolojik Testler, Akustik refleksler (sl. 3–4, 17–19, 21); Davranışsal Testler 04.12.2023 (sl. 15); Jerger ve Jerger (1977).' ] },
+    /* 2026-11-22: ders notlarından eklenen notlar (8–17) */
+    { t: 'Diyapazon testleri: Weber ve Rinne', p: [
+      'Rinne: aynı kulakta hava ve kemik yoluyla işitme süresi karşılaştırılır. Normal işitende hava yolu kemik yolundan yaklaşık iki kat uzun duyulur: Rinne (+).',
+      'İletim tipi kayıpta kemik yolundan işitme süresi hava yolundan uzun olabilir: Rinne (−). Sensörinöral kayıpta ikisi de kısalır ama oran korunur: patolojik Rinne (+).',
+      'Weber: ses, duyarlılığı daha iyi olan kokleadan ya da hava-kemik aralığı daha büyük olan kulakta daha güçlü algılanır. Tek taraflı sensörinöral kayıpta ses iyi kulakta, tek taraflı iletim tipi kayıpta patolojili kulakta duyulur.',
+      'Mikst tip kayıpta bu testler güvenilir sonuç vermeyebilir; saf iletim ya da saf sensörinöral kayıpta yorum yapılabilir.',
+      'Kaynak: Odyolojide Ayırıcı Tanı Testleri 1. ders (sl. 14–20).' ] },
+    { t: 'Rekrutman ve adaptasyon testleri', p: [
+      'Rekrutman: şiddetteki hafif artışla gürlük algısının anormal hızla artmasıdır; kokleadaki tüylü hücre ve sinir sonu kaybında görülür, iletim tipi kayıpta görülmez. Dekrutman (gürlüğün yavaş artması ya da artmaması) retrokoklear patolojiyi düşündürür.',
+      'ABLB (değişimli binaural gürlük dengeleme): normal kulağa 20 dB SL’de ses verilerek başlanır; iki kulakta eşit gürlükte duyulan şiddetler karşılaştırılır.',
+      'SISI: eşiğin 20 dB üstünde 1 dB’lik 20 artım verilir; normal kulak bunları fark edemez. %70’in üstü koklear patoloji için pozitiftir; koklear bileşeni olmayan retrokoklear patolojide %0’dır.',
+      'Metz rekruitmenti: aynı frekansta işitme eşiği ile akustik refleks eşiği arasındaki fark 50–55 dB’nin altındaysa pozitiftir.',
+      'Tone decay (ton erimesi): normal işitme siniri eşiğin 5 dB üstündeki sürekli sese 60 sn kesintisiz yanıt verebilir. Aşırı adaptasyon bölgesel lezyon olarak değerlendirilir; yorum Carhart’a göre yapılır.',
+      'Kaynak: Davranışsal Testler 04.12.2023 ve 11.12.2023 (sl. 2–15, 25–27); Odyolojide Ayırıcı Tanı Testleri, koklear ve retrokoklear ayırıcı tanı (sl. 25).' ] },
+    { t: 'Elektrokokleografi (ECochG)', p: [
+      'Üç bileşen kaydedilir: koklear mikrofonik (KM), sumasyon potansiyeli (SP) ve işitme sinirinin aksiyon potansiyeli (AP).',
+      'KM en çok koklea bazalindeki dış tüylü hücrelerden kaynaklanır; rarefaction ve condensation polaritelerde elde edilen dalgalar birbirinin ayna görüntüsüdür.',
+      'AP binlerce işitme siniri lifinin eş zamanlı uyarılmasını yansıtır; amplitüdü ve latansı değerlendirilir. İşitme kaybı arttıkça AP yayvanlaşır.',
+      'SP/AP oranındaki artış endolenfatik hidrops bulgusudur; ayrıca rarefaction ve condensation AP latans farkının 0,3 ms’den büyük olması da hidropsla ilişkilendirilir. Hidrops tanısında SP ve AP, KM’den daha güvenilirdir.',
+      'Endokoklear potansiyel (EP) transdüksiyon için gereklidir; endolenfin yapısındaki değişimler EP’yi etkiler.',
+      'Transtimpanik uygulama zarda perforasyon riski nedeniyle ekstratimpanik uygulamaya göre daha az tercih edilir.',
+      'Kaynak: Elektrofizyolojik Testler, ECochG (sl. 7, 14, 15, 22, 23, 28).' ] },
+    { t: 'Orta ve geç latanslı yanıtlar', p: [
+      'Orta latans yanıtlar (MLR, 10–100 ms) talamus ve işitme korteksini; geç latans yanıtlar (50 ms sonrası) işitsel kortikal yolları değerlendirir.',
+      'Kortikal işitsel uyarılmış potansiyeller (CAEP): eksojen yanıt P1–N1–P2 kompleksidir. P1 yaklaşık 50 ms’de, N1 80–100 ms’de, N2 180–250 ms’de görülür. Santral işitsel işlemleme bozukluğunda N1–P2 kompleksinde anomali, N1 latansında artış ve amplitüdünde azalma görülebilir.',
+      'Eşleşmeyen negatiflik (MMN): standart uyaranlar arasında seyrek ve farklı uyarana yaklaşık 150–250 ms’de çıkan negatif dalgadır; dikkat gerektirmez, bu yüzden yenidoğan ve küçük çocuklarda kullanılabilir.',
+      'P300: aynı “oddball” düzeniyle kaydedilir ama kişinin seyrek uyaranlara dikkat edip onları belirlemesi istenir; seyrek uyarandan sonra 250–500 ms’de ortaya çıkar.',
+      'Kaynak: Elektrofizyolojik Testler, giriş dersi (sl. 4), CAEP (sl. 2–5), MMN-ACC-P300 (sl. 2–13); Davranışsal Testler 26.12.2023 (sl. 7).' ] },
+    { t: 'VEMP (vestibüler uyarılmış miyojenik potansiyeller)', p: [
+      'Yüksek şiddette (95 dB’in üstünde), kısa akustik uyaranla otolit organları uyarılır ve kaslardan miyojenik yanıt kaydedilir.',
+      'Servikal VEMP (cVEMP): tonik kasılmış aynı taraf sternokleidomastoid kasından inhibitör yanıt kaydedilir. Yol: sakkulus, alt vestibüler sinir, lateral vestibüler çekirdek, XI. sinir, sternokleidomastoid kası. Dalga p13–n23 olarak adlandırılır (bir tez çalışmasında p13 ≈ 14,7 ms, n23 ≈ 22,5 ms).',
+      'Oküler VEMP (oVEMP) de miyojenik bir yanıttır; utrikulus, üst vestibüler sinir ve refleks yolu hakkında bilgi verir.',
+      'Uyaran ses olduğu için yanıt iletim tipi kayıp yaratan orta kulak sorunlarından etkilenir; hava-kemik aralığı 10 dB’den fazlaysa dalga alınamayabilir ya da bozuk olabilir.',
+      'Semisirküler kanal dehisansında (SSCD) eşik düşük, amplitüd anormal yüksektir: normalde 90–95 dB nHL olan eşik yaklaşık 20 dB daha düşüktür.',
+      'Kaynak: Elektrofizyolojik Testler, VEMP (sl. 2–3, 7, 11, 16–17, 23); Vestibüler Sistemin Değerlendirilmesi, cVEMP-oVEMP (sl. 21).' ] },
+    { t: 'Kalorik test ve video baş itme testi (vHIT)', p: [
+      'Kalorik test yalnızca horizontal kanalları değerlendirir ve iki kulak arasındaki ilişkiyi gösterir. British Society of Audiology sırası: sağ sıcak, sol sıcak, sağ soğuk, sol soğuk; testler arası en az 5 dakika.',
+      'Su: 250 ml, 40 sn (sıcak 44°, soğuk 30°). Hava: 8 l/dk, 60 sn (sıcak 50°, soğuk 24°). Her uyaranda yaklaşık 200 sn kayıt alınır.',
+      'Yanıt nistagmusun yavaş faz hızıyla ölçülür ve Jongkees formülleriyle yorumlanır: kanal parezisi (tek taraflı zayıflık) iki taraf arasındaki farkın %20–25’in, yön üstünlüğü %26–30’un üstünde olmasıdır.',
+      'vHIT altı semisirküler kanalı değerlendirebilir. Normal VOR kazancı 0,76–0,80’in üstünde, kanallar arası asimetri %0–8’dir (cihaza göre değişir). Kalorik sonuçları normal olan hastalarda anormal vHIT bulguları görülebilir.',
+      'Kaynak: Vestibüler Sistemin Değerlendirilmesi, VideoNistagmografi (sl. 30–35) ve vHIT (sl. 6, 14, 17–18).' ] },
+    { t: 'BPPV (benign paroksismal pozisyonel vertigo)', p: [
+      'Periferik kaynaklı vertigonun en yaygın nedenidir (%75–80). Vertigo ataklar hâlinde, pozisyona bağlı ve kısa sürelidir (10–15 sn ile 120 sn arası); provoke eden pozisyon sürdükçe azalır.',
+      'Kanalitiazis: otokoniler kanalda serbesttir, endolenfle hareket ederek yerçekimiyle kupulayı büker (Epley). Kupulolitiazis: otokoniler kupulaya yapışır ve onu yerçekimine duyarlı hâle getirir; latent periyot ve yorulma görülmez.',
+      'Kanallara göre görülme: posterior %80–85, horizontal %5–15, anterior %1–3.',
+      'Dix-Hallpike (vertikal kanallar): baş 45° çevrilir, 30° ekstansiyona getirilir. Sağ posterior kanal kanalitiazisinde sağ Dix-Hallpike’ta yukarı vuran, torsiyonel bileşenli nistagmus görülür; 60 sn’den uzun sürerse kupulolitiazis ya da santral patoloji düşünülür. Horizontal kanal için head roll testi yapılır (geotropik ya da ageotropik nistagmus).',
+      'Tedavi: posterior kanal kanalitiazisinde Epley manevrası (pozisyonlar arası en az 60 sn ya da belirtiler geçene kadar), posterior kanal kupulolitiazisinde Semont manevrası (hızlı yapılır, pozisyonlar arası 2–3 dk), horizontal kanal kanalitiazisinde Barbekü (BBQ) manevrası, horizontal kanal kupulolitiazisinde Casani manevrası.',
+      'Kaynak: Vestibüler Sistem ve Hastalıkları, BPPV (sl. 14–30); Aksoy ve Kabiş, Temel Vestibüler Rehabilitasyon (2020).' ] },
+    { t: 'Yenidoğan işitme taraması', p: [
+      'Tarama taburcu olmadan yapılır; 35 dB SPL klik uyaranla geçti/kaldı sonucu verir. Geçti sayılması için iki kulakta da geçti gerekir; en az bir kulakta kaldı, taramadan kaldı demektir.',
+      'Sağlıklı yenidoğanda TEOAE ile taranır; kalan bebek en az 1 hafta sonra, 15 gün içinde yeniden taranır. İkinci kez kalan bebeğe tarama ABR yapılır; tarama ABR’den kalanlar tanısal değerlendirme için referans merkeze sevk edilir.',
+      'Risk faktörü olan bebeklerde tarama ABR kullanılır: duyarlılığı ve özgüllüğü yüksektir ve işitme sinirini de değerlendirir.',
+      'Yalancı pozitiflik için kabul edilebilir oran %4’tür. Nedenleri: dış kulak yolunda amniyon sıvısı ve doğum kalıntıları, orta kulakta sıvı, gürültülü ortam, personel hataları.',
+      'Geç başlangıçlı ya da ilerleyici kayıp riski olan bebekler taramayı geçseler de izlenir (JCIH 2007: 24–30 ay arasında yeniden değerlendirme). Risk faktörleri Kütüphane → Şemalar → Yenidoğan taraması şemasında.',
+      'Kaynak: İşitme Taramaları, 4.–5. ders (sl. 30–35) ve 6. ders (sl. 6–16).' ] },
+    { t: 'Pediatrik davranışsal testler', p: [
+      'Davranış gözlem odyometrisi: yaklaşık 0–4 aylık bebeklerde sese verilen kendiliğinden tepkiler gözlenir.',
+      'Görsel pekiştireçli odyometri: sese baş çevirme ışıklı ya da hareketli oyuncakla ödüllendirilir; ders notlarında 5–36 ay (tabloda 5–24 ay) için verilir. 5–6 aylık bebekler başlarını ses kaynağına çevirebilir.',
+      'Koşullandırılmış oyun odyometrisi: çocuğa sesi duyunca bir oyun hareketi (tahtaya çubuk geçirme, blok dizme vb.) öğretilir; 24 ay ve üzeri çocuklarda kullanılır.',
+      'Kaynak: Davranışsal Testler, 5. hafta (davranış gözlem odyometrisi, sl. 4–5) ve 6. hafta (görsel pekiştireç ve oyun odyometrisi).' ] },
+    { t: 'Tinnitus, hiperakuzi ve mizofoni', p: [
+      'Tinnitus: dış uyaran olmaksızın ses algısıdır; fantom bir algıdır (Jastreboff 1995).',
+      'Hiperakuzi: normal seslere karşı yaşanan aşırı duyarlılıktır.',
+      'Mizofoni: işitsel sistemde anormal ve yüksek bir aktivasyon olmadan, limbik ve otonom sinir sisteminin sese anormal tepki göstermesidir. Mizofonide işitsel ve limbik yapılar arasındaki bağlantılar artmışken hiperakuzide normaldir; mizofoni ile işitme eşikleri arasında bağlantı yoktur.',
+      'Tedaviler tinnitus sinyalini azaltmaya ya da tinnitusa gelişen tepkileri azaltmaya yöneliktir. Tinnitus yeniden eğitim terapisi (TRT) nörofizyolojik modele dayanır ve tinnitusa alışmayı (habituasyon) amaçlar; bilişsel davranışçı terapi tinnitusun duygusal sonuçlarını hedefler.',
+      'Kaynak: Tinnitus-Hiperakuzi, 1. ders (sl. 4–5), 4. ders (sl. 2, 42), 7. ders (sl. 2–8); Davranışsal Testler 04.12.2023 (sl. 3).' ] }
   ];
   // Koddaki temel notlar da yönetici tarafından düzenlenebilir (anahtar: not.<sıra>). Sırayı değiştirme.
   var NOT_ALAN = [{ f: 't', ad: 'Başlık' }, { f: 'p', ad: 'Maddeler (her satıra bir madde)', cok: true }];
@@ -648,12 +714,17 @@
      Belge yoksa aşağıdaki varsayılan başlıklar kullanılır (adları eski icerik/not.gruplar düzenlemesiyle değişmiş olabilir).
      Hiçbir başlıkta olmayan notlar (yöneticinin yeni eklediği ya da başlığı silinen notlar) en sonda "Diğer notlar" altında. */
   var NOT_GRUPLARI = [
-    { id: 'temel', notlar: [0, 1, 3, 4] },
+    { id: 'temel', notlar: [0, 1, 3, 4, 8] },
+    { id: 'ayirici', notlar: [9] },
     { id: 'immitans', notlar: [2, 7] },
-    { id: 'elektro', notlar: [5, 6] }
+    { id: 'elektro', notlar: [5, 6, 10, 11] },
+    { id: 'vestibuler', notlar: [12, 13, 14] },
+    { id: 'pediatrik', notlar: [15, 16] },
+    { id: 'tinnitus', notlar: [17] }
   ];
-  var GRUP_AD = { key: 'not.gruplar', temel: 'Temel odyometri', immitans: 'İmmitansmetri', elektro: 'Elektrofizyoloji', eklenen: 'Diğer notlar' };
-  editable(GRUP_AD, ['temel', 'immitans', 'elektro', 'eklenen']);
+  var GRUP_AD = { key: 'not.gruplar', temel: 'Temel odyometri', ayirici: 'Ayırıcı tanı testleri', immitans: 'İmmitansmetri', elektro: 'Elektrofizyoloji',
+    vestibuler: 'Vestibüler değerlendirme', pediatrik: 'Pediatrik odyoloji ve tarama', tinnitus: 'Tinnitus ve ses toleransı', eklenen: 'Diğer notlar' };
+  editable(GRUP_AD, ['temel', 'ayirici', 'immitans', 'elektro', 'vestibuler', 'pediatrik', 'tinnitus', 'eklenen']);
   var GRUP_BELGESI = 'ayar/notGruplari', GRUP_EN_COK = 30, GRUP_AD_SINIRI = 60;
   var notDuzen = null;   // Firestore'daki başlık düzeni (yoksa varsayılan)
 
