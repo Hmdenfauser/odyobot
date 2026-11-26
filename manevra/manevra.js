@@ -33,7 +33,7 @@
   function kur(kap, id, ayar) {
     var M = H.MANEVRA[id];
     var taraf = 'sag', cesit = H.cesitler(id)[0], O = null, oynuyor = false, calisiyor = false, son = 0, kare = null, bitti = false;
-    var KAMERA = { az: -28, el: 16, uz: 2.25 }, kamera = Object.assign({}, KAMERA), yakin = false, renk = null;
+    var KAMERA = { az: -24, el: 20, uz: 3.2 }, kamera = Object.assign({}, KAMERA), yakin = false, renk = null;
     var azalt = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     // ---- yapı
@@ -113,7 +113,7 @@
     // ---- kamera ve izdüşüm
     var W = 0, Hh = 0, KB = 150, cam, ileri, sag, yuk, odak;
     function kameraKur(basP) {
-      var hedef = yakin && basP ? basP : [0.55, 0.05, 0], uz = yakin ? 1.0 : kamera.uz, az = kamera.az * H.DER, e = kamera.el * H.DER;
+      var hedef = yakin && basP ? basP : [0.8, -0.12, 0], uz = yakin ? 1.2 : kamera.uz, az = kamera.az * H.DER, e = kamera.el * H.DER;
       cam = add(hedef, [Math.sin(az) * Math.cos(e) * uz, Math.sin(e) * uz, Math.cos(az) * Math.cos(e) * uz]);
       ileri = nrm(sub(hedef, cam)); sag = nrm(cross(ileri, [0, 1, 0])); yuk = cross(sag, ileri);
       odak = Hh * 1.35;
