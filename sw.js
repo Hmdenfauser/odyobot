@@ -41,6 +41,7 @@ var ASSETS = [
   './seslab/dagilma.js',
   './seslab/seslab.js',
   './seslab/seslab.css',
+  './manevra/manevra-veri.js', './manevra/manevra-hesap.js', './manevra/manevra.js', './manevra/manevra.css',
   './firebase-config.js',
   './manifest.webmanifest',
   './vendor/firebase/firebase-app-compat.js',

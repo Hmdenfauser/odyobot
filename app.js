@@ -841,8 +841,8 @@
       'Kanalitiazis: otokoniler kanalda serbesttir, endolenfle hareket ederek yerçekimiyle kupulayı büker (Epley). Kupulolitiazis: otokoniler kupulaya yapışır ve onu yerçekimine duyarlı hâle getirir; latent periyot ve yorulma görülmez.',
       'Kanallara göre görülme: posterior %80–85, horizontal %5–15, anterior %1–3.',
       'Dix-Hallpike (vertikal kanallar): baş 45° çevrilir, 30° ekstansiyona getirilir. Sağ posterior kanal kanalitiazisinde sağ Dix-Hallpike’ta yukarı vuran, torsiyonel bileşenli nistagmus görülür; 60 sn’den uzun sürerse kupulolitiazis ya da santral patoloji düşünülür. Horizontal kanal için head roll testi yapılır (geotropik ya da ageotropik nistagmus).',
-      'Tedavi: posterior kanal kanalitiazisinde Epley manevrası (pozisyonlar arası en az 60 sn ya da belirtiler geçene kadar), posterior kanal kupulolitiazisinde Semont manevrası (hızlı yapılır, pozisyonlar arası 2–3 dk), horizontal kanal kanalitiazisinde Barbekü (BBQ) manevrası, horizontal kanal kupulolitiazisinde Casani manevrası.',
-      'Kaynak: Vestibüler Sistem ve Hastalıkları, BPPV (sl. 14–30); Aksoy ve Kabiş, Temel Vestibüler Rehabilitasyon (2020).' ] },
+      'Tedavi: posterior kanalda Epley manevrası (pozisyonlar arası 30 sn–1 dk) ya da Semont manevrası (kanalolitiaziste en az 30 sn; ders notunda kupulolitiazis için, pozisyonlar arası 2–3 dk; hızlı yapılır), horizontal kanal kanalitiazisinde Barbekü (BBQ) manevrası, horizontal kanal kupulolitiazisinde Casani manevrası. Ayrıntılar ve animasyonlar: Vestibüler Manevralar başlığı.',
+      'Kaynak: Vestibüler Sistem ve Hastalıkları, BPPV (sl. 14–30); Aksoy ve Kabiş, Temel Vestibüler Rehabilitasyon (2020); Odyolojide Özel Durumlar, Vestibüler Sistem Bozuklukları (s. 465–467).' ] },
     { t: 'Yenidoğan işitme taraması', p: [
       'Tarama taburcu olmadan yapılır; 35 dB SPL klik uyaranla geçti/kaldı sonucu verir. Geçti sayılması için iki kulakta da geçti gerekir; en az bir kulakta kaldı, taramadan kaldı demektir.',
       'Sağlıklı yenidoğanda TEOAE ile taranır; kalan bebek en az 1 hafta sonra, 15 gün içinde yeniden taranır. İkinci kez kalan bebeğe tarama ABR yapılır; tarama ABR’den kalanlar tanısal değerlendirme için referans merkeze sevk edilir.',
@@ -865,6 +865,18 @@
   // Koddaki temel notlar da yönetici tarafından düzenlenebilir (anahtar: not.<sıra>). Sırayı değiştirme.
   var NOT_ALAN = [{ f: 't', ad: 'Başlık' }, { f: 'p', ad: 'Maddeler (her satıra bir madde)', cok: true }];
   NOTES.forEach(function (n, i) { n.key = 'not.' + i; editable(n, ['t', 'p']); });
+  /* Vestibüler Manevralar (2026-11-26): manevra/manevra-veri.js. Ders notlarında değil, Kütüphane'de kendi sayfasında
+     (#manevralar; her manevra #manevra/<kimlik>, not sayfası görünümüyle açılır). Her biri "man.<kimlik>" anahtarlı; animasyonlu olanlarda
+     her çeşidin adımları a_<çeşit> (satır: "kısa ad | açıklama | süre"), çeşit adları c_<çeşit>. Animasyon yazıları man.metin. */
+  var MV = window.MANEVRA_VERI, MAN_NOTES = [], MAN_METIN = null;
+  if (MV) {
+    MAN_NOTES = MV.sira.filter(function (id) { return MV.notlar[id]; }).map(function (id) {
+      var d = MV.notlar[id], n = { t: d.t, p: d.p.slice(), key: 'man.' + id, man: id, cesitler: [] }, alan = ['t', 'p'];
+      Object.keys(d.a || {}).forEach(function (c) { n['a_' + c] = d.a[c].slice(); n['c_' + c] = (d.cesit || {})[c] || c; n.cesitler.push(c); alan.push('a_' + c, 'c_' + c); });
+      editable(n, alan); return n;
+    });
+    MAN_METIN = Object.assign({ key: 'man.metin' }, MV.metin); editable(MAN_METIN, Object.keys(MV.metin));
+  }
   /* Konu başlıkları (grupları). Yönetici ekler, adını değiştirir, siler (Ders notları sayfasındaki yönetici paneli).
      Kayıt: Firestore ayar/notGruplari -> { gruplar: [{ id, ad, notlar: [not anahtarı, ...] }], digerAd, guncelleme }.
      Belge yoksa aşağıdaki varsayılan başlıklar kullanılır (adları eski icerik/not.gruplar düzenlemesiyle değişmiş olabilir).
@@ -886,7 +898,8 @@
 
   // Not anahtarı: koddaki notlar "not.<sıra>", yöneticinin eklediği notlar "nd.<belge kimliği>". Adres: #not/<anahtar>.
   function tumNotlar() { return NOTES.concat(customNotes); }
-  function notBul(key) { var l = tumNotlar(); for (var i = 0; i < l.length; i++) if (l[i].key === key) return l[i]; return null; }
+  // Not sayfasında açılabilenler: ders notları + Vestibüler Manevralar (favori ve "kaldığın yer" için de)
+  function notBul(key) { var l = tumNotlar().concat(MAN_NOTES); for (var i = 0; i < l.length; i++) if (l[i].key === key) return l[i]; return null; }
   function duzenOku(d) {   // Firestore'dan geleni denetle
     if (!d || !Array.isArray(d.gruplar)) return null;
     var g = d.gruplar.filter(function (x) { return x && typeof x.id === 'string' && typeof x.ad === 'string' && Array.isArray(x.notlar); })
@@ -1027,13 +1040,18 @@
       return;
     }
     $('not-baslik').textContent = n.t;
+    $('not-geri').querySelector('.gizli-yazi').textContent = n.man ? 'Geri: ' + $('mv-liste-baslik').textContent : 'Geri: Ders notları';
     var fav = favoriMi(n.key);
     $('not-yildiz').setAttribute('aria-pressed', fav ? 'true' : 'false');
     $('not-yildiz').setAttribute('aria-label', fav ? 'Favorilerden çıkar' : 'Favorilere ekle');
-    var admin = null, grupSec = null;
-    if (canEdit && n.key.indexOf('not.') === 0) admin = adminPart(n.key, n, NOT_ALAN, 'Bu notu düzenle');
+    var admin = null, grupSec = null, anim = null, metinAdmin = null;
+    if (n.man) anim = manevraAnim(n);
+    if (canEdit && n.man) admin = adminPart(n.key, n, NOT_ALAN.concat([].concat.apply([], n.cesitler.map(function (c) {
+      return [{ f: 'c_' + c, ad: 'Çeşidin adı (' + c + ')' }, { f: 'a_' + c, ad: 'Adımlar: ' + n['c_' + c] + ' (her satır: kısa ad | açıklama | gerçek süre; satır sayısı değişmez)', cok: true }];
+    }))), 'Bu notu düzenle');
+    else if (canEdit && n.key.indexOf('not.') === 0) admin = adminPart(n.key, n, NOT_ALAN, 'Bu notu düzenle');
     else if (canEdit) admin = h('div', { 'class': 'admin-bar' }, [h('a', { 'class': 'linkbtn', href: '#notlar', text: 'Ders notları sayfasındaki yönetici panelinde düzenle' })]);
-    if (canEdit) {   // yönetici: notun konu başlığı
+    if (canEdit && !n.man) {   // yönetici: notun konu başlığı (manevralar ders notu başlıklarına girmez)
       var sel = h('select', { id: 'not-grup-sec' });
       grupSecenekleri(sel, notunGrubu(n.key));
       var gm = h('div', { 'class': 'msg', role: 'status' });
@@ -1043,12 +1061,28 @@
       });
       grupSec = h('div', { 'class': 'fld not-grup-sec' }, [h('label', { 'for': 'not-grup-sec', text: 'Konu başlığı (yönetici)' }), sel, gm]);
     }
-    govde.replaceChildren.apply(govde, [h('ul', { 'class': 'not-maddeler' }, n.p.map(function (x) { return h('li', { text: x }); })), grupSec, admin].filter(Boolean));
+    govde.replaceChildren.apply(govde, [anim, h('ul', { 'class': 'not-maddeler' }, n.p.map(function (x) { return h('li', { text: x }); })), grupSec, admin, metinAdmin].filter(Boolean));
+    if (anim && manAnim.api) manAnim.api.goster();
+  }
+  /* Manevra animasyonu (manevra/manevra.js). Aynı not açıkken yeniden çizimde aynı animasyon korunur (yönetici düzenlemesi
+     ya da metinler gelince baştan başlamasın). */
+  var manAnim = { key: null, kutu: null, api: null };
+  function manAdimlar(n, c) {
+    var l = n['a_' + c] || [], d = n._def['a_' + c] || [];
+    return d.map(function (v, i) { var x = String(l[i] || v).split('|').map(function (s) { return s.trim(); }); return { k: x[0] || String(i + 1), a: x[1] || '', s: x[2] || '' }; });
+  }
+  function manevraAnim(n) {
+    if (!window.Manevra || !window.ManevraHesap || !window.ManevraHesap.MANEVRA[n.man]) return null;
+    if (manAnim.key === n.key && manAnim.kutu) { manAnim.api.yenile(); return manAnim.kutu; }
+    var kutu = h('div', { 'class': 'mv-kap' });
+    manAnim = { key: n.key, kutu: kutu, api: null };
+    manAnim.api = window.Manevra.kur(kutu, n.man, { metin: function () { return MAN_METIN; }, adimlar: function (c) { return manAdimlar(n, c); }, cesitAd: function (c) { return n['c_' + c] || c; } });
+    return kutu;
   }
   $('not-yildiz').addEventListener('click', function () { if (acikNot) { favoriDegistir(acikNot); notSayfaCiz(); } });
   var notGeldigi = null;
   $('not-geri').addEventListener('click', function () {
-    if (notGeldigi !== null && history.length > 1) history.back(); else location.hash = '#notlar';
+    if (notGeldigi !== null && history.length > 1) history.back(); else location.hash = acikNot && acikNot.indexOf('man.') === 0 ? '#manevralar' : '#notlar';
   });
   function notAc(key) {
     acikNot = key;
@@ -1056,8 +1090,28 @@
     notSayfaCiz();
   }
 
+  /* Kütüphane → Vestibüler Manevralar listesi (#manevralar): değerlendirme testleri, tedavi manevraları, ayrıca */
+  function manevraListe() {
+    var kutu = $('mv-liste-kutu'); if (!kutu || !MAN_NOTES.length) return;
+    var MH = window.ManevraHesap, bolum = { test: [], tedavi: [], diger: [] };
+    MAN_NOTES.forEach(function (n) { bolum[MH && MH.MANEVRA[n.man] ? (MH.MANEVRA[n.man].test ? 'test' : 'tedavi') : 'diger'].push(n); });
+    kutu.replaceChildren.apply(kutu, ['test', 'tedavi', 'diger'].filter(function (b) { return bolum[b].length; }).map(function (b) {
+      return h('div', { 'class': 'stack not-grup' }, [
+        h('h3', { 'class': 'not-grup-bas', text: MAN_METIN['liste_' + b] }),
+        h('div', { 'class': 'satir-liste' }, bolum[b].map(function (n) {
+          return h('a', { 'class': 'satir', href: '#manevra/' + encodeURIComponent(n.man) }, [h('span', { 'class': 'satir-ad', text: n.t }), svgOk()]);
+        }))
+      ]);
+    }));
+    var ad = $('mv-liste-admin');
+    fill(ad, [canEdit && MAN_METIN ? adminPart('man.metin', MAN_METIN, Object.keys(MV.metin).map(function (f) { return { f: f, ad: 'Yazı: ' + f, cok: MV.metin[f].length > 60 }; }), 'Bölüm başlıklarını ve animasyon yazılarını düzenle') : null]);
+  }
+
   function refreshNotes() {
     NOTES.forEach(function (n) { applyOv(n.key, n); });
+    MAN_NOTES.forEach(function (n) { applyOv(n.key, n); });
+    if (MAN_METIN) applyOv(MAN_METIN.key, MAN_METIN);
+    manevraListe();
     applyOv(GRUP_AD.key, GRUP_AD);
     renderNotes($('n-ara').value);
     if (acikNot) notSayfaCiz();
@@ -1127,9 +1181,9 @@
   /* ---------- tabs ---------- */
   // 'uc-boyut' = 3D sayfası; adresi #3d. Alt çubukta sekmesi yok, o sırada Ana sayfa seçili görünür.
   // Alt sayfalar (2026-11-17): 'duyurular' (tam liste), 'not-sayfa' (#not/<anahtar>). Alt çubukta sekmeleri yok; bağlı oldukları sekme seçili görünür.
-  var TABS = ['anasayfa', 'depo', 'odybot', 'notlar', 'vakalarim', 'ayarlar', 'giris', 'hesap', 'uc-boyut', 'duyurular', 'not-sayfa', 'seslab', 'sozluk', 'kutuphane', 'topluluk', 'yasal'];
+  var TABS = ['anasayfa', 'depo', 'odybot', 'notlar', 'vakalarim', 'ayarlar', 'giris', 'hesap', 'uc-boyut', 'duyurular', 'not-sayfa', 'seslab', 'sozluk', 'kutuphane', 'topluluk', 'yasal', 'manevralar'];
   // 4. adım (2026-11-21): Görsel depo, Ders notları ve Terimler sözlüğü alt çubukta Kütüphane'nin altında
-  var UST_SEKME = { 'uc-boyut': 'anasayfa', duyurular: 'anasayfa', depo: 'kutuphane', notlar: 'kutuphane', 'not-sayfa': 'kutuphane', seslab: 'anasayfa', sozluk: 'kutuphane' };
+  var UST_SEKME = { 'uc-boyut': 'anasayfa', duyurular: 'anasayfa', depo: 'kutuphane', notlar: 'kutuphane', 'not-sayfa': 'kutuphane', seslab: 'anasayfa', sozluk: 'kutuphane', manevralar: 'kutuphane' };
   var UC_ESKI = ['uc-boyut', '3d-model', 'gorsel3d', 'depo/3d', 'model'];   // olası eski/başka adresler -> #3d/periferik (eskiden #3d doğrudan kulak modeliydi)
   var oncekiHash = '', ucGeldigi = null, ucListedenGeldi = false, slGeldigi = null, slSecimdenGeldi = false, ilkRota = true, gorunen = 'anasayfa';
   function adresDegistir(yeni) { try { history.replaceState(null, '', yeni); } catch (e) {} }
@@ -1169,6 +1223,10 @@
     else if (p[0] === 'topluluk' && p.length > 1) { t = 'topluluk'; }
     else if (p[0] === 'yasal') { t = 'yasal'; }   // yasal metinler: yasal.js hangi sayfanın görüneceğini seçer   // forum alt sayfaları forum.js'te (#topluluk/g/<id>, /yeni, /duzenle/<id>)
     else if (p[0] === 'sozluk' && p[1] === 'terim') { t = 'sozluk'; ham = 'sozluk'; adresDegistir('#sozluk'); sonra = function () { bildir('odyo:sozluk-terim', decodeURIComponent(p[2] || '')); }; }
+    else if (p[0] === 'manevra' && p[1]) {   // Vestibüler Manevralar: tek manevra, not sayfası görünümüyle
+      if (oncekiHash !== ham) notGeldigi = ilkRota ? null : oncekiHash;
+      t = 'not-sayfa'; notAc('man.' + decodeURIComponent(p[1]));
+    }
     else if (p[0] === 'not' && p[1]) {
       if (oncekiHash !== ham) notGeldigi = ilkRota ? null : oncekiHash;
       t = 'not-sayfa'; notAc(decodeURIComponent(p.slice(1).join('/')));
@@ -1248,6 +1306,10 @@
   function araListe() {
     var l = [];
     tumNotlar().forEach(function (n) { l.push({ tur: AM('araTurNot'), ad: n.t, metin: n.p.join(' '), git: '#not/' + encodeURIComponent(n.key) }); });
+    if ($('mv-liste-baslik')) {
+      l.push({ tur: AM('araTurBolum'), ad: $('mv-liste-baslik').textContent, metin: 'BPPV manevra repozisyon Epley Semont Dix-Hallpike vertigo', git: '#manevralar' });
+      MAN_NOTES.forEach(function (n) { l.push({ tur: $('mv-liste-baslik').textContent, ad: n.t, metin: n.p.join(' '), git: '#manevra/' + encodeURIComponent(n.man) }); });
+    }
     DEVICES.forEach(function (d) {
       if (d.gizli) return;
       l.push({ tur: d.grup === 'implant' ? AM('araTurImplant') : AM('araTurCihaz'), ad: d.ad, metin: d.alt + ' ' + d.gorselAlt, git: '#depo/cihaz/' + d.id });
