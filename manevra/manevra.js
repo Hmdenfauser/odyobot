@@ -1,4 +1,4 @@
-/* Vestibüler manevralar: ekran (2026-11-26). Kütüphane → Ders notları → "Vestibüler Manevralar" notlarının sayfasında açılır.
+/* Vestibüler manevralar: ekran (2026-11-26). Kütüphane → "Vestibüler Manevralar" → bir manevranın sayfasında (#manevra/<kimlik>) açılır.
    - Sahne: 2D canvas üzerinde kütüphanesiz, basit 3B çizim (ressam yöntemi: uzaktan yakına). Sedye, hasta (gövde, kollar,
      bacaklar, baş; sağ kulak kırmızı, sol kulak mavi). Parmakla yana sürükleyince sahne döner.
    - Sağ üst köşe: hasta kulağın kanalı (şematik halka), kristaller, kupula, utrikulus ve yerçekimi oku.

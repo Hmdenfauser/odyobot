@@ -1,4 +1,4 @@
-/* Vestibüler manevralar: yazılar (Kütüphane → Ders notları → "Vestibüler Manevralar"). 2026-11-26.
+/* Vestibüler manevralar: yazılar (Kütüphane → "Vestibüler Manevralar", #manevralar). 2026-11-26.
    Her not yönetici tarafından düzenlenebilir (anahtar icerik/man.<id>; alanlar t, p ve her çeşit için a_<çeşit>).
    Adım satırları "kısa ad | açıklama | gerçek bekleme süresi" biçimindedir; satır sayısı manevra-hesap.js'teki adım sayısıyla aynıdır.
    Kural (proje sahibi, 2026-11-26): kaynaklar çeliştiğinde kitaba uyulur; manevra sonrası önerilere ders notu da eklenir;
@@ -26,6 +26,7 @@
       ampulla: 'Ampulla', utrikulus: 'Utrikulus', yer: 'Yer',
       uyari: 'Kupula: uyarı', baskilanma: 'Kupula: baskılanma', dik: 'Kupula: dik',
       gercek: 'Gerçekte', adimlar: 'Adımlar',
+      liste_test: 'Değerlendirme testleri', liste_tedavi: 'Tedavi manevraları', liste_diger: 'Ayrıca',
       canvas: 'Manevra animasyonu: sedyedeki hasta ve köşede hasta kulağın kanalı',
       sema: 'Şematik çizimdir; açılar ve kanallar ölçekli değildir. Kulaklar: sağ kırmızı, sol mavi. Bekleme süreleri animasyonda kısaltıldı. Modeli parmakla yana sürükleyerek çevirebilirsin.',
       kanalNot: 'Köşedeki çizim hasta kulağın kanalını gösterir: kristaller (turuncu) yerçekimiyle kayar, kupula akımın yönüne bükülür. Lateral kanalda ampullaya doğru, posterior ve anterior kanalda ampulladan uzaklaşan akım uyarıcıdır (Ewald yasaları).'
