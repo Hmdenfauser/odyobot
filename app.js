@@ -685,8 +685,8 @@
       'Kanalitiazis: otokoniler kanalda serbesttir, endolenfle hareket ederek yerçekimiyle kupulayı büker (Epley). Kupulolitiazis: otokoniler kupulaya yapışır ve onu yerçekimine duyarlı hâle getirir; latent periyot ve yorulma görülmez.',
       'Kanallara göre görülme: posterior %80–85, horizontal %5–15, anterior %1–3.',
       'Dix-Hallpike (vertikal kanallar): baş 45° çevrilir, 30° ekstansiyona getirilir. Sağ posterior kanal kanalitiazisinde sağ Dix-Hallpike’ta yukarı vuran, torsiyonel bileşenli nistagmus görülür; 60 sn’den uzun sürerse kupulolitiazis ya da santral patoloji düşünülür. Horizontal kanal için head roll testi yapılır (geotropik ya da ageotropik nistagmus).',
-      'Tedavi: posterior kanal kanalitiazisinde Epley manevrası (pozisyonlar arası en az 60 sn ya da belirtiler geçene kadar), posterior kanal kupulolitiazisinde Semont manevrası (hızlı yapılır, pozisyonlar arası 2–3 dk), horizontal kanal kanalitiazisinde Barbekü (BBQ) manevrası, horizontal kanal kupulolitiazisinde Casani manevrası.',
-      'Kaynak: Vestibüler Sistem ve Hastalıkları, BPPV (sl. 14–30); Aksoy ve Kabiş, Temel Vestibüler Rehabilitasyon (2020).' ] },
+      'Tedavi: posterior kanalda Epley manevrası (pozisyonlar arası 30 sn–1 dk) ya da Semont manevrası (kanalolitiaziste en az 30 sn; ders notunda kupulolitiazis için, pozisyonlar arası 2–3 dk; hızlı yapılır), horizontal kanal kanalitiazisinde Barbekü (BBQ) manevrası, horizontal kanal kupulolitiazisinde Casani manevrası. Ayrıntılar ve animasyonlar: Vestibüler Manevralar başlığı.',
+      'Kaynak: Vestibüler Sistem ve Hastalıkları, BPPV (sl. 14–30); Aksoy ve Kabiş, Temel Vestibüler Rehabilitasyon (2020); Odyolojide Özel Durumlar, Vestibüler Sistem Bozuklukları (s. 465–467).' ] },
     { t: 'Yenidoğan işitme taraması', p: [
       'Tarama taburcu olmadan yapılır; 35 dB SPL klik uyaranla geçti/kaldı sonucu verir. Geçti sayılması için iki kulakta da geçti gerekir; en az bir kulakta kaldı, taramadan kaldı demektir.',
       'Sağlıklı yenidoğanda TEOAE ile taranır; kalan bebek en az 1 hafta sonra, 15 gün içinde yeniden taranır. İkinci kez kalan bebeğe tarama ABR yapılır; tarama ABR’den kalanlar tanısal değerlendirme için referans merkeze sevk edilir.',
@@ -709,6 +709,17 @@
   // Koddaki temel notlar da yönetici tarafından düzenlenebilir (anahtar: not.<sıra>). Sırayı değiştirme.
   var NOT_ALAN = [{ f: 't', ad: 'Başlık' }, { f: 'p', ad: 'Maddeler (her satıra bir madde)', cok: true }];
   NOTES.forEach(function (n, i) { n.key = 'not.' + i; editable(n, ['t', 'p']); });
+  /* Vestibüler Manevralar (2026-11-26): manevra/manevra-veri.js. Her not "man.<kimlik>" anahtarlı; animasyonlu notlarda
+     her çeşidin adımları a_<çeşit> (satır: "kısa ad | açıklama | süre"), çeşit adları c_<çeşit>. Animasyon yazıları man.metin. */
+  var MV = window.MANEVRA_VERI, MAN_NOTES = [], MAN_METIN = null;
+  if (MV) {
+    MAN_NOTES = MV.sira.filter(function (id) { return MV.notlar[id]; }).map(function (id) {
+      var d = MV.notlar[id], n = { t: d.t, p: d.p.slice(), key: 'man.' + id, man: id, cesitler: [] }, alan = ['t', 'p'];
+      Object.keys(d.a || {}).forEach(function (c) { n['a_' + c] = d.a[c].slice(); n['c_' + c] = (d.cesit || {})[c] || c; n.cesitler.push(c); alan.push('a_' + c, 'c_' + c); });
+      editable(n, alan); return n;
+    });
+    MAN_METIN = Object.assign({ key: 'man.metin' }, MV.metin); editable(MAN_METIN, Object.keys(MV.metin));
+  }
   /* Konu başlıkları (grupları). Yönetici ekler, adını değiştirir, siler (Ders notları sayfasındaki yönetici paneli).
      Kayıt: Firestore ayar/notGruplari -> { gruplar: [{ id, ad, notlar: [not anahtarı, ...] }], digerAd, guncelleme }.
      Belge yoksa aşağıdaki varsayılan başlıklar kullanılır (adları eski icerik/not.gruplar düzenlemesiyle değişmiş olabilir).
@@ -723,13 +734,14 @@
     { id: 'tinnitus', notlar: [17] }
   ];
   var GRUP_AD = { key: 'not.gruplar', temel: 'Temel odyometri', ayirici: 'Ayırıcı tanı testleri', immitans: 'İmmitansmetri', elektro: 'Elektrofizyoloji',
-    vestibuler: 'Vestibüler değerlendirme', pediatrik: 'Pediatrik odyoloji ve tarama', tinnitus: 'Tinnitus ve ses toleransı', eklenen: 'Diğer notlar' };
-  editable(GRUP_AD, ['temel', 'ayirici', 'immitans', 'elektro', 'vestibuler', 'pediatrik', 'tinnitus', 'eklenen']);
+    vestibuler: 'Vestibüler değerlendirme', pediatrik: 'Pediatrik odyoloji ve tarama', tinnitus: 'Tinnitus ve ses toleransı', eklenen: 'Diğer notlar',
+    manevra: (MV && MV.grup) || 'Vestibüler Manevralar' };
+  editable(GRUP_AD, ['temel', 'ayirici', 'immitans', 'elektro', 'vestibuler', 'pediatrik', 'tinnitus', 'eklenen', 'manevra']);
   var GRUP_BELGESI = 'ayar/notGruplari', GRUP_EN_COK = 30, GRUP_AD_SINIRI = 60;
   var notDuzen = null;   // Firestore'daki başlık düzeni (yoksa varsayılan)
 
   // Not anahtarı: koddaki notlar "not.<sıra>", yöneticinin eklediği notlar "nd.<belge kimliği>". Adres: #not/<anahtar>.
-  function tumNotlar() { return NOTES.concat(customNotes); }
+  function tumNotlar() { return NOTES.concat(MAN_NOTES, customNotes); }
   function notBul(key) { var l = tumNotlar(); for (var i = 0; i < l.length; i++) if (l[i].key === key) return l[i]; return null; }
   function duzenOku(d) {   // Firestore'dan geleni denetle
     if (!d || !Array.isArray(d.gruplar)) return null;
@@ -737,9 +749,16 @@
       .slice(0, GRUP_EN_COK).map(function (x) { return { id: x.id.slice(0, 40), ad: x.ad.slice(0, GRUP_AD_SINIRI), notlar: x.notlar.filter(function (k) { return typeof k === 'string'; }) }; });
     return { gruplar: g, digerAd: typeof d.digerAd === 'string' && d.digerAd.trim() ? d.digerAd.slice(0, GRUP_AD_SINIRI) : '' };
   }
+  // Manevra notlarının varsayılan başlığı. Yöneticinin kayıtlı düzeninde (ayar/notGruplari) bu notlar hiç yoksa başlık sona eklenir;
+  // yönetici bir manevra notunu başka başlığa taşıyınca kendi düzeni geçerli olur.
+  function manevraGrubu() { return { id: 'manevra', ad: GRUP_AD.manevra, notlar: MAN_NOTES.map(function (n) { return n.key; }) }; }
   function gruplar() {
-    if (notDuzen) return notDuzen.gruplar;
-    return NOT_GRUPLARI.map(function (g) { return { id: g.id, ad: GRUP_AD[g.id], notlar: g.notlar.map(function (i) { return 'not.' + i; }) }; });
+    if (notDuzen) {
+      var kayitta = notDuzen.gruplar.some(function (g) { return g.id === 'manevra' || g.notlar.some(function (k) { return k.indexOf('man.') === 0; }); });
+      return kayitta || !MAN_NOTES.length ? notDuzen.gruplar : notDuzen.gruplar.concat([manevraGrubu()]);
+    }
+    var l = NOT_GRUPLARI.map(function (g) { return { id: g.id, ad: GRUP_AD[g.id], notlar: g.notlar.map(function (i) { return 'not.' + i; }) }; });
+    return MAN_NOTES.length ? l.concat([manevraGrubu()]) : l;
   }
   function digerAd() { return (notDuzen && notDuzen.digerAd) || GRUP_AD.eklenen; }
   // Ekranda gösterilecek gruplar: her başlık kendi notlarıyla, sonda başlıksız notlar. Bir not yalnızca ilk başlığında görünür.
@@ -874,8 +893,15 @@
     var fav = favoriMi(n.key);
     $('not-yildiz').setAttribute('aria-pressed', fav ? 'true' : 'false');
     $('not-yildiz').setAttribute('aria-label', fav ? 'Favorilerden çıkar' : 'Favorilere ekle');
-    var admin = null, grupSec = null;
-    if (canEdit && n.key.indexOf('not.') === 0) admin = adminPart(n.key, n, NOT_ALAN, 'Bu notu düzenle');
+    var admin = null, grupSec = null, anim = null, metinAdmin = null;
+    if (n.man) {
+      anim = manevraAnim(n);
+      if (canEdit && MAN_METIN && anim) metinAdmin = adminPart(MAN_METIN.key, MAN_METIN, Object.keys(MV.metin).map(function (f) { return { f: f, ad: 'Animasyon yazısı: ' + f, cok: MV.metin[f].length > 60 }; }), 'Animasyon yazılarını düzenle (bütün manevralar)');
+    }
+    if (canEdit && n.man) admin = adminPart(n.key, n, NOT_ALAN.concat([].concat.apply([], n.cesitler.map(function (c) {
+      return [{ f: 'c_' + c, ad: 'Çeşidin adı (' + c + ')' }, { f: 'a_' + c, ad: 'Adımlar: ' + n['c_' + c] + ' (her satır: kısa ad | açıklama | gerçek süre; satır sayısı değişmez)', cok: true }];
+    }))), 'Bu notu düzenle');
+    else if (canEdit && n.key.indexOf('not.') === 0) admin = adminPart(n.key, n, NOT_ALAN, 'Bu notu düzenle');
     else if (canEdit) admin = h('div', { 'class': 'admin-bar' }, [h('a', { 'class': 'linkbtn', href: '#notlar', text: 'Ders notları sayfasındaki yönetici panelinde düzenle' })]);
     if (canEdit) {   // yönetici: notun konu başlığı
       var sel = h('select', { id: 'not-grup-sec' });
@@ -887,7 +913,23 @@
       });
       grupSec = h('div', { 'class': 'fld not-grup-sec' }, [h('label', { 'for': 'not-grup-sec', text: 'Konu başlığı (yönetici)' }), sel, gm]);
     }
-    govde.replaceChildren.apply(govde, [h('ul', { 'class': 'not-maddeler' }, n.p.map(function (x) { return h('li', { text: x }); })), grupSec, admin].filter(Boolean));
+    govde.replaceChildren.apply(govde, [anim, h('ul', { 'class': 'not-maddeler' }, n.p.map(function (x) { return h('li', { text: x }); })), grupSec, admin, metinAdmin].filter(Boolean));
+    if (anim && manAnim.api) manAnim.api.goster();
+  }
+  /* Manevra animasyonu (manevra/manevra.js). Aynı not açıkken yeniden çizimde aynı animasyon korunur (yönetici düzenlemesi
+     ya da metinler gelince baştan başlamasın). */
+  var manAnim = { key: null, kutu: null, api: null };
+  function manAdimlar(n, c) {
+    var l = n['a_' + c] || [], d = n._def['a_' + c] || [];
+    return d.map(function (v, i) { var x = String(l[i] || v).split('|').map(function (s) { return s.trim(); }); return { k: x[0] || String(i + 1), a: x[1] || '', s: x[2] || '' }; });
+  }
+  function manevraAnim(n) {
+    if (!window.Manevra || !window.ManevraHesap || !window.ManevraHesap.MANEVRA[n.man]) return null;
+    if (manAnim.key === n.key && manAnim.kutu) { manAnim.api.yenile(); return manAnim.kutu; }
+    var kutu = h('div', { 'class': 'mv-kap' });
+    manAnim = { key: n.key, kutu: kutu, api: null };
+    manAnim.api = window.Manevra.kur(kutu, n.man, { metin: function () { return MAN_METIN; }, adimlar: function (c) { return manAdimlar(n, c); }, cesitAd: function (c) { return n['c_' + c] || c; } });
+    return kutu;
   }
   $('not-yildiz').addEventListener('click', function () { if (acikNot) { favoriDegistir(acikNot); notSayfaCiz(); } });
   var notGeldigi = null;
@@ -902,6 +944,8 @@
 
   function refreshNotes() {
     NOTES.forEach(function (n) { applyOv(n.key, n); });
+    MAN_NOTES.forEach(function (n) { applyOv(n.key, n); });
+    if (MAN_METIN) applyOv(MAN_METIN.key, MAN_METIN);
     applyOv(GRUP_AD.key, GRUP_AD);
     renderNotes($('n-ara').value);
     if (acikNot) notSayfaCiz();
