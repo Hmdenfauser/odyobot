@@ -210,7 +210,14 @@
         { poz: { don: -45 }, gecis: HIZLI, bekle: BEKLE },
         { poz: birles(OTUR_KENAR, { don: -45 }), gecis: YAVAS, bekle: 2 },
         { poz: { don: 0 }, gecis: YAVAS, bekle: 1.5 } ] },
+      // Ageotropik: Gufoni'nin özgün tarifi baş 45° aşağı (yere), Appiani modifikasyonu (2005) baş 45° yukarı
       apo: { tip: 'kupula', adimlar: [
+        { poz: OTUR_KENAR, gecis: 0, bekle: 1.5 },
+        { poz: yanYat(90), gecis: HIZLI, bekle: 3, kopar: true },
+        { poz: { don: 45 }, gecis: HIZLI, bekle: BEKLE },
+        { poz: birles(OTUR_KENAR, { don: 45 }), gecis: YAVAS, bekle: 2 },
+        { poz: { don: 0 }, gecis: YAVAS, bekle: 1.5 } ] },
+      appiani: { tip: 'kupula', adimlar: [
         { poz: OTUR_KENAR, gecis: 0, bekle: 1.5 },
         { poz: yanYat(90), gecis: HIZLI, bekle: 3, kopar: true },
         { poz: { don: -45 }, gecis: HIZLI, bekle: BEKLE },

@@ -25,7 +25,7 @@ function oynat(id, cesit, taraf) {
   var T = taraf === 'sag' ? 'sağ' : 'sol';
   // Tedavi manevraları: bütün kristaller utrikulusa
   [['epley', 'kanal'], ['semont', 'kanal'], ['semont', 'kupula'], ['barbeku', 'kanal'], ['vannucchi-asprella', 'kanal'],
-    ['casani', 'kupula'], ['gufoni', 'geo'], ['gufoni', 'apo'], ['yacovino', 'kanal']].forEach(function (x) {
+    ['casani', 'kupula'], ['gufoni', 'geo'], ['gufoni', 'apo'], ['gufoni', 'appiani'], ['yacovino', 'kanal']].forEach(function (x) {
     var r = oynat(x[0], x[1], taraf), son = r.s[r.s.length - 1];
     bekle(T + ' ' + x[0] + ' (' + x[1] + '): kristaller utrikulusta', son.cikan === r.sayi, son.cikan + '/' + r.sayi);
   });
