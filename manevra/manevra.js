@@ -33,7 +33,7 @@
   function kur(kap, id, ayar) {
     var M = H.MANEVRA[id];
     var taraf = 'sag', cesit = H.cesitler(id)[0], O = null, oynuyor = false, calisiyor = false, son = 0, kare = null, bitti = false;
-    var KAMERA = { az: -24, el: 20, uz: 3.2 }, kamera = Object.assign({}, KAMERA), yakin = false, renk = null;
+    var KAMERA = { az: -24, el: 18, uz: 2.35 }, odakYum = null, kamera = Object.assign({}, KAMERA), yakin = false, renk = null;
     var azalt = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     // ---- yapı
@@ -112,13 +112,17 @@
 
     // ---- kamera ve izdüşüm
     var W = 0, Hh = 0, KB = 150, cam, ileri, sag, yuk, odak;
-    function kameraKur(basP) {
-      var hedef = yakin && basP ? basP : [0.8, -0.12, 0], uz = yakin ? 1.2 : kamera.uz, az = kamera.az * H.DER, e = kamera.el * H.DER;
+    /* Kamera hastaya odaklanır (2026-11-27, proje sahibinin isteği): hedef, leğen ile başın ortası; hasta oturup yatarken
+       kamera yumuşakça izler. Büyüteçte hedef baştır. kalcaP: bütün vücudun ortası (baş ile ayak bileklerinin ortası). */
+    function kameraKur(basP, kalcaP) {
+      var orta = basP && kalcaP ? [(basP[0] + kalcaP[0]) / 2, (basP[1] + kalcaP[1]) / 2 - 0.05, (basP[2] + kalcaP[2]) / 2] : [0.6, 0.1, 0];
+      if (!odakYum || !calisiyor) odakYum = orta.slice(); else for (var i = 0; i < 3; i++) odakYum[i] += (orta[i] - odakYum[i]) * 0.08;
+      var hedef = yakin && basP ? basP : odakYum, uz = yakin ? 1.2 : kamera.uz, az = kamera.az * H.DER, e = kamera.el * H.DER;
       cam = add(hedef, [Math.sin(az) * Math.cos(e) * uz, Math.sin(e) * uz, Math.cos(az) * Math.cos(e) * uz]);
       ileri = nrm(sub(hedef, cam)); sag = nrm(cross(ileri, [0, 1, 0])); yuk = cross(sag, ileri);
       odak = Hh * 1.35;
     }
-    function izd(p) { var d = sub(p, cam), z = dot(d, ileri); z = Math.max(z, 0.05); return [W / 2 + odak * dot(d, sag) / z, Hh * 0.4 - odak * dot(d, yuk) / z, z]; }
+    function izd(p) { var d = sub(p, cam), z = dot(d, ileri); z = Math.max(z, 0.05); return [W / 2 + odak * dot(d, sag) / z, Hh * 0.44 - odak * dot(d, yuk) / z, z]; }
 
     // ---- çizim öğeleri (ressam yöntemi)
     function kutuYuz(liste, koseler, normaller, renkAd, kenar) {
@@ -163,7 +167,8 @@
     function sahneCiz(x) {
       var d = O.durum(), p = d.poz, T = H.TABAN[O.taban], B = H.govdeMatris(O.taban, p), Hb = H.basMatris(O.taban, p);
       var P = T.p, basP = H.basYeri(O.taban, p);
-      kameraKur(basP);
+      var ayak = add(P, U(B, bacak(p.kalca, p.diz, 1)[2]));
+      kameraKur(basP, ayak);
       // sedye (önce; hasta hep üstünde ya da yanında)
       var masa = [];
       kutu(masa, null, [0, 0, 0], [0, -0.09, -0.33], [1.9, 0, 0.33], renk.minder, renk.cizgi);
