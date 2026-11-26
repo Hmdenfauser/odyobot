@@ -70,7 +70,7 @@
           'Başlangıç | Hasta sırtüstü yatar, baş 30° fleksiyonda. Kristaller kupulaya yapışıktır. | ',
           'Hasta yana | Baş hızla hasta tarafa çevrilir. Ağırlaşan kupula ampulladan uzağa bükülür (baskılanma): ageotropik, daha zayıf nistagmus. | 1 dk kadar',
           'Ortaya | Baş yavaşça orta hatta alınır. | ',
-          'Sağlam yana | Baş hızla sağlam tarafa çevrilir. Kupula ampullaya doğru bükülür (uyarı): ageotropik, daha güçlü ve uzun nistagmus. | 1 dk kadar',
+          'Sağlam yana | Baş hızla sağlam tarafa çevrilir. Kupula ampullaya doğru bükülür (uyarı): ageotropik, daha güçlü nistagmus. | 1 dk kadar',
           'Ortaya | Baş orta hatta alınır. | ' ] } },
       'egil-yaslan': { t: 'Eğil-yaslan testi (bow and lean)', cesit: { kanal: 'Kanalolitiazis', kupula: 'Kupulolitiazis' }, p: [
         'Lateral kanal BPPV’sinde hasta tarafı bulmaya yardım eder. Ders notunda bilateral etkilenimde ve şiddetli tarafın tayininde kullanıldığı belirtilir.',
@@ -184,12 +184,12 @@
           'Baş aşağı | Baş 45° aşağı (yere doğru) çevrilir. | 2–3 dk',
           'Oturt | Hızla oturur konuma getirilir. Kristaller utrikulusa dökülür. | 2–3 dk',
           'Baş ortaya | Baş karşıya çevrilir. | ' ] } },
-      'gufoni': { t: 'Gufoni manevrası', cesit: { geo: 'Geotropik', apo: 'Ageotropik' }, p: [
+      'gufoni': { t: 'Gufoni manevrası', cesit: { geo: 'Geotropik', apo: 'Ageotropik (baş aşağı)', appiani: 'Ageotropik, Appiani (baş yukarı)' }, p: [
         'Lateral kanal BPPV’sinin geotropik ve ageotropik tipinde kullanılabilir. 10 randomize çalışmayı içeren bir sistematik derlemede sahte manevraya göre etkili bulunmuştur. Yuvarlanma gerektirmediği için yaşlı ya da hareketi kısıtlı hastalarda daha kolay uygulanır.',
         'Geotropik tip: hasta oturur konumdan sağlam tarafına düz yan yatar; sonra baş hızla yere doğru 45–60° çevrilir ve 2 dk tutulur; hasta oturtulur.',
-        'Ageotropik tip: hasta hasta tarafına yatar; baş yukarı (burun tavana) 45–60° çevrilir ve 1–2 dk tutulur; hasta oturtulur. Ageotropik tip geotropik tipe dönüşebilir.',
+        'Ageotropik tip: hasta oturur konumdan hızla hasta tarafına yatar. Gufoni’nin özgün tarifinde baş 45° aşağı (yere doğru) çevrilir; Appiani’nin 2005’teki değişikliğinde baş 45° yukarı (burun tavana) çevrilir ve 1–2 dk tutulur; sonra hasta oturtulur. Kaynaklarda bu iki manevranın adları zaman zaman karışık kullanılır. Ageotropik tip geotropik tipe dönüşebilir.',
         'Bekleme süreleri kaynaklara göre değişir. Kitapta ve ders notunda bu manevra yoktur.',
-        'Kaynak: AAO-HNS BPPV kılavuzu (2017); Otolaryngologic Clinics of North America (2012, şekil); Gufoni sistematik derlemesi (2024); ageotropik lateral kanal BPPV’si sistematik derlemesi (2023).' ],
+        'Kaynak: AAO-HNS BPPV kılavuzu (2017); Otolaryngologic Clinics of North America (2012, şekil); Gufoni sistematik derlemesi (2024); ageotropik lateral kanal BPPV’si sistematik derlemesi (2023); Gufoni ve Appiani manevralarını karşılaştıran randomize çalışma (PMC8356861).' ],
         a: { geo: [
           'Başlangıç | Hasta sedyenin kenarında oturur. | ',
           'Sağlam yana | Hızla sağlam tarafına düz yan yatar. | 30 sn–1 dk',
@@ -199,7 +199,13 @@
           apo: [
           'Başlangıç | Hasta sedyenin kenarında oturur. Kristaller kupulaya yapışıktır. | ',
           'Hasta yana | Hızla hasta tarafına yatar. | ',
-          'Baş yukarı | Baş yukarı (burun tavana) 45–60° çevrilir. | 1–2 dk',
+          'Baş aşağı | Baş 45° aşağı (yere doğru) çevrilir. | ',
+          'Oturt | Baş çevrili kalarak hasta oturtulur. | ',
+          'Baş ortaya | Baş karşıya çevrilir. | ' ],
+          appiani: [
+          'Başlangıç | Hasta sedyenin kenarında oturur. Kristaller kupulaya yapışıktır. | ',
+          'Hasta yana | Hızla hasta tarafına yatar. | ',
+          'Baş yukarı | Baş 45° yukarı (burun tavana) çevrilir. | 1–2 dk',
           'Oturt | Baş çevrili kalarak hasta oturtulur. | ',
           'Baş ortaya | Baş karşıya çevrilir. | ' ] } },
       'yacovino': { t: 'Yacovino (derin baş sarkıtma) manevrası', cesit: { kanal: 'Kanalolitiazis' }, p: [
