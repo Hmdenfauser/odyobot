@@ -531,6 +531,7 @@
         <button type="button" id="alt-refleks" aria-pressed="false">Refleks arkı</button>
         <button type="button" id="alt-tarama" aria-pressed="false">Yenidoğan taraması</button>
         <button type="button" id="alt-hafiza" aria-pressed="false">İşitsel hafıza</button>
+        <button type="button" id="alt-vor" aria-pressed="false">VOR yolağı</button>
       </div>
 
       <div id="p-yolak" class="stack">
@@ -610,6 +611,29 @@
         <article class="card" id="detail-hf" aria-live="polite"></article>
         <p class="note" data-k="hafiza.not">Süreler kaynaklara göre farklı verilir; şemadaki değerler yaklaşıktır.</p>
         <p class="note" data-k="hafiza.kaynak">Kaynak: Atkinson ve Shiffrin (1968) bellek modelinden uyarlanmış ders slaytı. Şema bu slayta bakılarak yeniden çizildi.</p>
+      </div>
+
+      <!-- VOR yolağı (2026-11-26): yatay vestibülo-oküler refleks (app.js, VNODES). Kitap şekilleri, ders slaytı ve Wikipedia şemasına bakılarak özgün çizildi. -->
+      <div id="p-vor" class="stack" hidden>
+        <p class="lead" data-k="vor.lead">Vestibülo-oküler refleks (VOR), baş hareketi sırasında net görüşü korumak için başın hareketini telafi eden göz hareketleri oluşturur. Şema yatay VOR’u üstten gösterir. Başın dönüş yönünü seç; bir yapıya dokun.</p>
+        <div class="seg seg2" role="group" aria-label="Başın dönüş yönü">
+          <button type="button" id="vor-sola" aria-pressed="true">Baş sola</button>
+          <button type="button" id="vor-saga" aria-pressed="false">Baş sağa</button>
+        </div>
+        <div class="figure">
+          <svg id="vor" viewBox="0 0 360 540" role="group" aria-label="Yatay vestibülo-oküler refleks yolağı şeması"></svg>
+          <div class="legend">
+            <span><i class="ln l"></i>Sol kanal uyarılınca</span>
+            <span><i class="ln r"></i>Sağ kanal uyarılınca</span>
+            <span><i class="ln inh"></i>Baskılayıcı yol</span>
+            <span><i class="ln azal"></i>Etkinliği azalan yol</span>
+          </div>
+        </div>
+        <p class="vor-durum" id="vor-durum" aria-live="polite"></p>
+        <article class="card" id="detail-vor" aria-live="polite"></article>
+        <div class="card" id="vor-tablo"></div>
+        <p class="note" data-k="vor.not">Şema basitleştirilmiştir. VOR’un kanal-oküler (açısal) ve otolit-oküler (doğrusal) iki bileşeni vardır; burada yalnızca lateral kanalların açısal VOR’u çizildi. Retiküler formasyon, serebellum ve vertikal kanalların yolları gösterilmedi.</p>
+        <p class="note" data-k="vor.kaynak">Kaynak: Vestibüler Sistem Klinik Nörofizyolojisi, Bölüm 20 (s. 386–391; Tablo 20.1–20.3, Şekil 20.9, 20.11, 20.12); İşitme ve Denge Sistemi-II, santral vestibüler sistem fizyolojisi (sl. 198–213); Vestibüler Sistem Değerlendirme, vHIT (sl. 4). Şema bu kaynaklara bakılarak yeniden çizildi.</p>
       </div>
       </div>
 

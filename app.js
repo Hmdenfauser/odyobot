@@ -576,10 +576,166 @@
     { p: [[100, 185], [100, 236]], ok: 1 }, { p: [[190, 185], [190, 236]], ok: 1 }    // bozulma
   ], ['uyaran', 'ozellik', 'ekoik', 'bozulma1', 'dikkat', 'ksb', 'tekrar', 'bozulma2', 'aktarim', 'uzb', 'geri'], 'ekoik', 'detail-hf', HNODES, HAFIZA_ALAN, 'Süre: ');
 
+
+  /* ---------- VOR yolağı (2026-11-26): yatay (horizontal) vestibülo-oküler refleks ----------
+     Kaynaklar: kitap, Bölüm 20 "Vestibüler Sistem Klinik Nörofizyolojisi" (s. 386–391: Tablo 20.1–20.3, Şekil 20.9, 20.11, 20.12);
+     İşitme ve Denge Sistemi-II, santral vestibüler sistem fizyolojisi (sl. 198–213); Vestibüler Sistem Değerlendirme, vHIT (sl. 4);
+     Elektrofizyolojik Testler, VEMP (sl. 18). Proje sahibinin görselleri (ham-gorseller/vor-yolak/, kitap şekilleri ve Wikipedia
+     "Vestibulo-ocular reflex" şeması) ile ders slaytındaki Baloh ve Honrubia şekline bakılarak özgün çizildi; görseller uygulamaya konmadı.
+     Üstten görünüş: ekranın solu hastanın solu. Renk uyarılan kanalın tarafı (sağ kırmızı, sol mavi; refleks arkındaki gibi istisna),
+     düz çizgi uyarıcı, kesik çizgi baskılayıcı yol, gri etkinliği azalan yol. Kimlikler değiştirilmez; yönetici: icerik/vor.<id>. */
+  var VNODES = {
+    kanal: { ad: 'Lateral kanal', baslik: 'Lateral (horizontal) semisirküler kanal', yer: 'İç kulak. Yatay VOR’un reseptörleri lateral kanalların ampullasındaki kristadır.',
+      islev: 'Baş sola döndürülünce endolenf eylemsizlik nedeniyle hareketin gerisinde kalır: sol kanalda kupula kinosilyuma doğru bükülür ve sol kanaldan gelen uyarı artar; sağ kanalda kupula kinosilyumdan uzaklaşır ve uyarı azalır. Baş sağa dönünce tersi olur.',
+      klinik: 'Her kanalın uyarılması o kanalın düzleminde göz hareketine yol açar (Flourens yasası). Yatay VOR, pek çok vestibüler klinik testin odak noktasıdır.' },
+    scarpa: { ad: 'VIII', baslik: 'Vestibüler sinir ve Scarpa ganglionu', yer: 'Birinci nöronların hücre gövdeleri superior vestibüler sinirdeki Scarpa ganglionundadır.',
+      islev: 'Afferent yolaktır: lateral kanaldan gelen sinyali VIII. kranial sinirin vestibüler dalıyla beyin sapındaki vestibüler çekirdeklere taşır.',
+      klinik: 'Kanal uyarılınca sinirdeki ateşleme hızı dinlenim düzeyinin üstüne çıkar, baskılanınca altına iner; iki taraf arasındaki fark gözlerin hangi yöne döneceğini belirler.' },
+    vn: { ad: 'VN', baslik: 'Vestibüler çekirdekler (VN)', yer: 'Beyin sapında, medulla ile pons arasında. Dört ana çekirdek vardır: superior, lateral, medial ve inferior (desendan).',
+      islev: 'Santral bağlantıdır; ikinci nöronlar buradadır. Lateral kanal sinyalleri aynı taraftaki medial vestibüler çekirdekte sinaps yapar; buradan karşı taraf abdusens çekirdeğine ve aynı taraf okülomotor çekirdeğe iki yolla iletilir. Lateral kanal aynı taraf lateral rektusu ve karşı taraf medial rektusu inhibe eder.',
+      klinik: 'İki taraftaki çekirdekler komissürlerle birbirine bağlanır ve kanalların itme-çekme eşleşmesini sağlar. Serebellumdan gelen yol VN aktivitesini baskılar; bu yol VOR supresyonunda ve santral vestibüler kompansasyonda rol oynar.' },
+    abdusens: { ad: 'VI', baslik: 'Abdusens çekirdeği (VI)', yer: 'Beyin sapı.',
+      islev: 'Lateral rektusa giden sinyaller abdusens (6. kranial sinir) çekirdeğinden iletilir. Karşı taraftaki vestibüler çekirdekten uyarı alır; ara nöronları MLF yoluyla karşı taraf okülomotor çekirdeğe bağlanır.',
+      klinik: '' },
+    mlf: { ad: 'MLF', baslik: 'Medial longitudinal fasikül (MLF)', yer: 'Beyin sapı.',
+      islev: 'Yatay VOR’un efferent yolağıdır: sinyalleri okülomotor çekirdeklere taşır. Superior vestibüler çekirdekten kalkan lifler de aynı ve karşı taraf MLF’de ilerleyip oküler motor çekirdeklerde sonlanır.',
+      klinik: 'Demiyelinizasyonda MLF’nin etkilenmesi VEMP yanıtlarını bozabilir.' },
+    okulomotor: { ad: 'III', baslik: 'Okülomotor çekirdek (III)', yer: 'Beyin sapı.',
+      islev: 'Lateral rektus ve superior oblik dışındaki bütün ekstraoküler kaslar (medial rektus dahil) okülomotor sinir (3. kranial sinir) çekirdeğinden innerve edilir. Üç oküler motor çekirdek VN’den gelen sinyalleri MLF, Deiters’in yükselen yolu ya da retiküler formasyon aracılığıyla alır.',
+      klinik: '' },
+    atd: { ad: 'ATD', baslik: 'Deiters’in yükselen yolu (ATD)', yer: 'Beyin sapı.',
+      islev: 'Vestibüler çekirdekten aynı taraf okülomotor çekirdeğe giden yoldur. Medial rektusa giden uyarının ikinci yoludur (birincisi abdusens çekirdeği ve MLF üzerinden).',
+      klinik: '' },
+    lr: { ad: 'LR', baslik: 'Lateral rektus', yer: 'Gözün dış (kulak) tarafındaki ekstraoküler kas.',
+      islev: 'Medial rektusla birlikte yatay göz hareketlerini kontrol eder. Bu iki kas birbirinin agonisti ve antagonistidir: lateral rektusun kasılması medial rektusun gevşemesiyle sonuçlanır.',
+      klinik: 'Baş sola dönünce sağ lateral rektus kasılır, sol lateral rektus gevşer.' },
+    mr: { ad: 'MR', baslik: 'Medial rektus', yer: 'Gözün iç (burun) tarafındaki ekstraoküler kas.',
+      islev: 'Lateral rektusla birlikte yatay göz hareketlerini kontrol eder; okülomotor çekirdekten innerve edilir.',
+      klinik: 'Baş sola dönünce sol medial rektus kasılır, sağ medial rektus gevşer.' },
+    goz: { ad: 'Gözler', baslik: 'Gözler ve nistagmus', yer: '',
+      islev: 'VOR’un amacı baş hareketleri sırasında bakışı sabitlemektir: gözler başın tersi yönünde döner ve görüntü retinanın foveasında kalır. Bu, nistagmusun yavaş fazıdır. Sakkadik sistem gözleri yeniden orta hatta getirir; bu da hızlı fazdır.',
+      klinik: 'Baş sola döndürülünce gözler sağa kayar ve sola hızlı sakkad gelişir: sola vuran nistagmus. Nistagmus hızlı fazın yönüne göre adlandırılır.' }
+  };
+  var VOR_ALAN = [{ f: 'ad', ad: 'Şemadaki kısa ad' }, { f: 'baslik', ad: 'Kart başlığı' }, { f: 'yer', ad: 'Konum', cok: true }, { f: 'islev', ad: 'İşlev', cok: true }, { f: 'klinik', ad: 'Klinik not', cok: true }];
+  Object.keys(VNODES).forEach(function (id) { var n = VNODES[id]; n.id = id; n.key = 'vor.' + id; n._g = []; editable(n, VOR_ALAN.map(function (x) { return x.f; })); });
+  var VOR_SIRA = ['kanal', 'scarpa', 'vn', 'abdusens', 'mlf', 'okulomotor', 'atd', 'lr', 'mr', 'goz'];
+  var VOR_METIN = { key: 'vor.metin', sola: 'Baş sola', saga: 'Baş sağa',
+    durumSola: 'Baş sola dönünce sol lateral kanal uyarılır, sağdaki baskılanır. Sağ lateral rektus ve sol medial rektus kasılır, sağ medial rektus ve sol lateral rektus gevşer: gözler sağa kayar (yavaş faz). Ardından sola hızlı sakkad gelir: sola vuran nistagmus.',
+    durumSaga: 'Baş sağa dönünce sağ lateral kanal uyarılır, soldaki baskılanır. Sol lateral rektus ve sağ medial rektus kasılır, sol medial rektus ve sağ lateral rektus gevşer: gözler sola kayar (yavaş faz). Ardından sağa hızlı sakkad gelir: sağa vuran nistagmus.',
+    tabloBaslik: 'Semisirküler kanallar ve göz kasları', tabloUyar: 'Uyardığı kaslar', tabloInhibe: 'İnhibe ettiği kaslar', tabloHareket: 'Göz hareketi',
+    tYatay: 'Lateral (horizontal)', tYatayU: 'Aynı taraf medial rektus, karşı taraf lateral rektus', tYatayI: 'Karşı taraf medial rektus, aynı taraf lateral rektus', tYatayH: 'Gözler karşı tarafa doğru eşlenik sapar',
+    tAnt: 'Anterior (superior)', tAntU: 'Aynı taraf superior rektus, karşı taraf inferior oblik', tAntI: 'Aynı taraf inferior rektus, karşı taraf superior oblik', tAntH: 'Yukarı ve ters yönlü torsiyonel',
+    tPost: 'Posterior (inferior)', tPostU: 'Aynı taraf superior oblik, karşı taraf inferior rektus', tPostI: 'Aynı taraf inferior oblik, karşı taraf superior rektus', tPostH: 'Aşağı ve ters yönlü torsiyonel' };
+  editable(VOR_METIN, Object.keys(VOR_METIN).filter(function (k) { return k !== 'key'; }));
+  var vorYon = 'sola', vorSec = 'kanal', VOR = { cizgiler: [], kaslar: [], gozler: [] };
+  (function () {
+    var s = $('vor'); if (!s) return;
+    var defs = se('defs', {}, s);
+    ['l', 'r', 'g'].forEach(function (c) {
+      var m = se('marker', { id: 'vor-ok-' + c, viewBox: '0 0 10 10', refX: '8', refY: '5', markerWidth: '5', markerHeight: '5', orient: 'auto' }, defs);
+      se('path', { d: 'M0,0 L10,5 L0,10 z', 'class': 'vor-ok ' + c }, m);
+      var b = se('marker', { id: 'vor-dur-' + c, viewBox: '0 0 10 10', refX: '5', refY: '5', markerWidth: '6', markerHeight: '6', orient: 'auto' }, defs);
+      se('path', { d: 'M5,0 L5,10', 'class': 'vor-dur ' + c }, b);
+    });
+    se('line', { x1: 180, y1: 112, x2: 180, y2: 520, 'class': 'vor-orta' }, s);
+    se('text', { x: 186, y: 516, 'class': 'vor-yan', 'text-anchor': 'start' }, s).textContent = 'orta hat';
+    // Yollar: her biri bir tarafın (kanalın) zincirine aittir. tur: 'u' uyarıcı, 'i' baskılayıcı (inhibitör)
+    function yol(taraf, tur, d) { VOR.cizgiler.push({ taraf: taraf, tur: tur, el: se('path', { d: d, 'class': 'vor-yol' }, s) }); }
+    [['l', 1], ['r', -1]].forEach(function (x) {
+      var t = x[0], k = x[1], X = function (v) { return 180 - k * (180 - v); };   // sol taraf koordinatları, sağ için aynalanır
+      yol(t, 'u', 'M' + X(80) + ',462 L' + X(92) + ',426');                                   // kanal → VIII
+      yol(t, 'u', 'M' + X(102) + ',400 L' + X(128) + ',358');                                 // VIII → VN
+      yol(t, 'u', 'M' + X(152) + ',330 C' + X(200) + ',300 ' + X(250) + ',300 ' + X(262) + ',266');   // VN → karşı VI
+      yol(t, 'i', 'M' + X(128) + ',326 L' + X(102) + ',268');                                 // VN ⊣ aynı taraf VI
+      yol(t, 'u', 'M' + X(274) + ',234 L' + X(280) + ',104');                                 // karşı VI → karşı LR (o tarafın VI'sı)
+      yol(t, 'u', 'M' + X(254) + ',240 C' + X(220) + ',222 ' + X(180) + ',206 ' + X(158) + ',184');   // karşı VI → MLF → aynı taraf III
+      yol(t, 'u', 'M' + X(146) + ',156 L' + X(140) + ',104');                                 // III → aynı taraf MR
+      yol(t, 'u', 'M' + X(144) + ',324 C' + X(132) + ',270 ' + X(140) + ',220 ' + X(146) + ',188');   // ATD: VN → aynı taraf III
+    });
+    function dugum(id, el) { var n = VNODES[id], g = se('g', { 'class': 'node vor-d', tabindex: '0', role: 'button' }, s); el(g); n._g.push(g);
+      g.addEventListener('click', function () { vorSecim(id); });
+      g.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); vorSecim(id); } });
+      return g; }
+    function etiket(g, x, y, id) { var t = se('text', { x: x, y: y }, g); t.setAttribute('data-vor', id); return t; }
+    [['l', 1], ['r', -1]].forEach(function (x) {
+      var t = x[0], k = x[1], X = function (v) { return 180 - k * (180 - v); };
+      dugum('kanal', function (g) { se('circle', { cx: X(66), cy: 482, r: 26, 'class': 'vor-kanal ' + t }, g); se('circle', { cx: X(66), cy: 482, r: 30, 'class': 'vor-dokun' }, g); });
+      dugum('scarpa', function (g) { se('circle', { cx: X(96), cy: 413, r: 15, 'class': 'vor-cek' }, g); etiket(g, X(96), 413, 'scarpa'); });
+      dugum('vn', function (g) { se('ellipse', { cx: X(140), cy: 342, rx: 26, ry: 20, 'class': 'vor-cek' }, g); etiket(g, X(140), 342, 'vn'); });
+      dugum('abdusens', function (g) { se('circle', { cx: X(96), cy: 250, r: 19, 'class': 'vor-cek' }, g); etiket(g, X(96), 250, 'abdusens'); });
+      dugum('okulomotor', function (g) { se('circle', { cx: X(150), cy: 172, r: 17, 'class': 'vor-cek' }, g); etiket(g, X(150), 172, 'okulomotor'); });
+      dugum('lr', function (g) { var r = se('rect', { x: X(76) - 9, y: 66, width: 18, height: 36, rx: 6, 'class': 'vor-kas' }, g); VOR.kaslar.push({ el: r, kas: 'lr', taraf: t });
+        etiket(g, X(76) + (t === 'l' ? -22 : 22), 84, 'lr'); });
+      dugum('mr', function (g) { var r = se('rect', { x: X(142) - 9, y: 66, width: 18, height: 36, rx: 6, 'class': 'vor-kas' }, g); VOR.kaslar.push({ el: r, kas: 'mr', taraf: t });
+        etiket(g, X(142), 116, 'mr'); });
+      dugum('goz', function (g) { se('circle', { cx: X(109), cy: 84, r: 24, 'class': 'vor-goz' }, g); VOR.gozler.push(se('circle', { cx: X(109), cy: 84, r: 8, 'class': 'vor-bebek' }, g)); });
+      se('text', { x: X(66), y: 528, 'class': 'vor-yan' }, s).textContent = t === 'l' ? 'Sol' : 'Sağ';
+    });
+    dugum('mlf', function (g) { se('rect', { x: 160, y: 196, width: 40, height: 20, rx: 10, 'class': 'pill' }, g); etiket(g, 180, 206, 'mlf'); });
+    dugum('atd', function (g) { se('rect', { x: 118, y: 236, width: 40, height: 20, rx: 10, 'class': 'pill' }, g); etiket(g, 138, 246, 'atd');
+      se('rect', { x: 202, y: 236, width: 40, height: 20, rx: 10, 'class': 'pill' }, g); etiket(g, 222, 246, 'atd'); });
+    // Başın dönüş yönü (üstte) ve gözlerin kayma yönü
+    VOR.basOk = se('path', { 'class': 'vor-basok' }, s); VOR.basYazi = se('text', { x: 180, y: 16, 'class': 'vor-yan' }, s);
+    VOR.gozOk = se('path', { 'class': 'vor-gozok' }, s);
+    s.insertBefore(defs, s.firstChild);
+  })();
+  function vorCiz() {
+    if (!VOR.cizgiler.length) return;
+    var akt = vorYon === 'sola' ? 'l' : 'r', ak = akt === 'l' ? 'l' : 'r';
+    VOR.cizgiler.forEach(function (c) {
+      var aktif = c.taraf === akt;
+      c.el.setAttribute('class', 'vor-yol ' + (aktif ? ak + (c.tur === 'i' ? ' inh' : '') : 'azal'));
+      c.el.setAttribute('marker-end', aktif ? 'url(#vor-' + (c.tur === 'i' ? 'dur-' : 'ok-') + ak + ')' : 'url(#vor-ok-g)');
+    });
+    // Kasılan: baş sola → sağ LR + sol MR; baş sağa → sol LR + sağ MR
+    VOR.kaslar.forEach(function (m) {
+      var kasil = (m.kas === 'lr' && m.taraf !== akt) || (m.kas === 'mr' && m.taraf === akt);
+      m.el.setAttribute('class', 'vor-kas ' + (kasil ? 'kasil ' + ak : 'gevse'));
+    });
+    var y = akt === 'l' ? 1 : -1;   // gözler başın tersine
+    VOR.gozler.forEach(function (b) { b.setAttribute('transform', 'translate(' + (8 * y) + ',0)'); });
+    VOR.basOk.setAttribute('d', akt === 'l' ? 'M214,30 C196,40 164,40 146,30' : 'M146,30 C164,40 196,40 214,30');
+    VOR.basOk.setAttribute('marker-end', 'url(#vor-ok-' + ak + ')'); VOR.basOk.setAttribute('class', 'vor-basok ' + ak);
+    VOR.basYazi.textContent = VOR_METIN[vorYon];
+    VOR.gozOk.setAttribute('d', akt === 'l' ? 'M160,58 L200,58' : 'M200,58 L160,58'); VOR.gozOk.setAttribute('marker-end', 'url(#vor-ok-g)');
+    document.querySelectorAll('#vor [data-vor]').forEach(function (t) { t.textContent = VNODES[t.getAttribute('data-vor')].ad; });
+    ['sola', 'saga'].forEach(function (k) { var b = $('vor-' + k); b.textContent = VOR_METIN[k]; b.setAttribute('aria-pressed', k === vorYon ? 'true' : 'false'); });
+    $('vor-durum').textContent = vorYon === 'sola' ? VOR_METIN.durumSola : VOR_METIN.durumSaga;
+    vorTablo();
+  }
+  function vorTablo() {
+    var M = VOR_METIN, satir = function (a) { return h('tr', null, [h('th', { scope: 'row', text: M[a] }), h('td', { text: M[a + 'U'] }), h('td', { text: M[a + 'I'] }), h('td', { text: M[a + 'H'] })]); };
+    fill($('vor-tablo'), [h('h3', { text: M.tabloBaslik }), h('div', { 'class': 'vor-tablo-kap' }, [h('table', { 'class': 'vor-tablo' }, [
+      h('thead', null, [h('tr', null, [h('th', { text: '' }), h('th', { text: M.tabloUyar }), h('th', { text: M.tabloInhibe }), h('th', { text: M.tabloHareket })])]),
+      h('tbody', null, [satir('tYatay'), satir('tAnt'), satir('tPost')])])]),
+      adminPart(VOR_METIN.key, VOR_METIN, Object.keys(VOR_METIN._def).map(function (f) { return { f: f, ad: f, cok: VOR_METIN._def[f].length > 60 }; }), 'Şema ve tablo yazılarını düzenle')]);
+  }
+  function vorSecim(id) {
+    vorSec = id;
+    Object.keys(VNODES).forEach(function (k) { VNODES[k]._g.forEach(function (g) { g.classList.toggle('sel', k === id); }); });
+    var n = VNODES[id], idx = VOR_SIRA.indexOf(id);
+    var prev = h('button', { 'class': 'btn', type: 'button', text: '← Önceki' }), next = h('button', { 'class': 'btn', type: 'button', text: 'Sonraki →' });
+    if (idx <= 0) prev.disabled = true; if (idx === VOR_SIRA.length - 1) next.disabled = true;
+    prev.addEventListener('click', function () { vorSecim(VOR_SIRA[idx - 1]); }); next.addEventListener('click', function () { vorSecim(VOR_SIRA[idx + 1]); });
+    fill($('detail-vor'), [h('div', { 'class': 'card-head' }, [h('h2', { text: n.baslik })]),
+      h('dl', null, [n.yer ? dlRow('Konum', n.yer) : null, n.islev ? dlRow('İşlev', n.islev) : null, n.klinik ? dlRow('Klinik not', n.klinik) : null].filter(Boolean)),
+      h('div', { 'class': 'stepper' }, [prev, h('span', { 'class': 'pos', text: (idx + 1) + ' / ' + VOR_SIRA.length }), next]),
+      adminPart(n.key, n, VOR_ALAN, 'Bu basamağı düzenle')]);
+  }
+  ['sola', 'saga'].forEach(function (k) { var b = $('vor-' + k); if (b) b.addEventListener('click', function () { vorYon = k; vorCiz(); }); });
+  function refreshVor() {
+    if (!$('vor')) return;
+    Object.keys(VNODES).forEach(function (id) { applyOv(VNODES[id].key, VNODES[id]); });
+    applyOv(VOR_METIN.key, VOR_METIN);
+    vorCiz(); vorSecim(vorSec);
+  }
+  refreshVor();
+
   function refreshTarama() {
     Object.keys(TNODES).forEach(function (id) { var n = TNODES[id]; applyOv(n.key, n); n._kutular.forEach(tyaz); });
     Object.keys(HNODES).forEach(function (id) { var n = HNODES[id]; applyOv(n.key, n); n._kutular.forEach(tyaz); });
     tsec(TA, TA.sec); tsec(TB, TB.sec); tsec(HF, HF.sec);
+    refreshVor();
   }
   refreshTarama();
 
@@ -940,7 +1096,7 @@
     $('depo-bas').textContent = k ? k.textContent : $('seg-' + which).textContent;
   }
   window.addEventListener('odyo:metinler', function () { var a = document.querySelector('#depo .depo-seg [aria-pressed="true"]'); if (a) depoBaslik(a.id.replace('seg-', '')); });
-  var altSec = secici(['yolak', 'refleks', 'tarama', 'hafiza'], 'alt-', 'p-');
+  var altSec = secici(['yolak', 'refleks', 'tarama', 'hafiza', 'vor'], 'alt-', 'p-');
   var trSec = secici(['a', 'b'], 'tr-', 'tp-');
   // Görsel depo içinde bir yere git (ana sayfadaki arama ve hızlı erişim): #depo/isitme, #depo/implant, #depo/sema,
   // #depo/yolak/<id>, #depo/refleks/<id>, #depo/tarama/<id>, #depo/cihaz/<id>. Hedef ekrana kaydırılır ve kısa süre vurgulanır.
@@ -960,6 +1116,7 @@
       seg('sema'); altSec('tarama'); trSec(o === TA ? 'a' : 'b'); tsec(o, id); vurgula(o.detay); return;
     }
     if (a === 'hafiza') { seg('sema'); altSec('hafiza'); if (HNODES[id]) { tsec(HF, id); vurgula(HF.detay); } return; }
+    if (a === 'vor') { seg('sema'); altSec('vor'); if (VNODES[id]) { vorSecim(id); vurgula($('detail-vor')); } return; }
     if (a === 'cihaz') {
       var d = DEVICES.filter(function (x) { return x.id === id; })[0];
       if (!d) return;
@@ -1102,13 +1259,14 @@
     if (window.Sozluk) window.Sozluk.terimler().forEach(function (x) { l.push({ tur: AM('araTurTerim'), ad: x.tr + (x.en ? ' (' + x.en + ')' : ''), metin: x.kisaltma + ' ' + x.aciklama, git: '#sozluk/terim/' + encodeURIComponent(x.id) }); });
     var sema = AM('araTurSema') + ' · ';
     // Bölümlerin kendisi (şemalar ve cihaz panelleri)
-    [['alt-yolak', '#depo/yolak/' + sel], ['alt-refleks', '#depo/refleks/' + rsel], ['alt-tarama', '#depo/tarama/' + TA.sec], ['alt-hafiza', '#depo/hafiza/' + HF.sec], ['seg-isitme', '#depo/isitme'], ['seg-implant', '#depo/implant']].forEach(function (x) {
+    [['alt-yolak', '#depo/yolak/' + sel], ['alt-refleks', '#depo/refleks/' + rsel], ['alt-tarama', '#depo/tarama/' + TA.sec], ['alt-hafiza', '#depo/hafiza/' + HF.sec], ['alt-vor', '#depo/vor/' + vorSec], ['seg-isitme', '#depo/isitme'], ['seg-implant', '#depo/implant']].forEach(function (x) {
       l.push({ tur: $('kutuphane').querySelector('h2').textContent, ad: $(x[0]).textContent, metin: '', git: x[1] });
     });
     NODES.forEach(function (n) { l.push({ tur: sema + $('alt-yolak').textContent, ad: n.label, metin: n.latin + ' ' + n.bolge + ' ' + n.yer, git: '#depo/yolak/' + n.id }); });
     RNODES.forEach(function (n) { l.push({ tur: sema + $('alt-refleks').textContent, ad: n.title, metin: n.latin + ' ' + n.label.join(' '), git: '#depo/refleks/' + n.id }); });
     Object.keys(TNODES).forEach(function (id) { var n = TNODES[id]; l.push({ tur: sema + $('alt-tarama').textContent, ad: n.baslik, metin: n.aciklama, git: '#depo/tarama/' + id }); });
     Object.keys(HNODES).forEach(function (id) { var n = HNODES[id]; l.push({ tur: sema + $('alt-hafiza').textContent, ad: n.baslik, metin: n.aciklama, git: '#depo/hafiza/' + id }); });
+    Object.keys(VNODES).forEach(function (id) { var n = VNODES[id]; l.push({ tur: sema + $('alt-vor').textContent, ad: n.baslik, metin: 'VOR vestibülo-oküler refleks ' + n.islev, git: '#depo/vor/' + id }); });
     return l;
   }
   function araCiz() {

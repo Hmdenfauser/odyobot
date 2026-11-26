@@ -967,3 +967,36 @@ input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
 .sz-satir-aciklama { font-size: 15px; line-height: 1.5; white-space: pre-line; }
 @media (prefers-reduced-motion: reduce) { .sz-kart-ic { transition: none; } }
 .sz-yigin[hidden], .sz-dugmeler[hidden], .sz-bitti[hidden], #sozluk .btn[hidden] { display: none; }
+
+/* VOR yolağı (2026-11-26). Renk uyarılan kanalın tarafı (sağ kırmızı, sol mavi), kesik çizgi baskılayıcı yol, gri etkinliği azalan yol. */
+.vor-yol { fill: none; stroke-width: 2.6; stroke-linecap: round; }
+.vor-yol.l { stroke: var(--left); } .vor-yol.r { stroke: var(--right); }
+.vor-yol.inh { stroke-dasharray: 6 4; }
+.vor-yol.azal { stroke: var(--muted); stroke-width: 1.3; stroke-dasharray: 2 4; opacity: .7; }
+.vor-ok.l { fill: var(--left); } .vor-ok.r { fill: var(--right); } .vor-ok.g { fill: var(--muted); }
+.vor-dur { stroke-width: 2.4; } .vor-dur.l { stroke: var(--left); } .vor-dur.r { stroke: var(--right); } .vor-dur.g { stroke: var(--muted); }
+.vor-orta { stroke: var(--line); stroke-width: 1.2; stroke-dasharray: 4 4; }
+.vor-yan { font: 500 11px var(--font-body); fill: var(--muted); text-anchor: middle; }
+.vor-cek { fill: var(--surface); stroke: var(--ink); stroke-width: 1.5; }
+.vor-kanal { fill: none; stroke-width: 8; } .vor-kanal.l { stroke: var(--left); } .vor-kanal.r { stroke: var(--right); }
+.vor-dokun { fill: transparent; stroke: none; }
+.vor-goz { fill: var(--surface); stroke: var(--ink); stroke-width: 1.5; }
+.vor-bebek { fill: var(--ink); transition: transform .4s ease; }
+.vor-kas { stroke-width: 1.5; }
+.vor-kas.kasil.l { fill: var(--left); stroke: var(--left); } .vor-kas.kasil.r { fill: var(--right); stroke: var(--right); }
+.vor-kas.gevse { fill: var(--surface); stroke: var(--muted); stroke-dasharray: 3 2; }
+.vor-basok { fill: none; stroke-width: 2.4; } .vor-basok.l { stroke: var(--left); } .vor-basok.r { stroke: var(--right); }
+.vor-gozok { fill: none; stroke: var(--muted); stroke-width: 2; }
+.vor-d.sel .vor-cek, .vor-d.sel .vor-goz { fill: var(--accent); stroke: var(--accent); }
+.vor-d.sel .vor-kanal { stroke-width: 11; }
+.vor-d.sel .vor-kas { stroke: var(--accent); stroke-width: 3; }
+.vor-d:focus-visible .vor-cek, .vor-d:focus-visible .vor-goz { stroke: var(--accent); stroke-width: 3; }
+.vor-durum { margin: 0; line-height: 1.5; }
+.legend .ln.inh { border-top-style: dashed; }
+.legend .ln.azal { border-top: 2px dotted var(--muted); }
+.vor-tablo-kap { overflow-x: auto; }
+.vor-tablo { width: 100%; border-collapse: collapse; font-size: 13px; line-height: 1.4; }
+.vor-tablo th, .vor-tablo td { text-align: left; vertical-align: top; padding: 6px 6px; border-bottom: 1px solid var(--line); }
+.vor-tablo thead th { font-weight: 600; color: var(--muted); }
+.vor-tablo tbody th { font-weight: 600; }
+@media (prefers-reduced-motion: reduce) { .vor-bebek { transition: none; } }
