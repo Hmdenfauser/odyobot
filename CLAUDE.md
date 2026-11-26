@@ -51,6 +51,11 @@ Uygulama **https://hmdenfauser.github.io/odyobot/** adresinde yayında. Proje sa
 - Alt çubuk sırası: Ana sayfa, Görsel depo, OdyoBOT, Vakalarım, Notlar.
 - Odyogram çıktısı (`cikti.js`), Vakalarım → OdyoBOT gönderme, düğmeli sohbet (`odybot.js`). sw v12. Ayrıntı: `PROGRESS.md`.
 
+### KALDIĞIMIZ YER (2026-11-27) — oturum başında bunu özetle
+**Durum:** Yayında **sw v50** (main; `onizleme-v50` = `bppv-manevralar` + `vor-yolak` birleşti). Önceki yayının yedeği git etiketi `yedek-yayin-v49`.
+**v50:** Kütüphane → **Vestibüler Manevralar** (13 animasyonlu BPPV test/tedavi manevrası + "Manevralardan sonra"; Gufoni'de geotropik / ageotropik özgün (baş aşağı) / Appiani (baş yukarı)); Şemalar → **VOR yolağı** (Katz Bölüm 20 + ders notu). Ayrıntı aşağıdaki "Yeni istek (2026-11-26)" ve "VOR yolağı" maddelerinde.
+**Oturum başında hatırlat:** (1) Telefonda v50: manevra animasyonları (akıcılık, yana sürükleyerek çevirme, Sağ/Sol, tipler, kamera), VOR şeması (Baş sola/sağa, kartlar, tablo). (2) Doğrulanamayan tek nokta: Vannucchi-Asprella'da baş açısı (kitap 45°, özgün makaleye ulaşılamadı). (3) **Bugünün işi: "Hasta nasıl duyar?" ses benzetimleri** (KI, işitme cihazı, işitsel nöropati, otitis media) — önce yer, örnek sesler, yöntem ve kaynak netleştirilir. (4) Temizlik: `bppv-manevralar`, `vor-yolak`, `onizleme-v50` (ve eski `ampulla-model`, `icerik-denetim`, `onizleme-birlesik`) dalları silinebilir. (5) Mağaza/alan adı/reklam kararları ve odyogram fotoğrafı örnekleri hâlâ bekliyor (aşağıda).
+
 ### KALDIĞIMIZ YER (2026-11-22 akşam) — oturum başında bunu özetle
 **Durum:** Yayında **sw v49**, bekleyen kod değişikliği yok. v49 ayrıntısı aşağıdaki bölümde.
 **Proje sahibi düşünüyor, karar bekleniyor (mağaza + alan adı + reklam):**
