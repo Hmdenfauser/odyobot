@@ -578,7 +578,7 @@
 
 
   /* ---------- VOR yolağı (2026-11-26): yatay (horizontal) vestibülo-oküler refleks ----------
-     Kaynaklar: kitap, Bölüm 20 "Vestibüler Sistem Klinik Nörofizyolojisi" (s. 386–391: Tablo 20.1–20.3, Şekil 20.9, 20.11, 20.12);
+     Kaynaklar: Katz, Klinik Odyoloji (Türkçe baskı; proje sahibi 2026-11-27 doğruladı), Bölüm 20 "Vestibüler Sistem Klinik Nörofizyolojisi" (s. 386–391: Tablo 20.1–20.3, Şekil 20.9, 20.11, 20.12);
      İşitme ve Denge Sistemi-II, santral vestibüler sistem fizyolojisi (sl. 198–213); Vestibüler Sistem Değerlendirme, vHIT (sl. 4);
      Elektrofizyolojik Testler, VEMP (sl. 18). Proje sahibinin görselleri (ham-gorseller/vor-yolak/, kitap şekilleri ve Wikipedia
      "Vestibulo-ocular reflex" şeması) ile ders slaytındaki Baloh ve Honrubia şekline bakılarak özgün çizildi; görseller uygulamaya konmadı.
